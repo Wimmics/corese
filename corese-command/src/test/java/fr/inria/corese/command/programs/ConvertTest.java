@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -16,8 +14,9 @@ import java.nio.file.Paths;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.corese.command.utils.GraphUtils;
+import fr.inria.corese.command.utils.RdfDataLoader;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
+import fr.inria.corese.core.Graph;
 import picocli.CommandLine;
 
 public class ConvertTest {
@@ -599,7 +598,6 @@ public class ConvertTest {
         int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", inputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
-        System.out.println(err.toString().trim());
         assertTrue(err.toString().trim().contains("Input path cannot be the same as output path."));
     }
 
@@ -611,8 +609,7 @@ public class ConvertTest {
         int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", outputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
-        assertTrue(err.toString().trim()
-                .contains("Error while loading : invalid_path.ttl (No such file or directory)"));
+        assertTrue(err.toString().trim().contains("Failed to open RDF data file:"));
     }
 
     @Test
@@ -623,21 +620,36 @@ public class ConvertTest {
         int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", outputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
-        assertTrue(err.toString().trim().contains(
-                "/invalid/path/for/output.ttl (No such file or directory)"));
+        assertTrue(err.toString().trim().contains("Failed to open export file:"));
     }
 
     @Test
     public void testGraphUtilsLoadWithInvalidFormat() {
-        InputStream input = new ByteArrayInputStream("<rdf></rdf>".getBytes());
+        Path inputPath = Paths.get(referencesPath, "beatles.ttl");
+
         try {
-            GraphUtils.load(input, EnumInputFormat.JSONLD);
+            RdfDataLoader.loadFromFile(inputPath, EnumInputFormat.JSONLD, Graph.create(), null, false);
             fail("Expected an IllegalArgumentException to be thrown");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Failed to parse RDF file."));
-        } catch (IOException e) {
-            fail("Unexpected IOException: " + e.getMessage());
         }
+    }
+
+    @Test
+    public void testConvertTurtleToxmlUrl() {
+        String pathRefBeatlesXML = Paths.get(referencesPath, "beatlesUrl.xml").toString();
+        String pathOutBeatlesTTL = Paths.get(resultPath, "beatlesUrl.ttl").toString();
+
+        int exitCode = cmd.execute("-i", "https://files.inria.fr/corese/data/unit-test/beatles.ttl", "-if", "turtle",
+                "-of", "RDFXML", "-o", pathOutBeatlesTTL);
+
+        String expectedOutput = readFileAsString(pathRefBeatlesXML);
+        String actualOutput = readFileAsString(pathOutBeatlesTTL);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertEquals(expectedOutput, actualOutput);
     }
 
 }

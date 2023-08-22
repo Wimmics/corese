@@ -1,10 +1,8 @@
 package fr.inria.corese.command.programs;
 
-import java.io.IOException;
 import java.security.InvalidParameterException;
 
 import fr.inria.corese.command.App;
-import fr.inria.corese.command.utils.GraphUtils;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.logic.OWLProfile;
@@ -45,12 +43,10 @@ public class Profile implements Runnable {
 
     @Override
     public void run() {
-        try {
-            this.graph = GraphUtils.load(this.intputPath, this.inputFormat);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        chechProfile();
+        // try { this.graph = RdfDataLoader.loadFromPathOrUrl(this.intputPath,
+        // this.inputFormat); } catch (IOException e) { e.printStackTrace();
+        // }
+        // chechProfile();
     }
 
     /**

@@ -1,15 +1,19 @@
 package fr.inria.corese.command.programs;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import fr.inria.corese.command.App;
-import fr.inria.corese.command.utils.GraphUtils;
+import fr.inria.corese.command.utils.ConfigManager;
+import fr.inria.corese.command.utils.ConvertString;
+import fr.inria.corese.command.utils.RdfDataExporter;
+import fr.inria.corese.command.utils.RdfDataLoader;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.util.Property;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
@@ -18,9 +22,9 @@ import picocli.CommandLine.Spec;
 @Command(name = "convert", version = App.version, description = "Convert an RDF file from one serialization format to another.", mixinStandardHelpOptions = true)
 public class Convert implements Callable<Integer> {
 
-    private static final String DEFAULT_OUTPUT_FILE_NAME = "output";
-    private static final int ERROR_EXIT_CODE_SUCCESS = 0;
-    private static final int ERROR_EXIT_CODE_ERROR = 1;
+    private final String DEFAULT_OUTPUT_FILE_NAME = "output";
+    private final int ERROR_EXIT_CODE_SUCCESS = 0;
+    private final int ERROR_EXIT_CODE_ERROR = 1;
 
     @Spec
     CommandSpec spec;
@@ -46,9 +50,9 @@ public class Convert implements Callable<Integer> {
 
     @Option(names = { "-c", "--config",
             "--init" }, description = "Path to a configuration file. If not provided, the default configuration file will be used.", required = false)
-    private String configFilePath;
+    private Path configFilePath;
 
-    private Graph graph;
+    private Graph graph = Graph.create();
 
     private boolean outputFormatIsDefined = false;
     private boolean isDefaultOutputName = false;
@@ -62,69 +66,79 @@ public class Convert implements Callable<Integer> {
         try {
 
             // Load configuration file
-            if (configFilePath != null) {
-                Property.load(configFilePath);
-                if (this.verbose) {
-                    spec.commandLine().getOut().println("Loaded configuration file: " + configFilePath);
-                }
-            } else if (this.verbose) {
-                spec.commandLine().getOut().println("No configuration file provided. Using default configuration.");
+            Optional<Path> configFilePath = Optional.ofNullable(this.configFilePath);
+            if (configFilePath.isPresent()) {
+                ConfigManager.loadFromFile(configFilePath.get(), spec, verbose);
+            } else {
+                ConfigManager.loadDefaultConfig(spec, verbose);
             }
 
+            // Check if output format is defined
             this.outputFormatIsDefined = this.output != null;
-            this.isDefaultOutputName = this.output != null && DEFAULT_OUTPUT_FILE_NAME.equals(this.output.toString());
-            checkInputValues();
-            loadInputFile();
-            exportGraph();
-            return ERROR_EXIT_CODE_SUCCESS;
+
+            // Check if output file name is default
+            this.isDefaultOutputName = this.output != null
+                    && DEFAULT_OUTPUT_FILE_NAME.equals(this.output.toString());
+
+            // Execute command
+            this.checkInputValues();
+            this.loadInputFile();
+            this.exportGraph();
+
+            return this.ERROR_EXIT_CODE_SUCCESS;
         } catch (IllegalArgumentException | IOException e) {
-            spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
-            return ERROR_EXIT_CODE_ERROR;
+            this.spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            return this.ERROR_EXIT_CODE_ERROR;
         }
     }
 
     /**
      * Check if the input values are correct.
-     * 
+     *
      * @throws IllegalArgumentException if input path is same as output path.
      */
     private void checkInputValues() throws IllegalArgumentException {
-        if (input != null && output != null && input.equals(output.toString())) {
+        if (this.input != null
+                && this.output != null
+                && this.input.equals(this.output.toString())) {
             throw new IllegalArgumentException("Input path cannot be the same as output path.");
         }
     }
 
     /**
      * Load the input file.
-     * 
+     *
      * @throws IllegalArgumentException if the input format is not supported.
      * @throws IOException              if an I/O error occurs while loading the
      *                                  input file.
      */
     private void loadInputFile() throws IllegalArgumentException, IOException {
+        Optional<URL> url = ConvertString.toUrl(this.input);
+        Optional<Path> path = ConvertString.toPath(this.input);
+
         if (input == null) {
-            // if input is null, load from stdin
-            this.graph = GraphUtils.load(System.in, inputFormat);
-            if (verbose) {
-                spec.commandLine().getOut().println("Loaded file: stdin");
-            }
+            // if input is not provided, load from standard input
+            RdfDataLoader.LoadFromStdin(this.inputFormat, this.graph, this.spec, this.verbose);
+        } else if (url.isPresent()) {
+            // if input is a URL, load from the given URL
+            RdfDataLoader.loadFromURL(url.get(), this.inputFormat, this.graph, this.spec, this.verbose);
+        } else if (path.isPresent()) {
+            // if input is provided, load from the given file
+            RdfDataLoader.loadFromFile(path.get(), this.inputFormat, this.graph, this.spec, this.verbose);
         } else {
-            this.graph = GraphUtils.load(input, inputFormat);
-            if (verbose) {
-                spec.commandLine().getOut().println("Loaded file: " + input);
-            }
+            throw new IllegalArgumentException("Input path is not a valid URL or file path: " + this.input);
         }
     }
 
     /**
      * Export the graph.
-     * 
+     *
      * @throws IOException if an I/O error occurs while exporting the graph.
      */
     private void exportGraph() throws IOException {
 
-        if (verbose) {
-            spec.commandLine().getOut().println("Converting file to " + outputFormat + " format...");
+        if (this.verbose) {
+            this.spec.commandLine().getOut().println("Converting file to " + this.outputFormat + " format...");
         }
 
         Path outputFileName;
@@ -133,21 +147,19 @@ public class Convert implements Callable<Integer> {
         if (this.outputFormatIsDefined && !this.isDefaultOutputName) {
             outputFileName = this.output;
         } else {
-            outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.outputFormat.getExtention());
+            outputFileName = Path.of(this.DEFAULT_OUTPUT_FILE_NAME + "." + this.outputFormat.getExtention());
         }
 
         // Export the graph
-        if (output == null) {
-            // if output is null, print to stdout
-            GraphUtils.exportToStdout(graph, outputFormat, spec);
-            if (verbose) {
-                spec.commandLine().getOut().println("Results exported to standard output.");
-            }
+        if (this.output == null) {
+            RdfDataExporter.exportToStdout(this.outputFormat, this.graph, this.spec, this.verbose);
         } else {
-            GraphUtils.exportToFile(graph, outputFormat, outputFileName);
-            if (verbose) {
-                spec.commandLine().getOut().println("Results exported to file: " + outputFileName);
-            }
+            RdfDataExporter.exportToFile(
+                    outputFileName,
+                    this.outputFormat,
+                    this.graph,
+                    this.spec,
+                    this.verbose);
         }
     }
 

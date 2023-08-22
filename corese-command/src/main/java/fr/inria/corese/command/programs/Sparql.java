@@ -13,6 +13,7 @@ import fr.inria.corese.command.utils.RdfDataExporter;
 import fr.inria.corese.command.utils.RdfDataLoader;
 import fr.inria.corese.command.utils.SparqlQueryLoader;
 import fr.inria.corese.command.utils.SparqlResultExporter;
+import fr.inria.corese.command.utils.TestType;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.command.utils.format.EnumResultFormat;
@@ -91,9 +92,9 @@ public class Sparql implements Callable<Integer> {
             // Load configuration file
             Optional<Path> configFilePath = Optional.ofNullable(this.configFilePath);
             if (configFilePath.isPresent()) {
-                ConfigManager.loadFromFile(configFilePath.get(), spec, verbose);
+                ConfigManager.loadFromFile(configFilePath.get(), this.spec, this.verbose);
             } else {
-                ConfigManager.loadDefaultConfig(spec, verbose);
+                ConfigManager.loadDefaultConfig(this.spec, this.verbose);
             }
 
             this.resultFormatIsDefined = this.resultFormat != null;
@@ -175,7 +176,7 @@ public class Sparql implements Callable<Integer> {
     private void loadQuery() throws IOException {
         Optional<Path> path = ConvertString.toPath(this.queryUrlOrFile);
         Optional<URL> url = ConvertString.toUrl(this.queryUrlOrFile);
-        Boolean isSparqlQuery = ConvertString.isSparqlQuery(this.queryUrlOrFile);
+        Boolean isSparqlQuery = TestType.isSparqlQuery(this.queryUrlOrFile);
 
         if (isSparqlQuery) {
             // if query is a SPARQL query

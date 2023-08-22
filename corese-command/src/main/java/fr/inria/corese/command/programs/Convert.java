@@ -68,9 +68,9 @@ public class Convert implements Callable<Integer> {
             // Load configuration file
             Optional<Path> configFilePath = Optional.ofNullable(this.configFilePath);
             if (configFilePath.isPresent()) {
-                ConfigManager.loadFromFile(configFilePath.get(), spec, verbose);
+                ConfigManager.loadFromFile(configFilePath.get(), this.spec, this.verbose);
             } else {
-                ConfigManager.loadDefaultConfig(spec, verbose);
+                ConfigManager.loadDefaultConfig(this.spec, this.verbose);
             }
 
             // Check if output format is defined

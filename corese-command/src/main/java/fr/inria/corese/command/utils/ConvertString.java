@@ -38,23 +38,4 @@ public class ConvertString {
             return Optional.empty();
         }
     }
-
-    /**
-     * Detect if a string is a possible SPARQL query.
-     *
-     * @param input String to check.
-     * @return True if the string seems to be a SPARQL query, false otherwise.
-     */
-    public static boolean isSparqlQuery(String input) {
-        if (input == null) {
-            return false;
-        }
-
-        String trimmedInput = input.trim().toUpperCase();
-        return trimmedInput.startsWith("SELECT") ||
-                trimmedInput.startsWith("CONSTRUCT") ||
-                trimmedInput.startsWith("ASK") ||
-                trimmedInput.startsWith("INSERT") ||
-                trimmedInput.startsWith("DESCRIBE");
-    }
 }

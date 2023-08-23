@@ -1,0 +1,16 @@
+@prefix xsh: <http://www.w3.org/ns/shacl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+<urn:uuid:a082018c-aede-48f8-b99c-e5d822844336> a sh:ValidationResult ;
+  sh:focusNode <http://stardog.com/tutorial/Please_Please_Me> ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]" ;
+  sh:resultPath <http://stardog.com/tutorial/name> ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
+  sh:sourceShape _:b2 ;
+  sh:value 2 .
+
+[a sh:ValidationReport ;
+  sh:conforms false ;
+  sh:result <urn:uuid:a082018c-aede-48f8-b99c-e5d822844336>] .
+

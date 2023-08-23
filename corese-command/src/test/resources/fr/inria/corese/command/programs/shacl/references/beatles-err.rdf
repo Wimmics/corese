@@ -1,0 +1,34 @@
+<!DOCTYPE rdf:RDF [
+   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
+]>
+
+<rdf:RDF 
+  xmlns:xsh='http://www.w3.org/ns/shacl#'
+  xmlns:ft='http://ns.inria.fr/sparql-template/format/rdfxml/'
+  xmlns:sh='http://www.w3.org/ns/shacl#'
+  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+<sh:ValidationReport rdf:nodeID='_:bb2'>
+  <sh:conforms rdf:datatype='&xsd;boolean'>false</sh:conforms>
+  <sh:result rdf:resource='urn:uuid:57bc48cf-5d67-42cd-af00-cbf982b18452' />
+</sh:ValidationReport>
+
+<rdf:Description rdf:about='urn:uuid:57bc48cf-5d67-42cd-af00-cbf982b18452'>
+  <rdf:type rdf:resource='http://www.w3.org/ns/shacl#ValidationResult' />
+  <sh:focusNode rdf:resource='http://stardog.com/tutorial/Please_Please_Me' />
+  <sh:resultMessage>Fail at: [sh:datatype xsd:string ;
+  sh:maxCount 1 ;
+  sh:minCount 1 ;
+  sh:path <http://stardog.com/tutorial/name>]</sh:resultMessage>
+  <sh:resultPath rdf:resource='http://stardog.com/tutorial/name' />
+  <sh:resultSeverity rdf:resource='http://www.w3.org/ns/shacl#Violation' />
+  <sh:sourceConstraintComponent rdf:resource='http://www.w3.org/ns/shacl#MaxCountConstraintComponent' />
+  <sh:sourceShape>
+    <rdf:Description rdf:nodeID='_:b2'>
+      
+    </rdf:Description>
+  </sh:sourceShape>
+  <sh:value rdf:datatype='&xsd;integer'>2</sh:value>
+</rdf:Description>
+
+</rdf:RDF>

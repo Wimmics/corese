@@ -1,0 +1,58 @@
+@prefix xsh: <http://www.w3.org/ns/shacl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/ns#> .
+
+<urn:uuid:0ad011f8-1f77-4ca6-b6d1-adfd88fe271f> a sh:ValidationResult ;
+  sh:focusNode ex:Calvin ;
+  sh:resultMessage "Fail at: [sh:class ex:Company ;\n  sh:nodeKind sh:IRI ;\n  sh:path ex:worksFor]" ;
+  sh:resultPath ex:worksFor ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:ClassConstraintComponent ;
+  sh:sourceShape _:b9 ;
+  sh:value ex:UntypedCompany .
+
+<urn:uuid:140d7f0a-1539-47a7-b7f7-45e0b0b9cbee> a sh:ValidationResult ;
+  sh:focusNode <http://stardog.com/tutorial/Please_Please_Me> ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]" ;
+  sh:resultPath <http://stardog.com/tutorial/name> ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
+  sh:sourceShape _:b2 ;
+  sh:value 2 .
+
+<urn:uuid:2a88a507-366c-4049-a7c7-9bb4e40f3ec1> a sh:ValidationResult ;
+  sh:focusNode ex:Bob ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:path ex:ssn ;\n  sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"]" ;
+  sh:resultPath ex:ssn ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
+  sh:sourceShape _:b8 ;
+  sh:value 2 .
+
+<urn:uuid:38bcfd51-7185-4368-8ddb-ef41d8543874> a sh:ValidationResult ;
+  sh:focusNode ex:Alice ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:path ex:ssn ;\n  sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"]" ;
+  sh:resultPath ex:ssn ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:PatternConstraintComponent ;
+  sh:sourceShape _:b8 ;
+  sh:value "987-65-432A" .
+
+<urn:uuid:ebc2e209-82bc-43dd-a45e-34767ed0e570> a sh:ValidationResult ;
+  sh:focusNode ex:Calvin ;
+  sh:resultMessage "Fail at: ex:PersonShape a sh:NodeShape ;\n  sh:closed true ;\n  sh:ignoredProperties (rdf:type) ;\n  sh:property [sh:datatype xsd:string ;\n    sh:maxCount 1 ;\n    sh:path ex:ssn ;\n    sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"] ;\n  sh:property [sh:class ex:Company ;\n    sh:nodeKind sh:IRI ;\n    sh:path ex:worksFor] ;\n  sh:targetClass ex:Person" ;
+  sh:resultPath ex:birthDate ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:ClosedConstraintComponent ;
+  sh:sourceShape ex:PersonShape ;
+  sh:value "1971-07-07"^^xsd:date .
+
+[a sh:ValidationReport ;
+  sh:conforms false ;
+  sh:result <urn:uuid:0ad011f8-1f77-4ca6-b6d1-adfd88fe271f> ;
+  sh:result <urn:uuid:140d7f0a-1539-47a7-b7f7-45e0b0b9cbee> ;
+  sh:result <urn:uuid:2a88a507-366c-4049-a7c7-9bb4e40f3ec1> ;
+  sh:result <urn:uuid:38bcfd51-7185-4368-8ddb-ef41d8543874> ;
+  sh:result <urn:uuid:ebc2e209-82bc-43dd-a45e-34767ed0e570>] .
+
+

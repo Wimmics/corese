@@ -1,0 +1,98 @@
+{
+"@context": {
+  "xsh": "http://www.w3.org/ns/shacl#",
+  "sh": "http://www.w3.org/ns/shacl#"
+},
+
+"@graph":
+[
+  {
+    "@id": "_:b0",
+    "sh:datatype": {"@id": "http://www.w3.org/2001/XMLSchema#string"},
+    "sh:maxCount": 1,
+    "sh:minCount": 1,
+    "sh:path": {"@id": "http://stardog.com/tutorial/name"}
+  },
+  
+  {
+    "@id": "_:b1",
+    "sh:class": {"@id": "http://stardog.com/tutorial/SoloArtist"},
+    "sh:minCount": 1,
+    "sh:path": {"@id": "http://stardog.com/tutorial/member"}
+  },
+  
+  {
+    "@id": "_:b2",
+    "sh:datatype": {"@id": "http://www.w3.org/2001/XMLSchema#string"},
+    "sh:maxCount": 1,
+    "sh:minCount": 1,
+    "sh:path": {"@id": "http://stardog.com/tutorial/name"}
+  },
+  
+  {
+    "@id": "_:b3",
+    "sh:datatype": {"@id": "http://www.w3.org/2001/XMLSchema#date"},
+    "sh:maxCount": 1,
+    "sh:minCount": 1,
+    "sh:path": {"@id": "http://stardog.com/tutorial/date"}
+  },
+  
+  {
+    "@id": "_:b4",
+    "sh:maxCount": 1,
+    "sh:minCount": 1,
+    "sh:nodeKind": {"@id": "http://www.w3.org/ns/shacl#IRI"},
+    "sh:path": {"@id": "http://stardog.com/tutorial/artist"}
+  },
+  
+  {
+    "@id": "_:b5",
+    "sh:datatype": {"@id": "http://www.w3.org/2001/XMLSchema#string"},
+    "sh:maxCount": 1,
+    "sh:minCount": 1,
+    "sh:path": {"@id": "http://stardog.com/tutorial/name"}
+  },
+  
+  {
+    "@id": "_:b6",
+    "sh:datatype": {"@id": "http://www.w3.org/2001/XMLSchema#integer"},
+    "sh:maxCount": 1,
+    "sh:minCount": 1,
+    "sh:path": {"@id": "http://stardog.com/tutorial/length"}
+  },
+  
+  {
+    "@id": "_:b7",
+    "sh:minCount": 1,
+    "sh:nodeKind": {"@id": "http://www.w3.org/ns/shacl#IRI"},
+    "sh:path": {"@id": "http://stardog.com/tutorial/writer"}
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/AlbumShape",
+    "@type": "http://www.w3.org/ns/shacl#NodeShape",
+    "sh:property": [{"@id": "_:b2"}, {"@id": "_:b3"}, {"@id": "_:b4"}],
+    "sh:targetClass": {"@id": "http://stardog.com/tutorial/Album"}
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/BandShape",
+    "@type": "http://www.w3.org/ns/shacl#NodeShape",
+    "sh:property": [{"@id": "_:b0"}, {"@id": "_:b1"}],
+    "sh:targetClass": {"@id": "http://stardog.com/tutorial/Band"}
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/SoloArtistShape",
+    "@type": "http://www.w3.org/ns/shacl#NodeShape",
+    "sh:targetClass": {"@id": "http://stardog.com/tutorial/SoloArtist"}
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/SongShape",
+    "@type": "http://www.w3.org/ns/shacl#NodeShape",
+    "sh:property": [{"@id": "_:b5"}, {"@id": "_:b6"}, {"@id": "_:b7"}],
+    "sh:targetClass": {"@id": "http://stardog.com/tutorial/Song"}
+  }
+]
+}

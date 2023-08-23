@@ -1,0 +1,34 @@
+PREFIX : <http://stardog.com/tutorial/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+:The_Beatles      rdf:type  :Band .
+:The_Beatles      :name     "The Beatles" .
+:The_Beatles      :member   :John_Lennon .
+:The_Beatles      :member   :Paul_McCartney .
+:The_Beatles      :member   :Ringo_Starr .
+:The_Beatles      :member   :George_Harrison .
+:John_Lennon      rdf:type  :SoloArtist .
+:Paul_McCartney   rdf:type  :SoloArtist .
+:Ringo_Starr      rdf:type  :SoloArtist .
+:George_Harrison  rdf:type  :SoloArtist .
+:Please_Please_Me rdf:type  :Album .
+:Please_Please_Me :name     "Please Please Me" .
+:Please_Please_Me :date     "1963-03-22"^^xsd:date .
+:Please_Please_Me :artist   :The_Beatles .
+:Please_Please_Me :track    :Love_Me_Do .
+:Love_Me_Do       rdf:type  :Song .
+:Love_Me_Do       :name     "Love Me Do" .
+:Love_Me_Do       :length   125 .
+:Love_Me_Do       :writer   :John_Lennon .
+:Love_Me_Do       :writer   :Paul_McCartney .
+
+:McCartney        rdf:type  :Album .
+:McCartney        :name     "McCartney" .
+:McCartney        :date     "1970-04-17"^^xsd:date .
+:McCartney        :artist   :Paul_McCartney .
+
+:Imagine          rdf:type  :Album .
+:Imagine          :name     "Imagine" .
+:Imagine          :date     "1971-10-11"^^xsd:date .
+:Imagine          :artist   :John_Lennon .

@@ -1,0 +1,64 @@
+<!DOCTYPE rdf:RDF [
+   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
+]>
+
+<rdf:RDF 
+  xmlns:ns1='http://stardog.com/tutorial/'
+  xmlns:ft='http://ns.inria.fr/sparql-template/format/rdfxml/'
+  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/George_Harrison'>
+  <rdf:type rdf:resource='http://stardog.com/tutorial/SoloArtist' />
+</rdf:Description>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/Imagine'>
+  <ns1:artist rdf:resource='http://stardog.com/tutorial/John_Lennon' />
+  <ns1:date rdf:datatype='&xsd;date'>1971-10-11</ns1:date>
+  <ns1:name>Imagine</ns1:name>
+  <rdf:type rdf:resource='http://stardog.com/tutorial/Album' />
+</rdf:Description>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/John_Lennon'>
+  <rdf:type rdf:resource='http://stardog.com/tutorial/SoloArtist' />
+</rdf:Description>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/Love_Me_Do'>
+  <ns1:length rdf:datatype='&xsd;integer'>125</ns1:length>
+  <ns1:name>Love Me Do</ns1:name>
+  <ns1:writer rdf:resource='http://stardog.com/tutorial/John_Lennon' />
+  <ns1:writer rdf:resource='http://stardog.com/tutorial/Paul_McCartney' />
+  <rdf:type rdf:resource='http://stardog.com/tutorial/Song' />
+</rdf:Description>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/McCartney'>
+  <ns1:artist rdf:resource='http://stardog.com/tutorial/Paul_McCartney' />
+  <ns1:date rdf:datatype='&xsd;date'>1970-04-17</ns1:date>
+  <ns1:name>McCartney</ns1:name>
+  <rdf:type rdf:resource='http://stardog.com/tutorial/Album' />
+</rdf:Description>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/Paul_McCartney'>
+  <rdf:type rdf:resource='http://stardog.com/tutorial/SoloArtist' />
+</rdf:Description>
+
+<ns1:Album rdf:about='http://stardog.com/tutorial/Please_Please_Me'>
+  <ns1:artist rdf:resource='http://stardog.com/tutorial/The_Beatles' />
+  <ns1:date rdf:datatype='&xsd;date'>1963-03-22</ns1:date>
+  <ns1:name>Please Please Me</ns1:name>
+  <ns1:track rdf:resource='http://stardog.com/tutorial/Love_Me_Do' />
+</ns1:Album>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/Ringo_Starr'>
+  <rdf:type rdf:resource='http://stardog.com/tutorial/SoloArtist' />
+</rdf:Description>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/The_Beatles'>
+  <ns1:member rdf:resource='http://stardog.com/tutorial/George_Harrison' />
+  <ns1:member rdf:resource='http://stardog.com/tutorial/John_Lennon' />
+  <ns1:member rdf:resource='http://stardog.com/tutorial/Paul_McCartney' />
+  <ns1:member rdf:resource='http://stardog.com/tutorial/Ringo_Starr' />
+  <ns1:name>The Beatles</ns1:name>
+  <rdf:type rdf:resource='http://stardog.com/tutorial/Band' />
+</rdf:Description>
+
+</rdf:RDF>

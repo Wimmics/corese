@@ -1,0 +1,14 @@
+<!DOCTYPE rdf:RDF [
+   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
+]>
+
+<rdf:RDF 
+  xmlns:xsh='http://www.w3.org/ns/shacl#'
+  xmlns:ft='http://ns.inria.fr/sparql-template/format/rdfxml/'
+  xmlns:sh='http://www.w3.org/ns/shacl#'>
+
+<sh:ValidationReport rdf:nodeID='_:b3'>
+  <sh:conforms rdf:datatype='&xsd;boolean'>true</sh:conforms>
+</sh:ValidationReport>
+
+</rdf:RDF>

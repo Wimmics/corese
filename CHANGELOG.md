@@ -8,6 +8,8 @@
 
 - Added the "verbose" option to Corese-command.
 - Added support for property files to Corese-command.
+- Added new sub-commands 'shacl', allowing to validate RDF graphs against SHACL shapes.
+- Added verbose option to Corese-command.
 
 ### Changes
 

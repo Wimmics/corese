@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="console-application">
+    <id>fr.inria.corese.CoreseCommand</id>
+
+    <name>Corese-Command</name>
+    <summary>Unlock the power of the Semantic Web</summary>
+    <developer_name>Inria Research Team Wimmics</developer_name>
+
+    <metadata_license>MIT</metadata_license>
+    <project_license>CECILL-C</project_license>
+
+    <description>
+        <p>
+            Corese is a comprehensive software platform designed to implement and extend the W3C's
+            Semantic Web standards. This includes support for RDF, RDFS, SPARQL 1.1 Query &amp;
+            Update, OWL RL, SHACL, and more.
+        </p>
+        <p>
+            Corese-Command serves as the command-line interface (CLI) to the Corese platform. With
+            it, you can execute SPARQL queries against RDF datasets and effortlessly convert between
+            various RDF serialization formats all directly from the command line. This makes
+            Corese-Command an invaluable asset for automated data processing, rapid testing, and
+            seamless integration into broader applications and workflows.
+        </p>
+    </description>
+
+
+    <categories>
+        <category>Science</category>
+        <category>DataVisualization</category>
+        <category>Utility</category>
+        <category>ArtificialIntelligence</category>
+        <category>Java</category>
+    </categories>
+
+    <keywords>
+        <keyword>semantic web</keyword>
+        <keyword>RDF</keyword>
+        <keyword>SPARQL</keyword>
+        <keyword>OWL</keyword>
+        <keyword>SHACL</keyword>
+        <keyword>LDScript</keyword>
+        <keyword>STTL</keyword>
+        <keyword>SPARQL Rule</keyword>
+        <keyword>SPARQL*</keyword>
+        <keyword>RDF*</keyword>
+        <keyword>SPARQL Query</keyword>
+        <keyword>SPARQL Update</keyword>
+        <keyword>SPARQL Graph</keyword>
+        <keyword>SPARQL Template</keyword>
+        <keyword>Command Line Interface</keyword>
+        <keyword>CLI</keyword>
+    </keywords>
+
+    <content_rating type="oars-1.1" />
+
+    <launchable type="desktop-id">fr.inria.corese.CoreseCommand.desktop</launchable>
+
+    <screenshots>
+        <screenshot type="default">
+            <image>https://files.inria.fr/corese/distrib/FlatHub/command/convert-jsonld.png</image>
+            <caption>Convert Turtle to JSON-LD</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://files.inria.fr/corese/distrib/FlatHub/command/sparql-md.png</image>
+            <caption>SPARQL query with markdown output</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://files.inria.fr/corese/distrib/FlatHub/command/sparql-xml.png</image>
+            <caption>SPARQL query with XML output</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://files.inria.fr/corese/distrib/FlatHub/command/convert-trig-url.png</image>
+            <caption>Convert Turtle to TriG from URL</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://files.inria.fr/corese/distrib/FlatHub/command/sparql-pipe-insert.png</image>
+            <caption>SPARQL query with pipe input and INSERT WHERE</caption>
+        </screenshot>
+    </screenshots>
+
+    <releases>
+        <release version="4.4.1" date="2023-07-25">
+            <description>
+                <p>
+                    - Enhanced 'convert' and 'sparql' to accept URL and standard input.&#10;
+                    - 'sparql' and 'convert' now support standard output and multiple file inputs.&#10;
+                    - Expanded 'sparql' to handle directories, recursive directories, and various query types (SELECT, CONSTRUCT, ASK, etc.).&#10;
+                    - User can choose result format in 'sparql', including markdown.&#10;
+                    - Added mime type as a format name.&#10;
+                    – Disabled owl:imports auto-import.&#10;
+                    - Docker users can pass custom options and adjust log level for Corese-server.&#10;
+                    - Standardized format names in Corese-command.&#10;
+                    - Removed 'owlProfile' and 'ldscript'; to return after refactoring.&#10;
+                    - Fixed warning related to sun.reflect.Reflection.getCallerClass.
+                </p>
+            </description>
+        </release>
+        <release version="4.4.0" date="2023-03-30">
+            <description>
+                <p>
+                    – Added prove of concept of sub-commands `convert`.&#10;
+                    – Added prove of concept of sub-commands `sparql`.&#10;
+                    – Added prove of concept of sub-commands `ldscript`.&#10;
+                    – Added prove of concept of sub-commands `owlProfile`.&#10;
+                </p>
+            </description>
+        </release>
+    </releases>
+
+    <url type="homepage">https://project.inria.fr/corese/</url>
+    <url type="bugtracker">https://github.com/Wimmics/corese/issues/</url>
+    <url type="help">https://project.inria.fr/corese/documentation/</url>
+
+    <update_contact>remi.ceres@inria.fr</update_contact>
+
+    <provides>
+        <binary>corese</binary>
+    </provides>
+
+</component>

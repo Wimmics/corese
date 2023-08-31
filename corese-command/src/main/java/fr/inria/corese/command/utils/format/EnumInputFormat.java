@@ -119,8 +119,7 @@ public enum EnumInputFormat {
                 return EnumInputFormat.RDFA;
 
             default:
-                throw new InvalidParameterException("Loader format " + loaderFormat + " is unknown.");
-
+                throw new InvalidParameterException("Impossible to determine the input format, please specify it with the -f or -if or --input-format option.");
         }
     }
 

@@ -3,8 +3,12 @@
     <id>fr.inria.corese.CoreseGui</id>
 
     <name>Corese-Gui</name>
+    
     <summary>Unlock the power of the Semantic Web</summary>
+    <summary xml:lang="fr">Débloquez la puissance du Web sémantique</summary>
+
     <developer_name>Inria Research Team Wimmics</developer_name>
+    <developer_name xml:lang="fr">Équipe de recherche Inria Wimmics</developer_name>
 
     <metadata_license>MIT</metadata_license>
     <project_license>CECILL-C</project_license>
@@ -26,6 +30,27 @@
             functionalities such as STTL SPARQL, SPARQL Rule, and LDScript. This enhances your data
             processing and reasoning workflows, making Corese-GUI an indispensable tool for both
             novices and experts in the Semantic Web domain.
+        </p>
+
+        <!-- French translation -->
+        <p xml:lang="fr">
+            Corese est une plateforme logicielle tout-en-un conçue pour mettre en œuvre fidèlement
+            et étendre de manière créative les normes du Web sémantique établies par le W3C. Cela
+            couvre une large gamme de technologies, y compris RDF, RDFS, SPARQL 1.1 Query &amp;
+            Update, OWL RL, SHACL, et au-delà.
+        </p>
+        <p xml:lang="fr">
+            Corese-Gui est l'interface graphique utilisateur de la plateforme Corese, servant de
+            passerelle intuitive pour le Web sémantique. Il propose un ensemble riche de
+            fonctionnalités qui facilitent la création, la manipulation, l'analyse, la sérialisation
+            et l'interrogation des données RDF.
+        </p>
+        <p xml:lang="fr">
+            De plus, l'interface graphique apporte des capacités avancées à portée de main,
+            incorporant des fonctionnalités étendues telles que STTL SPARQL, SPARQL Rule et
+            LDScript. Cela améliore vos flux de travail de traitement et de raisonnement des
+            données, faisant de Corese-GUI un outil indispensable pour les novices comme pour les
+            experts dans le domaine du Web sémantique.
         </p>
     </description>
 
@@ -94,6 +119,11 @@
                     - Fixed warning: "sun.reflect.Reflection.getCallerClass is not supported".&#10;
                     - Updated json library from 20180813 to 20230227.
                 </p>
+                <!-- French translation -->
+                <p xml:lang="fr">
+                    - Correction de l'avertissement : "sun.reflect.Reflection.getCallerClass n'est pas pris en charge".&#10;
+                    - Mise à jour de la bibliothèque json du 20180813 au 20230227.
+                </p>
             </description>
         </release>
         <release version="4.4.0" date="2023-03-30">
@@ -109,6 +139,18 @@
                     - Fixed inconsistent status of the OWL and Rules checkboxes that was not updated during reload.&#10;
                     - Fixed the rule engine that was implementing optimizations incompatible with the `owl:propertyChainAxiom` rule.
                 </p>
+                <!-- French translation -->
+                <p xml:lang="fr">
+                    - Ajout du support des systèmes de stockage (Jena TDB1, RDF4J Model)&#10;
+                    - Ajout du support Beta pour RDF* et SPARQL* (Rapport du groupe communautaire du 17 décembre 2021)&#10;
+                    - Ajout du support Annuler/Refaire&#10;
+                    - Correction d'une erreur d'encodage lors du chargement d'un fichier dont le chemin contient un espace&#10;
+                    - Correction d'un bug du moteur SPARQL où il était impossible de charger un graphe nommé contenant une liste RDF non vide.&#10;
+                    - Correction du problème avec "rdf:" non trouvé lors de l'envoi d'une requête fédérée à Fuseki.&#10;
+                    - Correction du format JSON non standard lors du dépassement du temps de requête.&#10;
+                    - Correction de l'état incohérent des cases à cocher OWL et Rules qui n'était pas mis à jour lors du rechargement.&#10;
+                    - Correction du moteur de règles qui mettait en œuvre des optimisations incompatibles avec la règle `owl:propertyChainAxiom`.
+                </p>
             </description>
         </release>
         <release version="4.3.0" date="2021-01-18">
@@ -117,6 +159,12 @@
                     - Added graphical editor for SHACL file.&#10;
                     - Added graphical editor for TURTLE file.&#10;
                     - Added save graph option.
+                </p>
+                <!-- French translation -->
+                <p xml:lang="fr">
+                    - Ajout d'un éditeur graphique pour les fichiers SHACL.&#10;
+                    - Ajout d'un éditeur graphique pour les fichiers TURTLE.&#10;
+                    - Ajout de l'option de sauvegarde de graphe.
                 </p>
             </description>
         </release>

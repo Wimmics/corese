@@ -41,6 +41,7 @@ public class RdfDataExporter {
         exportToOutputStream(outputStream, outputFormat, graph);
 
         if (verbose) {
+            spec.commandLine().getErr().println("Exported RDF data with format: " + outputFormat);
             spec.commandLine().getErr().println("Exported RDF data to file: " + path.toString());
         }
     }
@@ -62,7 +63,8 @@ public class RdfDataExporter {
         exportToOutputStream(System.out, outputFormat, graph);
 
         if (verbose) {
-            spec.commandLine().getErr().println("Exported RDF data to standard output");
+            spec.commandLine().getErr().println("Exported RDF data with format: " + outputFormat);
+            spec.commandLine().getErr().println("Exported RDF data to: standard output");
         }
     }
 

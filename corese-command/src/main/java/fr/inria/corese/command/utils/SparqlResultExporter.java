@@ -40,6 +40,7 @@ public class SparqlResultExporter {
         }
 
         if (verbose) {
+            spec.commandLine().getErr().println("Exported SPARQL result with format: " + resultFormat);
             spec.commandLine().getErr().println("Exported SPARQL result to file: " + path.toString());
         }
     }
@@ -70,7 +71,8 @@ public class SparqlResultExporter {
         }
 
         if (verbose) {
-            spec.commandLine().getErr().println("Exported SPARQL result to standard output");
+            spec.commandLine().getErr().println("Exported SPARQL result with format: " + resultFormat);
+            spec.commandLine().getErr().println("Exported SPARQL result to: standard output");
         }
     }
 }

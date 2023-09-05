@@ -101,48 +101,54 @@
     <releases>
         <release version="4.4.1" date="2023-07-25">
             <description>
-                <p>
-                    - Enhanced 'convert' and 'sparql' to accept URL and standard input.&#10;
-                    - 'sparql' and 'convert' now support standard output and multiple file inputs.&#10;
-                    - Expanded 'sparql' to handle directories, recursive directories, and various query types (SELECT, CONSTRUCT, ASK, etc.).&#10;
-                    - User can choose result format in 'sparql', including markdown.&#10;
-                    - Added mime type as a format name.&#10;
-                    – Disabled owl:imports auto-import.&#10;
-                    - Docker users can pass custom options and adjust log level for Corese-server.&#10;
-                    - Standardized format names in Corese-command.&#10;
-                    - Removed 'owlProfile' and 'ldscript'; to return after refactoring.&#10;
-                    - Fixed warning related to sun.reflect.Reflection.getCallerClass.
-                </p>
+                <ul>
+                    <li>Enhanced 'convert' and 'sparql' to accept URL and standard input.</li>
+                    <li>'sparql' and 'convert' now support standard output and multiple file inputs.</li>
+                    <li>Expanded 'sparql' to handle directories, recursive directories, and various
+                        query types (SELECT, CONSTRUCT, ASK, etc.).</li>
+                    <li>User can choose result format in 'sparql', including markdown.</li>
+                    <li>Added mime type as a format name.</li>
+                    <li>Disabled owl:imports auto-import.</li>
+                    <li>Docker users can pass custom options and adjust log level for Corese-server.</li>
+                    <li>Standardized format names in Corese-command.</li>
+                    <li>Removed 'owlProfile' and 'ldscript'; to return after refactoring.</li>
+                    <li>Fixed warning related to sun.reflect.Reflection.getCallerClass.</li>
+                </ul>
                 <!-- French translation -->
-                <p xml:lang="fr">
-                    - Amélioration des commandes 'convert' et 'sparql' pour accepter les URL et l'entrée standard.&#10;
-                    - 'sparql' et 'convert' supportent désormais la sortie standard et de multiples fichiers en entrée.&#10;
-                    - Extension de 'sparql' pour gérer les répertoires, les sous-répertoires et divers types de requêtes (SELECT, CONSTRUCT, ASK, etc.).&#10;
-                    - L'utilisateur peut choisir le format du résultat dans 'sparql', y compris en markdown.&#10;
-                    - Ajout du type MIME comme nom de format.&#10;
-                    – Désactivation de l'auto-importation owl:imports.&#10;
-                    - Les utilisateurs de Docker peuvent passer des options personnalisées et ajuster le niveau de journalisation pour Corese-server.&#10;
-                    - Standardisation des noms de format dans Corese-command.&#10;
-                    - Retrait des commandes 'owlProfile' et 'ldscript'; reviendront après refonte.&#10;
-                    - Correction d'un avertissement lié à sun.reflect.Reflection.getCallerClass.
-                </p>
+                <ul xml:lang="fr">
+                    <li>Amélioration des commandes 'convert' et 'sparql' pour accepter les URL et
+                        l'entrée standard.</li>
+                    <li>'sparql' et 'convert' supportent désormais la sortie standard et de
+                        multiples fichiers en entrée.</li>
+                    <li>Extension de 'sparql' pour gérer les répertoires, les sous-répertoires et
+                        divers types de requêtes (SELECT, CONSTRUCT, ASK, etc.).</li>
+                    <li>L'utilisateur peut choisir le format du résultat dans 'sparql', y compris en
+                        markdown.</li>
+                    <li>Ajout du type MIME comme nom de format.</li>
+                    <li>Désactivation de l'auto-importation owl:imports.</li>
+                    <li>Les utilisateurs de Docker peuvent passer des options personnalisées et
+                        ajuster le niveau de journalisation pour Corese-server.</li>
+                    <li>Standardisation des noms de format dans Corese-command.</li>
+                    <li>Retrait des commandes 'owlProfile' et 'ldscript'; reviendront après refonte.</li>
+                    <li>Correction d'un avertissement lié à sun.reflect.Reflection.getCallerClass.</li>
+                </ul>
             </description>
         </release>
         <release version="4.4.0" date="2023-03-30">
             <description>
-                <p>
-                    – Added prove of concept of sub-commands `convert`.&#10;
-                    – Added prove of concept of sub-commands `sparql`.&#10;
-                    – Added prove of concept of sub-commands `ldscript`.&#10;
-                    – Added prove of concept of sub-commands `owlProfile`.&#10;
-                </p>
+                <ul>
+                    <li>Added proof of concept for sub-commands `convert`.</li>
+                    <li>Added proof of concept for sub-commands `sparql`.</li>
+                    <li>Added proof of concept for sub-commands `ldscript`.</li>
+                    <li>Added proof of concept for sub-commands `owlProfile`.</li>
+                </ul>
                 <!-- French translation -->
-                <p xml:lang="fr">
-                    – Ajouté une preuve de concept pour les sous-commandes `convert`.&#10;
-                    – Ajouté une preuve de concept pour les sous-commandes `sparql`.&#10;
-                    – Ajouté une preuve de concept pour les sous-commandes `ldscript`.&#10;
-                    – Ajouté une preuve de concept pour les sous-commandes `owlProfile`.&#10;
-                </p>
+                <ul xml:lang="fr">
+                    <li>Ajouté une preuve de concept pour les sous-commandes `convert`.</li>
+                    <li>Ajouté une preuve de concept pour les sous-commandes `sparql`.</li>
+                    <li>Ajouté une preuve de concept pour les sous-commandes `ldscript`.</li>
+                    <li>Ajouté une preuve de concept pour les sous-commandes `owlProfile`.</li>
+                </ul>
             </description>
         </release>
     </releases>

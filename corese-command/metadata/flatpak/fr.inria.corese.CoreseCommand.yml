@@ -34,10 +34,10 @@ modules:
         url: https://github.com/Wimmics/corese/releases/download/release-4.4.1/corese-command-4.4.1.jar
         sha256: 2b15c46a9643eafb1119db9579e4f259e576647d9f322f437089960120960393
         x-checker-data:
-          - type: json
-          - url: https://api.github.com/repos/wimmics/corese/releases/latest
-          - version-query: .tag_name | gsub("release-";"")
-          - url-query: '"https://github.com/Wimmics/corese/releases/download/release-" + $version + "/corese-command-" + $version + ".jar"'
+          type: json
+          url: https://api.github.com/repos/wimmics/corese/releases/latest
+          version-query: .tag_name | gsub("release-";"")
+          url-query: '"https://github.com/Wimmics/corese/releases/download/release-" + $version + "/corese-command-" + $version + ".jar"'
         dest-filename: corese-command.jar
       - type: git
         dest: git_repo

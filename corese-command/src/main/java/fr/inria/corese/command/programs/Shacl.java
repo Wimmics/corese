@@ -188,6 +188,11 @@ public class Shacl implements Callable<Integer> {
     private void execute() throws Exception {
         fr.inria.corese.core.shacl.Shacl shacl = new fr.inria.corese.core.shacl.Shacl(dataGraph, shapesGraph);
         try {
+
+            if (this.verbose) {
+                this.spec.commandLine().getOut().println("Evaluating SHACL shapes...");
+            }
+
             this.reportGraph = shacl.eval();
         } catch (Exception e) {
             throw new Exception("Error while evaluating SHACL shapes: " + e.getMessage(), e);

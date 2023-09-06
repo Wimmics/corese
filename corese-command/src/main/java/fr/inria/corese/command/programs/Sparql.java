@@ -210,6 +210,11 @@ public class Sparql implements Callable<Integer> {
 
         // Execute query
         try {
+
+            if (this.verbose) {
+                this.spec.commandLine().getOut().println("Executing query...");
+            }
+
             ASTQuery ast = exec.ast(this.query);
             Mappings map = exec.query(ast);
 

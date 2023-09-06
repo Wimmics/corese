@@ -19,6 +19,8 @@ import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.command.utils.format.EnumResultFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.util.Property;
+import fr.inria.corese.core.util.Property.Value;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import picocli.CommandLine.Command;
@@ -71,6 +73,10 @@ public class Sparql implements Callable<Integer> {
             "--init" }, description = "Path to a configuration file. If not provided, the default configuration file will be used.", required = false)
     private Path configFilePath;
 
+    @Option(names = { "-n",
+            "--no-owl-import" }, description = "Disables the automatic importation of ontologies specified in 'owl:imports' statements. When this flag is set, the application will not fetch and include referenced ontologies.", required = false, defaultValue = "false")
+    private boolean noOwlImport;
+
     private String query;
 
     private Graph graph = Graph.create();
@@ -96,6 +102,9 @@ public class Sparql implements Callable<Integer> {
             } else {
                 ConfigManager.loadDefaultConfig(this.spec, this.verbose);
             }
+
+            // Set owl import
+            Property.set(Value.DISABLE_OWL_AUTO_IMPORT, this.noOwlImport);
 
             this.resultFormatIsDefined = this.resultFormat != null;
             this.outputPathIsDefined = this.output != null;

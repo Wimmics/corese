@@ -15,6 +15,8 @@ import fr.inria.corese.command.utils.TestType;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.util.Property;
+import fr.inria.corese.core.util.Property.Value;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
@@ -63,6 +65,10 @@ public class Shacl implements Callable<Integer> {
             "--init" }, description = "Path to a configuration file. If not provided, the default configuration file will be used.", required = false)
     private Path configFilePath;
 
+    @Option(names = { "-n",
+            "--no-owl-import" }, description = "Disables the automatic importation of ontologies specified in 'owl:imports' statements. When this flag is set, the application will not fetch and include referenced ontologies.", required = false, defaultValue = "false")
+    private boolean noOwlImport;
+
     private Graph dataGraph = Graph.create();
     private Graph shapesGraph = Graph.create();
     private Graph reportGraph = Graph.create();
@@ -84,6 +90,9 @@ public class Shacl implements Callable<Integer> {
             } else {
                 ConfigManager.loadDefaultConfig(this.spec, this.verbose);
             }
+
+            // Set owl import
+            Property.set(Value.DISABLE_OWL_AUTO_IMPORT, this.noOwlImport);
 
             // Check if output format is defined
             this.outputFormatIsDefined = this.output != null;

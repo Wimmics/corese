@@ -88,7 +88,14 @@ Documentation:
 
 ### Corese-GUI
 
-- Download [Corese-gui jar file](https://project.inria.fr/corese/download/).
+- Download on Flathub
+<!-- markdownlint-disable MD033 -->
+<a href='https://flathub.org/apps/fr.inria.corese.CoreseGui'>
+   <img src='https://dl.flathub.org/assets/badges/flathub-badge-en.png' alt='Download on Flathub' width='175'/>
+</a>
+<!-- markdownlint-enable MD033 -->
+
+- Or download [Corese-gui jar file](https://project.inria.fr/corese/download/).
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-gui-4.4.1.jar"
@@ -110,7 +117,14 @@ java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.1.jar"
 
 ### Corese-Command (beta)
 
-- Download [Corese-command jar file](https://project.inria.fr/corese/download/).
+- Download on Flathub
+<!-- markdownlint-disable MD033 -->
+<a href='https://flathub.org/apps/fr.inria.corese.CoreseCommand'>
+   <img src='https://dl.flathub.org/assets/badges/flathub-badge-en.png' alt='Download on Flathub' width='175'/>
+</a>
+<!-- markdownlint-enable MD033 -->
+
+- Or download [Corese-command jar file](https://project.inria.fr/corese/download/).
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-command-4.4.1.jar"

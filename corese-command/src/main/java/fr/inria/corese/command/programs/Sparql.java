@@ -9,14 +9,14 @@ import java.util.concurrent.Callable;
 import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.ConfigManager;
 import fr.inria.corese.command.utils.ConvertString;
-import fr.inria.corese.command.utils.RdfDataExporter;
-import fr.inria.corese.command.utils.RdfDataLoader;
-import fr.inria.corese.command.utils.SparqlQueryLoader;
-import fr.inria.corese.command.utils.SparqlResultExporter;
 import fr.inria.corese.command.utils.TestType;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.command.utils.format.EnumResultFormat;
+import fr.inria.corese.command.utils.rdf.RdfDataExporter;
+import fr.inria.corese.command.utils.rdf.RdfDataLoader;
+import fr.inria.corese.command.utils.sparql.SparqlQueryLoader;
+import fr.inria.corese.command.utils.sparql.SparqlResultExporter;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.Property;
@@ -113,7 +113,7 @@ public class Sparql implements Callable<Integer> {
 
             this.loadInputFile();
             this.loadQuery();
-            this.execute();
+            this.executeAndPrint();
 
             return this.ERROR_EXIT_CODE_SUCCESS;
         } catch (Exception e) {
@@ -195,7 +195,6 @@ public class Sparql implements Callable<Integer> {
             this.query = SparqlQueryLoader.loadFromUrl(url.get(), this.spec, this.verbose);
         } else if (path.isPresent()) {
             // if query is a path
-            System.out.println(path.get());
             this.query = SparqlQueryLoader.loadFromFile(path.get(), this.spec, this.verbose);
         }
     }
@@ -205,7 +204,7 @@ public class Sparql implements Callable<Integer> {
      *
      * @throws Exception If the query cannot be executed.
      */
-    private void execute() throws Exception {
+    private void executeAndPrint() throws Exception {
         QueryProcess exec = QueryProcess.create(graph);
 
         // Execute query
@@ -254,7 +253,7 @@ public class Sparql implements Callable<Integer> {
     private void exportResult(ASTQuery ast, Mappings map) throws IOException {
         Path outputFileName;
 
-        boolean isUpdate = ast.isInsert() || ast.isDelete() || ast.isUpdate();
+        boolean isUpdate = ast.isSPARQLUpdate();
         boolean isConstruct = ast.isConstruct();
         boolean isAsk = ast.isAsk();
         boolean isSelect = ast.isSelect();

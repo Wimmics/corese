@@ -14,8 +14,8 @@ import java.nio.file.Paths;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.corese.command.utils.RdfDataLoader;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
+import fr.inria.corese.command.utils.rdf.RdfDataLoader;
 import fr.inria.corese.core.Graph;
 import picocli.CommandLine;
 

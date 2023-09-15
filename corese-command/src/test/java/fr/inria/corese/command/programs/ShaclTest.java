@@ -105,9 +105,6 @@ public class ShaclTest {
                 "-s", inputShacl,
                 "-o", result);
 
-        System.out.println(expected);
-        System.out.println(result);
-
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
@@ -284,9 +281,6 @@ public class ShaclTest {
                 "-s", inputShacl,
                 "-o", result,
                 "-R");
-
-        System.out.println(expected);
-        System.out.println(result);
 
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());

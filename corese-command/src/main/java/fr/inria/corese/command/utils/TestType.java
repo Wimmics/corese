@@ -1,8 +1,11 @@
 package fr.inria.corese.command.utils;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 
 /**
  * Utility class to test the type of a string.
@@ -16,16 +19,19 @@ public class TestType {
      * @return True if the string seems to be a SPARQL query, false otherwise.
      */
     public static boolean isSparqlQuery(String input) {
-        if (input == null) {
+        if (input == null || input.trim().isEmpty()) {
             return false;
         }
 
-        String trimmedInput = input.trim().toUpperCase();
-        return trimmedInput.startsWith("SELECT") ||
-                trimmedInput.startsWith("CONSTRUCT") ||
-                trimmedInput.startsWith("ASK") ||
-                trimmedInput.startsWith("INSERT") ||
-                trimmedInput.startsWith("DESCRIBE");
+        Graph graph = Graph.create();
+        QueryProcess exec = QueryProcess.create(graph);
+
+        try {
+            Query query = exec.compile(input);
+            return query != null;
+        } catch (EngineException e) {
+            return false;
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 
-package fr.inria.corese.command.utils;
+package fr.inria.corese.command.utils.sparql;
 
 import java.nio.file.Path;
 

@@ -1,4 +1,4 @@
-package fr.inria.corese.command.utils;
+package fr.inria.corese.command.utils.sparql;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

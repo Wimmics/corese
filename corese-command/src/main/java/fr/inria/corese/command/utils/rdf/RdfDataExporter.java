@@ -1,4 +1,4 @@
-package fr.inria.corese.command.utils;
+package fr.inria.corese.command.utils.rdf;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;

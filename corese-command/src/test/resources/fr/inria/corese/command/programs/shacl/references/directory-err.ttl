@@ -2,7 +2,7 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <http://example.org/ns#> .
 
-<urn:uuid:15f3f577-6dae-4691-88a9-b4e8ca9132df> a sh:ValidationResult ;
+<urn:uuid:1545c404-d099-4e94-8d58-9eafbe5f2910> a sh:ValidationResult ;
   sh:focusNode <http://stardog.com/tutorial/Please_Please_Me> ;
   sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]" ;
   sh:resultPath <http://stardog.com/tutorial/name> ;
@@ -11,25 +11,7 @@
   sh:sourceShape _:b2 ;
   sh:value 2 .
 
-<urn:uuid:2c58a092-2146-4889-b857-0b4f25194b00> a sh:ValidationResult ;
-  sh:focusNode ex:Alice ;
-  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:path ex:ssn ;\n  sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"]" ;
-  sh:resultPath ex:ssn ;
-  sh:resultSeverity sh:Violation ;
-  sh:sourceConstraintComponent sh:PatternConstraintComponent ;
-  sh:sourceShape _:b8 ;
-  sh:value "987-65-432A" .
-
-<urn:uuid:cb40b63f-c3dd-47aa-a227-90b0d6c37729> a sh:ValidationResult ;
-  sh:focusNode ex:Alice ;
-  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:path ex:ssn ;\n  sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"]" ;
-  sh:resultPath ex:ssn ;
-  sh:resultSeverity sh:Violation ;
-  sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
-  sh:sourceShape _:b8 ;
-  sh:value 2 .
-
-<urn:uuid:f362aab2-56c8-4c47-9ea3-0dfc4fbd8089> a sh:ValidationResult ;
+<urn:uuid:1597d8f9-f790-4c0b-bac5-7a64bd5a5871> a sh:ValidationResult ;
   sh:focusNode ex:Calvin ;
   sh:resultMessage "Fail at: ex:PersonShape a sh:NodeShape ;\n  sh:closed true ;\n  sh:ignoredProperties (rdf:type) ;\n  sh:property [sh:datatype xsd:string ;\n    sh:maxCount 1 ;\n    sh:path ex:ssn ;\n    sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"] ;\n  sh:property [sh:class ex:Company ;\n    sh:nodeKind sh:IRI ;\n    sh:path ex:worksFor] ;\n  sh:targetClass ex:Person" ;
   sh:resultPath ex:birthDate ;
@@ -38,7 +20,16 @@
   sh:sourceShape ex:PersonShape ;
   sh:value "1971-07-07"^^xsd:date .
 
-<urn:uuid:f3e76ca9-6304-4b00-8068-3437b7524e04> a sh:ValidationResult ;
+<urn:uuid:241f1ac0-82ea-49df-af8d-53f141495b40> a sh:ValidationResult ;
+  sh:focusNode <http://stardog.com/tutorial/Please_Please_Me> ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]" ;
+  sh:resultPath <http://stardog.com/tutorial/name> ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
+  sh:sourceShape _:b21 ;
+  sh:value 2 .
+
+<urn:uuid:5bb4d2b3-8ed4-4a12-9c34-e86c8b95be5e> a sh:ValidationResult ;
   sh:focusNode ex:Bob ;
   sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:path ex:ssn ;\n  sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"]" ;
   sh:resultPath ex:ssn ;
@@ -47,11 +38,40 @@
   sh:sourceShape _:b8 ;
   sh:value 2 .
 
+<urn:uuid:640885ea-e46e-4915-aeae-f451c5b6eb60> a sh:ValidationResult ;
+  sh:focusNode ex:Alice ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:path ex:ssn ;\n  sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"]" ;
+  sh:resultPath ex:ssn ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:PatternConstraintComponent ;
+  sh:sourceShape _:b8 ;
+  sh:value "987-65-432A" .
+
+<urn:uuid:b397d15e-aefd-4f0b-9954-ac6b64e88378> a sh:ValidationResult ;
+  sh:focusNode ex:Alice ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:path ex:ssn ;\n  sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"]" ;
+  sh:resultPath ex:ssn ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
+  sh:sourceShape _:b8 ;
+  sh:value 2 .
+
+<urn:uuid:e4f2fd8f-6f88-4485-b02d-d2b744b6b6be> a sh:ValidationResult ;
+  sh:focusNode <http://stardog.com/tutorial/Please_Please_Me> ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]" ;
+  sh:resultPath <http://stardog.com/tutorial/name> ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
+  sh:sourceShape _:b11 ;
+  sh:value 2 .
+
 [a sh:ValidationReport ;
   sh:conforms false ;
-  sh:result <urn:uuid:15f3f577-6dae-4691-88a9-b4e8ca9132df> ;
-  sh:result <urn:uuid:2c58a092-2146-4889-b857-0b4f25194b00> ;
-  sh:result <urn:uuid:cb40b63f-c3dd-47aa-a227-90b0d6c37729> ;
-  sh:result <urn:uuid:f362aab2-56c8-4c47-9ea3-0dfc4fbd8089> ;
-  sh:result <urn:uuid:f3e76ca9-6304-4b00-8068-3437b7524e04>] .
+  sh:result <urn:uuid:1545c404-d099-4e94-8d58-9eafbe5f2910> ;
+  sh:result <urn:uuid:1597d8f9-f790-4c0b-bac5-7a64bd5a5871> ;
+  sh:result <urn:uuid:241f1ac0-82ea-49df-af8d-53f141495b40> ;
+  sh:result <urn:uuid:5bb4d2b3-8ed4-4a12-9c34-e86c8b95be5e> ;
+  sh:result <urn:uuid:640885ea-e46e-4915-aeae-f451c5b6eb60> ;
+  sh:result <urn:uuid:b397d15e-aefd-4f0b-9954-ac6b64e88378> ;
+  sh:result <urn:uuid:e4f2fd8f-6f88-4485-b02d-d2b744b6b6be>] .
 

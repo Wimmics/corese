@@ -1,6 +1,7 @@
 package fr.inria.corese.command.programs;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -10,8 +11,11 @@ import java.util.concurrent.Callable;
 import com.github.jsonldjava.shaded.com.google.common.io.Files;
 
 import fr.inria.corese.command.utils.ConfigManager;
+import fr.inria.corese.command.utils.ConvertString;
+import fr.inria.corese.command.utils.TestType;
 import fr.inria.corese.command.utils.http.EnumRequestMethod;
 import fr.inria.corese.command.utils.http.SparqlHttpClient;
+import fr.inria.corese.command.utils.sparql.SparqlQueryLoader;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
@@ -30,7 +34,7 @@ public class RemoteSparql implements Callable<Integer> {
     private CommandSpec spec;
 
     @Option(names = { "-q", "--query" }, description = "SPARQL query to execute", required = true)
-    private String query;
+    private String queryUrlOrFile;
 
     @Option(names = { "-e", "--endpoint" }, description = "SPARQL endpoint URL", required = true)
     private String endpoint_url;
@@ -72,6 +76,8 @@ public class RemoteSparql implements Callable<Integer> {
             "--ignore-query-validation" }, description = "Ignore query validation.", required = false, defaultValue = "false")
     private boolean ignoreQueryValidation;
 
+    private String query;
+
     @Override
     public Integer call() throws Exception {
         try {
@@ -87,6 +93,9 @@ public class RemoteSparql implements Callable<Integer> {
                 ConfigManager.loadDefaultConfig(this.spec, this.verbose);
             }
 
+            // Load query
+            this.loadQuery();
+
             // Execute query
             String res = this.sendRequest();
 
@@ -99,6 +108,30 @@ public class RemoteSparql implements Callable<Integer> {
         }
 
         return this.ERROR_EXIT_CODE_SUCCESS;
+    }
+
+    /**
+     * Load the query from the query string or from the query file.
+     *
+     * @throws IOException If the query file cannot be read.
+     */
+    private void loadQuery() throws IOException {
+        Optional<Path> path = ConvertString.toPath(this.queryUrlOrFile);
+        Optional<URL> url = ConvertString.toUrl(this.queryUrlOrFile);
+        Boolean isSparqlQuery = TestType.isSparqlQuery(this.queryUrlOrFile);
+
+        if (isSparqlQuery) {
+            // if query is a SPARQL query
+            this.query = this.queryUrlOrFile;
+        } else if (url.isPresent()) {
+            // if query is a URL
+            this.query = SparqlQueryLoader.loadFromUrl(url.get(), this.spec, this.verbose);
+        } else if (path.isPresent()) {
+            // if query is a path
+            this.query = SparqlQueryLoader.loadFromFile(path.get(), this.spec, this.verbose);
+        } else {
+            throw new RuntimeException("The query is not a valid SPARQL query, a URL or a file path.");
+        }
     }
 
     /**

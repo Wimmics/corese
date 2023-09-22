@@ -16,6 +16,8 @@ import fr.inria.corese.command.utils.TestType;
 import fr.inria.corese.command.utils.http.EnumRequestMethod;
 import fr.inria.corese.command.utils.http.SparqlHttpClient;
 import fr.inria.corese.command.utils.sparql.SparqlQueryLoader;
+import fr.inria.corese.core.util.Property;
+import fr.inria.corese.core.util.Property.Value;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
@@ -39,7 +41,7 @@ public class RemoteSparql implements Callable<Integer> {
     @Option(names = { "-e", "--endpoint" }, description = "SPARQL endpoint URL", required = true)
     private String endpoint_url;
 
-    @Option(names = { "-a", "--accept" }, description = "Accept header value", defaultValue = "text/csv")
+    @Option(names = { "-a", "-of", "--accept" }, description = "Accept header value", defaultValue = "text/csv")
     private String accept;
 
     @Option(names = { "-m",
@@ -54,7 +56,7 @@ public class RemoteSparql implements Callable<Integer> {
             "--max-redirection" }, description = "Maximum number of redirections to follow", defaultValue = "5")
     private int maxRedirection;
 
-    @Option(names = { "-g", "--default-graph" }, description = "Default graph URI", arity = "0..")
+    @Option(names = { "-d", "--default-graph" }, description = "Default graph URI", arity = "0..")
     private List<String> default_graph;
 
     @Option(names = { "-n", "--named-graph" }, description = "Named graph URI", arity = "0..")
@@ -64,9 +66,6 @@ public class RemoteSparql implements Callable<Integer> {
             "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.", arity = "0..1", fallbackValue = DEFAULT_OUTPUT_FILE_NAME)
     private Path output;
 
-    @Option(names = { "-t", "--timeout" }, description = "Timeout in seconds", defaultValue = "0")
-    private int timeout;
-
     @Option(names = { "-c",
             "--config",
             "--init" }, description = "Path to a configuration file. If not provided, the default configuration file will be used.", required = false)
@@ -75,6 +74,10 @@ public class RemoteSparql implements Callable<Integer> {
     @Option(names = { "-i",
             "--ignore-query-validation" }, description = "Ignore query validation.", required = false, defaultValue = "false")
     private boolean ignoreQueryValidation;
+
+    @Option(names = { "-w",
+            "--no-owl-import" }, description = "Disables the automatic importation of ontologies specified in 'owl:imports' statements. When this flag is set, the application will not fetch and include referenced ontologies.", required = false, defaultValue = "false")
+    private boolean noOwlImport;
 
     private String query;
 
@@ -92,6 +95,9 @@ public class RemoteSparql implements Callable<Integer> {
             } else {
                 ConfigManager.loadDefaultConfig(this.spec, this.verbose);
             }
+
+            // Set owl import
+            Property.set(Value.DISABLE_OWL_AUTO_IMPORT, this.noOwlImport);
 
             // Load query
             this.loadQuery();
@@ -146,7 +152,6 @@ public class RemoteSparql implements Callable<Integer> {
         client.setAcceptHeader(this.accept);
         client.setQueryMethod(this.requestMethod);
         client.setVerbose(this.verbose);
-        client.setTimeout(this.timeout);
         client.setMaxRedirection(this.maxRedirection);
 
         return client.sendRequest(this.query, this.default_graph, this.named_graph, this.ignoreQueryValidation);

@@ -73,7 +73,7 @@ public class Sparql implements Callable<Integer> {
             "--init" }, description = "Path to a configuration file. If not provided, the default configuration file will be used.", required = false)
     private Path configFilePath;
 
-    @Option(names = { "-n",
+    @Option(names = { "-w",
             "--no-owl-import" }, description = "Disables the automatic importation of ontologies specified in 'owl:imports' statements. When this flag is set, the application will not fetch and include referenced ontologies.", required = false, defaultValue = "false")
     private boolean noOwlImport;
 
@@ -211,7 +211,8 @@ public class Sparql implements Callable<Integer> {
         try {
 
             if (this.verbose) {
-                this.spec.commandLine().getOut().println("Executing query...");
+                this.spec.commandLine().getErr().println("Query: " + this.query );
+                this.spec.commandLine().getErr().println("Executing query...");
             }
 
             ASTQuery ast = exec.ast(this.query);

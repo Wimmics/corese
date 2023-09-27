@@ -20,3 +20,7 @@ The purpose of this page is to gather the documentation of Corese.
 ## Storage Systems
 
 - [Configuring and Connecting to Different Storage Systems in Corese](storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md)
+
+## Federated and Distributed Queries
+
+- [Federated and Distributed Queries](federation/Federated%20and%20Distributed%20Queries.md)

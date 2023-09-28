@@ -2,7 +2,11 @@
 
 Corese facilitates Federated Queries, enabling users to execute SPARQL queries seamlessly across multiple data sources or endpoints. This document guides you through utilizing Federated Queries and Federation in Corese and details the configuration necessary.
 
-## Federated Queries
+1. [Federated Queries and Federation](#federated-queries-and-federation)
+   1. [1. Federated Queries](#1-federated-queries)
+   2. [2. Federations](#2-federations)
+
+## 1. Federated Queries
 
 **Basic syntax:**
 
@@ -35,7 +39,7 @@ java -jar corese-server.jar -su
 
 This option executes the server in superuser mode, allowing connections to all endpoints. This setting is not recommended for public servers due to security concerns.
 
-## Federations
+## 2. Federations
 
 A Federation in Corese is a named set of endpoints, defined in a file to avoid the repetition of listing endpoints in each query.
 

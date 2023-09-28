@@ -47,7 +47,7 @@ A Federation in Corese is a named set of endpoints, defined in a file to avoid t
 
 1. Create a `federation.ttl` file with the following content:
 
-```ttl
+```turtle
 # Define a federation
 <http://myserver.fr/myname/federate> a st:Federation ;
     st:definition (

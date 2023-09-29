@@ -362,11 +362,8 @@ public class SparqlHttpClient {
             List<String> defaultGraphUris,
             List<String> namedGraphUris) {
 
-        // Configure timeout
-        ClientBuilder clientBuilder = ClientBuilder.newBuilder();
-        clientBuilder.connectTimeout(this.timeout, TimeUnit.SECONDS);
-
         // Create the web target
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder();
         Client client = clientBuilder.build();
         WebTarget webTarget = client.target(endpoint);
 
@@ -478,7 +475,7 @@ public class SparqlHttpClient {
     private void validateResponse(Response response) throws Exception {
         int status = response.getStatus();
 
-        if (status != 200) {
+        if (status < 200 || status >= 300) {
             String errorMessage = response.readEntity(String.class);
 
             String detailedMessage;

@@ -23,7 +23,7 @@ import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Spec;
 
-@Command(name = "remote-sparql", version = "1.0", description = "Execute a SPARQL query on a remote endpoint.")
+@Command(name = "remote-sparql", version = "1.0", description = "Execute a SPARQL query on a remote endpoint.", mixinStandardHelpOptions = true)
 public class RemoteSparql implements Callable<Integer> {
 
     private final int ERROR_EXIT_CODE_SUCCESS = 0;

@@ -527,11 +527,11 @@ public class CompileService implements URLParam {
             if (dt.getLabel().contains(" ")) {
                 return Constant.create(dt.getLabel().replace(" ", "%20"));
             } else {
-                return ast.createQNameURI(dt.getLabel());
+                return Constant.create(dt.getLabel());
             }
         }
         else {
-            return Constant.create(dt);   
+            return Constant.create(dt);
         }
     }
     

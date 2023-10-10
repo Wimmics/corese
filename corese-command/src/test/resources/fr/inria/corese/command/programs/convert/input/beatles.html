@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:ex="http://example.com/"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<head>
+    <title>Exemple RDFa</title>
+</head>
+
+<body>
+
+    <!-- Section Artists -->
+    <div about="http://example.com/John_Lennon" typeof="ex:SoloArtist"></div>
+    <div about="ex:Paul_McCartney" typeof="ex:SoloArtist"></div>
+    <div about="ex:Ringo_Starr" typeof="ex:SoloArtist"></div>
+    <div about="ex:George_Harrison" typeof="ex:SoloArtist"></div>
+    <div about="ex:The_Beatles" typeof="ex:Band">
+        <link rel="ex:member" href="http://example.com/John_Lennon" />
+        <link rel="ex:member" href="ex:Paul_McCartney" />
+        <link rel="ex:member" href="ex:George_Harrison" />
+        <link rel="ex:member" href="ex:Ringo_Starr" />
+        <span property="ex:name">The Beatles</span>
+    </div>
+
+    <!-- Section Albums -->
+    <div about="http://example.com/Please_Please_Me" typeof="ex:Album">
+        <link rel="ex:artist" href="ex:The_Beatles" />
+        <time property="ex:date" datatype="xsd:date">1963-03-22</time>
+        <span property="ex:name">Please Please Me</span>
+        <link rel="ex:track" href="ex:Love_Me_Do" />
+    </div>
+    <div about="ex:Imagine" typeof="ex:Album">
+        <link rel="ex:artist" href="http://example.com/John_Lennon" />
+        <time property="ex:date" datatype="xsd:date">1971-10-11</time>
+        <span property="ex:name">Imagine</span>
+    </div>
+    <div about="ex:McCartney" typeof="ex:Album">
+        <link rel="ex:artist" href="ex:Paul_McCartney" />
+        <time property="ex:date" datatype="xsd:date">1970-04-17</time>
+        <span property="ex:name">McCartney</span>
+    </div>
+
+    <!-- Section Songs -->
+    <div about="ex:Love_Me_Do" typeof="ex:Song">
+        <span property="ex:length">125</span>
+        <span property="ex:name">Love Me Do</span>
+        <link rel="ex:writer" href="http://example.com/John_Lennon" />
+        <link rel="ex:writer" href="ex:Paul_McCartney" />
+    </div>
+
+</body>
+</html>

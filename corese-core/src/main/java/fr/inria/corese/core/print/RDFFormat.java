@@ -2,27 +2,28 @@ package fr.inria.corese.core.print;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.core.Mapping;
-import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.logic.OWL;
 import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.core.logic.RDFS;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  *
@@ -33,7 +34,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  */
 public class RDFFormat {
 
-    private static final String XMLDEC = "<?xml version=\"1.0\" ?>";
+    private static final String XMLDEC = "<?xml version=\"1.0\"?>";
     private static final String RDF_OPEN = "<rdf:RDF";
     private static final String RDF_CLOSE = "</rdf:RDF>";
     static final String XMLNS = "xmlns";
@@ -47,6 +48,7 @@ public class RDFFormat {
     static final String RDFPROPERTY = "rdf:Property";
     static final String OWLCLASS = "owl:Class";
     static final String SPACE = " ";
+    static final String INDENTATION = "  ";
     static final String NL = System.getProperty("line.separator");
     private static final String OCOM = "<!--";
     private static final String CCOM = "-->";
@@ -73,7 +75,7 @@ public class RDFFormat {
         this(n);
         if (g != null) {
             graph = g;
-            //graph.prepare();
+            // graph.prepare();
             g.getEventManager().start(Event.Format);
         }
     }
@@ -82,7 +84,7 @@ public class RDFFormat {
         this(getAST(q).getNSM());
         if (g != null) {
             graph = g;
-            //graph.prepare();
+            // graph.prepare();
             g.getEventManager().start(Event.Format);
         }
         ast = getAST(q);
@@ -90,7 +92,7 @@ public class RDFFormat {
     }
 
     static ASTQuery getAST(Query q) {
-        return  q.getAST();
+        return q.getAST();
     }
 
     RDFFormat(Mapping m, NSManager n) {
@@ -105,7 +107,7 @@ public class RDFFormat {
     public static RDFFormat create(Graph g, Query q) {
         return new RDFFormat(g, q);
     }
-    
+
     static NSManager nsm() {
         return NSManager.create().setRecord(true);
     }
@@ -166,7 +168,7 @@ public class RDFFormat {
         }
         return graph.getRBNodes();
     }
-    
+
     Iterable<Node> getSubjectNodes() {
         if (map != null) {
             return map.getMapNodes();
@@ -205,8 +207,14 @@ public class RDFFormat {
     public void write(String name) throws IOException {
         StringBuilder sb = getStringBuilder();
         FileOutputStream fos = new FileOutputStream(name);
-        Writer out = new OutputStreamWriter(fos); //, "UTF8");
+        Writer out = new OutputStreamWriter(fos); // , "UTF8");
         out.write(sb.toString());
+        out.close();
+    }
+
+    public void write(OutputStream out) throws IOException {
+        StringBuilder sb = getStringBuilder();
+        out.write(sb.toString().getBytes());
         out.close();
     }
 
@@ -241,7 +249,7 @@ public class RDFFormat {
     void header(StringBuilder bb) {
         boolean first = true;
         boolean rdf = false;
-        
+
         for (String p : nsm.getPrefixSet()) {
             String ns = nsm.getNamespace(p);
             if (nsm.isDisplayable(ns)) {
@@ -264,8 +272,9 @@ public class RDFFormat {
             defPrefix(bb, "rdf", NSManager.RDF);
         }
     }
-    
+
     void defPrefix(StringBuilder bb, String p, String ns) {
+        bb.append(INDENTATION);
         bb.append(XMLNS);
         if (!p.equals("")) {
             bb.append(":");
@@ -274,32 +283,40 @@ public class RDFFormat {
     }
 
     void print(Node node) {
-
         Iterator<Edge> it = getEdges(node).iterator();
+        boolean typeSpecified = false;
+
+        // vérifiez si rdf:type est déjà spécifié
+        while (it.hasNext()) {
+            Edge ent = it.next();
+            if (ent != null && ent.getEdgeNode().getLabel().equals(RDF.TYPE)) {
+                typeSpecified = true;
+                break;
+            }
+        }
+
+        it = getEdges(node).iterator(); // réinitialisez l'itérateur
 
         if (it.hasNext()) {
-
             IDatatype dt = getValue(node);
-
             String id = ID;
             if (dt.isBlank()) {
                 id = NODEID;
             }
-            String type = type(node);
-
-            String open = "<" + type;
-            String close = "</" + type + ">";
+            String type = nsm.toPrefixXML(type(node));
+            String open = INDENTATION + "<" + type;
+            String close = INDENTATION + "</" + type + ">";
 
             if (dt.isBlank()) {
                 display(open + id + toXML(node.getLabel()) + "'>");
-                //display(open + ">");
             } else {
                 display(open + id + toXML(node.getLabel()) + "'>");
             }
 
             for (; it.hasNext();) {
                 Edge ent = it.next();
-                if (ent != null) {
+                if (ent != null && !(typeSpecified && ent.getEdgeNode().getLabel().equals(RDF.TYPE))) {
+                    sb.append(INDENTATION);
                     wprint(ent);
                 }
             }
@@ -310,19 +327,21 @@ public class RDFFormat {
     }
 
     String type(Node node) {
-        String open = DESCRIPTION;
         Node type = getType(node);
         if (type != null) {
             String name = type.getLabel();
+
             if (name.equals(RDFS.CLASS)) {
-                open = RDFSCLASS;
+                return RDFSCLASS;
             } else if (name.equals(OWL.CLASS)) {
-                open = OWLCLASS;
+                return OWLCLASS;
             } else if (name.equals(RDF.PROPERTY)) {
-                open = RDFPROPERTY;
+                return RDFPROPERTY;
+            } else {
+                return name;
             }
         }
-        return open;
+        return DESCRIPTION; // retourner "rdf:Description" si le type de noeud est null
     }
 
     void wprint(Edge ent) {
@@ -361,11 +380,11 @@ public class RDFFormat {
             String lit = toXML(dt.getLabel());
 
             if (dt.hasLang()) {
-                display(SPACE + open + LANG + dt.getLang() + "'>" + lit + close);
+                display(INDENTATION + open + LANG + dt.getLang() + "'>" + lit + close);
             } else if (dt.getDatatype() != null) {
-                display(SPACE + open + DATATYPE + dt.getDatatypeURI() + "'>" + lit + close);
+                display(INDENTATION + open + DATATYPE + dt.getDatatypeURI() + "'>" + lit + close);
             } else {
-                display(SPACE + open + ">" + lit + close);
+                display(INDENTATION + open + ">" + lit + close);
             }
         } else {
             String uri = toXML(dt.getLabel());
@@ -373,7 +392,7 @@ public class RDFFormat {
             if (dt.isBlank()) {
                 id = NODEID;
             }
-            display(SPACE + open + id + uri + "'/>");
+            display(INDENTATION + open + id + uri + "' />");
         }
     }
 
@@ -382,7 +401,7 @@ public class RDFFormat {
     }
 
     IDatatype getValue(Node node) {
-        return  node.getValue();
+        return node.getValue();
     }
 
     void display(String mes, Object obj) {

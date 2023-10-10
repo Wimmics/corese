@@ -4,12 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,11 +30,46 @@ public class ConvertTest {
     private StringWriter out = new StringWriter();
     private StringWriter err = new StringWriter();
 
+    private String inputFile = ConvertTest.class
+            .getResource("/fr/inria/corese/command/programs/convert/input/")
+            .getPath();
     private String referencesPath = ConvertTest.class
             .getResource("/fr/inria/corese/command/programs/convert/references/")
             .getPath();
-    private String resultPath = ConvertTest.class.getResource("/fr/inria/corese/command/programs/convert/results/")
+    private String resultPath = ConvertTest.class
+            .getResource("/fr/inria/corese/command/programs/convert/results/")
             .getPath();
+
+    private boolean compareFiles(String filePath1, String filePath2) {
+        // Create two sets to store the lines of each file
+        Set<String> file1Lines = new HashSet<>();
+        Set<String> file2Lines = new HashSet<>();
+
+        try {
+            // Read the first file and store each line in the set
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath1))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    file1Lines.add(line);
+                }
+            }
+
+            // Read the second file and store each line in the set
+            try (BufferedReader reader = new BufferedReader(new FileReader(filePath2))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    file2Lines.add(line);
+                }
+            }
+
+            // Check if both sets are equal
+            return file1Lines.equals(file2Lines);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false; // Return false if an error occurs
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -41,555 +79,592 @@ public class ConvertTest {
         cmd.setErr(err);
     }
 
-    private String readFileAsString(String path) {
-        Path filePath = Paths.get(path);
-        String data = "";
-        try {
-            data = new String(Files.readAllBytes(filePath));
-        } catch (IOException e) {
-            System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return data;
-    }
-
     @Test
     public void testConvertTurtleToxml() {
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathOutBeatlesXML = Paths.get(resultPath, "ttlbeatles.xml").toString();
+        String pathinputBeatlesTTL = Paths.get(inputFile, "beatles.ttl").toString();
+        String pathRefBeatlesXML = Paths.get(referencesPath, "ttl.beatles.rdf").toString();
+        String pathOutBeatlesXML = Paths.get(resultPath, "ttl.beatles.rdf").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "-of", "RDFXML", "-o", pathOutBeatlesXML);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesXML);
-        String actualOutput = readFileAsString(pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathinputBeatlesTTL, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
     }
 
     @Test
-    public void testConvertTurtleToJson() {
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathOutBeatlesJSON = Paths.get(resultPath, "ttlbeatles.json").toString();
+    public void testConvertTurtleToJsonld() {
+        String pathInputBeatlesTTL = Paths.get(inputFile, "beatles.ttl").toString();
+        String pathRefBeatlesJSON = Paths.get(referencesPath, "ttl.beatles.jsonld").toString();
+        String pathOutBeatlesJSON = Paths.get(resultPath, "ttl.beatles.jsonld").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesJSON);
-        String actualOutput = readFileAsString(pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathInputBeatlesTTL, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
     }
 
     @Test
     public void testConvertTurtleToTrig() {
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathOutBeatlesTRIG = Paths.get(resultPath, "ttlbeatles.trig").toString();
+        String pathInputBeatlesTTL = Paths.get(inputFile, "beatles.ttl").toString();
+        String pathRefBeatlesTRIG = Paths.get(referencesPath, "ttl.beatles.trig").toString();
+        String pathOutBeatlesTRIG = Paths.get(resultPath, "ttl.beatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
-        String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
-        String actualOutput = readFileAsString(pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathInputBeatlesTTL, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
     }
 
     @Test
     public void testConvertTurtleToTurtle() {
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathOutBeatlesTTL = Paths.get(resultPath, "ttlbeatles.ttl").toString();
+        String pathInputBeatlesTTL = Paths.get(inputFile, "beatles.ttl").toString();
+        String pathRefBeatlesTTL = Paths.get(referencesPath, "ttl.beatles.ttl").toString();
+        String pathOutBeatlesTTL = Paths.get(resultPath, "ttl.beatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTTL);
-        String actualOutput = readFileAsString(pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathInputBeatlesTTL, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+    }
+
+    @Test
+    public void testConvertTurtleToNt() {
+        String pathInputBeatlesTTL = Paths.get(inputFile, "beatles.ttl").toString();
+        String pathRefBeatlesNT = Paths.get(referencesPath, "ttl.beatles.nt").toString();
+        String pathOutBeatlesNT = Paths.get(resultPath, "ttl.beatles.nt").toString();
+
+        int exitCode = cmd.execute("-i", pathInputBeatlesTTL, "-of", "NTRIPLES", "-o", pathOutBeatlesNT);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+    }
+
+    @Test
+    public void testConvertTurtleToNq() {
+        String pathInputBeatlesTTL = Paths.get(inputFile, "beatles.ttl").toString();
+        String pathRefBeatlesNQ = Paths.get(referencesPath, "ttl.beatles.nq").toString();
+        String pathOutBeatlesNQ = Paths.get(resultPath, "ttl.beatles.nq").toString();
+
+        int exitCode = cmd.execute("-i", pathInputBeatlesTTL, "-of", "NQUADS", "-o", pathOutBeatlesNQ);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
     }
 
     @Test
     public void testConvertXmltoXml() {
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathOutBeatlesXML = Paths.get(resultPath, "beatles.xml").toString();
+        String pathInputBeatlesXML = Paths.get(inputFile, "beatles.rdf").toString();
+        String pathRefBeatlesXML = Paths.get(referencesPath, "rdf.beatles.rdf").toString();
+        String pathOutBeatlesXML = Paths.get(resultPath, "rdf.beatles.rdf").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "-of", "RDFXML", "-o", pathOutBeatlesXML);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesXML);
-        String actualOutput = readFileAsString(pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathInputBeatlesXML, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
     }
 
     @Test
-    public void testConvertXmlToJson() {
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathOutBeatlesJSON = Paths.get(resultPath, "beatles.json").toString();
+    public void testConvertXmlToJsonld() {
+        String pathInputBeatlesXML = Paths.get(inputFile, "beatles.rdf").toString();
+        String pathRefBeatlesJSON = Paths.get(referencesPath, "rdf.beatles.jsonld").toString();
+        String pathOutBeatlesJSON = Paths.get(resultPath, "rdf.beatles.jsonld").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesJSON);
-        String actualOutput = readFileAsString(pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathInputBeatlesXML, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
     }
 
     @Test
     public void testConvertXmlToTrig() {
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathOutBeatlesTRIG = Paths.get(resultPath, "beatles.trig").toString();
+        String pathInputBeatlesXML = Paths.get(inputFile, "beatles.rdf").toString();
+        String pathRefBeatlesTRIG = Paths.get(referencesPath, "rdf.beatles.trig").toString();
+        String pathOutBeatlesTRIG = Paths.get(resultPath, "rdf.beatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
-        String actualOutput = readFileAsString(pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathInputBeatlesXML, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
     }
 
     @Test
     public void testConvertXmlTiTurtle() {
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathOutBeatlesTTL = Paths.get(resultPath, "beatles.ttl").toString();
+        String pathInputBeatlesXML = Paths.get(inputFile, "beatles.rdf").toString();
+        String pathRefBeatlesTTL = Paths.get(referencesPath, "rdf.beatles.ttl").toString();
+        String pathOutBeatlesTTL = Paths.get(resultPath, "rdf.beatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTTL);
-        String actualOutput = readFileAsString(pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathInputBeatlesXML, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+    }
+
+    @Test
+    public void testConvertXmlToNt() {
+        String pathInputBeatlesXML = Paths.get(inputFile, "beatles.rdf").toString();
+        String pathRefBeatlesNT = Paths.get(referencesPath, "rdf.beatles.nt").toString();
+        String pathOutBeatlesNT = Paths.get(resultPath, "rdf.beatles.nt").toString();
+
+        int exitCode = cmd.execute("-i", pathInputBeatlesXML, "-of", "NTRIPLES", "-o", pathOutBeatlesNT);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+    }
+
+    @Test
+    public void testConvertXmlToNq() {
+        String pathInputBeatlesXML = Paths.get(inputFile, "beatles.rdf").toString();
+        String pathRefBeatlesNQ = Paths.get(referencesPath, "rdf.beatles.nq").toString();
+        String pathOutBeatlesNQ = Paths.get(resultPath, "rdf.beatles.nq").toString();
+
+        int exitCode = cmd.execute("-i", pathInputBeatlesXML, "-of", "NQUADS", "-o", pathOutBeatlesNQ);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
     }
 
     @Test
     public void testConvertTrigToXml() {
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathOutBeatlesXML = Paths.get(resultPath, "trigbeatles.xml").toString();
+        String pathInputBeatlesTRIG = Paths.get(inputFile, "beatles.trig").toString();
+        String pathRefBeatlesXML = Paths.get(referencesPath, "trig.beatles.rdf").toString();
+        String pathOutBeatlesXML = Paths.get(resultPath, "trig.beatles.rdf").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "-of", "RDFXML", "-o", pathOutBeatlesXML);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesXML);
-        String actualOutput = readFileAsString(pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathInputBeatlesTRIG, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
     }
 
     @Test
-    public void testConvertTrigToJson() {
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathOutBeatlesJSON = Paths.get(resultPath, "trigbeatles.json").toString();
+    public void testConvertTrigToJsonld() {
+        String pathInputBeatlesTRIG = Paths.get(inputFile, "beatles.trig").toString();
+        String pathRefBeatlesJSON = Paths.get(referencesPath, "trig.beatles.jsonld").toString();
+        String pathOutBeatlesJSON = Paths.get(resultPath, "trig.beatles.jsonld").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesJSON);
-        String actualOutput = readFileAsString(pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathInputBeatlesTRIG, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
     }
 
     @Test
     public void testConvertTrigToTrig() {
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathOutBeatlesTRIG = Paths.get(resultPath, "trigbeatles.trig").toString();
+        String pathInputBeatlesTRIG = Paths.get(inputFile, "beatles.trig").toString();
+        String pathExpectBeatlesTRIG = Paths.get(referencesPath, "trig.beatles.trig").toString();
+        String pathOutBeatlesTRIG = Paths.get(resultPath, "trig.beatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
-        String actualOutput = readFileAsString(pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathInputBeatlesTRIG, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathExpectBeatlesTRIG, pathOutBeatlesTRIG));
     }
 
     @Test
     public void testConvertTrigToTurtle() {
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathOutBeatlesTTL = Paths.get(resultPath, "trigbeatles.ttl").toString();
+        String pathInputBeatlesTRIG = Paths.get(inputFile, "beatles.trig").toString();
+        String pathRefBeatlesTTL = Paths.get(referencesPath, "trig.beatles.ttl").toString();
+        String pathOutBeatlesTTL = Paths.get(resultPath, "trig.beatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTTL);
-        String actualOutput = readFileAsString(pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathInputBeatlesTRIG, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
     }
 
     @Test
-    public void testConvertJsonToJson() {
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathOutBeatlesJSON = Paths.get(resultPath, "jsonbeatles.json").toString();
+    public void testConvertTrigToNt() {
+        String pathInputBeatlesTRIG = Paths.get(inputFile, "beatles.trig").toString();
+        String pathRefBeatlesNT = Paths.get(referencesPath, "trig.beatles.nt").toString();
+        String pathOutBeatlesNT = Paths.get(resultPath, "trig.beatles.nt").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesJSON);
-        String actualOutput = readFileAsString(pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathInputBeatlesTRIG, "-of", "NTRIPLES", "-o", pathOutBeatlesNT);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
     }
 
     @Test
-    public void testConvertJsonToTurtle() {
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathOutBeatlesTTL = Paths.get(resultPath, "jsonbeatles.ttl").toString();
+    public void testConvertTrigToNq() {
+        String pathInputBeatlesTRIG = Paths.get(inputFile, "beatles.trig").toString();
+        String pathRefBeatlesNQ = Paths.get(referencesPath, "trig.beatles.nq").toString();
+        String pathOutBeatlesNQ = Paths.get(resultPath, "trig.beatles.nq").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTTL);
-        String actualOutput = readFileAsString(pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathInputBeatlesTRIG, "-of", "NQUADS", "-o", pathOutBeatlesNQ);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
     }
 
     @Test
-    public void testConvertJsonToXml() {
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathOutBeatlesXML = Paths.get(resultPath, "jsonbeatles.xml").toString();
+    public void testConvertJsonldToXml() {
+        String pathInputBeatlesJSONLD = Paths.get(inputFile, "beatles.jsonld").toString();
+        String pathRefBeatlesXML = Paths.get(referencesPath, "jsonld.beatles.rdf").toString();
+        String pathOutBeatlesXML = Paths.get(resultPath, "jsonld.beatles.rdf").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "-of", "RDFXML", "-o", pathOutBeatlesXML);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesXML);
-        String actualOutput = readFileAsString(pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathInputBeatlesJSONLD, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
     }
 
     @Test
-    public void testConvertJsonToTrig() {
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathOutBeatlesTRIG = Paths.get(resultPath, "jsonbeatles.trig").toString();
+    public void testConvertJsonldToJsonld() {
+        String pathInputBeatlesJSONLD = Paths.get(inputFile, "beatles.jsonld").toString();
+        String pathRefBeatlesJSON = Paths.get(referencesPath, "jsonld.beatles.jsonld").toString();
+        String pathOutBeatlesJSON = Paths.get(resultPath, "jsonld.beatles.jsonld").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
-        String actualOutput = readFileAsString(pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathInputBeatlesJSONLD, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
     }
 
     @Test
-    public void testConvertN3ToXml() {
-        String pathRefBeatlesN3 = Paths.get(referencesPath, "beatles.n3").toString();
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathOutBeatlesXML = Paths.get(resultPath, "n3beatles.xml").toString();
+    public void testConvertJsonldToTrig() {
+        String pathInputBeatlesJSONLD = Paths.get(inputFile, "beatles.jsonld").toString();
+        String pathRefBeatlesTRIG = Paths.get(referencesPath, "jsonld.beatles.trig").toString();
+        String pathOutBeatlesTRIG = Paths.get(resultPath, "jsonld.beatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "-of", "RDFXML", "-o", pathOutBeatlesXML);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesXML);
-        String actualOutput = readFileAsString(pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathInputBeatlesJSONLD, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
     }
 
     @Test
-    public void testConvertN3ToJson() {
-        String pathRefBeatlesN3 = Paths.get(referencesPath, "beatles.n3").toString();
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathOutBeatlesJSON = Paths.get(resultPath, "n3beatles.json").toString();
+    public void testConvertJsonldToTurtle() {
+        String pathInputBeatlesJSONLD = Paths.get(inputFile, "beatles.jsonld").toString();
+        String pathRefBeatlesTTL = Paths.get(referencesPath, "jsonld.beatles.ttl").toString();
+        String pathOutBeatlesTTL = Paths.get(resultPath, "jsonld.beatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesJSON);
-        String actualOutput = readFileAsString(pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathInputBeatlesJSONLD, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
     }
 
     @Test
-    public void testConvertN3ToTrig() {
-        String pathRefBeatlesN3 = Paths.get(referencesPath, "beatles.n3").toString();
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathOutBeatlesTRIG = Paths.get(resultPath, "n3beatles.trig").toString();
+    public void testConvertJsonldToNt() {
+        String pathInputBeatlesJSONLD = Paths.get(inputFile, "beatles.jsonld").toString();
+        String pathRefBeatlesNT = Paths.get(referencesPath, "jsonld.beatles.nt").toString();
+        String pathOutBeatlesNT = Paths.get(resultPath, "jsonld.beatles.nt").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
-        String actualOutput = readFileAsString(pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathInputBeatlesJSONLD, "-of", "NTRIPLES", "-o", pathOutBeatlesNT);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
     }
 
     @Test
-    public void testConvertN3ToTurtle() {
-        String pathRefBeatlesN3 = Paths.get(referencesPath, "beatles.n3").toString();
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathOutBeatlesTTL = Paths.get(resultPath, "n3beatles.ttl").toString();
+    public void testConvertJsonldToNq() {
+        String pathInputBeatlesJSONLD = Paths.get(inputFile, "beatles.jsonld").toString();
+        String pathRefBeatlesNQ = Paths.get(referencesPath, "jsonld.beatles.nq").toString();
+        String pathOutBeatlesNQ = Paths.get(resultPath, "jsonld.beatles.nq").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTTL);
-        String actualOutput = readFileAsString(pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathInputBeatlesJSONLD, "-of", "NQUADS", "-o", pathOutBeatlesNQ);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
     }
 
     @Test
-    public void testConvertNTriplesToXml() {
-        String pathRefBeatlesNT = Paths.get(referencesPath, "beatles.nt").toString();
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathOutBeatlesXML = Paths.get(resultPath, "ntbeatles.xml").toString();
+    public void testConvertNtToXml() {
+        String pathInputBeatlesNT = Paths.get(inputFile, "beatles.nt").toString();
+        String pathRefBeatlesXML = Paths.get(referencesPath, "nt.beatles.rdf").toString();
+        String pathOutBeatlesXML = Paths.get(resultPath, "nt.beatles.rdf").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "-of", "RDFXML", "-o", pathOutBeatlesXML);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesXML);
-        String actualOutput = readFileAsString(pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathInputBeatlesNT, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
     }
 
     @Test
-    public void testConvertNTriplesToJson() {
-        String pathRefBeatlesNT = Paths.get(referencesPath, "beatles.nt").toString();
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathOutBeatlesJSON = Paths.get(resultPath, "ntbeatles.json").toString();
+    public void testConvertNtToJsonld() {
+        String pathInputBeatlesNT = Paths.get(inputFile, "beatles.nt").toString();
+        String pathRefBeatlesJSON = Paths.get(referencesPath, "nt.beatles.jsonld").toString();
+        String pathOutBeatlesJSON = Paths.get(resultPath, "nt.beatles.jsonld").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesJSON);
-        String actualOutput = readFileAsString(pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathInputBeatlesNT, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
     }
 
     @Test
-    public void testConvertNTriplesToTrig() {
-        String pathRefBeatlesNT = Paths.get(referencesPath, "beatles.nt").toString();
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathOutBeatlesTRIG = Paths.get(resultPath, "ntbeatles.trig").toString();
+    public void testConvertNtToTrig() {
+        String pathInputBeatlesNT = Paths.get(inputFile, "beatles.nt").toString();
+        String pathRefBeatlesTRIG = Paths.get(referencesPath, "nt.beatles.trig").toString();
+        String pathOutBeatlesTRIG = Paths.get(resultPath, "nt.beatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
-        String actualOutput = readFileAsString(pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathInputBeatlesNT, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
     }
 
     @Test
-    public void testConvertNTriplesToTurtle() {
-        String pathRefBeatlesNT = Paths.get(referencesPath, "beatles.nt").toString();
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathOutBeatlesTTL = Paths.get(resultPath, "ntbeatles.ttl").toString();
+    public void testConvertNtToTurtle() {
+        String pathInputBeatlesNT = Paths.get(inputFile, "beatles.nt").toString();
+        String pathRefBeatlesTTL = Paths.get(referencesPath, "nt.beatles.ttl").toString();
+        String pathOutBeatlesTTL = Paths.get(resultPath, "nt.beatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTTL);
-        String actualOutput = readFileAsString(pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathInputBeatlesNT, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
     }
 
     @Test
-    public void testConvertNQuadsToXml() {
-        String pathRefBeatlesNQ = Paths.get(referencesPath, "beatles.nq").toString();
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathOutBeatlesXML = Paths.get(resultPath, "nqbeatles.xml").toString();
+    public void testConvertNtToNt() {
+        String pathInputBeatlesNT = Paths.get(inputFile, "beatles.nt").toString();
+        String pathRefBeatlesNT = Paths.get(referencesPath, "nt.beatles.nt").toString();
+        String pathOutBeatlesNT = Paths.get(resultPath, "nt.beatles.nt").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "-of", "RDFXML", "-o", pathOutBeatlesXML);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesXML);
-        String actualOutput = readFileAsString(pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathInputBeatlesNT, "-of", "NTRIPLES", "-o", pathOutBeatlesNT);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
     }
 
     @Test
-    public void testConvertNQuadsToJson() {
-        String pathRefBeatlesNQ = Paths.get(referencesPath, "beatles.nq").toString();
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathOutBeatlesJSON = Paths.get(resultPath, "nqbeatles.json").toString();
+    public void testConvertNtToNq() {
+        String pathInputBeatlesNT = Paths.get(inputFile, "beatles.nt").toString();
+        String pathRefBeatlesNQ = Paths.get(referencesPath, "nt.beatles.nq").toString();
+        String pathOutBeatlesNQ = Paths.get(resultPath, "nt.beatles.nq").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesJSON);
-        String actualOutput = readFileAsString(pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathInputBeatlesNT, "-of", "NQUADS", "-o", pathOutBeatlesNQ);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
     }
 
     @Test
-    public void testConvertNQuadsToTrig() {
-        String pathRefBeatlesNQ = Paths.get(referencesPath, "beatles.nq").toString();
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles2.trig").toString();
-        String pathOutBeatlesTRIG = Paths.get(resultPath, "nqbeatles.trig").toString();
+    public void testConvertNqToXml() {
+        String pathInputBeatlesNQ = Paths.get(inputFile, "beatles.nq").toString();
+        String pathRefBeatlesXML = Paths.get(referencesPath, "nq.beatles.rdf").toString();
+        String pathOutBeatlesXML = Paths.get(resultPath, "nq.beatles.rdf").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
-        String actualOutput = readFileAsString(pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathInputBeatlesNQ, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
     }
 
     @Test
-    public void testConvertNQuadsToTurtle() {
-        String pathRefBeatlesNQ = Paths.get(referencesPath, "beatles.nq").toString();
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathOutBeatlesTTL = Paths.get(resultPath, "nqbeatles.ttl").toString();
+    public void testConvertNqToJsonld() {
+        String pathInputBeatlesNQ = Paths.get(inputFile, "beatles.nq").toString();
+        String pathRefBeatlesJSON = Paths.get(referencesPath, "nq.beatles.jsonld").toString();
+        String pathOutBeatlesJSON = Paths.get(resultPath, "nq.beatles.jsonld").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTTL);
-        String actualOutput = readFileAsString(pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathInputBeatlesNQ, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
+    }
+
+    @Test
+    public void testConvertNqToTrig() {
+        String pathInputBeatlesNQ = Paths.get(inputFile, "beatles.nq").toString();
+        String pathRefBeatlesTRIG = Paths.get(referencesPath, "nq.beatles.trig").toString();
+        String pathOutBeatlesTRIG = Paths.get(resultPath, "nq.beatles.trig").toString();
+
+        int exitCode = cmd.execute("-i", pathInputBeatlesNQ, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
+    }
+
+    @Test
+    public void testConvertNqToTurtle() {
+        String pathInputBeatlesNQ = Paths.get(inputFile, "beatles.nq").toString();
+        String pathRefBeatlesTTL = Paths.get(referencesPath, "nq.beatles.ttl").toString();
+        String pathOutBeatlesTTL = Paths.get(resultPath, "nq.beatles.ttl").toString();
+
+        int exitCode = cmd.execute("-i", pathInputBeatlesNQ, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+    }
+
+    @Test
+    public void testConvertNqToNt() {
+        String pathInputBeatlesNQ = Paths.get(inputFile, "beatles.nq").toString();
+        String pathRefBeatlesNT = Paths.get(referencesPath, "nq.beatles.nt").toString();
+        String pathOutBeatlesNT = Paths.get(resultPath, "nq.beatles.nt").toString();
+
+        int exitCode = cmd.execute("-i", pathInputBeatlesNQ, "-of", "NTRIPLES", "-o", pathOutBeatlesNT);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+    }
+
+    @Test
+    public void testConvertNqToNq() {
+        String pathInputBeatlesNQ = Paths.get(inputFile, "beatles.nq").toString();
+        String pathRefBeatlesNQ = Paths.get(referencesPath, "nq.beatles.nq").toString();
+        String pathOutBeatlesNQ = Paths.get(resultPath, "nq.beatles.nq").toString();
+
+        int exitCode = cmd.execute("-i", pathInputBeatlesNQ, "-of", "NQUADS", "-o", pathOutBeatlesNQ);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
     }
 
     @Test
     public void testConvertRdfaToXml() {
-        String pathRefBeatlesRdfa = Paths.get(referencesPath, "beatles.html").toString();
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
-        String pathOutBeatlesXML = Paths.get(resultPath, "rdfabeatles.xml").toString();
+        String pathInputStringHtml = Paths.get(inputFile, "beatles.html").toString();
+        String pathRefBeatlesXML = Paths.get(referencesPath, "html.beatles.rdf").toString();
+        String pathOutBeatlesXML = Paths.get(resultPath, "html.beatles.rdf").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "-of", "RDFXML", "-o", pathOutBeatlesXML);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesXML);
-        String actualOutput = readFileAsString(pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathInputStringHtml, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
     }
 
     @Test
-    public void testConvertRdfaToJson() {
-        String pathRefBeatlesRdfa = Paths.get(referencesPath, "beatles.html").toString();
-        String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
-        String pathOutBeatlesJSON = Paths.get(resultPath, "rdfabeatles.json").toString();
+    public void testConvertRdfaToJsonld() {
+        String pathInputStringHtml = Paths.get(inputFile, "beatles.html").toString();
+        String pathRefBeatlesJSON = Paths.get(referencesPath, "html.beatles.jsonld").toString();
+        String pathOutBeatlesJSON = Paths.get(resultPath, "html.beatles.jsonld").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesJSON);
-        String actualOutput = readFileAsString(pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathInputStringHtml, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
     }
 
     @Test
     public void testConvertRdfaToTrig() {
-        String pathRefBeatlesRdfa = Paths.get(referencesPath, "beatles.html").toString();
-        String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
-        String pathOutBeatlesTRIG = Paths.get(resultPath, "rdfabeatles.trig").toString();
+        String pathInputStringHtml = Paths.get(inputFile, "beatles.html").toString();
+        String pathRefBeatlesTRIG = Paths.get(referencesPath, "html.beatles.trig").toString();
+        String pathOutBeatlesTRIG = Paths.get(resultPath, "html.beatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
-        String actualOutput = readFileAsString(pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathInputStringHtml, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
     }
 
     @Test
     public void testConvertRdfaToTurtle() {
-        String pathRefBeatlesRdfa = Paths.get(referencesPath, "beatles.html").toString();
-        String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
-        String pathOutBeatlesTTL = Paths.get(resultPath, "rdfabeatles.ttl").toString();
+        String pathInputStringHtml = Paths.get(inputFile, "beatles.html").toString();
+        String pathRefBeatlesTTL = Paths.get(referencesPath, "html.beatles.ttl").toString();
+        String pathOutBeatlesTTL = Paths.get(resultPath, "html.beatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesTTL);
-        String actualOutput = readFileAsString(pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathInputStringHtml, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
+        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+    }
+
+    @Test
+    public void testConvertRdfaToNt() {
+        String pathInputStringHtml = Paths.get(inputFile, "beatles.html").toString();
+        String pathRefBeatlesNT = Paths.get(referencesPath, "html.beatles.nt").toString();
+        String pathOutBeatlesNT = Paths.get(resultPath, "html.beatles.nt").toString();
+
+        int exitCode = cmd.execute("-i", pathInputStringHtml, "-of", "NTRIPLES", "-o", pathOutBeatlesNT);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+    }
+
+    @Test
+    public void testConvertRdfaToNq() {
+        String pathInputStringHtml = Paths.get(inputFile, "beatles.html").toString();
+        String pathRefBeatlesNQ = Paths.get(referencesPath, "html.beatles.nq").toString();
+        String pathOutBeatlesNQ = Paths.get(resultPath, "html.beatles.nq").toString();
+
+        int exitCode = cmd.execute("-i", pathInputStringHtml, "-of", "NQUADS", "-o", pathOutBeatlesNQ);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
     }
 
     @Test
@@ -620,7 +695,7 @@ public class ConvertTest {
         int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", outputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
-        assertTrue(err.toString().trim().contains("Failed to open export file:"));
+        assertTrue(err.toString().trim().contains("Failed to open RDF data file:"));
     }
 
     @Test
@@ -631,25 +706,8 @@ public class ConvertTest {
             RdfDataLoader.loadFromFile(inputPath, EnumInputFormat.JSONLD, Graph.create(), null, false);
             fail("Expected an IllegalArgumentException to be thrown");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().contains("Failed to parse RDF file."));
+            assertTrue(e.getMessage().contains("Failed to open RDF data file:"));
         }
-    }
-
-    @Test
-    public void testConvertTurtleToxmlUrl() {
-        String pathRefBeatlesXML = Paths.get(referencesPath, "beatlesUrl.xml").toString();
-        String pathOutBeatlesTTL = Paths.get(resultPath, "beatlesUrl.ttl").toString();
-
-        int exitCode = cmd.execute("-i", "https://files.inria.fr/corese/data/unit-test/beatles.ttl", "-if", "turtle",
-                "-of", "RDFXML", "-o", pathOutBeatlesTTL);
-
-        String expectedOutput = readFileAsString(pathRefBeatlesXML);
-        String actualOutput = readFileAsString(pathOutBeatlesTTL);
-
-        assertEquals(0, exitCode);
-        assertEquals(out.toString(), "");
-        assertEquals(err.toString(), "");
-        assertEquals(expectedOutput, actualOutput);
     }
 
 }

@@ -1,13 +1,11 @@
 @prefix : <http://stardog.com/tutorial/> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-
 
 :The_Beatles :member :John_Lennon ;
-:member :Paul_McCartney ;
-:member :Ringo_Starr ;
-:member :George_Harrison ;
-:name "The Beatles" ;
-rdf:type :Band .
+  :member :Paul_McCartney ;
+  :member :Ringo_Starr ;
+  :member :George_Harrison ;
+  :name "The Beatles" ;
+  a :Band .
 
 :Please_Please_Me :artist :The_Beatles .
 

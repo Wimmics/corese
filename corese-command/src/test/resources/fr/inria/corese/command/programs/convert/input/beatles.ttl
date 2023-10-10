@@ -1,0 +1,42 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ns1: <http://example.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+
+<http://example.com/Love_Me_Do> ns1:length 125 ;
+ns1:name "Love Me Do" ;
+ns1:writer ns1:John_Lennon ;
+ns1:writer ns1:Paul_McCartney ;
+rdf:type ns1:Song .
+
+ns1:The_Beatles ns1:member ns1:John_Lennon ;
+ns1:member ns1:Paul_McCartney ;
+ns1:member ns1:Ringo_Starr ;
+ns1:member ns1:George_Harrison ;
+ns1:name "The Beatles" ;
+rdf:type ns1:Band .
+
+ns1:Please_Please_Me ns1:artist ns1:The_Beatles ;
+ns1:date "1963-03-22"^^xsd:date ;
+ns1:name "Please Please Me" ;
+ns1:track ns1:Love_Me_Do ;
+rdf:type ns1:Album .
+
+ns1:George_Harrison rdf:type ns1:SoloArtist .
+
+ns1:Ringo_Starr rdf:type ns1:SoloArtist .
+
+ns1:John_Lennon rdf:type ns1:SoloArtist .
+
+ns1:Paul_McCartney rdf:type ns1:SoloArtist .
+
+ns1:McCartney ns1:artist ns1:Paul_McCartney ;
+ns1:date "1970-04-17"^^xsd:date ;
+ns1:name "McCartney" ;
+rdf:type ns1:Album .
+
+ns1:Imagine ns1:artist ns1:John_Lennon ;
+ns1:date "1971-10-11"^^xsd:date ;
+ns1:name "Imagine" ;
+rdf:type ns1:Album .
+

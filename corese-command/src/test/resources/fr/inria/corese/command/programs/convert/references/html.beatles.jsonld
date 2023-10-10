@@ -1,0 +1,115 @@
+{
+	"@context": {
+		"xsd": "http://www.w3.org/2001/XMLSchema#",
+		"ns1": "http://example.com/",
+		"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	},
+	"@graph": [
+		{
+			"@id": "ns1:John_Lennon",
+			"@type": "ns1:SoloArtist"
+		},
+		{
+			"@id": "ns1:The_Beatles",
+			"ns1:name": {
+				"@value": "The Beatles",
+				"@type": "xsd:string"
+			},
+			"ns1:member": [
+				{
+					"@id": "ns1:John_Lennon"
+				},
+				{
+					"@id": "ex:Paul_McCartney"
+				},
+				{
+					"@id": "ex:George_Harrison"
+				},
+				{
+					"@id": "ex:Ringo_Starr"
+				}
+			],
+			"@type": "ns1:Band"
+		},
+		{
+			"@id": "ns1:George_Harrison",
+			"@type": "ns1:SoloArtist"
+		},
+		{
+			"@id": "ns1:Imagine",
+			"ns1:name": {
+				"@value": "Imagine",
+				"@type": "xsd:string"
+			},
+			"ns1:artist": {
+				"@id": "ns1:John_Lennon"
+			},
+			"ns1:date": {
+				"@value": "1971-10-11",
+				"@type": "xsd:date"
+			},
+			"@type": "ns1:Album"
+		},
+		{
+			"@id": "ns1:Paul_McCartney",
+			"@type": "ns1:SoloArtist"
+		},
+		{
+			"@id": "ns1:Ringo_Starr",
+			"@type": "ns1:SoloArtist"
+		},
+		{
+			"@id": "ns1:Love_Me_Do",
+			"ns1:name": {
+				"@value": "Love Me Do",
+				"@type": "xsd:string"
+			},
+			"ns1:writer": [
+				{
+					"@id": "ns1:John_Lennon"
+				},
+				{
+					"@id": "ex:Paul_McCartney"
+				}
+			],
+			"ns1:length": {
+				"@value": "125",
+				"@type": "xsd:string"
+			},
+			"@type": "ns1:Song"
+		},
+		{
+			"@id": "ns1:Please_Please_Me",
+			"ns1:name": {
+				"@value": "Please Please Me",
+				"@type": "xsd:string"
+			},
+			"ns1:track": {
+				"@id": "ex:Love_Me_Do"
+			},
+			"ns1:artist": {
+				"@id": "ex:The_Beatles"
+			},
+			"ns1:date": {
+				"@value": "1963-03-22",
+				"@type": "xsd:date"
+			},
+			"@type": "ns1:Album"
+		},
+		{
+			"@id": "ns1:McCartney",
+			"ns1:name": {
+				"@value": "McCartney",
+				"@type": "xsd:string"
+			},
+			"ns1:artist": {
+				"@id": "ex:Paul_McCartney"
+			},
+			"ns1:date": {
+				"@value": "1970-04-17",
+				"@type": "xsd:date"
+			},
+			"@type": "ns1:Album"
+		}
+	]
+}

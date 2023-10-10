@@ -1,0 +1,42 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix : <http://example.com/graphs/> .
+
+:artists {
+    <http://example.com/John_Lennon> rdf:type ex:SoloArtist .
+    ex:Paul_McCartney rdf:type ex:SoloArtist .
+    ex:Ringo_Starr rdf:type ex:SoloArtist .
+    ex:George_Harrison rdf:type ex:SoloArtist .
+    ex:The_Beatles ex:member ex:John_Lennon ;
+        ex:member ex:Paul_McCartney ;
+        ex:member ex:George_Harrison ;
+        ex:member ex:Ringo_Starr ;
+        ex:name "The Beatles" ;
+        rdf:type ex:Band .
+}
+
+:albums {
+    <http://example.com/Please_Please_Me> ex:artist ex:The_Beatles ;
+        ex:date "1963-03-22"^^xsd:date ;
+        ex:name "Please Please Me" ;
+        ex:track ex:Love_Me_Do ;
+        rdf:type ex:Album .
+    ex:Imagine ex:artist ex:John_Lennon ;
+        ex:date "1971-10-11"^^xsd:date ;
+        ex:name "Imagine" ;
+        rdf:type ex:Album .
+    ex:McCartney ex:artist ex:Paul_McCartney ;
+        ex:date "1970-04-17"^^xsd:date ;
+        ex:name "McCartney" ;
+        rdf:type ex:Album .
+}
+
+:songs {
+    ex:Love_Me_Do ex:length 125 ;
+        ex:name "Love Me Do" ;
+        ex:writer ex:John_Lennon ;
+        ex:writer ex:Paul_McCartney ;
+        rdf:type ex:Song .
+}
+

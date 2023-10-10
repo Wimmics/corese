@@ -111,15 +111,17 @@ corese-command sparql -q 'SELECT * WHERE {?s ?p ?o}' -i myData.ttl -r json
 
 The result format can be specified with the `-r` or `-of` flag. The following formats are available:
 
-- RDF/XML: `rdfxml` or `application/rdf+xml`
-- Turtle: `turtle` or `text/turtle`
+- RDF/XML: `rdfxml`, `rdf` or `application/rdf+xml`
+- Turtle: `turtle`, `ttl` or `text/turtle`
 - TriG: `trig` or `application/trig`
 - JSON-LD: `jsonld` or `application/ld+json`
-- XML: `xml` or `application/sparql-results+xml`
-- Json: `json` or `application/sparql-results+json`
+- NTRIPLES: `ntriples`, `nt` or `application/n-triples`
+- NQUADS: `nquads`, `nq`, or `application/n-quads`
+- XML: `xml`, `srx` or `application/sparql-results+xml`
+- Json: `json`, `srj` or `application/sparql-results+json`
 - CSV: `csv` or `text/csv`
 - TSV: `tsv` or `text/tab-separated-values`
-- Markdown: `markdown` or `md` or `text/markdown`
+- Markdown: `markdown`, `md` or `text/markdown`
 
 Here is a table of available formats according to the type of request:
 
@@ -129,6 +131,8 @@ Here is a table of available formats according to the type of request:
 | turtle   | ❌      | ❌   | ✅      | ✅            | ✅      | ✅            | ✅        | ✅         |
 | trig     | ❌      | ❌   | ✅      | ✅            | ✅      | ✅            | ✅        | ✅         |
 | jsonld   | ❌      | ❌   | ✅      | ✅            | ✅      | ✅            | ✅        | ✅         |
+| ntriples | ❌      | ❌   | ✅      | ✅            | ✅      | ✅            | ✅        | ✅         |
+| nquads   | ❌      | ❌   | ✅      | ✅            | ✅      | ✅            | ✅        | ✅         |
 | xml      | ✅      | ✅   | ❌      | ❌            | ❌      | ❌            | ❌        | ❌         |
 | json     | ✅      | ✅   | ❌      | ❌            | ❌      | ❌            | ❌        | ❌         |
 | csv      | ✅      | ✅   | ❌      | ❌            | ❌      | ❌            | ❌        | ❌         |
@@ -161,14 +165,13 @@ cat myData.ttl | corese-command sparql -q 'SELECT * WHERE {?s ?p ?o}' -if turtle
 > the input is provided on the standard input or you want to force the input
 > format, you can use the `-f` or `-if` flag. Possible values are:
 >
-> - `rdfxml`, `application/rdf+xml`
-> - `turtle`, `text/turtle`
+> - `rdfxml`, `rdf` or `application/rdf+xml`
+> - `turtle`, `ttl` or `text/turtle`
 > - `trig`, `application/trig`
 > - `jsonld`, `application/ld+json`
-> - `n3`, `text/n3`
-> - `ntriples`, `application/n-triples`
-> - `nquads`, `application/n-quads`
-> - `rdfa`, `application/xhtml+xml`
+> - `ntriples`, `nt` or `application/n-triples`
+> - `nquads`, `nq`, or `application/n-quads`
+> - `rdfa`, `html` or `application/xhtml+xml`
 
 ### 3.4. Different Types of Queries
 
@@ -268,14 +271,13 @@ cat myData.ttl | corese-command convert -r turtle -if turtle
 > the input is provided on the standard input or you want to force the input
 > format, you can use the `-f` or flag. Possible values are:
 >
-> - `rdfxml`, `application/rdf+xml`
-> - `turtle`, `text/turtle`
+> - `rdfxml`, `rdf` or `application/rdf+xml`
+> - `turtle`, `ttl` or `text/turtle`
 > - `trig`, `application/trig`
 > - `jsonld`, `application/ld+json`
-> - `n3`, `text/n3`
-> - `ntriples`, `application/n-triples`
-> - `nquads`, `application/n-quads`
-> - `rdfa`, `application/xhtml+xml`
+> - `ntriples`, `nt` or `application/n-triples`
+> - `nquads`, `nq`, or `application/n-quads`
+> - `rdfa`, `html` or `application/xhtml+xml`
 
 ### 4.3. Different Types of Output
 
@@ -295,10 +297,12 @@ corese-command convert -i myData.ttl -r jsonld | jq […]
 
 > The output file format can be specified with the `-r` flag. Possible values are:
 >
-> - `rdfxml`, `application/rdf+xml`
-> - `turtle`, `text/turtle`
-> - `trig`, `application/trig`
-> - `jsonld`, `application/ld+json`
+> - RDF/XML: `rdfxml`, `rdf` or `application/rdf+xml`
+> - Turtle: `turtle`, `ttl` or `text/turtle`
+> - TriG: `trig` or `application/trig`
+> - JSON-LD: `jsonld` or `application/ld+json`
+> - NTRIPLES: `ntriples`, `nt` or `application/n-triples`
+> - NQUADS: `nquads`, `nq`, or `application/n-quads`
 
 ### 4.4. Summary of Available Formats
 
@@ -310,9 +314,8 @@ The `convert` command supports the following formats for input and output:
 | Turtle   | ✅             | ✅              |
 | JSONLD   | ✅             | ✅              |
 | TriG     | ✅             | ✅              |
-| N3       | ✅             | ❌              |
-| NTRIPLES | ✅             | ❌              |
-| NQUADS   | ✅             | ❌              |
+| NTRIPLES | ✅             | ✅              |
+| NQUADS   | ✅             | ✅              |
 | RDFA     | ✅             | ❌              |
 
 > More output formats will be added in the future.
@@ -355,14 +358,13 @@ cat myData.ttl | corese-command shacl -s myShapes.ttl -if turtle
 > the input is provided on the standard input or you want to force the input
 > format, you can use the `-f` or `-if` flag for the data and the `-a` or `-sf` flag for the shapes. Possible values are:
 >
-> - `rdfxml`, `application/rdf+xml`
-> - `turtle`, `text/turtle`
+> - `rdfxml`, `rdf` or `application/rdf+xml`
+> - `turtle`, `ttl` or `text/turtle`
 > - `trig`, `application/trig`
 > - `jsonld`, `application/ld+json`
-> - `n3`, `text/n3`
-> - `ntriples`, `application/n-triples`
-> - `nquads`, `application/n-quads`
-> - `rdfa`, `application/xhtml+xml`
+> - `ntriples`, `nt` or `application/n-triples`
+> - `nquads`, `nq`, or `application/n-quads`
+> - `rdfa`, `html` or `application/xhtml+xml`
 
 ### 5.3. Different Types of Output
 
@@ -382,10 +384,12 @@ corese-command shacl -i myData.ttl -s myShapes.ttl | other-command
 
 > The output file format can be specified with the `-r` or `-of` flag. Possible values are:
 >
-> - `rdfxml`, `application/rdf+xml`
-> - `turtle`, `text/turtle`
-> - `trig`, `application/trig`
-> - `jsonld`, `application/ld+json`
+> - RDF/XML: `rdfxml`, `rdf` or `application/rdf+xml`
+> - Turtle: `turtle`, `ttl` or `text/turtle`
+> - TriG: `trig` or `application/trig`
+> - JSON-LD: `jsonld` or `application/ld+json`
+> - NTRIPLES: `ntriples`, `nt` or `application/n-triples`
+> - NQUADS: `nquads`, `nq`, or `application/n-quads`
 
 ### 5.4. Multiple Input Files
 

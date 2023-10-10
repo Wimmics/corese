@@ -56,6 +56,9 @@ public class ResultFormat implements ResultFormatDef {
     public static final String TRIG_TEXT = "text/trig";
     public static final String NT_TEXT = "text/nt";
     public static final String TEXT = "text/plain";
+    public static final String N3 = "text/n3";
+    public static final String N_TRIPLES = "application/n-triples";
+    public static final String N_QUADS = "application/n-quads";
 
     public static int DEFAULT_SELECT_FORMAT = XML_FORMAT;
     public static int DEFAULT_CONSTRUCT_FORMAT = RDF_XML_FORMAT;
@@ -87,7 +90,7 @@ public class ResultFormat implements ResultFormatDef {
         table = new HashMap();
         table.put(Metadata.DISPLAY_TURTLE, TURTLE_FORMAT);
         table.put(Metadata.DISPLAY_RDF_XML, RDF_XML_FORMAT);
-        table.put(Metadata.DISPLAY_JSON_LD, JSON_LD_FORMAT);
+        table.put(Metadata.DISPLAY_JSON_LD, JSONLD_FORMAT);
 
         table.put(Metadata.DISPLAY_RDF, RDF_FORMAT);
         table.put(Metadata.DISPLAY_XML, XML_FORMAT);
@@ -113,7 +116,7 @@ public class ResultFormat implements ResultFormatDef {
         defContent(RDF_XML, RDF_XML_FORMAT);
         defContent(TURTLE_TEXT, TURTLE_FORMAT);
         defContent(TRIG, TRIG_FORMAT);
-        defContent(JSON_LD, JSON_LD_FORMAT);
+        defContent(JSON_LD, JSONLD_FORMAT);
         // defContent(JSON, JSON_LD_FORMAT);
 
         format.put(TRIG_TEXT, TRIG_FORMAT);
@@ -132,7 +135,7 @@ public class ResultFormat implements ResultFormatDef {
         format.put("tsv", TSV_FORMAT);
         format.put("markdown", MARKDOWN_FORMAT);
 
-        format.put("jsonld", JSON_LD_FORMAT);
+        format.put("jsonld", JSONLD_FORMAT);
         format.put("rdf", TURTLE_FORMAT);
         format.put("turtle", TURTLE_FORMAT);
         format.put("trig", TRIG_FORMAT);
@@ -213,7 +216,7 @@ public class ResultFormat implements ResultFormatDef {
             case Transformer.JSON:
                 return create(m, ResultFormat.JSON_FORMAT);
             case Transformer.JSON_LD:
-                return create(m, ResultFormat.JSON_LD_FORMAT);
+                return create(m, ResultFormat.JSONLD_FORMAT);
             case Transformer.RDF:
                 return create(m, ResultFormat.RDF_FORMAT);
             case Transformer.RDFXML:
@@ -434,8 +437,13 @@ public class ResultFormat implements ResultFormatDef {
             case TRIG_FORMAT:
                 return TripleFormat.create(getGraph(), true)
                         .setNbTriple(getNbTriple()).toString(node);
-            case JSON_LD_FORMAT:
+            case JSONLD_FORMAT:
                 return JSONLDFormat.create(getGraph()).toString();
+            case NTRIPLES_FORMAT:
+                return NTriplesFormat.create(getGraph()).toString();
+            case NQUADS_FORMAT:
+                return TripleFormat.create(getGraph(), true)
+                        .setNbTriple(getNbTriple()).toString(node);
             case TURTLE_FORMAT:
             default:
                 // e.g. HTML
@@ -476,7 +484,7 @@ public class ResultFormat implements ResultFormatDef {
             case RDF_XML_FORMAT:
             case TURTLE_FORMAT:
             case TRIG_FORMAT:
-            case JSON_LD_FORMAT:
+            case JSONLD_FORMAT:
                 // case RDF_FORMAT:
                 return true;
             default:
@@ -525,7 +533,7 @@ public class ResultFormat implements ResultFormatDef {
                 return TripleFormat.create(map).setNbTriple(getNbTriple()).toString();
             case TRIG_FORMAT:
                 return TripleFormat.create(map, true).setNbTriple(getNbTriple()).toString();
-            case JSON_LD_FORMAT:
+            case JSONLD_FORMAT:
                 return JSONLDFormat.create(map).toString();
 
             case RDF_FORMAT:

@@ -1,9 +1,13 @@
 package fr.inria.corese.sparql.triple.parser;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
+import static fr.inria.corese.kgram.api.core.PointerType.NSMANAGER;
+
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -11,27 +15,29 @@ import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.inria.corese.sparql.triple.cst.KeywordPP;
-import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.PointerType;
-import static fr.inria.corese.kgram.api.core.PointerType.NSMANAGER;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.cst.KeywordPP;
+import fr.inria.corese.sparql.triple.cst.RDFS;
 
 /**
  * <p>
- * Title: Corese</p>
+ * Title: Corese
+ * </p>
  * <p>
- * Description: A Semantic Search Engine</p>
+ * Description: A Semantic Search Engine
+ * </p>
  * <p>
- * Copyright: Copyright INRIA (c) 2007</p>
+ * Copyright: Copyright INRIA (c) 2007
+ * </p>
  * <p>
- * Company: INRIA</p>
+ * Company: INRIA
+ * </p>
  * <p>
- * Project: Acacia</p>
+ * Project: Acacia
+ * </p>
  * <br>
  * This class is used to manage prefixes and namespaces.
  * <br>
@@ -63,30 +69,30 @@ public class NSManager extends ASTObject {
     public static final String FOAF = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
     public static final String XMLRESULT = "http://www.w3.org/2005/sparql-results#";
-    public static final String EXT_FUN    = "function://fr.inria.corese.core.extension.Extension.";
-    public static final String EXT_FUN_REP    = "function://fr.inria.corese.core.extension.Report.";
+    public static final String EXT_FUN = "function://fr.inria.corese.core.extension.Extension.";
+    public static final String EXT_FUN_REP = "function://fr.inria.corese.core.extension.Report.";
     public static final String DCTERM = "http://purl.org/dc/terms/";
     public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
     public static final String DBPEDIA = "http://dbpedia.org/resource/";
     public static final String RESOURCE = "http://ns.inria.fr/corese/";
     public static final String CORESE = "http://ns.inria.fr/corese/";
-    public static final String RULE  = CORESE+"rule/";
+    public static final String RULE = CORESE + "rule/";
     public static final String HTTP = "http://ns.inria.fr/http/";
     public static final String GEO = "http://www.w3.org/2003/01/geo/wgs84_pos#";
-   
-    public static final String INDEX    = "http://ns.inria.fr/rdf/index/";
+
+    public static final String INDEX = "http://ns.inria.fr/rdf/index/";
     public static final String FEDERATE = "http://ns.inria.fr/federation/";
-    
+
     public static final String SHACL = "http://www.w3.org/ns/shacl#";
     public static final String SHACL_FUNCTION_PATH = "http://www.w3.org/ns/shacl/functionpath#";
     public static final String SHACL_FUNCTION = "http://www.w3.org/ns/shacl/function#";
     public static final String SHACL_MESSAGE = "http://www.w3.org/ns/shacl/message#";
     public static final String SHACL_RESULT = "http://www.w3.org/ns/shacl/result#";
-    public static final String SHACL_PREFIX =  "sh";
+    public static final String SHACL_PREFIX = "sh";
     public static final String SHEX_SHACL = "http://ns.inria.fr/shex/shacl#";
     public static final String SHAPE = SHACL;
     public static final String SHACL_JAVA = "function://fr.inria.corese.core.extension.SHACL.";
-    public static final String SHACL_SHACL = RESOURCE+"data/shaclshacl.ttl";
+    public static final String SHACL_SHACL = RESOURCE + "data/shaclshacl.ttl";
 
     public static final String COSNS = RDFS.COSNS;
     public static final String COS = RDFS.COS;
@@ -95,8 +101,8 @@ public class NSManager extends ASTObject {
     public static final String D3 = STL + "d3#";
     public static final String STL_FORMAT = STL + "format/";
     // transform=stm:mapper generate map
-    public static final String STL_MAPPER = STL + "navlab#";    
-    public static final String STL_D3 = STL + "d3#";    
+    public static final String STL_MAPPER = STL + "navlab#";
+    public static final String STL_D3 = STL + "d3#";
     public static final String JAVA = ExpType.EXT + "java/";
     public static final String DS = ExpType.EXT + "ds/";
     public static final String CAST = ExpType.EXT + "cast/";
@@ -128,8 +134,8 @@ public class NSManager extends ASTObject {
     public static final String UNDEF_URL = "http://example.org/_undefined_";
     // use case: determine if a string can be considered as an uri
     // use case: json string converted to uri or string
-    static String[] protocol = {"http://", "https://", "file://", "ftp://", "urn:"};
-    
+    static String[] protocol = { "http://", "https://", "file://", "ftp://", "urn:" };
+
     public static final int XSD_LENGTH = XSD.length();
 
     /**
@@ -139,17 +145,18 @@ public class NSManager extends ASTObject {
     private static final String DOT = ".";
     public static final String HASH = "#";
     static final String NL = System.getProperty("line.separator");
-    static final char[] END_CHAR = {'#', '/', '?'}; //, ':'}; // may end an URI ...
-    static final String[] PB_CHAR_NAME = {".", "\u2013", ":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
-    static final String[] PB_CHAR_URI = {"(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
+    static final char[] END_CHAR = { '#', '/', '?' }; // , ':'}; // may end an URI ...
+    static final String[] PB_CHAR_NAME = { ".", "\u2013", ":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}",
+            "?", "&" };
+    static final String[] PB_CHAR_URI = { "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&" };
     static final String pchar = ":";
     int count = 0;
-    static final NSManager nsm ;
+    static final NSManager nsm;
     static final HashMap<String, Boolean> number;
 
     static HashMap<String, String> def; // system namespace with prefered prefix
-    HashMap<String, Integer> index;  // namespace -> number
-    HashMap<String, String> tns;     // namespace -> prefix
+    HashMap<String, Integer> index; // namespace -> number
+    HashMap<String, String> tns; // namespace -> prefix
     HashMap<String, String> tprefix; // prefix -> namespace
     HashMap<String, String> trecord;
     String base;
@@ -161,20 +168,20 @@ public class NSManager extends ASTObject {
      */
     private String defaultNamespaces = null;
     private boolean record = false;
-    
+
     static {
         number = new HashMap<>();
         number();
         define();
         nsm = create();
     }
-    
+
     // for pretty printing without ^^datatype
     static void number() {
         number.put(fr.inria.corese.sparql.datatype.RDF.xsdinteger, Boolean.TRUE);
-        //number.put(fr.inria.corese.sparql.datatype.RDF.xsdint, Boolean.TRUE);
-        //number.put(fr.inria.corese.sparql.datatype.RDF.xsdfloat, Boolean.TRUE);
-        //number.put(fr.inria.corese.sparql.datatype.RDF.xsddouble, Boolean.TRUE);
+        // number.put(fr.inria.corese.sparql.datatype.RDF.xsdint, Boolean.TRUE);
+        // number.put(fr.inria.corese.sparql.datatype.RDF.xsdfloat, Boolean.TRUE);
+        // number.put(fr.inria.corese.sparql.datatype.RDF.xsddouble, Boolean.TRUE);
         number.put(fr.inria.corese.sparql.datatype.RDF.xsddecimal, Boolean.TRUE);
     }
 
@@ -183,7 +190,7 @@ public class NSManager extends ASTObject {
         tns = new HashMap<>();
         index = new HashMap<>();
         trecord = new HashMap<>();
-        //define();
+        // define();
     }
 
     private NSManager(String defaultNamespaces) {
@@ -224,7 +231,7 @@ public class NSManager extends ASTObject {
             nsm.definePrefix(p, getNamespace(p));
         }
         nsm.setRecord(isRecord());
-        // for defining prefix of pretty printed qname 
+        // for defining prefix of pretty printed qname
         nsm.setRecordedPrefix(getRecordedPrefix());
         return nsm;
     }
@@ -279,7 +286,7 @@ public class NSManager extends ASTObject {
 
     // default predefined namespaces
     static void define() {
-        def = new HashMap<>();        
+        def = new HashMap<>();
         def.put(RDFS.XML, RDFS.XMLPrefix);
         def.put(RDFS.RDF, RDFS.RDFPrefix);
         def.put(RDFS.RDFS, RDFS.RDFSPrefix);
@@ -289,11 +296,11 @@ public class NSManager extends ASTObject {
 
         def.put(SPIN, SPIN_PREF);
         def.put(FOAF, FOAF_PREF);
-        //def.put("http://dbpedia.org/ontology/", "dbo");
+        // def.put("http://dbpedia.org/ontology/", "dbo");
         def.put("http://www.w3.org/2004/02/skos/core#", "skos");
         def.put(DCTERM, "dc");
-        //def.put(DBPEDIAFR, "db");
-        //def.put(DBPEDIA, "dbe");
+        // def.put(DBPEDIAFR, "db");
+        // def.put(DBPEDIA, "dbe");
 
         def.put(KGRAM, KPREF);
         def.put(KGEXT, KEPREF);
@@ -303,7 +310,7 @@ public class NSManager extends ASTObject {
         def.put(PPN, PPP);
         def.put(STL, STL_PREF);
         def.put(STL_MAPPER, "stm");
-        //def.put(STL_D3, "std");
+        // def.put(STL_D3, "std");
         def.put(D3, "d3");
         def.put(SWL, SWL_PREF);
         def.put(EXT, EXT_PREF);
@@ -311,12 +318,12 @@ public class NSManager extends ASTObject {
         def.put(ExpType.DT, "dt");
         def.put(CUSTOM, "cs");
         def.put(SPARQL, SPARQL_PREF);
-        //def.put(SHACL, "xsh");
+        // def.put(SHACL, "xsh");
         def.put(SHACL, SHACL_PREFIX);
         def.put(SHACL_FUNCTION, "sx");
         def.put(SHACL_FUNCTION_PATH, "sxp");
-        def.put(SHACL_MESSAGE,  "sm");
-        def.put(SHACL_RESULT,  "sr");
+        def.put(SHACL_MESSAGE, "sm");
+        def.put(SHACL_RESULT, "sr");
         def.put(SHEX_SHACL, "shex");
         def.put(SHACL_JAVA, "jsh");
         def.put(EXT_FUN, "fun");
@@ -342,7 +349,7 @@ public class NSManager extends ASTObject {
     public boolean isSystem(String ns) {
         return def.containsKey(ns);
     }
-    
+
     public boolean isSystemURI(String uri) {
         return isSystem(namespace(uri));
     }
@@ -350,7 +357,7 @@ public class NSManager extends ASTObject {
     public boolean isNamespace(String ns) {
         return tns.containsKey(ns);
     }
-    
+
     public static boolean isNumber(String ns) {
         return number.get(ns) != null;
     }
@@ -469,7 +476,7 @@ public class NSManager extends ASTObject {
 
     /**
      *
-     * @param skip: do not generate prefix when prefix undefined
+     * @param skip:    do not generate prefix when prefix undefined
      * @param display: display mode, generate prefixed named even with ' or ()
      */
     public String toPrefixURI(String nsname, boolean skip, boolean display) {
@@ -485,7 +492,7 @@ public class NSManager extends ASTObject {
         }
     }
 
-    boolean containsChar(String str, String [] pb) {
+    boolean containsChar(String str, String[] pb) {
         for (String s : pb) {
             if (str.contains(s)) {
                 return true;
@@ -506,30 +513,55 @@ public class NSManager extends ASTObject {
         return toPrefix(nsname, skip, false);
     }
 
-    public String toPrefix(String nsname, boolean skip, boolean xml) {   
-        String ns = namespace(nsname);
-        if (ns == null || ns.equals("") || ns.equals(nsname)) {
+    public String toPrefix(String nsname, boolean skip, boolean xml) {
+        String namespace = extractNamespace(nsname);
+        if (isInvalidNamespace(namespace, nsname)) {
             return nsname;
         }
-        String p = getPrefix(ns);
-        if (p == null) {
+
+        String prefix = getPrefix(namespace);
+        if (prefix == null) {
             if (skip) {
                 return nsname;
-            } else {
-                p = defNamespace(ns);
             }
+            prefix = defineDefaultNamespace(namespace);
         }
-        String str = p;
-        String name = nsname.substring(ns.length());
-        if (containsChar(name, PB_CHAR_NAME)) {
+
+        String name = extractLocalName(nsname, namespace);
+        if (containsForbiddenCharacters(name)) {
             return nsname;
         }
-        if (!(xml && p.equals(""))) {
-            str += pchar;
+
+        String result = assembleResult(prefix, name, xml);
+        record(namespace);
+        return result;
+    }
+
+    private String extractNamespace(String nsname) {
+        return namespace(nsname);
+    }
+
+    private boolean isInvalidNamespace(String namespace, String nsname) {
+        return namespace == null || namespace.isEmpty() || namespace.equals(nsname);
+    }
+
+    private String defineDefaultNamespace(String namespace) {
+        return defNamespace(namespace);
+    }
+
+    private String extractLocalName(String nsname, String namespace) {
+        return nsname.substring(namespace.length());
+    }
+
+    private boolean containsForbiddenCharacters(String name) {
+        return containsChar(name, PB_CHAR_NAME);
+    }
+
+    private String assembleResult(String prefix, String name, boolean xml) {
+        if (xml && prefix.isEmpty()) {
+            return name;
         }
-        record(ns);
-        str += name;
-        return str;
+        return prefix + pchar + name;
     }
 
     /**
@@ -652,7 +684,7 @@ public class NSManager extends ASTObject {
 
     /**
      *
-     * @param force: generate a prefix if no prefix exist
+     * @param force:   generate a prefix if no prefix exist
      * @param display: display mode, generate prefixed name even with ' or ()
      */
     public IDatatype turtle(IDatatype dt, boolean force, boolean display) {
@@ -671,8 +703,7 @@ public class NSManager extends ASTObject {
                 // add quotes around string, add lang tag if any
                 dt = DatatypeMap.newStringBuilder(dt.toString());
             }
-        }
-        else if (dt.isTriple()) {
+        } else if (dt.isTriple()) {
             dt = DatatypeMap.newStringBuilder(dt.toString());
         }
         return dt;
@@ -782,7 +813,8 @@ public class NSManager extends ASTObject {
         // if namespace not null, removes it
         // if refp add a #
         return ((namespace != null) && (inNamespace(name, namespace)))
-                ? ((refp) ? HASH + strip(name) : strip(name)) : name;
+                ? ((refp) ? HASH + strip(name) : strip(name))
+                : name;
     }
 
     public String strip(String name) {
@@ -806,12 +838,11 @@ public class NSManager extends ASTObject {
         }
         return name;
     }
-    
+
     public static String domain(String uri) {
         return domain(uri, true);
     }
 
-    
     public static String domain(String uri, boolean scheme) {
         try {
             URI url = new URI(uri);
@@ -824,8 +855,7 @@ public class NSManager extends ASTObject {
                     res = res.concat("//");
                 }
                 return res.concat(url.getAuthority());
-            }
-            else {
+            } else {
                 return url.getAuthority();
             }
         } catch (URISyntaxException ex) {
@@ -841,15 +871,15 @@ public class NSManager extends ASTObject {
         }
         return false;
     }
-    
+
     public static boolean isPredefinedTransformation(String uri) {
         return inNamespace(uri, STL);
     }
-    
+
     public static boolean isPredefinedNamespace(String uri) {
         return isResource(uri);
     }
-    
+
     /**
      * URL denote a resource to be found in the software archive
      */
@@ -865,7 +895,7 @@ public class NSManager extends ASTObject {
             return type.startsWith(namespace);
         }
     }
-    
+
     public static boolean isFile(String path) {
         try {
             URL url = new URL(path);
@@ -874,7 +904,7 @@ public class NSManager extends ASTObject {
             return true;
         }
     }
-    
+
     public static boolean isURI(String str) {
         for (String pro : protocol) {
             if (str.startsWith(pro)) {
@@ -883,20 +913,20 @@ public class NSManager extends ASTObject {
         }
         return false;
     }
-    
+
     /**
      * path = http://ns.inria.fr/corese/rule/owl.rul
      * return directory of resource: /rule/owl.rul
      */
     public static String stripResource(String uri) {
-        String ns = RESOURCE; 
+        String ns = RESOURCE;
         if (uri.startsWith(STL)) {
             ns = STL;
         }
         return "/" + strip(uri, ns);
     }
 
-    public static String namespace(String type) {  //retourne le namespace d'un type
+    public static String namespace(String type) { // retourne le namespace d'un type
         if (type.startsWith(HASH)) {
             return "";
         }
@@ -914,8 +944,8 @@ public class NSManager extends ASTObject {
     }
 
     /*
-     return last occurrence of pat (e.g. '/') in str
-     if pat is last, find preceding occurrence
+     * return last occurrence of pat (e.g. '/') in str
+     * if pat is last, find preceding occurrence
      */
     static int getIndex(String str, char pat) {
         int index = str.lastIndexOf(pat);
@@ -972,20 +1002,20 @@ public class NSManager extends ASTObject {
         this.record = record;
         return this;
     }
-    
+
     static HashMap<String, String> getDefaultNS() {
         return def;
     }
-    
+
     public static void defineDefaultPrefix(String p, String ns) {
         def.put(ns, p);
     }
-    
-    public HashMap<String, String> getRecordedPrefix(){
+
+    public HashMap<String, String> getRecordedPrefix() {
         return trecord;
     }
-    
-    public void setRecordedPrefix(HashMap<String, String> map){
+
+    public void setRecordedPrefix(HashMap<String, String> map) {
         trecord = map;
     }
 

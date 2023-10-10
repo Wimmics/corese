@@ -1,34 +1,46 @@
 package fr.inria.corese.command.utils.format;
 
-import java.security.InvalidParameterException;
-
-import fr.inria.corese.core.transform.Transformer;
-
 /**
  * Enumeration of exportable RDF serialization formats.
  */
 public enum EnumOutputFormat {
-    RDFXML(1, "rdfxml"),
-    TURTLE(2, "turtle"),
-    TRIG(3, "trig"),
-    JSONLD(4, "jsonld"),
-    APPLICATION_RDF_XML(1, "application/rdf+xml"),
-    TEXT_TURTLE(2, "text/turtle"),
-    APPLICATION_TRIG(3, "application/trig"),
-    APPLICATION_LD_JSON(4, "application/ld+json");
+    RDFXML(1, "rdfxml", "rdf"),
+    RDF(1, "rdf", "rdf"),
+    APPLICATION_RDF_XML(1, "application/rdf+xml", "rdf"),
+
+    TURTLE(2, "turtle", "ttl"),
+    TTL(2, "ttl", "ttl"),
+    TEXT_TURTLE(2, "text/turtle", "ttl"),
+
+    TRIG(3, "trig", "trig"),
+    APPLICATION_TRIG(3, "application/trig", "trig"),
+
+    JSONLD(4, "jsonld", "jsonld"),
+    APPLICATION_LD_JSON(4, "application/ld+json", "jsonld"),
+
+    NTRIPLES(6, "ntriples", "nt"),
+    NT(6, "nt", "nt"),
+    APPLICATION_NTRIPLES(6, "application/n-triples", "nt"),
+
+    NQUADS(7, "nquads", "nq"),
+    NQ(7, "nq", "nq"),
+    APPLICATION_NQUADS(7, "application/n-quads", "nq");
 
     private final int value;
     private final String name;
+    private final String extention;
 
     /**
      * Constructor.
      * 
-     * @param value The value of the enum.
-     * @param name  The name of the enum.
+     * @param value     The value of the enum.
+     * @param name      The name of the enum.
+     * @param extention The extension of the format.
      */
-    EnumOutputFormat(int value, String name) {
+    private EnumOutputFormat(int value, String name, String extention) {
         this.value = value;
         this.name = name;
+        this.extention = extention;
     }
 
     /**
@@ -55,71 +67,7 @@ public enum EnumOutputFormat {
      * @return The extension.
      */
     public String getExtention() {
-        switch (this) {
-            case RDFXML:
-            case APPLICATION_RDF_XML:
-                return "xml";
-
-            case TURTLE:
-            case TEXT_TURTLE:
-                return "ttl";
-
-            case TRIG:
-            case APPLICATION_TRIG:
-                return "trig";
-
-            case JSONLD:
-            case APPLICATION_LD_JSON:
-                return "jsonld";
-
-            default:
-                throw new InvalidParameterException("Output format " + this + " is unknow.");
-        }
-    }
-
-    /**
-     * Get the enum from its value.
-     * 
-     * @param value The value of the enum.
-     * @return The enum.
-     */
-    public static EnumOutputFormat fromValue(int value) {
-        for (EnumOutputFormat format : EnumOutputFormat.values()) {
-            if (format.getValue() == value) {
-                return format;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Convert {@code OutputFormat} value into {@code Transformer} equivalent
-     * value.
-     *
-     * @param outputFormat Value to convert.
-     * @return Converted value.
-     */
-    public static String convertToTransformer(EnumOutputFormat outputFormat) {
-        switch (outputFormat) {
-            case RDFXML:
-            case APPLICATION_RDF_XML:
-                return Transformer.RDFXML;
-
-            case TURTLE:
-            case TEXT_TURTLE:
-                return Transformer.TURTLE;
-
-            case JSONLD:
-            case APPLICATION_LD_JSON:
-                return Transformer.JSON;
-
-            case TRIG:
-            case APPLICATION_TRIG:
-                return Transformer.TRIG;
-
-            default:
-                throw new InvalidParameterException("Output format " + outputFormat + " is unknow.");
-        }
+        return this.extention;
     }
 
     @Override

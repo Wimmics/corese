@@ -211,7 +211,7 @@ public class Sparql implements Callable<Integer> {
         try {
 
             if (this.verbose) {
-                this.spec.commandLine().getErr().println("Query: " + this.query );
+                this.spec.commandLine().getErr().println("Query: " + this.query);
                 this.spec.commandLine().getErr().println("Executing query...");
             }
 
@@ -222,25 +222,6 @@ public class Sparql implements Callable<Integer> {
             exportResult(ast, map);
         } catch (Exception e) {
             throw new Exception("Error when executing SPARQL query : " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Check if the result format is a RDF format.
-     *
-     * @return True if the result format is a RDF format, false otherwise.
-     */
-    private boolean isRDFFormat() {
-        switch (this.resultFormat) {
-            case BIDING_XML:
-            case BIDING_JSON:
-            case BIDING_CSV:
-            case BIDING_TSV:
-            case BIDING_MD:
-            case BIDING_MARKDOWN:
-                return false;
-            default:
-                return true;
         }
     }
 
@@ -269,11 +250,11 @@ public class Sparql implements Callable<Integer> {
         }
 
         // Check if the output format is valid for the query type
-        if ((isUpdate || isConstruct) && !isRDFFormat()) {
+        if ((isUpdate || isConstruct) && !this.resultFormat.isRDFFormat()) {
             throw new IllegalArgumentException(String.format(ERROR_OUTPUT_FORMAT_CONSTRUCT_REQUEST, resultFormat));
         }
 
-        if ((isAsk || isSelect) && isRDFFormat()) {
+        if ((isAsk || isSelect) && this.resultFormat.isRDFFormat()) {
             throw new IllegalArgumentException(String.format(ERROR_OUTPUT_FORMAT_SELECT_REQUEST, resultFormat));
         }
 

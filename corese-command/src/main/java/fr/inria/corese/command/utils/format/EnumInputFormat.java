@@ -8,21 +8,31 @@ import fr.inria.corese.core.api.Loader;
  * Enumeration of parsable RDF serialization formats.
  */
 public enum EnumInputFormat {
+
     RDFXML(1, "rdfxml"),
-    TURTLE(2, "turtle"),
-    TRIG(3, "trig"),
-    JSONLD(4, "jsonld"),
-    N3(5, "n3"),
-    NTRIPLES(6, "ntriples"),
-    NQUADS(7, "nquads"),
-    RDFA(8, "rdfa"),
+    RDF(1, "rdf"),
     APPLICATION_RDF_XML(1, "application/rdf+xml"),
+
+    TURTLE(2, "turtle"),
+    TTL(2, "ttl"),
     TEXT_TURTLE(2, "text/turtle"),
+
+    TRIG(3, "trig"),
     APPLICATION_TRIG(3, "application/trig"),
+
+    JSONLD(4, "jsonld"),
     APPLICATION_LD_JSON(4, "application/ld+json"),
-    TEXT_N3(5, "text/n3"),
-    APPLICATION_N_TRIPLES(6, "application/n-triples"),
-    APPLICATION_N_QUADS(7, "application/n-quads"),
+
+    NTRIPLES(6, "ntriples"),
+    NT(6, "nt"),
+    APPLICATION_NTRIPLES(6, "application/n-triples"),
+
+    NQUADS(7, "nquads"),
+    NQ(7, "nq"),
+    APPLICATION_NQUADS(7, "application/n-quads"),
+
+    RDFA(8, "rdfa"),
+    HTML(8, "html"),
     APPLICATION_XHTML_XML(8, "application/xhtml+xml");
 
     private final int value;
@@ -31,10 +41,11 @@ public enum EnumInputFormat {
     /**
      * Constructor.
      * 
-     * @param value The value of the enum.
-     * @param name  The name of the enum.
+     * @param value     The value of the enum.
+     * @param name      The name of the enum.
+     * @param extention The extension of the format.
      */
-    EnumInputFormat(int value, String name) {
+    private EnumInputFormat(int value, String name) {
         this.value = value;
         this.name = name;
     }
@@ -58,36 +69,6 @@ public enum EnumInputFormat {
     }
 
     /**
-     * Get the enum from its value.
-     * 
-     * @param value The value of the enum.
-     * @return The enum.
-     */
-    public static EnumInputFormat fromValue(int value) {
-        for (EnumInputFormat format : EnumInputFormat.values()) {
-            if (format.getValue() == value) {
-                return format;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Get the enum from its name.
-     * 
-     * @param name The name of the enum.
-     * @return The enum.
-     */
-    public static EnumInputFormat fromName(String name) {
-        for (EnumInputFormat format : EnumInputFormat.values()) {
-            if (format.getName().equals(name)) {
-                return format;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Convert {@code Loader} format value into {@code InputFormat} equivalent
      * 
      * @param loaderFormat The Loader format.
@@ -96,21 +77,19 @@ public enum EnumInputFormat {
     public static EnumInputFormat fromLoaderValue(int loaderFormat) {
         switch (loaderFormat) {
             case Loader.RDFXML_FORMAT:
-            case Loader.XML_FORMAT:
                 return EnumInputFormat.RDFXML;
 
             case Loader.TURTLE_FORMAT:
                 return EnumInputFormat.TURTLE;
 
-            case Loader.NT_FORMAT:
-                return EnumInputFormat.NTRIPLES;
-
-            case Loader.JSONLD_FORMAT:
-            case Loader.JSON_FORMAT:
-                return EnumInputFormat.JSONLD;
-
             case Loader.TRIG_FORMAT:
                 return EnumInputFormat.TRIG;
+
+            case Loader.JSONLD_FORMAT:
+                return EnumInputFormat.JSONLD;
+
+            case Loader.NT_FORMAT:
+                return EnumInputFormat.NTRIPLES;
 
             case Loader.NQUADS_FORMAT:
                 return EnumInputFormat.NQUADS;
@@ -119,7 +98,8 @@ public enum EnumInputFormat {
                 return EnumInputFormat.RDFA;
 
             default:
-                throw new InvalidParameterException("Impossible to determine the input format, please specify it with the -f or -if or --input-format option.");
+                throw new InvalidParameterException(
+                        "Impossible to determine the input format, please specify it with the -f or -if or --input-format option.");
         }
     }
 
@@ -133,30 +113,35 @@ public enum EnumInputFormat {
     public static int toLoaderValue(EnumInputFormat format) {
         switch (format) {
             case RDFXML:
+            case RDF:
             case APPLICATION_RDF_XML:
                 return Loader.RDFXML_FORMAT;
 
             case TURTLE:
+            case TTL:
             case TEXT_TURTLE:
                 return Loader.TURTLE_FORMAT;
-
-            case NTRIPLES:
-            case APPLICATION_N_TRIPLES:
-                return Loader.NT_FORMAT;
-
-            case JSONLD:
-            case APPLICATION_LD_JSON:
-                return Loader.JSONLD_FORMAT;
 
             case TRIG:
             case APPLICATION_TRIG:
                 return Loader.TRIG_FORMAT;
 
+            case JSONLD:
+            case APPLICATION_LD_JSON:
+                return Loader.JSONLD_FORMAT;
+
+            case NTRIPLES:
+            case NT:
+            case APPLICATION_NTRIPLES:
+                return Loader.NT_FORMAT;
+
             case NQUADS:
-            case APPLICATION_N_QUADS:
+            case NQ:
+            case APPLICATION_NQUADS:
                 return Loader.NQUADS_FORMAT;
 
             case RDFA:
+            case HTML:
             case APPLICATION_XHTML_XML:
                 return Loader.RDFA_FORMAT;
 

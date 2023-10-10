@@ -175,7 +175,8 @@ public class MainFrame extends JFrame implements ActionListener {
     private JCheckBox checkBoxRule;
     private JCheckBox checkBoxVerbose;
     private JCheckBox checkBoxLoad;
-    private JCheckBox cbrdfs, cbowlrl, cbclean, cbrdfsrl, cbowlrltest, cbowlrllite, cbowlrlext, cbtrace, cbnamed, cbindex;
+    private JCheckBox cbrdfs, cbowlrl, cbclean, cbrdfsrl, cbowlrltest, cbowlrllite, cbowlrlext, cbtrace, cbnamed,
+            cbindex;
     private JCheckBox cbshexClosed, cbshexExtend, cbshexCard, cbshexshex;
     private JMenuItem validate;
     // style correspondant au graphe
@@ -875,7 +876,7 @@ public class MainFrame extends JFrame implements ActionListener {
         displayMenu.add(defDisplay("Turtle", ResultFormat.TURTLE_FORMAT));
         displayMenu.add(defDisplay("Trig", ResultFormat.TRIG_FORMAT));
         displayMenu.add(defDisplay("RDF/XML", ResultFormat.RDF_XML_FORMAT));
-        displayMenu.add(defDisplay("JSON LD", ResultFormat.JSON_LD_FORMAT));
+        displayMenu.add(defDisplay("JSON LD", ResultFormat.JSONLD_FORMAT));
         displayMenu.add(defDisplay("Index", ResultFormat.UNDEF_FORMAT));
         displayMenu.add(defDisplay("Internal", ResultFormat.UNDEF_FORMAT));
 
@@ -1031,7 +1032,7 @@ public class MainFrame extends JFrame implements ActionListener {
         cbowlrl.addItemListener((ItemEvent e) -> {
             setOWLRL(cbowlrl.isSelected(), RuleEngine.OWL_RL);
         });
-        
+
         cbowlrltest.setEnabled(true);
         cbowlrltest.setSelected(false);
         cbowlrltest.addItemListener((ItemEvent e) -> {

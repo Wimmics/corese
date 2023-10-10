@@ -6,7 +6,11 @@ import java.nio.file.Path;
 
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.core.print.JSONLDFormat;
+import fr.inria.corese.core.print.NQuadsFormat;
+import fr.inria.corese.core.print.NTriplesFormat;
+import fr.inria.corese.core.print.RDFFormat;
+import fr.inria.corese.core.print.TripleFormat;
 import picocli.CommandLine.Model.CommandSpec;
 
 /**
@@ -81,9 +85,41 @@ public class RdfDataExporter {
             Graph graph) {
 
         try {
-            Transformer transformer = Transformer.create(graph, EnumOutputFormat.convertToTransformer(outputFormat));
-            transformer.write(outputStream);
-            outputStream.close();
+            switch (outputFormat) {
+                case RDFXML:
+                case RDF:
+                case APPLICATION_RDF_XML:
+                    RDFFormat.create(graph).write(outputStream);
+                    break;
+                case TURTLE:
+                case TTL:
+                case TEXT_TURTLE:
+                    TripleFormat.create(graph).write(outputStream);
+                    break;
+                case TRIG:
+                case APPLICATION_TRIG:
+                    TripleFormat.create(graph, true).write(outputStream);
+                    break;
+                case JSONLD:
+                case APPLICATION_LD_JSON:
+                    JSONLDFormat.create(graph).write(outputStream);
+                    break;
+                case NTRIPLES:
+                case NT:
+                case APPLICATION_NTRIPLES:
+                    NTriplesFormat.create(graph).write(outputStream);
+                    break;
+                case NQUADS:
+                case NQ:
+                case APPLICATION_NQUADS:
+                    NQuadsFormat.create(graph).write(outputStream);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported output format: " + outputFormat);
+            }
+
+            outputStream.flush();
+
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to write to RDF data to output stream", e);
         }

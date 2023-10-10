@@ -52,23 +52,26 @@ public class ShaclTest {
         String content1 = new String(Files.readAllBytes(Paths.get(filePath1)));
         String content2 = new String(Files.readAllBytes(Paths.get(filePath2)));
 
-        String normalizedContent1 = sortAndRemoveUUIDs(content1);
-        String normalizedContent2 = sortAndRemoveUUIDs(content2);
+        String normalizedContent1 = sort(trimLines(removeUUIDsAndBlankNodes(content1)));
+        String normalizedContent2 = sort(trimLines(removeUUIDsAndBlankNodes(content2)));
 
         return normalizedContent1.equals(normalizedContent2);
     }
 
-    private String sortAndRemoveUUIDs(String content) {
+    private String sort(String content) {
         String[] lines = content.split("\n");
         Arrays.sort(lines);
-        String sortedContent = Arrays.stream(lines).collect(Collectors.joining("\n"));
-        return removeUUIDsAndBlankNodes(sortedContent);
+        return Arrays.stream(lines).collect(Collectors.joining("\n"));
     }
 
     private String removeUUIDsAndBlankNodes(String content) {
         content = Pattern.compile(UUID_REGEX).matcher(content).replaceAll("");
         content = Pattern.compile(BLANK_NODE_REGEX).matcher(content).replaceAll("");
         return content;
+    }
+
+    private String trimLines(String content) {
+        return Arrays.stream(content.split("\n")).map(String::trim).collect(Collectors.joining("\n"));
     }
 
     @Test

@@ -35,7 +35,7 @@ public class RemoteSparql implements Callable<Integer> {
     @Spec
     private CommandSpec spec;
 
-    @Option(names = { "-q", "--query" }, description = "SPARQL query to execute", required = true)
+    @Option(names = { "-q", "--query" }, description = "SPARQL query to execute", required = false)
     private String queryUrlOrFile;
 
     @Option(names = { "-e", "--endpoint" }, description = "SPARQL endpoint URL", required = true)
@@ -122,21 +122,31 @@ public class RemoteSparql implements Callable<Integer> {
      * @throws IOException If the query file cannot be read.
      */
     private void loadQuery() throws IOException {
-        Optional<Path> path = ConvertString.toPath(this.queryUrlOrFile);
-        Optional<URL> url = ConvertString.toUrl(this.queryUrlOrFile);
-        Boolean isSparqlQuery = TestType.isSparqlQuery(this.queryUrlOrFile);
 
-        if (isSparqlQuery) {
-            // if query is a SPARQL query
-            this.query = this.queryUrlOrFile;
-        } else if (url.isPresent()) {
-            // if query is a URL
-            this.query = SparqlQueryLoader.loadFromUrl(url.get(), this.spec, this.verbose);
-        } else if (path.isPresent()) {
-            // if query is a path
-            this.query = SparqlQueryLoader.loadFromFile(path.get(), this.spec, this.verbose);
+        // If query is not defined, read from standard input
+        if (this.queryUrlOrFile == null) {
+            this.query = SparqlQueryLoader.loadFromInputStream(System.in, this.spec, this.verbose);
+
+            if (this.query == null || this.query.isEmpty()) {
+                throw new RuntimeException("The query is not a valid SPARQL query, a URL or a file path.");
+            }
         } else {
-            throw new RuntimeException("The query is not a valid SPARQL query, a URL or a file path.");
+            Optional<Path> path = ConvertString.toPath(this.queryUrlOrFile);
+            Optional<URL> url = ConvertString.toUrl(this.queryUrlOrFile);
+            Boolean isSparqlQuery = TestType.isSparqlQuery(this.queryUrlOrFile);
+
+            if (isSparqlQuery) {
+                // if query is a SPARQL query
+                this.query = this.queryUrlOrFile;
+            } else if (url.isPresent()) {
+                // if query is a URL
+                this.query = SparqlQueryLoader.loadFromUrl(url.get(), this.spec, this.verbose);
+            } else if (path.isPresent()) {
+                // if query is a path
+                this.query = SparqlQueryLoader.loadFromFile(path.get(), this.spec, this.verbose);
+            } else {
+                throw new RuntimeException("The query is not a valid SPARQL query, a URL or a file path.");
+            }
         }
     }
 

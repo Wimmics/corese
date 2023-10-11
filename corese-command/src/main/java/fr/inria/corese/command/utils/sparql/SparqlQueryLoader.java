@@ -29,7 +29,7 @@ public class SparqlQueryLoader {
             throw new IllegalArgumentException("Failed to open SPARQL query file: " + path.toString(), e);
         }
 
-        String query = SparqlQueryLoader.loadFromInputStream(inputStream);
+        String query = SparqlQueryLoader.loadFromInputStreamPrivate(inputStream);
 
         if (verbose) {
             spec.commandLine().getErr().println("Loaded SPAQRL query file: " + path.toString());
@@ -54,10 +54,28 @@ public class SparqlQueryLoader {
             throw new IllegalArgumentException("Failed to open SPARQL query file: " + url.toString(), e);
         }
 
-        String query = SparqlQueryLoader.loadFromInputStream(inputStream);
+        String query = SparqlQueryLoader.loadFromInputStreamPrivate(inputStream);
 
         if (verbose) {
             spec.commandLine().getErr().println("Loaded SPARQL query file: " + url.toString());
+        }
+
+        return query;
+    }
+
+    /**
+     * Load a SPARQL query from stream input.
+     * 
+     * @param inputStream Input stream to load.
+     * @param spec        Command specification.
+     * @param verbose     If true, print information about the loaded files.
+     * @return The loaded query.
+     */
+    public static String loadFromInputStream(InputStream inputStream, CommandSpec spec, boolean verbose) {
+        String query = SparqlQueryLoader.loadFromInputStreamPrivate(inputStream);
+
+        if (verbose) {
+            spec.commandLine().getErr().println("Loaded SPARQL query from input stream");
         }
 
         return query;
@@ -69,7 +87,7 @@ public class SparqlQueryLoader {
      * @param inputStream Input stream of the file to load.
      * @return The loaded query.
      */
-    private static String loadFromInputStream(InputStream inputStream) {
+    private static String loadFromInputStreamPrivate(InputStream inputStream) {
         try {
             return new String(inputStream.readAllBytes());
         } catch (Exception e) {

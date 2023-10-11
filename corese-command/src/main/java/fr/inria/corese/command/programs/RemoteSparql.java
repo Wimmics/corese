@@ -41,7 +41,10 @@ public class RemoteSparql implements Callable<Integer> {
     @Option(names = { "-e", "--endpoint" }, description = "SPARQL endpoint URL", required = true)
     private String endpoint_url;
 
-    @Option(names = { "-a", "-of", "--accept" }, description = "Accept header value", defaultValue = "text/csv")
+    @Option(names = { "-H", "--header" }, description = "HTTP header to add to the request", arity = "0..")
+    private List<String> headers;
+
+    @Option(names = { "-a", "-of", "--accept" }, description = "Accept header value")
     private String accept;
 
     @Option(names = { "-m",
@@ -81,12 +84,19 @@ public class RemoteSparql implements Callable<Integer> {
 
     private String query;
 
+    private final String DEFAULT_ACCEPT_HEADER = "text/csv";
+
     @Override
     public Integer call() throws Exception {
         try {
 
             // Check if output is defined
             this.outputPathIsDefined = this.output != null;
+
+            // if accept is not defined, set it to text/csv
+            if (this.accept == null && !this.containAcceptHeader(this.headers)) {
+                this.accept = DEFAULT_ACCEPT_HEADER;
+            }
 
             // Load configuration file
             Optional<Path> configFilePath = Optional.ofNullable(this.configFilePath);
@@ -114,6 +124,27 @@ public class RemoteSparql implements Callable<Integer> {
         }
 
         return this.ERROR_EXIT_CODE_SUCCESS;
+    }
+
+    /**
+     * Check if the headers contain an accept header.
+     * 
+     * @param headers The headers to check.
+     * @return True if the headers contain an accept header, false otherwise.
+     */
+    private Boolean containAcceptHeader(List<String> headers) {
+        if (headers == null) {
+            return false;
+        }
+        for (String header : headers) {
+            String[] headerParts = header.split(":", 2);
+            if (headerParts.length == 2) {
+                if (headerParts[0].toLowerCase().equals("accept")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -159,12 +190,37 @@ public class RemoteSparql implements Callable<Integer> {
     public String sendRequest() throws Exception {
 
         SparqlHttpClient client = new SparqlHttpClient(this.endpoint_url);
-        client.setAcceptHeader(this.accept);
+        this.parseHeader(client);
         client.setQueryMethod(this.requestMethod);
         client.setVerbose(this.verbose);
         client.setMaxRedirection(this.maxRedirection);
 
         return client.sendRequest(this.query, this.default_graph, this.named_graph, this.ignoreQueryValidation);
+    }
+
+    /**
+     * Parse the header and add them to the client.
+     * 
+     * @param client The client to add the header to.
+     */
+    private void parseHeader(SparqlHttpClient client) {
+
+        // Add accept header
+        if (this.accept != null) {
+            client.addHeader("Accept", this.accept);
+        }
+
+        // Add other headers
+        if (this.headers != null) {
+            for (String header : this.headers) {
+                String[] headerParts = header.split(":", 2);
+                if (headerParts.length == 2) {
+                    client.addHeader(headerParts[0], headerParts[1]);
+                } else {
+                    throw new RuntimeException("Invalid header: " + header);
+                }
+            }
+        }
     }
 
     /**

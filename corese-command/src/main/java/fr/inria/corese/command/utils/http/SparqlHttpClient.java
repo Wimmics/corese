@@ -5,7 +5,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import fr.inria.corese.command.utils.TestType;
 import fr.inria.corese.core.Graph;
@@ -18,6 +19,7 @@ import fr.inria.corese.sparql.triple.update.Update;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation.Builder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -30,14 +32,13 @@ public class SparqlHttpClient {
 
     private final String endpointUrl;
     private EnumRequestMethod queryMethod = EnumRequestMethod.GET;
-    private String acceptHeader;
+    private List<Pair<String, String>> headers = new ArrayList<>();
 
     private boolean verbose = false;
 
     private int redirectCount = 0;
     private int maxRedirects = 5;
-    private int timeout = 0;
-    private final String userAgent = "Corese-Command/4.4.2";
+    private final String USERAGENT = "Corese-Command/4.4.2";
 
     /////////////////
     // Constructor //
@@ -58,15 +59,6 @@ public class SparqlHttpClient {
     ///////////////////////
     // Getters & Setters //
     ///////////////////////
-
-    /**
-     * Sets the accept header value.
-     * 
-     * @param acceptHeader the accept header value
-     */
-    public void setAcceptHeader(String acceptHeader) {
-        this.acceptHeader = acceptHeader;
-    }
 
     /**
      * Sets the query method.
@@ -96,15 +88,6 @@ public class SparqlHttpClient {
     }
 
     /**
-     * Sets the timeout in seconds.
-     * 
-     * @param timeout the timeout in seconds
-     */
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    /**
      * Sets the maximum number of redirections to follow.
      * 
      * @param maxRedirection the maximum number of redirections to follow
@@ -120,6 +103,16 @@ public class SparqlHttpClient {
      */
     public String getEndpointUrl() {
         return this.endpointUrl;
+    }
+
+    /**
+     * Sets the personalized header.
+     * 
+     * @param key   the key of the header
+     * @param value the value of the header
+     */
+    public void addHeader(String key, String value) {
+        this.headers.add(Pair.of(key, value));
     }
 
     /////////////////////////
@@ -209,9 +202,9 @@ public class SparqlHttpClient {
         return response.readEntity(String.class);
     }
 
-    /////////////////////////
+    /////////////////////
     // Private methods //
-    /////////////////////////
+    /////////////////////
 
     /**
      * Prints the response details.
@@ -235,21 +228,29 @@ public class SparqlHttpClient {
     private void printRequest(WebTarget webTarget, String bodyContent) {
         System.err.println("Request Details:");
 
+        // Print URL
         if (webTarget != null && webTarget.getUri() != null) {
-            System.err.println("  Request URL: " + webTarget.getUri());
+            System.err.println("  URL: " + webTarget.getUri());
         }
 
+        // Print query method
         if (this.queryMethod != null && this.queryMethod.getName() != null && !this.queryMethod.getName().isEmpty()) {
-            System.err.println("  Request method: " + this.queryMethod.getName());
+            System.err.println("  method: " + this.queryMethod.getName());
         }
 
+        // Print query string parameter
         if (webTarget != null && webTarget.getUri() != null && webTarget.getUri().getQuery() != null
                 && !webTarget.getUri().getQuery().isEmpty()) {
             System.err.println("  Query string parameter: " + webTarget.getUri().getQuery());
         }
 
-        if (this.acceptHeader != null && !this.acceptHeader.isEmpty()) {
-            System.err.println("  Accept header: " + this.acceptHeader);
+        // Print headers
+        if (this.headers != null && !this.headers.isEmpty()) {
+            System.err.println("  Headers:");
+            for (Pair<String, String> header : this.headers) {
+
+                System.err.println("    " + header.getKey() + ": " + header.getValue());
+            }
         }
 
         if (bodyContent != null && !bodyContent.isEmpty()) {
@@ -429,18 +430,21 @@ public class SparqlHttpClient {
     private Response executeRequest(WebTarget webTarget, String bodyContent) {
         Response response = null;
 
+        // Add headers
+        Builder builder = webTarget.request()
+                .header("User-Agent", this.USERAGENT);
+
+        for (Pair<String, String> header : this.headers) {
+            builder = builder.header(header.getKey(), header.getValue());
+        }
+
+        // Send the request
         if (this.queryMethod == EnumRequestMethod.GET) {
-            response = webTarget.request(this.acceptHeader)
-                    .header("User-Agent", this.userAgent)
-                    .get();
+            response = builder.get();
         } else if (this.queryMethod == EnumRequestMethod.POST_URLENCODED) {
-            response = webTarget.request(this.acceptHeader)
-                    .header("User-Agent", this.userAgent)
-                    .post(Entity.entity(bodyContent, MediaType.APPLICATION_FORM_URLENCODED));
+            response = builder.post(Entity.entity(bodyContent, MediaType.APPLICATION_FORM_URLENCODED));
         } else if (this.queryMethod == EnumRequestMethod.POST_DIRECT) {
-            response = webTarget.request(this.acceptHeader)
-                    .header("User-Agent", this.userAgent)
-                    .post(Entity.entity(bodyContent, "application/sparql-query"));
+            response = builder.post(Entity.entity(bodyContent, "application/sparql-query"));
         }
 
         return response;

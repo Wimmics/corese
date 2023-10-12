@@ -1,8 +1,8 @@
 # Getting Started With Corese-Command
 
-Corese-Command is a command-line interface (CLI) for the Corese Semantic Web Factory. It allows you to run SPARQL queries on RDF datasets, convert RDF files between various serialization formats, and validate RDF data against SHACL shapes directly from the command line. This makes it a powerful tool for automated processing, quick console-based testing, and integration into larger scripts or applications.
+Corese-Command is a command-line interface (CLI) for the Corese Semantic Web Factory. It facilitates running SPARQL queries on RDF datasets and remote SPARQL endpoints, converting RDF files between different serialization formats, and validating RDF data against SHACL shapes directly from the command line. This makes it an indispensable tool for automated processing, quick console-based testing, and integration into larger scripts or applications.
 
-Corese-Command is designed to simplify and streamline tasks related to querying, converting, and validating RDF data. It is suitable for developers, data scientists, and anyone working with Semantic Web technologies.
+Designed to simplify and streamline tasks related to querying, converting, and validating RDF data, Corese-Command is suitable for developers, data scientists, and anyone working with Semantic Web technologies.
 
 ## 1. Table of Contents
 
@@ -26,11 +26,25 @@ Corese-Command is designed to simplify and streamline tasks related to querying,
       2. [5.2. Different Types of Input](#52-different-types-of-input)
       3. [5.3. Different Types of Output](#53-different-types-of-output)
       4. [5.4. Multiple Input Files](#54-multiple-input-files)
-   6. [6. General Options](#6-general-options)
-      1. [6.1. Configuration file](#61-configuration-file)
-      2. [6.2. Verbose](#62-verbose)
-      3. [6.3. Version](#63-version)
-      4. [6.4. Get Help](#64-get-help)
+   6. [6. `remote-sparql` Command](#6-remote-sparql-command)
+      1. [6.1. Basic Usage](#61-basic-usage)
+      2. [6.2. Choose the Result Format](#62-choose-the-result-format)
+      3. [6.3. Different Types of Queries](#63-different-types-of-queries)
+      4. [6.4. Different Types of Output](#64-different-types-of-output)
+      5. [6.5. Different Types of Methods](#65-different-types-of-methods)
+      6. [6.6. Specifying Graphs](#66-specifying-graphs)
+         1. [6.6.1. Default Graph](#661-default-graph)
+         2. [6.6.2. Named Graph](#662-named-graph)
+      7. [6.7. Additional Request Configurations](#67-additional-request-configurations)
+         1. [6.7.1. Custom HTTP Headers](#671-custom-http-headers)
+         2. [6.7.2. Redirection Limit](#672-redirection-limit)
+         3. [6.7.3. Query Validation](#673-query-validation)
+   7. [7. General Options](#7-general-options)
+      1. [7.1. Configuration file](#71-configuration-file)
+      2. [7.2. Verbose](#72-verbose)
+      3. [7.3. Version](#73-version)
+      4. [7.4. Get Help](#74-get-help)
+      5. [7.5. Disabling OWL Auto Import](#75-disabling-owl-auto-import)
 
 ## 2. Installation
 
@@ -189,6 +203,12 @@ corese-command sparql -q 'SELECT * WHERE {?s ?p ?o}' -i myData.ttl
 corese-command sparql -q myQuery.rq -i myData.ttl
 ```
 
+- **URL Input:** URLs can be specified with the `-q` flag:
+
+```shell
+corese-command sparql -q 'http://example.org/myQuery.rq' -i myData.ttl
+```
+
 ### 3.5. Multiple Input Files
 
 - **Multiple Input:** It's possible to provide multiple input files by repeating the `-i` flag:
@@ -269,7 +289,7 @@ cat myData.ttl | corese-command convert -r turtle -if turtle
 
 > The input file format is automatically detected for file and URL inputs. If
 > the input is provided on the standard input or you want to force the input
-> format, you can use the `-f` or flag. Possible values are:
+> format, you can use the `-f` or `-if` flag. Possible values are:
 >
 > - `rdfxml`, `rdf` or `application/rdf+xml`
 > - `turtle`, `ttl` or `text/turtle`
@@ -317,8 +337,6 @@ The `convert` command supports the following formats for input and output:
 | NTRIPLES | ✅             | ✅              |
 | NQUADS   | ✅             | ✅              |
 | RDFA     | ✅             | ❌              |
-
-> More output formats will be added in the future.
 
 ## 5. The `shacl` Command
 
@@ -423,11 +441,148 @@ corese-command shacl -i ./myDirectory/ -s ./myShapes/ -R
 
 > All input files are loaded into the same dataset, and all shapes files are loaded into the same shapes graph. The dataset is validated against all shapes graphs.
 
-## 6. General Options
+## 6. `remote-sparql` Command
+
+The `remote-sparql` command allows you to run SPARQL queries on a remote SPARQL endpoint.
+
+### 6.1. Basic Usage
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql"
+```
+
+This example executes a query on the remote SPARQL endpoint `http://example.org/sparql`. The `-q` flag specifies the query, and the `-e` flag specifies the endpoint.
+
+### 6.2. Choose the Result Format
+
+Let's try the same query as before, but this time with the `json` format as output:
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql" -a "application/sparql-results+json"
+```
+
+The format of the result can be specified by using one of the following flags: `-a`, `-of`, or `--accept`. The available formats are determined by the remote SPARQL endpoint. Here are some common formats:
+
+- XML: `application/sparql-results+xml`
+- Json: `application/sparql-results+json`
+- CSV: `text/csv`
+- TSV: `text/tab-separated-values`
+
+> If no `-a`, `-of`, or `--accept` flag is provided, the program uses 'text/csv' as the default format.
+
+### 6.3. Different Types of Queries
+
+The query can be provided in different ways:
+
+- **Query String:** The query can be provided directly on the command line with the `-q` flag:
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql"
+```
+
+- **File Query:** The query can be provided in a file with the `-q` flag:
+
+```shell
+corese-command remote-sparql -q myQuery.rq -e "http://example.org/sparql"
+```
+
+- **URL Input:** URLs can be specified with the `-q` flag:
+
+```shell
+corese-command remote-sparql -q 'http://example.org/myQuery.rq' -e "http://example.org/sparql"
+```
+
+- **Standard Input:** If no input file is specified with `-q`, the program uses the standard input:
+
+```shell
+cat myQuery.rq | corese-command remote-sparql -e "http://example.org/sparql"
+```
+
+### 6.4. Different Types of Output
+
+The output can be provided in different ways:
+
+- **File Output:** The output file can be specified with the `-o` flag:
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql" -o myResult.csv
+```
+
+- **Standard Output:** If no output file is specified with `-o`, the program uses the standard output:
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql" -a "application/sparql-results+json" | jq […]
+```
+
+### 6.5. Different Types of Methods
+
+In SPARQL 1.1, three different methods are defined for sending a SPARQL query to a SPARQL endpoint:
+
+- **GET:** The query is sent as a URL parameter. This method is suitable for short queries. It's simple and easy to use, but has limitations on the length of the URL, which can be problematic for longer queries. [W3C SPARQL 1.1 Protocol](https://www.w3.org/TR/sparql11-protocol/#query-via-get)
+  
+- **POST-URLENCODED:** In this method, the query is sent in the body of the HTTP request, with the `application/x-www-form-urlencoded` media type. This method is suitable for longer queries that exceed the URL length limitations imposed on the GET method. [W3C SPARQL 1.1 Protocol](https://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded)
+  
+- **POST-Direct:** The query is sent in the body of the HTTP request, with the `application/sparql-query` media type. This method is also suitable for longer queries, and provides a direct way to post the SPARQL query to the endpoint. [W3C SPARQL 1.1 Protocol](https://www.w3.org/TR/sparql11-protocol/#query-via-post-direct)
+
+In the command line interface, the `-m` or `--request-method` flags are used to specify the HTTP request method to use. The default value is `GET`. The available options are `GET`, `POST-Encoded`, and `POST-Direct`, corresponding to the GET, POST-URLENCODED, and POST-Direct methods respectively.
+
+### 6.6. Specifying Graphs
+
+In SPARQL, the dataset to be queried can be specified using the `FROM` and `FROM NAMED` clauses in the query itself. However, you can also specify the default and named graphs using command line arguments when invoking the SPARQL processor. This can be particularly useful when you want to query multiple graphs without having to specify them within the query text.
+
+#### 6.6.1. Default Graph
+
+The default graph can be specified using the `-d` or `--default-graph` option. Each occurrence of this option represents a URI of a default graph. Multiple URIs can be specified by repeating this option.
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql" -d http://example.org/graph1 -d http://example.org/graph2
+```
+
+#### 6.6.2. Named Graph
+
+The named graph can be specified using the `-n` or `--named-graph` option. Each occurrence of this option represents a URI of a named graph. Multiple URIs can be specified by repeating this option.
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql" -n http://example.org/graph1 -n http://example.org/graph2
+```
+
+### 6.7. Additional Request Configurations
+
+The following options provide additional configurations for the HTTP request sent to the SPARQL endpoint. These configurations include setting custom headers, controlling redirections, and toggling query validation.
+
+#### 6.7.1. Custom HTTP Headers
+
+Custom HTTP headers can be added to the request using the `-H` or `--header` option. Each occurrence of this option represents a single header, with the header name and value separated by a colon `:`.
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql" --header "Accept: application/sparql-results+json" --header "User-Agent: MyClient"
+```
+
+> When the `--accept` option is used alongside the `--header "Accept: …"` option, the request sent to the server will contain a list of MIME types in the `Accept` header. The MIME type specified by the `--accept` option will be placed first in this list, followed by the MIME types specified with the `--header "Accept: …"` option.
+
+#### 6.7.2. Redirection Limit
+
+The maximum number of HTTP redirections to follow can be specified using the `-r` or `--max-redirection` option. The default value is 5.
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql" --max-redirection 10
+```
+
+#### 6.7.3. Query Validation
+
+By default, the query is validated before being sent to the SPARQL endpoint. This can be disabled using the `-i` or `--ignore-query-validation` option.
+
+```shell
+corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.org/sparql" --ignore-query-validation
+```
+
+This option is useful when you want to send a query that is not valid according to the SPARQL grammar, but is still accepted by the SPARQL endpoint.
+
+## 7. General Options
 
 General options are available for all commands.
 
-### 6.1. Configuration file
+### 7.1. Configuration file
 
 All interface of Corese (Gui, Server, Command) can be configured with a configuration file. The configuration file is a property file (See a example on [GitHub](https://github.com/Wimmics/corese/blob/master/corese-core/src/main/resources/data/corese/property.properties)).
 
@@ -443,21 +598,19 @@ For exampample, you can disable the auto import of owl with the following proper
 DISABLE_OWL_AUTO_IMPORT = true
 ```
 
-### 6.2. Verbose
+### 7.2. Verbose
 
 The `-v` flag allows you to get more information about the execution of the command.
-
-e.g.:
 
 ```shell
 corese-command sparql -q 'SELECT * WHERE {?s ?p ?o}' -i myData.ttl -v
 ```
 
-### 6.3. Version
+### 7.3. Version
 
 The `-V` flag allows you to get the version of the command.
 
-### 6.4. Get Help
+### 7.4. Get Help
 
 For any command, you can use the `-h` or `--help` flag to get a description and the syntax. This is also available for the general `corese-command` and each specific sub-command.
 
@@ -466,4 +619,20 @@ corese-command -h
 corese-command sparql -h
 corese-command convert -h
 corese-command shacl -h
+```
+
+### 7.5. Disabling OWL Auto Import
+
+Corese-Command is configured to automatically import the vocabulary referenced in `owl:imports` statements by default. However, this behavior can be turned off by using the `-w` or `--no-owl-import` flag.
+
+```shell
+corese-command sparql -q 'SELECT * WHERE {?s ?p ?o}' -i myData.ttl -w
+```
+
+```shell
+corese-command convert -i myData.ttl -r jsonld -w
+```
+  
+```shell
+corese-command shacl -i myData.ttl -s myShapes.ttl -w
 ```

@@ -239,7 +239,7 @@ public class DataProducer extends GraphObject
         MetaIterator<Edge> meta = new MetaIterator<Edge>();
 
         for (Node src : from) {
-            Node tfrom = getGraph().getGraphNode(src.getLabel());
+            Node tfrom = getGraph().getGraphNode(src);
             if (tfrom != null) {
                 Iterable<Edge> it = getGraph().getEdges(predicate, tfrom, Graph.IGRAPH);
                 if (it != null) {

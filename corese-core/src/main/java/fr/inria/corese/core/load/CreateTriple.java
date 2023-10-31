@@ -123,6 +123,10 @@ public class CreateTriple {
     Node addGraph(String src) {
         return graph.addGraph(src);
     }
+    
+    Node addGraph(Atom src) {
+        return graph.addGraph(src.getLabel(), src.isBlank());
+    }
 
     Node addDefaultGraphNode() {
         return graph.addDefaultGraphNode();

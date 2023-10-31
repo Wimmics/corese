@@ -53,7 +53,7 @@ public class DataFrom extends DataFilter {
         setFrom(list);
         if (list != null && list.size() == 1) {
             setOneFrom(true);
-            setFromNode(graph.getGraphNode(getFrom().get(0).getLabel()));
+            setFromNode(graph.getGraphNode(getFrom().get(0)));
             if (getFromNode() == null) {
                 setOneFrom(false);
             }

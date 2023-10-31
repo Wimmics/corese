@@ -163,6 +163,11 @@ public class ProducerImpl
         if (gNode == null) {
             return null;
         }
+        // named graph id may be a bnode, 
+        // in this case the bnode is already a target graph Node
+        if (gNode.isBlank()) {
+            return gNode;
+        }
         return getValue(gNode, env);
     }
 

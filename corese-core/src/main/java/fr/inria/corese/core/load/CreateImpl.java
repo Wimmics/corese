@@ -78,7 +78,7 @@ public class CreateImpl extends CreateTriple implements Creator {
     @Override
     public void graph(Atom src) {
         stack.add(source);
-        source = addGraph(src.getLabel());
+        source = addGraph(src);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class CreateImpl extends CreateTriple implements Creator {
     }
 
     Node getGraph(Atom graph) {
-        return graph == null ? addDefaultGraphNode() : addGraph(graph.getLabel());
+        return graph == null ? addDefaultGraphNode() : addGraph(graph);
     }
 
     @Override

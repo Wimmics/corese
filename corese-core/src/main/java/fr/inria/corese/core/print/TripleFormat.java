@@ -40,7 +40,7 @@ public class TripleFormat extends RDFFormat {
     private Mappings mappings;
     int tripleCounter = 0;
 
-    private boolean useCompactBlankNodeSyntax = true; //
+    private boolean useCompactBlankNodeSyntax = false; //
 
     TripleFormat(Graph g, NSManager n) {
         super(g, n);
@@ -264,9 +264,11 @@ public class TripleFormat extends RDFFormat {
                 }
                 if (first) {
                     first = false;
-                    if (isBlankNode) {
-                        sdisplay("[");
-                    } else {
+//                    if (isBlankNode) {
+//                        sdisplay("[");
+//                    } 
+//                    else 
+                    {
                         subject(edge);
                         sdisplay(SPACE);
                     }
@@ -281,9 +283,9 @@ public class TripleFormat extends RDFFormat {
         }
 
         if (!first) {
-            if (isBlankNode) {
-                sdisplay("]");
-            }
+//            if (isBlankNode) {
+//                sdisplay("]");
+//            }
             sdisplay(DOT);
             sdisplay(NL);
             sdisplay(NL);

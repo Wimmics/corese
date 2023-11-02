@@ -215,26 +215,27 @@ public class TripleFormat extends RDFFormat {
     }
 
     private boolean isRdfPrefixNeeded() {
-        for (Node node : graph.getGraphNodes()) {
-            for (Edge edge : graph.getNodeEdges(node)) {
+        //for (Node node : graph.getGraphNodes()) {
+            for (Edge edge : graph.getEdges()) {
                 String pred = nsm.toPrefix(edge.getEdgeNode().getLabel(), !addPrefix);
                 if (pred.startsWith("rdf:") && !pred.equals(RDF_TYPE)) {
                     return true;
                 }
             }
-        }
+        //}
         return false;
     }
 
     @Override
     void header(StringBuilder bb) {
         link(bb);
-        if (isRdfPrefixNeeded()) {
-            bb.append(nsm.toString(PREFIX, false, false));
-        } else {
-            // Si le préfixe rdf: n'est pas nécessaire, supprimez-le de la sortie
-            bb.append(nsm.toString(PREFIX, false, false).replaceAll("@prefix rdf:.*\n", ""));
-        }
+        bb.append(nsm.toString(PREFIX, false, false));
+//        if (isRdfPrefixNeeded()) {
+//            bb.append(nsm.toString(PREFIX, false, false));
+//        } else {
+//            // Si le préfixe rdf: n'est pas nécessaire, supprimez-le de la sortie
+//            bb.append(nsm.toString(PREFIX, false, false).replaceAll("@prefix rdf:.*\n", ""));
+//        }
     }
 
     void link(StringBuilder bb) {

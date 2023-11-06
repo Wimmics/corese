@@ -20,3 +20,18 @@ The purpose of this page is to gather the documentation of Corese.
 ## Storage Systems
 
 - [Configuring and Connecting to Different Storage Systems in Corese](storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md)
+
+## Advanced features
+
+<!-- - [SHACL Extension](https://files.inria.fr/corese/doc/shacl.html) TBD
+- [SPARQL Rule](https://files.inria.fr/corese/doc/rule.html) TBD
+- [SPARQL Template](https://files.inria.fr/corese/doc/sttl.html) | [Alternative](https://ns.inria.fr/sparql-template/) TBD
+- [SPARQL Function](https://files.inria.fr/corese/doc/ldscript.html) | [Alternative](https://ns.inria.fr/sparql-extension/) TBD
+- [Extension Functions](https://files.inria.fr/corese/doc/function.html) TBD
+- [Linked Data Event Model](https://files.inria.fr/corese/doc/event.html) TBD
+- [Linked Data Access Level](https://files.inria.fr/corese/doc/level.html) TBD
+- [SPARQL Workflow](https://files.inria.fr/corese/doc/workflow.html) TBD
+- [SPARQL Federated Query](https://files.inria.fr/corese/doc/federate.html) TBD -->
+- [SPARQL Service Extension](./advanced/SPARQL%20Service%20Extension.md) TBD
+<!-- - [SPARQL Service Report](https://files.inria.fr/corese/doc/report.html) TBD
+- [RDF*](https://files.inria.fr/corese/doc/rdfstar.html) TBD -->

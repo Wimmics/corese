@@ -1,0 +1,77 @@
+[33mcommit 4f3ce7f87700c2601da25a3bba0674961a6ada12[m
+Author: Franck Michel <[1;31mfrmichel[m@users.noreply.github.com>
+Date:   Sat Nov 6 06:03:02 2021 +0100
+
+    Add Docker build files for Corese server
+
+[33mcommit 37de6f1ebdef4200a1753516364977910ce58457[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Fri Feb 15 18:28:01 2019 +0100
+
+    Add JSON-LD "light" transformation in corese-core
+
+[33mcommit e8f5dd2b13e367f873052c01fe5adcbf6ae8dda4[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Fri Nov 23 07:42:09 2018 +0100
+
+    Ignore Eclipse files
+
+[33mcommit 2a909e5e85e9757970aac7e14b6b3410fb5d4b09[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Fri Nov 23 07:41:04 2018 +0100
+
+    Untrack Eclipse files
+
+[33mcommit 3d11950fa0482ed04f60078721b4787b1827470a[m
+Merge: 7776726d0 7ac70965d
+Author: Franck Michel <[1;31mfrmichel[m@users.noreply.github.com>
+Date:   Thu Dec 7 12:03:06 2017 +0100
+
+    Merge pull request #37 from Wimmics/hotfix/rest-api-update
+    
+    Hotfix/rest api update
+
+[33mcommit 72fc3b5c73eff8d03e34278367c75f45e88f2fbe[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Fri Nov 18 17:27:30 2016 +0100
+
+    Support Turtle in SPARQL queries
+
+[33mcommit 8ac6dfe4729110fbead73a14039ab9db5817f5a3[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Wed Nov 16 10:10:19 2016 +0100
+
+    Accept text/plain in SPARQL select request
+
+[33mcommit cd2d681b185edb0b5400220ba2683b936e878e60[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Tue Nov 15 17:54:05 2016 +0100
+
+    Content nego in service tutorial accepts any media type
+    Service Tutorial, method GET: accept any value in HTTP header Accept,
+    to avoid returning HTTP error 406 when a text/turtle media type is
+    requested.
+
+[33mcommit 10e25f64fc3b0da5ca5fe2973d586b369ae2468f[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Tue Nov 15 17:50:42 2016 +0100
+
+    Update Log4j config file after migration to Log4j2
+
+[33mcommit 90c5d06cd4d1f56207230e2083538223e6812d35[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Wed May 11 11:26:29 2016 +0200
+
+    Minor changes in style-old.css
+
+[33mcommit fc8303b8b0e9409481a47f0a5814429444bee67f[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Tue May 10 17:06:38 2016 +0200
+
+    .gitignore: ignore Eclipse files
+
+[33mcommit b0e3a57ec984b128a65dc483c38671212892f5a7[m
+Author: Franck Michel <[1;31mfrmichel[m7@yahoo.fr>
+Date:   Tue May 10 16:54:29 2016 +0200
+
+    Fix log4j issue at startup

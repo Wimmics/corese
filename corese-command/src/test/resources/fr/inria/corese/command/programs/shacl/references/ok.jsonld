@@ -1,0 +1,18 @@
+{
+	"@context": {
+		"xsd": "http://www.w3.org/2001/XMLSchema#",
+		"xsh": "http://www.w3.org/ns/shacl#",
+		"sh": "http://www.w3.org/ns/shacl#",
+		"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	},
+	"@graph": [
+		{
+			"@id": "_:b8",
+			"sh:conforms": {
+				"@value": "true",
+				"@type": "xsd:boolean"
+			},
+			"@type": "sh:ValidationReport"
+		}
+	]
+}

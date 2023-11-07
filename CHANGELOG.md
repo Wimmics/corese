@@ -1,4 +1,25 @@
+<!-- markdownlint-disable MD024 -->
+
 # Corese Changelog
+
+## 4.4.2 – <!-- TODO: add date and title  -->
+
+### Added
+
+- Added the "verbose" option to Corese-command.
+- Added support for property files to Corese-command.
+- Added new sub-commands 'shacl', allowing to validate RDF graphs against SHACL shapes.
+- Added verbose option to Corese-command.
+
+### Changes
+
+- Moved hint messages in Corese-Command to the standard error stream.
+
+### Removed
+
+### Fixed
+
+### Security
 
 ## 4.4.1 – 2023/07/25 – Corese-command update
 

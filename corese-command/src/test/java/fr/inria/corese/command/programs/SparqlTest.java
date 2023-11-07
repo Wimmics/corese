@@ -153,8 +153,6 @@ public class SparqlTest {
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o",
                                 pathResBeatlesSelectXml, "-q", pathQueryBeatlesAlbum);
 
-                System.out.println(err.toString());
-
                 assertEquals(0, exitCode);
                 assertEquals("", out.toString());
                 assertEquals("", err.toString());
@@ -1525,7 +1523,7 @@ public class SparqlTest {
                                 pathQueryBeatlesConstruct);
 
                 assertEquals(1, exitCode);
-                assertTrue(err.toString().contains("Error while loading"));
+                assertTrue(err.toString().contains("Failed to open RDF data file"));
         }
 
         @Test
@@ -1537,7 +1535,7 @@ public class SparqlTest {
                                 "output.ttl", "-q", nonExistentQueryFile);
 
                 assertEquals(1, exitCode);
-                assertTrue(err.toString().contains("Error while loading"));
+                assertTrue(err.toString().contains("Failed to open SPARQL query file"));
         }
 
         @Test
@@ -1548,7 +1546,7 @@ public class SparqlTest {
                                 "output.ttl", "-q", "SERRORELECT * WHERE { ?s ?p ?o }");
 
                 assertEquals(1, exitCode);
-                assertTrue(err.toString().contains("Error when executing SPARQL query"));
+                assertTrue(err.toString().contains("Failed to open SPARQL query file"));
         }
 
         @Test
@@ -1599,6 +1597,20 @@ public class SparqlTest {
 
                 int exitCode = cmd.execute("-i", input, "-q", "SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o }", "-o",
                                 pathResMultiFile, "-R");
+
+                assertEquals(0, exitCode);
+                assertTrue(compareFiles(pathRefMultiFile, pathResMultiFile));
+        }
+
+        @Test
+        public void testLoadFromUrl() throws IOException {
+                String rdfData = "https://files.inria.fr/corese/data/unit-test/beatles.ttl";
+                String sparqlQuery = "https://files.inria.fr/corese/data/unit-test/spo.rq";
+
+                String pathRefMultiFile = Paths.get(referencesPath, "select", "url.md").toString();
+                String pathResMultiFile = Paths.get(resultsPath, "select", "url.md").toString();
+
+                int exitCode = cmd.execute("-i", rdfData, "-q", sparqlQuery, "-o", pathResMultiFile);
 
                 assertEquals(0, exitCode);
                 assertTrue(compareFiles(pathRefMultiFile, pathResMultiFile));

@@ -105,10 +105,12 @@ Corese Loader can load formats :
 
 - RDF/XML (.rdf)
 - TURTLE (.ttl)
-- NOTATION3 (.n3)
-- N-TRIPLES (.nt)
-- JSON-LD (.jsonld)
 - TRIG (.trig)
+- JSONLD (.jsonld)
+- NTRIPLES (.nt)
+- NQUADS (.nq)
+- JSON-LD (.jsonld)
+- RDFa (.html)
 
 ```java
 // Create a new empty Graph
@@ -126,16 +128,24 @@ This example shows how to serialize a graph in file, here in TURTLE format.
 ```java
 // We assume that the 'graph' variable has been define previously
 
-Transformer transformer = Transformer.create(graph, Transformer.TURTLE); // serialize format is define here
-transformer.write("output file path");
+// Create exporter
+ResultFormat exporter = ResultFormat.create(graph, ResultFormat.TURTLE_FORMAT);
+String result = exporter.toString();
+
+// Write result in file
+FileWriter writer = new FileWriter("output file path");
+writer.write(result);
+writer.close();
 ```
 
 Corese Transformer can serialize graphs in different formats :
 
-- JSON `Transformer.JSON`
-- OWL `Transformer.OWL` (OWL functional syntax)
-- RDF/XML `Transformer.RDFXML`
-- TURTLE `Transformer.TURTLE`
+- RDF/XML `ResultFormat.RDF_XML_FORMAT`
+- TURTLE `ResultFormat.TURTLE_FORMAT`
+- TRIG `ResultFormat.TRIG_FORMAT`
+- JSONLD `ResultFormat.JSONLD_FORMAT`
+- NTRIPLES `ResultFormat.NTRIPLES_FORMAT`
+- NQUADS `ResultFormat.NQUADS_FORMAT`
 
 ## 3. SPARQL Protocol and RDF Query Language
 

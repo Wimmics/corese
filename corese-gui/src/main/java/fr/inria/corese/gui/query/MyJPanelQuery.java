@@ -12,6 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -71,8 +73,6 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
-import java.io.File;
-import java.io.FileWriter;
 
 /**
  * Onglet Query avec tout ce qu'il contient.
@@ -601,7 +601,7 @@ public final class MyJPanelQuery extends JPanel {
                 case Property.TRIG:
                     return ResultFormat.create(g, ResultFormat.TRIG_FORMAT).toString();
                 case Property.JSON:
-                    return clean(ResultFormat.create(g, ResultFormat.JSON_LD_FORMAT).toString());
+                    return clean(ResultFormat.create(g, ResultFormat.JSONLD_FORMAT).toString());
             }
         }
         // default
@@ -1018,16 +1018,13 @@ public final class MyJPanelQuery extends JPanel {
                         // copy current result into last result panel
                         // (as if load result), for xt:mappings()
                         coreseFrame.getLastQueryPanel().basicDisplay(getMappings());
-                    } 
-                    else if (ev.getSource() == buttonBrowse) {
+                    } else if (ev.getSource() == buttonBrowse) {
                         try {
                             browse(getMappings(), txt);
-                        }
-                        catch (IOException ex) {
+                        } catch (IOException ex) {
                             logger.error(ex.getMessage());
                         }
-                    } 
-                    else if (ev.getSource() == buttonSort) {
+                    } else if (ev.getSource() == buttonSort) {
                         modifier(query);
                     } else if (ev.getSource() == buttonCompare) {
                         compare();
@@ -1079,8 +1076,7 @@ public final class MyJPanelQuery extends JPanel {
             }
         };
     }
-    
-    
+
     void browse(Mappings map, String text) throws IOException {
         if (map.getQuery().isTemplate()) {
             browse(text);
@@ -1088,7 +1084,7 @@ public final class MyJPanelQuery extends JPanel {
         LinkedResult lr = new LinkedResult(mainFrame);
         lr.browse(map);
     }
-    
+
     void browse(String text) throws IOException {
         String FILE = "file://";
         File file = File.createTempFile("result", ".html");

@@ -16,10 +16,6 @@
             <maven.test.skip>true</maven.test.skip>
         </properties>-->
 	<dependencies>
-		<!-- <dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-		</dependency> -->
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>shex</artifactId>
@@ -27,33 +23,21 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>compiler</artifactId>
-		</dependency>
-		<!--		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>kgram</artifactId>
-		</dependency>-->
-		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>corese-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>corese-rdf4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>sparql</artifactId>
-			<version>${project.parent.version}</version>
+			<artifactId>corese-jena</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>corese-core</artifactId>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.graphstream</groupId>
 			<artifactId>gs-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>corese-jena</artifactId>
-			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jena</groupId>

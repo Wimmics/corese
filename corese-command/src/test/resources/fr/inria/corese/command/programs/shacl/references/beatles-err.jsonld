@@ -1,0 +1,28 @@
+{
+"@context": {
+  "xsh": "http://www.w3.org/ns/shacl#",
+  "sh": "http://www.w3.org/ns/shacl#"
+},
+
+"@graph":
+[
+  {
+    "@id": "_:bb2",
+    "@type": "http://www.w3.org/ns/shacl#ValidationReport",
+    "sh:conforms": false,
+    "sh:result": {"@id": "urn:uuid:2034a9fc-ade9-49f3-be09-2d7638404084"}
+  },
+  
+  {
+    "@id": "urn:uuid:2034a9fc-ade9-49f3-be09-2d7638404084",
+    "@type": "http://www.w3.org/ns/shacl#ValidationResult",
+    "sh:focusNode": {"@id": "http://stardog.com/tutorial/Please_Please_Me"},
+    "sh:resultMessage": "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]",
+    "sh:resultPath": {"@id": "http://stardog.com/tutorial/name"},
+    "sh:resultSeverity": {"@id": "http://www.w3.org/ns/shacl#Violation"},
+    "sh:sourceConstraintComponent": {"@id": "http://www.w3.org/ns/shacl#MaxCountConstraintComponent"},
+    "sh:sourceShape": {"@id": "_:b2"},
+    "sh:value": 2
+  }
+]
+}

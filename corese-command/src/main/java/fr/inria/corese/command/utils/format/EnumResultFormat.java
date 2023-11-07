@@ -8,38 +8,63 @@ import fr.inria.corese.core.print.ResultFormat;
  * Enumeration of exportable RDF serialization formats.
  */
 public enum EnumResultFormat {
-    RDFXML(1, "rdfxml"),
-    TURTLE(2, "turtle"),
-    TRIG(3, "trig"),
-    JSONLD(4, "jsonld"),
-    BIDING_XML(11, "xml"),
-    BIDING_JSON(13, "json"),
-    BIDING_CSV(14, "csv"),
-    BIDING_TSV(15, "tsv"),
-    BIDING_MARKDOWN(16, "markdown"),
-    BIDING_MD(16, "md"),
-    APPLICATION_RDF_XML(1, ResultFormat.RDF_XML),
-    TEXT_TURTLE(2, ResultFormat.TURTLE_TEXT),
-    APPLICATION_TRIG(3, ResultFormat.TRIG),
-    APPLICATION_LD_JSON(4, ResultFormat.JSON_LD),
-    APPLICATION_SPARQL_RESULTS_XML(11, ResultFormat.SPARQL_RESULTS_XML),
-    APPLICATION_SPARQL_RESULTS_JSON(13, ResultFormat.SPARQL_RESULTS_JSON),
-    TEXT_CSV(14, ResultFormat.SPARQL_RESULTS_CSV),
-    TEXT_TSV(15, ResultFormat.SPARQL_RESULTS_TSV),
-    TEXT_MARKDOWN(16, ResultFormat.SPARQL_RESULTS_MD);
+    RDFXML(1, "rdfxml", "rdf", true),
+    RDF(1, "rdf", "rdf", true),
+    APPLICATION_RDF_XML(1, "application/rdf+xml", "rdf", true),
+
+    TURTLE(2, "turtle", "ttl", true),
+    TTL(2, "ttl", "ttl", true),
+    TEXT_TURTLE(2, "text/turtle", "ttl", true),
+
+    TRIG(3, "trig", "trig", true),
+    APPLICATION_TRIG(3, "application/trig", "trig", true),
+
+    JSONLD(4, "jsonld", "jsonld", true),
+    APPLICATION_LD_JSON(4, "application/ld+json", "jsonld", true),
+
+    NTRIPLES(6, "ntriples", "nt", true),
+    NT(6, "nt", "nt", true),
+    APPLICATION_NTRIPLES(6, "application/n-triples", "nt", true),
+
+    NQUADS(7, "nquads", "nq", true),
+    NQ(7, "nq", "nq", true),
+    APPLICATION_NQUADS(7, "application/n-quads", "nq", true),
+
+    BIDING_XML(11, "xml", "srx", false),
+    SRX(11, "srx", "srx", false),
+    APPLICATION_SPARQL_RESULTS_XML(11, ResultFormat.SPARQL_RESULTS_XML, "srx", false),
+
+    BIDING_JSON(13, "json", "srj", false),
+    SRJ(13, "srj", "srj", false),
+    APPLICATION_SPARQL_RESULTS_JSON(13, ResultFormat.SPARQL_RESULTS_JSON, "srj", false),
+
+    BIDING_CSV(14, "csv", "csv", false),
+    TEXT_CSV(14, ResultFormat.SPARQL_RESULTS_CSV, "csv", false),
+
+    BIDING_TSV(15, "tsv", "tsv", false),
+    TEXT_TSV(15, ResultFormat.SPARQL_RESULTS_TSV, "tsv", false),
+
+    BIDING_MARKDOWN(16, "markdown", "md", false),
+    BIDING_MD(16, "md", "md", false),
+    TEXT_MARKDOWN(16, ResultFormat.SPARQL_RESULTS_MD, "md", false);
 
     private final int value;
     private final String name;
+    private final String extention;
+    private final boolean isRDFFormat;
 
     /**
      * Constructor.
      * 
-     * @param value The value of the enum.
-     * @param name  The name of the enum.
+     * @param value     The value of the enum.
+     * @param name      The name of the enum.
+     * @param extention The extension of the format.
      */
-    EnumResultFormat(int value, String name) {
+    private EnumResultFormat(int value, String name, String extention, boolean isRDFFormat) {
         this.value = value;
         this.name = name;
+        this.extention = extention;
+        this.isRDFFormat = isRDFFormat;
     }
 
     /**
@@ -67,38 +92,16 @@ public enum EnumResultFormat {
      * @throws InvalidParameterException If the format is unknow.
      */
     public String getExtention() {
-        switch (this) {
-            case RDFXML:
-            case APPLICATION_RDF_XML:
-                return "rdf";
-            case TURTLE:
-            case TEXT_TURTLE:
-                return "ttl";
-            case TRIG:
-            case APPLICATION_TRIG:
-                return "trig";
-            case JSONLD:
-            case APPLICATION_LD_JSON:
-                return "jsonld";
-            case BIDING_XML:
-            case APPLICATION_SPARQL_RESULTS_XML:
-                return "srx";
-            case BIDING_JSON:
-            case APPLICATION_SPARQL_RESULTS_JSON:
-                return "srj";
-            case BIDING_CSV:
-            case TEXT_CSV:
-                return "csv";
-            case BIDING_TSV:
-            case TEXT_TSV:
-                return "tsv";
-            case BIDING_MD:
-            case BIDING_MARKDOWN:
-            case TEXT_MARKDOWN:
-                return "md";
-            default:
-                throw new InvalidParameterException("Output format " + this + " is unknow.");
-        }
+        return this.extention;
+    }
+
+    /**
+     * Get if the format is a RDF format.
+     * 
+     * @return True if the format is a RDF format, false otherwise.
+     */
+    public boolean isRDFFormat() {
+        return this.isRDFFormat;
     }
 
     /**
@@ -110,9 +113,11 @@ public enum EnumResultFormat {
     public EnumOutputFormat convertToOutputFormat() {
         switch (this) {
             case RDFXML:
+            case RDF:
             case APPLICATION_RDF_XML:
                 return EnumOutputFormat.RDFXML;
             case TURTLE:
+            case TTL:
             case TEXT_TURTLE:
                 return EnumOutputFormat.TURTLE;
             case TRIG:
@@ -121,6 +126,15 @@ public enum EnumResultFormat {
             case JSONLD:
             case APPLICATION_LD_JSON:
                 return EnumOutputFormat.JSONLD;
+            case NTRIPLES:
+            case NT:
+            case APPLICATION_NTRIPLES:
+                return EnumOutputFormat.NTRIPLES;
+            case NQUADS:
+            case NQ:
+            case APPLICATION_NQUADS:
+                return EnumOutputFormat.NQUADS;
+
             default:
                 throw new InvalidParameterException("Output format " + this + " cannot be converted to OutputFormat.");
         }

@@ -29,6 +29,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.logic.RDFS;
 import fr.inria.corese.core.print.JSONLDFormat;
+import fr.inria.corese.core.print.NTriplesFormat;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.XMLFormat;
 import fr.inria.corese.core.producer.DataFilter;
@@ -6222,7 +6223,54 @@ public class TestQuery1 {
         String str = jf.toString();
 
         assertEquals(true, str.length() > 0);
+    }
 
+    @Test
+    public void testNT() throws LoadException, EngineException {
+        Graph g = Graph.create(true);
+
+        QueryProcess exec = QueryProcess.create(g);
+
+        String init = FOAF_PREF
+                + "insert data {"
+                // Cas standard :
+                + "<http://example.com/John> foaf:knows <http://example.com/Jim> ."
+                + "foaf:knows rdfs:domain foaf:Person ; rdfs:range foaf:Person ."
+                + "<http://example.com/John> foaf:knows <http://example.com/Jim> "
+                + "<http://example.com/Jim> foaf:knows <http://example.com/James> "
+                + "<http://example.com/Jack> foaf:knows <http://example.com/Jim> "
+                + "<http://example.com/James> a foaf:Person"
+                + "<http://example.com/John> foaf:name 'John' "
+                + "<http://example.com/Jim> foaf:name 'Jim' "
+                + "<http://example.com/James> foaf:name 'James' "
+                + "<http://example.com/Jack> foaf:name 'Jack' "
+                + "<http://example.com/Jim> foaf:age 20 "
+                + "<http://example.com/James> foaf:age 25 "
+                + "<http://example.com/John> foaf:age 30 "
+                // Test avec des caractères non-ASCII dans l'URI (devrait être valide, mais est
+                // une source courante d'erreurs) :
+                + "<http://example.com/Jöhn> foaf:knows <http://example.com/Jím> ."
+                // Test avec un littéral contenant des caractères spéciaux et des échappements :
+                + "<http://example.com/John> foaf:quote \"John's favorite quote is \\\"Hello World!\\\"\" ."
+                // Test avec un littéral multiligne (devrait être valide, mais peut causer des
+                // problèmes) :
+                + "<http://example.com/John> foaf:note \"\"\"This is\na multi-line\nnote.\"\"\" ."
+                // Test avec un littéral avec une langue :
+                + "<http://example.com/John> foaf:greeting \"Hello\"@en ."
+                // Test avec un littéral avec un type de données :
+                + "<http://example.com/John> foaf:age \"30\"^^<http://www.w3.org/2001/XMLSchema#integer> ."
+                + "}";
+
+        exec.query(init);
+
+        NTriplesFormat nTriplesFromat = NTriplesFormat.create(g);
+        String str = nTriplesFromat.toString();
+
+        System.out.println("–––––");
+        System.out.println(str);
+        System.out.println("–––––");
+
+        assertEquals(true, str.length() > 0);
     }
 
     @Test

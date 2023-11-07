@@ -1,0 +1,66 @@
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX : <http://stardog.com/tutorial/>
+
+# Shape for Bands
+:BandShape a sh:NodeShape ;
+    sh:targetClass :Band ;
+    sh:property [
+        sh:path :name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path :member ;
+        sh:class :SoloArtist ;
+        sh:minCount 1 ;
+    ] .
+
+# Shape for Solo Artists
+:SoloArtistShape a sh:NodeShape ;
+    sh:targetClass :SoloArtist .
+
+# Shape for Albums
+:AlbumShape a sh:NodeShape ;
+    sh:targetClass :Album ;
+    sh:property [
+        sh:path :name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path :date ;
+        sh:datatype xsd:date ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path :artist ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+# Shape for Songs
+:SongShape a sh:NodeShape ;
+    sh:targetClass :Song ;
+    sh:property [
+        sh:path :name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path :length ;
+        sh:datatype xsd:integer ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path :writer ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+    ] .
+

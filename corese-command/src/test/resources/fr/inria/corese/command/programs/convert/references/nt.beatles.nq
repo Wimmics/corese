@@ -1,0 +1,28 @@
+<http://example.com/Please_Please_Me> <http://example.com/artist> <http://example.com/The_Beatles>  .
+<http://example.com/Imagine> <http://example.com/artist> <http://example.com/John_Lennon>  .
+<http://example.com/McCartney> <http://example.com/artist> <http://example.com/Paul_McCartney>  .
+<http://example.com/Please_Please_Me> <http://example.com/date> "1963-03-22"^^<http://www.w3.org/2001/XMLSchema#date>  .
+<http://example.com/Imagine> <http://example.com/date> "1971-10-11"^^<http://www.w3.org/2001/XMLSchema#date>  .
+<http://example.com/McCartney> <http://example.com/date> "1970-04-17"^^<http://www.w3.org/2001/XMLSchema#date>  .
+<http://example.com/Love_Me_Do> <http://example.com/length> "125"^^<http://www.w3.org/2001/XMLSchema#integer>  .
+<http://example.com/The_Beatles> <http://example.com/member> <http://example.com/John_Lennon>  .
+<http://example.com/The_Beatles> <http://example.com/member> <http://example.com/Paul_McCartney>  .
+<http://example.com/The_Beatles> <http://example.com/member> <http://example.com/Ringo_Starr>  .
+<http://example.com/The_Beatles> <http://example.com/member> <http://example.com/George_Harrison>  .
+<http://example.com/Please_Please_Me> <http://example.com/name> "Please Please Me"^^<http://www.w3.org/2001/XMLSchema#string>  .
+<http://example.com/The_Beatles> <http://example.com/name> "The Beatles"^^<http://www.w3.org/2001/XMLSchema#string>  .
+<http://example.com/Imagine> <http://example.com/name> "Imagine"^^<http://www.w3.org/2001/XMLSchema#string>  .
+<http://example.com/McCartney> <http://example.com/name> "McCartney"^^<http://www.w3.org/2001/XMLSchema#string>  .
+<http://example.com/Love_Me_Do> <http://example.com/name> "Love Me Do"^^<http://www.w3.org/2001/XMLSchema#string>  .
+<http://example.com/Please_Please_Me> <http://example.com/track> <http://example.com/Love_Me_Do>  .
+<http://example.com/Love_Me_Do> <http://example.com/writer> <http://example.com/John_Lennon>  .
+<http://example.com/Love_Me_Do> <http://example.com/writer> <http://example.com/Paul_McCartney>  .
+<http://example.com/Please_Please_Me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Album>  .
+<http://example.com/The_Beatles> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Band>  .
+<http://example.com/Imagine> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Album>  .
+<http://example.com/John_Lennon> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/SoloArtist>  .
+<http://example.com/McCartney> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Album>  .
+<http://example.com/Paul_McCartney> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/SoloArtist>  .
+<http://example.com/Love_Me_Do> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Song>  .
+<http://example.com/Ringo_Starr> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/SoloArtist>  .
+<http://example.com/George_Harrison> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/SoloArtist>  .

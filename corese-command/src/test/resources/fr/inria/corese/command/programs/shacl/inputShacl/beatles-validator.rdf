@@ -1,0 +1,92 @@
+<!DOCTYPE rdf:RDF [
+   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#"> 
+]>
+
+<rdf:RDF 
+  xmlns:xsh='http://www.w3.org/ns/shacl#'
+  xmlns:ft='http://ns.inria.fr/sparql-template/format/rdfxml/'
+  xmlns:sh='http://www.w3.org/ns/shacl#'
+  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/AlbumShape'>
+  <rdf:type rdf:resource='http://www.w3.org/ns/shacl#NodeShape' />
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b2'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#string' />
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:path rdf:resource='http://stardog.com/tutorial/name' />
+    </rdf:Description>
+  </sh:property>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b3'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#date' />
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:path rdf:resource='http://stardog.com/tutorial/date' />
+    </rdf:Description>
+  </sh:property>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b4'>
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://stardog.com/tutorial/artist' />
+    </rdf:Description>
+  </sh:property>
+  <sh:targetClass rdf:resource='http://stardog.com/tutorial/Album' />
+</rdf:Description>
+
+<sh:NodeShape rdf:about='http://stardog.com/tutorial/BandShape'>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b0'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#string' />
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:path rdf:resource='http://stardog.com/tutorial/name' />
+    </rdf:Description>
+  </sh:property>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b1'>
+      <sh:class rdf:resource='http://stardog.com/tutorial/SoloArtist' />
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:path rdf:resource='http://stardog.com/tutorial/member' />
+    </rdf:Description>
+  </sh:property>
+  <sh:targetClass rdf:resource='http://stardog.com/tutorial/Band' />
+</sh:NodeShape>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/SoloArtistShape'>
+  <rdf:type rdf:resource='http://www.w3.org/ns/shacl#NodeShape' />
+  <sh:targetClass rdf:resource='http://stardog.com/tutorial/SoloArtist' />
+</rdf:Description>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/SongShape'>
+  <rdf:type rdf:resource='http://www.w3.org/ns/shacl#NodeShape' />
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b5'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#string' />
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:path rdf:resource='http://stardog.com/tutorial/name' />
+    </rdf:Description>
+  </sh:property>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b6'>
+      <sh:datatype rdf:resource='http://www.w3.org/2001/XMLSchema#integer' />
+      <sh:maxCount rdf:datatype='&xsd;integer'>1</sh:maxCount>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:path rdf:resource='http://stardog.com/tutorial/length' />
+    </rdf:Description>
+  </sh:property>
+  <sh:property>
+    <rdf:Description rdf:nodeID='_:b7'>
+      <sh:minCount rdf:datatype='&xsd;integer'>1</sh:minCount>
+      <sh:nodeKind rdf:resource='http://www.w3.org/ns/shacl#IRI' />
+      <sh:path rdf:resource='http://stardog.com/tutorial/writer' />
+    </rdf:Description>
+  </sh:property>
+  <sh:targetClass rdf:resource='http://stardog.com/tutorial/Song' />
+</rdf:Description>
+
+</rdf:RDF>

@@ -41,21 +41,21 @@ There are several interfaces for Corese:
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-core</artifactId>
-    <version>4.4.1</version>
+    <version>4.4.2</version>
 </dependency>
 
 <!-- jena storage -->
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-jena</artifactId>
-    <version>4.4.1</version>
+    <version>4.4.2</version>
 </dependency>
 
 <!-- rdf4j storage -->
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-rdf4j</artifactId>
-    <version>4.4.1</version>
+    <version>4.4.2</version>
 </dependency>
 ```
 
@@ -77,8 +77,8 @@ docker run --name my-corese \
 - Alternatively, download [Corese-server jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-server-4.4.1.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-server-4.4.1.jar"
+wget "files.inria.fr/corese/distrib/corese-server-4.4.2.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-server-4.4.2.jar"
 ```
 
 Documentation:
@@ -98,8 +98,8 @@ Documentation:
 - Or download [Corese-gui jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-gui-4.4.1.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.1.jar"
+wget "files.inria.fr/corese/distrib/corese-gui-4.4.2.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.2.jar"
 ```
 
 Documentation:
@@ -111,8 +111,8 @@ Documentation:
 - Download [Corese-python jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-library-python-4.4.1.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.1.jar"
+wget "files.inria.fr/corese/distrib/corese-library-python-4.4.2.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.2.jar"
 ```
 
 ### Corese-Command (beta)
@@ -127,8 +127,8 @@ java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.1.jar"
 - Or download [Corese-command jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-command-4.4.1.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-command-4.4.1.jar"
+wget "files.inria.fr/corese/distrib/corese-command-4.4.2.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-command-4.4.2.jar"
 ```
 
 - Alternatively, use the installation script for Linux and MacOS systems.

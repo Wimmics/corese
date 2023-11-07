@@ -542,7 +542,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @QueryParam("uri") List<String> uri) {
 
         logger.info("getRDFGraphJsonLDForGet");
-        return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, JSON_LD_FORMAT);
+        return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, JSONLD_FORMAT);
     }
 
     // ----------------------------------------------------
@@ -854,7 +854,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             String message) {
         query = getQuery(query, update, message);
         logger.info("getRDFGraphJsonLDForPost");
-        return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, JSON_LD_FORMAT);
+        return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, JSONLD_FORMAT);
 
     }
 

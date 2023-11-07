@@ -1,35 +1,35 @@
-@prefix kg: <http://ns.inria.fr/corese/kgram/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ns1: <http://stardog.com/tutorial/> .
 
-graph kg:default {
-  <http://stardog.com/tutorial/George_Harrison> a <http://stardog.com/tutorial/SoloArtist> .
+ns1:Ringo_Starr a ns1:SoloArtist .
 
-<http://stardog.com/tutorial/Imagine> a <http://stardog.com/tutorial/Album> ;
-  <http://stardog.com/tutorial/artist> <http://stardog.com/tutorial/John_Lennon> ;
-  <http://stardog.com/tutorial/date> "1971-10-11"^^xsd:date ;
-  <http://stardog.com/tutorial/name> "Imagine" .
+ns1:Imagine ns1:artist ns1:John_Lennon ;
+  ns1:date "1971-10-11"^^xsd:date ;
+  ns1:name "Imagine" ;
+  a ns1:Album .
 
-<http://stardog.com/tutorial/John_Lennon> a <http://stardog.com/tutorial/SoloArtist> .
+ns1:John_Lennon a ns1:SoloArtist .
 
-<http://stardog.com/tutorial/Love_Me_Do> a <http://stardog.com/tutorial/Song> ;
-  <http://stardog.com/tutorial/length> 125 ;
-  <http://stardog.com/tutorial/name> "Love Me Do" ;
-  <http://stardog.com/tutorial/writer> <http://stardog.com/tutorial/John_Lennon> ;
-  <http://stardog.com/tutorial/writer> <http://stardog.com/tutorial/Paul_McCartney> .
+ns1:Paul_McCartney a ns1:SoloArtist .
 
-<http://stardog.com/tutorial/Paul_McCartney> a <http://stardog.com/tutorial/SoloArtist> .
+ns1:The_Beatles ns1:member ns1:John_Lennon ;
+  ns1:member ns1:Paul_McCartney ;
+  ns1:member ns1:Ringo_Starr ;
+  ns1:member ns1:George_Harrison ;
+  ns1:name "The Beatles" ;
+  a ns1:Band .
 
-<http://stardog.com/tutorial/Please_Please_Me> a <http://stardog.com/tutorial/Album> ;
-  <http://stardog.com/tutorial/artist> <http://stardog.com/tutorial/The_Beatles> ;
-  <http://stardog.com/tutorial/date> "1963-03-22"^^xsd:date ;
-  <http://stardog.com/tutorial/name> "Please Please Me" ;
-  <http://stardog.com/tutorial/track> <http://stardog.com/tutorial/Love_Me_Do> .
+ns1:Please_Please_Me ns1:artist ns1:The_Beatles ;
+  ns1:date "1963-03-22"^^xsd:date ;
+  ns1:name "Please Please Me" ;
+  ns1:track ns1:Love_Me_Do ;
+  a ns1:Album .
 
-<http://stardog.com/tutorial/Ringo_Starr> a <http://stardog.com/tutorial/SoloArtist> .
+ns1:Love_Me_Do ns1:length 125 ;
+  ns1:name "Love Me Do" ;
+  ns1:writer ns1:John_Lennon ;
+  ns1:writer ns1:Paul_McCartney ;
+  a ns1:Song .
 
-<http://stardog.com/tutorial/The_Beatles> a <http://stardog.com/tutorial/Band> ;
-  <http://stardog.com/tutorial/member> <http://stardog.com/tutorial/George_Harrison> ;
-  <http://stardog.com/tutorial/member> <http://stardog.com/tutorial/John_Lennon> ;
-  <http://stardog.com/tutorial/member> <http://stardog.com/tutorial/Paul_McCartney> ;
-  <http://stardog.com/tutorial/member> <http://stardog.com/tutorial/Ringo_Starr> ;
-  <http://stardog.com/tutorial/name> "The Beatles" .
-}
+ns1:George_Harrison a ns1:SoloArtist .
+

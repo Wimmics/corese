@@ -1,0 +1,47 @@
+@prefix xsh: <http://www.w3.org/ns/shacl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/ns#> .
+
+<urn:uuid:343545dc-56a6-48f6-bc3b-87bce55b70c2> a sh:ValidationResult ;
+  sh:focusNode ex:Bob ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:path ex:ssn ;\n  sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"]" ;
+  sh:resultPath ex:ssn ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
+  sh:sourceShape _:b0 ;
+  sh:value 2 .
+
+<urn:uuid:392395bf-2630-479f-b1c1-5c9cfa2e385e> a sh:ValidationResult ;
+  sh:focusNode ex:Calvin ;
+  sh:resultMessage "Fail at: [sh:class ex:Company ;\n  sh:nodeKind sh:IRI ;\n  sh:path ex:worksFor]" ;
+  sh:resultPath ex:worksFor ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:ClassConstraintComponent ;
+  sh:sourceShape _:b1 ;
+  sh:value ex:UntypedCompany .
+
+<urn:uuid:a2a053d0-4aba-43a7-97a1-de5775052767> a sh:ValidationResult ;
+  sh:focusNode ex:Calvin ;
+  sh:resultMessage "Fail at: ex:PersonShape a sh:NodeShape ;\n  sh:closed true ;\n  sh:ignoredProperties (rdf:type) ;\n  sh:property [sh:datatype xsd:string ;\n    sh:maxCount 1 ;\n    sh:path ex:ssn ;\n    sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"] ;\n  sh:property [sh:class ex:Company ;\n    sh:nodeKind sh:IRI ;\n    sh:path ex:worksFor] ;\n  sh:targetClass ex:Person" ;
+  sh:resultPath ex:birthDate ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:ClosedConstraintComponent ;
+  sh:sourceShape ex:PersonShape ;
+  sh:value "1971-07-07"^^xsd:date .
+
+<urn:uuid:ceaacb09-98a3-4cd2-87ee-6887326880c2> a sh:ValidationResult ;
+  sh:focusNode ex:Alice ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:path ex:ssn ;\n  sh:pattern \"^\\\\d{3}-\\\\d{2}-\\\\d{4}$\"]" ;
+  sh:resultPath ex:ssn ;
+  sh:resultSeverity sh:Violation ;
+  sh:sourceConstraintComponent sh:PatternConstraintComponent ;
+  sh:sourceShape _:b0 ;
+  sh:value "987-65-432A" .
+
+[a sh:ValidationReport ;
+  sh:conforms false ;
+  sh:result <urn:uuid:343545dc-56a6-48f6-bc3b-87bce55b70c2> ;
+  sh:result <urn:uuid:392395bf-2630-479f-b1c1-5c9cfa2e385e> ;
+  sh:result <urn:uuid:a2a053d0-4aba-43a7-97a1-de5775052767> ;
+  sh:result <urn:uuid:ceaacb09-98a3-4cd2-87ee-6887326880c2>] .
+

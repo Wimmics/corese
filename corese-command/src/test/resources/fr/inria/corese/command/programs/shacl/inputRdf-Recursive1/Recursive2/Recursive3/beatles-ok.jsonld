@@ -1,0 +1,69 @@
+{
+"@context": {
+  "xsd": "http://www.w3.org/2001/XMLSchema#",
+  "ns1": "http://stardog.com/tutorial/"
+},
+
+"@graph":
+[
+  {
+    "@id": "http://stardog.com/tutorial/George_Harrison",
+    "@type": "http://stardog.com/tutorial/SoloArtist"
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/Imagine",
+    "@type": "http://stardog.com/tutorial/Album",
+    "ns1:artist": {"@id": "http://stardog.com/tutorial/John_Lennon"},
+    "ns1:date": {"@value": "1971-10-11", "@type": "xsd:date"},
+    "ns1:name": "Imagine"
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/John_Lennon",
+    "@type": "http://stardog.com/tutorial/SoloArtist"
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/Love_Me_Do",
+    "@type": "http://stardog.com/tutorial/Song",
+    "ns1:length": 125,
+    "ns1:name": "Love Me Do",
+    "ns1:writer": [{"@id": "http://stardog.com/tutorial/John_Lennon"}, {"@id": "http://stardog.com/tutorial/Paul_McCartney"}]
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/McCartney",
+    "@type": "http://stardog.com/tutorial/Album",
+    "ns1:artist": {"@id": "http://stardog.com/tutorial/Paul_McCartney"},
+    "ns1:date": {"@value": "1970-04-17", "@type": "xsd:date"},
+    "ns1:name": "McCartney"
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/Paul_McCartney",
+    "@type": "http://stardog.com/tutorial/SoloArtist"
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/Please_Please_Me",
+    "@type": "http://stardog.com/tutorial/Album",
+    "ns1:artist": {"@id": "http://stardog.com/tutorial/The_Beatles"},
+    "ns1:date": {"@value": "1963-03-22", "@type": "xsd:date"},
+    "ns1:name": "Please Please Me",
+    "ns1:track": {"@id": "http://stardog.com/tutorial/Love_Me_Do"}
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/Ringo_Starr",
+    "@type": "http://stardog.com/tutorial/SoloArtist"
+  },
+  
+  {
+    "@id": "http://stardog.com/tutorial/The_Beatles",
+    "@type": "http://stardog.com/tutorial/Band",
+    "ns1:member": [{"@id": "http://stardog.com/tutorial/John_Lennon"}, {"@id": "http://stardog.com/tutorial/Paul_McCartney"}, {"@id": "http://stardog.com/tutorial/Ringo_Starr"}, {"@id": "http://stardog.com/tutorial/George_Harrison"}],
+    "ns1:name": "The Beatles"
+  }
+]
+}

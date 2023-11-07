@@ -1,22 +1,26 @@
 package fr.inria.corese.command.programs;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
+import java.net.URL;
 import java.nio.file.Path;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import fr.inria.corese.command.App;
-import fr.inria.corese.command.utils.GraphUtils;
+import fr.inria.corese.command.utils.ConfigManager;
+import fr.inria.corese.command.utils.ConvertString;
+import fr.inria.corese.command.utils.TestType;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.command.utils.format.EnumResultFormat;
+import fr.inria.corese.command.utils.rdf.RdfDataExporter;
+import fr.inria.corese.command.utils.rdf.RdfDataLoader;
+import fr.inria.corese.command.utils.sparql.SparqlQueryLoader;
+import fr.inria.corese.command.utils.sparql.SparqlResultExporter;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.util.Property;
+import fr.inria.corese.core.util.Property.Value;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import picocli.CommandLine.Command;
@@ -25,20 +29,19 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Spec;
 
 @Command(name = "sparql", version = App.version, description = "Run a SPARQL query.", mixinStandardHelpOptions = true)
-public class Sparql implements Runnable {
+public class Sparql implements Callable<Integer> {
 
-    private static final Logger LOGGER = Logger.getLogger(Sparql.class.getName());
-
-    private static final String ERROR_OUTPUT_FORMAT_CONSTRUCT_REQUEST = "Error: %s is not a valid output format for insert, delete, describe or construct requests. Use one of the following RDF formats: \"rdfxml\", \"turtle\", \"jsonld\", \"trig\", \"jsonld\".";
-    private static final String ERROR_OUTPUT_FORMAT_SELECT_REQUEST = "Error: %s is not a valid output format for select or ask requests. Use one of the following result formats: \"xml\", \"json\", \"csv\", \"tsv\", \"md\".";
-    private static final int EXIT_CODE_ERROR = 1;
+    private final String ERROR_OUTPUT_FORMAT_CONSTRUCT_REQUEST = "Error: %s is not a valid output format for insert, delete, describe or construct requests. Use one of the following RDF formats: \"rdfxml\", \"turtle\", \"jsonld\", \"trig\", \"jsonld\".";
+    private final String ERROR_OUTPUT_FORMAT_SELECT_REQUEST = "Error: %s is not a valid output format for select or ask requests. Use one of the following result formats: \"xml\", \"json\", \"csv\", \"tsv\", \"md\".";
+    private final int ERROR_EXIT_CODE_SUCCESS = 0;
+    private final int ERROR_EXIT_CODE_ERROR = 1;
     private final String DEFAULT_OUTPUT_FILE_NAME = "output";
 
     @Spec
     private CommandSpec spec;
 
     @Option(names = { "-f", "-if",
-            "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
+            "--input-format" }, description = "RDF serialization format of the input file. Possible values: ${COMPLETION-CANDIDATES}.")
     private EnumInputFormat inputFormat = null;
 
     @Option(names = { "-i",
@@ -61,9 +64,22 @@ public class Sparql implements Runnable {
             "--recursive" }, description = "Load all files in the input directory recursively.", required = false, defaultValue = "false")
     private boolean recursive;
 
+    @Option(names = { "-v",
+            "--verbose" }, description = "Prints more information about the execution of the command..", required = false, defaultValue = "false")
+    private boolean verbose;
+
+    @Option(names = { "-c",
+            "--config",
+            "--init" }, description = "Path to a configuration file. If not provided, the default configuration file will be used.", required = false)
+    private Path configFilePath;
+
+    @Option(names = { "-w",
+            "--no-owl-import" }, description = "Disables the automatic importation of ontologies specified in 'owl:imports' statements. When this flag is set, the application will not fetch and include referenced ontologies.", required = false, defaultValue = "false")
+    private boolean noOwlImport;
+
     private String query;
 
-    private Graph graph;
+    private Graph graph = Graph.create();
 
     private boolean resultFormatIsDefined = false;
     private boolean outputPathIsDefined = false;
@@ -76,17 +92,33 @@ public class Sparql implements Runnable {
     }
 
     @Override
-    public void run() {
+    public Integer call() {
+
         try {
-            resultFormatIsDefined = resultFormat != null;
-            outputPathIsDefined = output != null;
-            isDefaultOutputName = output == null || DEFAULT_OUTPUT_FILE_NAME.equals(output.toString());
-            loadInputFile();
-            loadQuery();
-            execute();
+            // Load configuration file
+            Optional<Path> configFilePath = Optional.ofNullable(this.configFilePath);
+            if (configFilePath.isPresent()) {
+                ConfigManager.loadFromFile(configFilePath.get(), this.spec, this.verbose);
+            } else {
+                ConfigManager.loadDefaultConfig(this.spec, this.verbose);
+            }
+
+            // Set owl import
+            Property.set(Value.DISABLE_OWL_AUTO_IMPORT, this.noOwlImport);
+
+            this.resultFormatIsDefined = this.resultFormat != null;
+            this.outputPathIsDefined = this.output != null;
+            this.isDefaultOutputName = this.output == null
+                    || this.DEFAULT_OUTPUT_FILE_NAME.equals(this.output.toString());
+
+            this.loadInputFile();
+            this.loadQuery();
+            this.executeAndPrint();
+
+            return this.ERROR_EXIT_CODE_SUCCESS;
         } catch (Exception e) {
-            System.err.println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
-            System.exit(EXIT_CODE_ERROR);
+            this.spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            return this.ERROR_EXIT_CODE_ERROR;
         }
     }
 
@@ -96,91 +128,94 @@ public class Sparql implements Runnable {
      * @throws IOException If the file cannot be read.
      */
     private void loadInputFile() throws IOException {
-        if (inputs == null) {
-            // If inputPath is not provided, load from stdin
-            this.graph = GraphUtils.load(System.in, inputFormat);
+
+        if (this.inputs == null) {
+            // If inputs is not provided, load from stdin
+            RdfDataLoader.LoadFromStdin(
+                    this.inputFormat,
+                    this.graph,
+                    this.spec,
+                    this.verbose);
         } else {
-            this.graph = Graph.create();
-            for (String input : inputs) {
-                File file = new File(input);
-                if (file.isDirectory() && recursive) {
-                    loadFilesInDirectoryRecursive(file.toPath(), graph);
-                } else if (file.isDirectory()) {
-                    // If inputPath is a directory, load all files in the directory non-recursively
-                    File[] files = file.listFiles();
-                    if (files != null) {
-                        for (File childFile : files) {
-                            if (childFile.isFile()) {
-                                GraphUtils.load(childFile.getPath(), inputFormat, graph);
-                            }
-                        }
+            for (String input : this.inputs) {
+                Optional<Path> path = ConvertString.toPath(input);
+                Optional<URL> url = ConvertString.toUrl(input);
+
+                if (url.isPresent()) {
+                    // if input is a URL
+                    RdfDataLoader.loadFromURL(
+                            url.get(),
+                            this.inputFormat,
+                            this.graph,
+                            this.spec,
+                            this.verbose);
+                } else if (path.isPresent()) {
+                    // if input is a path
+                    if (path.get().toFile().isDirectory()) {
+                        // if input is a directory
+                        RdfDataLoader.loadFromDirectory(
+                                path.get(),
+                                this.inputFormat,
+                                this.graph,
+                                this.recursive,
+                                this.spec,
+                                this.verbose);
+                    } else {
+                        // if input is a file
+                        RdfDataLoader.loadFromFile(
+                                path.get(),
+                                this.inputFormat,
+                                this.graph,
+                                this.spec,
+                                this.verbose);
                     }
                 } else {
-                    GraphUtils.load(input, inputFormat, graph);
+                    throw new IllegalArgumentException(
+                            "Input path is not a valid URL, file path or directory: " + input);
                 }
             }
         }
     }
 
     /**
-     * Load all files in the given directory recursively.
-     *
-     * @param directoryPath The path of the directory to load files from.
-     * @param graph         The graph to load the files into.
-     */
-    private void loadFilesInDirectoryRecursive(Path directoryPath, Graph graph) {
-        try {
-            Files.walk(directoryPath)
-                    .filter(Files::isRegularFile)
-                    .forEach(filePath -> {
-                        try {
-                            GraphUtils.load(filePath.toString(), inputFormat, graph);
-                        } catch (IOException e) {
-                            LOGGER.log(Level.SEVERE, "Error loading file: " + filePath, e);
-                        }
-                    });
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error loading directory: " + directoryPath, e);
-        }
-    }
-
-    /**
-     * Convert an input stream to a string.
-     * 
-     * @param inputStream The input stream to convert.
-     * @return The string representation of the input stream.
-     */
-    private static String convertToString(InputStream inputStream) {
-        try (Scanner scanner = new Scanner(inputStream).useDelimiter("\\A")) {
-            return scanner.hasNext() ? scanner.next() : "";
-        }
-    }
-
-    /**
      * Load the query from the query string or from the query file.
-     * 
+     *
      * @throws IOException If the query file cannot be read.
      */
     private void loadQuery() throws IOException {
-        if (queryUrlOrFile.endsWith(".rq")) {
-            InputStream inputStream = GraphUtils.pathOrUrlToInputStream(queryUrlOrFile);
-            query = convertToString(inputStream);
-        } else {
-            query = queryUrlOrFile;
+        Optional<Path> path = ConvertString.toPath(this.queryUrlOrFile);
+        Optional<URL> url = ConvertString.toUrl(this.queryUrlOrFile);
+        Boolean isSparqlQuery = TestType.isSparqlQuery(this.queryUrlOrFile);
+
+        if (isSparqlQuery) {
+            // if query is a SPARQL query
+            this.query = this.queryUrlOrFile;
+        } else if (url.isPresent()) {
+            // if query is a URL
+            this.query = SparqlQueryLoader.loadFromUrl(url.get(), this.spec, this.verbose);
+        } else if (path.isPresent()) {
+            // if query is a path
+            this.query = SparqlQueryLoader.loadFromFile(path.get(), this.spec, this.verbose);
         }
     }
 
     /**
      * Execute the query and print or write the results.
-     * 
+     *
      * @throws Exception If the query cannot be executed.
      */
-    private void execute() throws Exception {
+    private void executeAndPrint() throws Exception {
         QueryProcess exec = QueryProcess.create(graph);
 
         // Execute query
         try {
-            ASTQuery ast = exec.ast(query);
+
+            if (this.verbose) {
+                this.spec.commandLine().getErr().println("Query: " + this.query);
+                this.spec.commandLine().getErr().println("Executing query...");
+            }
+
+            ASTQuery ast = exec.ast(this.query);
             Mappings map = exec.query(ast);
 
             // Print or write results
@@ -191,27 +226,8 @@ public class Sparql implements Runnable {
     }
 
     /**
-     * Check if the result format is a RDF format.
-     * 
-     * @return True if the result format is a RDF format, false otherwise.
-     */
-    private boolean isRDFFormat() {
-        switch (this.resultFormat) {
-            case BIDING_XML:
-            case BIDING_JSON:
-            case BIDING_CSV:
-            case BIDING_TSV:
-            case BIDING_MD:
-            case BIDING_MARKDOWN:
-                return false;
-            default:
-                return true;
-        }
-    }
-
-    /**
      * Export the results to the output file or to the standard output.
-     * 
+     *
      * @param ast – AST of the query
      * @param map – Mappings of the query
      * @throws IOException If the output file cannot be written.
@@ -219,7 +235,7 @@ public class Sparql implements Runnable {
     private void exportResult(ASTQuery ast, Mappings map) throws IOException {
         Path outputFileName;
 
-        boolean isUpdate = ast.isInsert() || ast.isDelete() || ast.isUpdate();
+        boolean isUpdate = ast.isSPARQLUpdate();
         boolean isConstruct = ast.isConstruct();
         boolean isAsk = ast.isAsk();
         boolean isSelect = ast.isSelect();
@@ -234,11 +250,11 @@ public class Sparql implements Runnable {
         }
 
         // Check if the output format is valid for the query type
-        if ((isUpdate || isConstruct) && !isRDFFormat()) {
+        if ((isUpdate || isConstruct) && !this.resultFormat.isRDFFormat()) {
             throw new IllegalArgumentException(String.format(ERROR_OUTPUT_FORMAT_CONSTRUCT_REQUEST, resultFormat));
         }
 
-        if ((isAsk || isSelect) && isRDFFormat()) {
+        if ((isAsk || isSelect) && this.resultFormat.isRDFFormat()) {
             throw new IllegalArgumentException(String.format(ERROR_OUTPUT_FORMAT_SELECT_REQUEST, resultFormat));
         }
 
@@ -252,30 +268,41 @@ public class Sparql implements Runnable {
         // Export results
         if (isUpdate) {
             EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
+
             if (this.outputPathIsDefined) {
-                GraphUtils.exportToFile(graph, outputFormat, outputFileName);
+                RdfDataExporter.exportToFile(
+                        outputFileName,
+                        outputFormat,
+                        this.graph,
+                        this.spec,
+                        this.verbose);
             } else {
-                // if no output format is defined
-                // if print results to stdout
-                // then print true if the update was successful or false otherwise
+                // if no output format is defined if print results to stdout
+                // then print true if the update was successful or false
+                // otherwise
                 if (!resultFormatIsDefined) {
-                    spec.commandLine().getOut().println(!map.isEmpty());
-                    spec.commandLine().getOut()
-                            .println("Precise result format with --resultFormat option to print the result.");
+                    this.spec.commandLine().getOut().println(!map.isEmpty());
+                    this.spec.commandLine().getErr()
+                            .println(
+                                    "Precise result format with --resultFormat option to get the result in standard output.");
                 } else {
-                    GraphUtils.exportToStdout(graph, outputFormat, spec);
+                    RdfDataExporter.exportToStdout(outputFormat, this.graph, this.spec, this.verbose);
                 }
             }
         } else {
-            ResultFormat resultFormater = ResultFormat.create(map);
-            resultFormater.setSelectFormat(this.resultFormat.getValue());
-            resultFormater.setConstructFormat(this.resultFormat.getValue());
-
             if (this.outputPathIsDefined) {
-                resultFormater.write(outputFileName.toString());
+                SparqlResultExporter.exportToFile(
+                        outputFileName,
+                        this.resultFormat,
+                        map,
+                        this.spec,
+                        this.verbose);
             } else {
-                String result = resultFormater.toString();
-                spec.commandLine().getOut().println(result);
+                SparqlResultExporter.exportToStdout(
+                        this.resultFormat,
+                        map,
+                        this.spec,
+                        this.verbose);
             }
         }
     }

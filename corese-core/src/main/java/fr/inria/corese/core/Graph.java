@@ -77,7 +77,6 @@ public class Graph extends GraphObject implements
     static {
         Corese.init();
     }
-
     private static Logger logger = LoggerFactory.getLogger(Graph.class);
     private static final String SHAPE_CONFORM = NSManager.SHAPE + "conforms";
     public static final String SYSTEM = ExpType.KGRAM + "system";
@@ -175,15 +174,15 @@ public class Graph extends GraphObject implements
     EdgeManagerIndexer ruleEdgeIndex;
     // predefined individual Node such as kg:default named graph
     HashMap<String, Node> system;
-    // key -> URI Node
+    // key -> URI Node ; member of graph nodes (subject/object)
     Hashtable<String, Node> individual;
-    // label -> Blank Node
+    // label -> Blank Node ; member of graph nodes (subject/object)
     Hashtable<String, Node> blank;
     // Triple Reference Node
     Hashtable<String, Node> triple;
-    // graph nodes: key -> graph Node
+    // named graph id nodes: key -> named graph id Node (possibly not subject/object Node)
     Hashtable<String, Node> graph;
-    // property nodes: label -> property Node 
+    // property nodes: label -> property Node (possibly not subject/object Node)
     Hashtable<String, Node> property;
     // allocate Node (1 and 01 have different Node)
     private SortedMap<IDatatype, Node> literalNodeManager;
@@ -1430,7 +1429,7 @@ public class Graph extends GraphObject implements
      *
      */
     public Edge insertEdgeWithTargetNode(Edge ee) {
-        ee.setGraph(basicAddGraph(ee.getGraph().getLabel()));
+        ee.setGraph(basicAddGraph(ee.getGraph()));
         ee.setProperty(basicAddProperty(ee.getProperty().getLabel()));
         ee.setNode(0, addNode(ee.getNode(0)));
         ee.setNode(1, addNode(ee.getNode(1)));
@@ -1869,12 +1868,28 @@ public class Graph extends GraphObject implements
         }
         return node;
     }
-
-    public Node getBlankNode(IDatatype dt, boolean create, boolean add) {
+    
+    public Node getBlankNode1(IDatatype dt, boolean create, boolean add) {
         Node node = getBlankNode(dt.getLabel());
         if (node != null) {
             return node;
         }
+        if (node == null && create) {
+            node = buildNode(dt);
+        }
+        if (add) {
+            add(dt, node);
+        }
+        return node;
+    }
+    
+    // bnode may be a named graph id
+    public Node getBlankNode(IDatatype dt, boolean create, boolean add) {
+        Node node = getBlankNodeBasic(dt.getLabel());
+        if (node != null) {
+            return node;
+        }
+        node = getBlankNodeGraph(dt.getLabel());
         if (node == null && create) {
             node = buildNode(dt);
         }
@@ -1954,8 +1969,26 @@ public class Graph extends GraphObject implements
         individual.put(getID(node), node);
     }
 
+    public Node getBlankNode1(String name) {
+        return getBlankNodeBasic(name);
+    }
+    
+    // bnode subject/object or named graph id
     public Node getBlankNode(String name) {
+        Node node = getBlankNodeBasic(name);
+        if (node == null) {
+            node = getBlankNodeGraph(name);
+        }
+        return node;
+    }
+    
+    public Node getBlankNodeBasic(String name) {
         return blank.get(name);
+    }
+    
+    // named graph id may be a bnode
+    public Node getBlankNodeGraph(String name) {
+        return graph.get(name);
     }
     
     public Node getTripleNode(String name) {
@@ -1998,7 +2031,15 @@ public class Graph extends GraphObject implements
         }
     }
 
+    Node basicAddGraph(Node node) {
+        return basicAddGraph(node.getLabel(), node.isBlank());
+    }
+    
     Node basicAddGraph(String label) {
+        return basicAddGraph(label, false);
+    }
+    
+    Node basicAddGraph1(String label, boolean bnode) {
         String key = getID(label);
         Node node = getGraphNode(key, label);
         if (node != null) {
@@ -2013,6 +2054,35 @@ public class Graph extends GraphObject implements
         graph.put(key, node);
         return node;
     }
+    
+    Node basicAddGraph(String label, boolean bnode) {
+        String key = getID(label);
+        Node node = getGraphNode(key, label);
+        if (node != null) {
+            return node;
+        }
+        if (bnode || isBlank(label)) {
+            node = getBlankNodeBasic(label);
+            if (node == null) {
+                IDatatype dt = DatatypeMap.createBlank(label);
+                node = createNode(key, dt);
+                indexNode(dt, node);
+            }
+        } else {
+            node = getResource(key, label);
+            if (node == null) {
+                IDatatype dt = DatatypeMap.createResource(label);
+                node = createNode(key, dt);
+                indexNode(dt, node);
+            }
+        }
+        graph.put(key, node);
+        return node;
+    }
+    
+    boolean isBlank(String label) {
+        return label.startsWith(BLANK);
+    }
 
     Node basicAddGraphNode(Node node) {
         graph.put(node.getLabel(), node);
@@ -2022,7 +2092,7 @@ public class Graph extends GraphObject implements
     Node basicAddResource(String label) {
         Node node = getResource(label);
         if (node != null) {
-            add(getDatatypeValue(node), node);
+            add(node.getDatatypeValue(), node);
             return node;
         }
         IDatatype dt = DatatypeMap.createResource(label);
@@ -2047,7 +2117,7 @@ public class Graph extends GraphObject implements
         return node;
     }
 
-    Node basicAddBlank(String label) {
+    Node basicAddBlank1(String label) {
         Node node = getBlankNode(label);
         if (node == null) {
             IDatatype dt = DatatypeMap.createBlank(label);
@@ -2057,6 +2127,33 @@ public class Graph extends GraphObject implements
                 addBlankNode(dt, node);
             }
         }
+        return node;
+    }
+    
+    // add bnode as subject/object
+    // bnode may already exist as subject/object or as named graph id
+    Node basicAddBlank(String label) {
+        Node node = getBlankNodeBasic(label);
+        if (node != null) {
+            return node;
+        }
+        else {
+            node = getBlankNodeGraph(label);
+        }
+        if (node == null) {
+            IDatatype dt = DatatypeMap.createBlank(label);
+            if (dt != null) {
+                node = buildNode(dt);
+                indexNode(dt, node);
+                addBlankNode(dt, node);
+            }
+        }
+        else {
+            // node is named graph id but not a graph node (subject/object)
+            // register node as graph node
+            addBlankNode(node.getDatatypeValue(), node);  
+        }
+        
         return node;
     }
     
@@ -3380,7 +3477,7 @@ public class Graph extends GraphObject implements
      * create a local copy of nodes
      */
     public Edge copy(Edge edge) {
-        Node g = basicAddGraph(edge.getGraph().getLabel());
+        Node g = basicAddGraph(edge.getGraph());
         Node p = basicAddProperty(edge.getEdgeNode().getLabel());
 
         ArrayList<Node> list = new ArrayList<>();
@@ -3546,10 +3643,14 @@ public class Graph extends GraphObject implements
     /**
      * Graph in itself is not considered as a graph node for SPARQL path unless
      * explicitely referenced as a subject or object Hence ?x :p* ?y does not
-     * return graph nodes
+     * return named graph nodes
      */
     public Node addGraph(String label) {
         return basicAddGraph(label);
+    }
+    
+    public Node addGraph(String label, boolean bnode) {
+        return basicAddGraph(label, bnode);
     }
 
     public Node addDefaultGraphNode() {

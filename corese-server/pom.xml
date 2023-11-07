@@ -52,10 +52,6 @@
 			<artifactId>corese-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>sparql</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.glassfish.metro</groupId>
 			<artifactId>webservices-rt</artifactId>
 		</dependency>
@@ -123,12 +119,12 @@
 			<artifactId>websocket-jetty-server</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>corese-jena</artifactId>
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>corese-rdf4j</artifactId>
 			<version>${revision}</version>
 		</dependency>

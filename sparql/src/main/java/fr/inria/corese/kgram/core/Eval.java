@@ -1512,10 +1512,13 @@ public class Eval implements ExpType, Plugin {
         return getMemory().getNode(gNode);        
     }
     
+//    Node getGraphNode(Node node) {
+//        return (node == null) ? null : node.isConstant() ? node : getMemory().getNode(node);
+//    }
+    
     Node getGraphNode(Node node) {
-        return (node == null) ? null : node.isConstant() ? node : getMemory().getNode(node);
+        return node;
     }
-
     /**
      * bind(exp as var)
      */
@@ -2195,10 +2198,10 @@ public class Eval implements ExpType, Plugin {
         if (!env.push(p, qEdge, ent, n)) {
             return false;
         }
-        if (gNode != null && !env.push(gNode, node, n)) {
-            env.pop(qEdge, ent);
-            return false;
-        }
+//        if (gNode != null && !env.push(gNode, node, n)) {
+//            env.pop(qEdge, ent);
+//            return false;
+//        }
         return true;
     }
 

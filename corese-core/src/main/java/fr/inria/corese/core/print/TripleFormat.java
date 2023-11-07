@@ -40,7 +40,7 @@ public class TripleFormat extends RDFFormat {
     private Mappings mappings;
     int tripleCounter = 0;
 
-    private boolean useCompactBlankNodeSyntax = true; //
+    private boolean useCompactBlankNodeSyntax = false; //
 
     TripleFormat(Graph g, NSManager n) {
         super(g, n);
@@ -215,26 +215,27 @@ public class TripleFormat extends RDFFormat {
     }
 
     private boolean isRdfPrefixNeeded() {
-        for (Node node : graph.getGraphNodes()) {
-            for (Edge edge : graph.getNodeEdges(node)) {
+        //for (Node node : graph.getGraphNodes()) {
+            for (Edge edge : graph.getEdges()) {
                 String pred = nsm.toPrefix(edge.getEdgeNode().getLabel(), !addPrefix);
                 if (pred.startsWith("rdf:") && !pred.equals(RDF_TYPE)) {
                     return true;
                 }
             }
-        }
+        //}
         return false;
     }
 
     @Override
     void header(StringBuilder bb) {
         link(bb);
-        if (isRdfPrefixNeeded()) {
-            bb.append(nsm.toString(PREFIX, false, false));
-        } else {
-            // Si le préfixe rdf: n'est pas nécessaire, supprimez-le de la sortie
-            bb.append(nsm.toString(PREFIX, false, false).replaceAll("@prefix rdf:.*\n", ""));
-        }
+        bb.append(nsm.toString(PREFIX, false, false));
+//        if (isRdfPrefixNeeded()) {
+//            bb.append(nsm.toString(PREFIX, false, false));
+//        } else {
+//            // Si le préfixe rdf: n'est pas nécessaire, supprimez-le de la sortie
+//            bb.append(nsm.toString(PREFIX, false, false).replaceAll("@prefix rdf:.*\n", ""));
+//        }
     }
 
     void link(StringBuilder bb) {
@@ -264,9 +265,11 @@ public class TripleFormat extends RDFFormat {
                 }
                 if (first) {
                     first = false;
-                    if (isBlankNode) {
-                        sdisplay("[");
-                    } else {
+//                    if (isBlankNode) {
+//                        sdisplay("[");
+//                    } 
+//                    else 
+                    {
                         subject(edge);
                         sdisplay(SPACE);
                     }
@@ -281,9 +284,9 @@ public class TripleFormat extends RDFFormat {
         }
 
         if (!first) {
-            if (isBlankNode) {
-                sdisplay("]");
-            }
+//            if (isBlankNode) {
+//                sdisplay("]");
+//            }
             sdisplay(DOT);
             sdisplay(NL);
             sdisplay(NL);

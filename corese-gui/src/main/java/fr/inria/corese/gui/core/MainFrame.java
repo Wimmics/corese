@@ -1469,7 +1469,7 @@ public class MainFrame extends JFrame implements ActionListener {
                     }
                 }
             }
-            appendMsg("Load done\n");
+            appendMsg("\nLoading is done\n");
         }
     }
 
@@ -1739,7 +1739,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 } else {
                     load(lPath);
                 }
-                appendMsg("Load done\n");
+                appendMsg("\nLoading is done\n");
             }
         }
     }
@@ -1988,7 +1988,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 }
             }
         }
-        appendMsg("Load done\n");
+        appendMsg("\nLoading is done\n");
         return str;
     }
 

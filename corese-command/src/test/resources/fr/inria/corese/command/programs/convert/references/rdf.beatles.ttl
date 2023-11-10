@@ -1,5 +1,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix ns1: <http://example.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 ns1:Love_Me_Do ns1:length 125 ;
   ns1:name "Love Me Do" ;

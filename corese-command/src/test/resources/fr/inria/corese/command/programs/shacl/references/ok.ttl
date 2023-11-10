@@ -1,6 +1,0 @@
-@prefix xsh: <http://www.w3.org/ns/shacl#> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
-
-[a sh:ValidationReport ;
-  sh:conforms true] .
-

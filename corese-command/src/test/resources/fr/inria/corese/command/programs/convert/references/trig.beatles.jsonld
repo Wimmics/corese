@@ -28,19 +28,7 @@
 					"@type": "ns2:Album"
 				},
 				{
-					"@id": "ns2:Imagine",
-					"ns2:name": {
-						"@value": "Imagine",
-						"@type": "xsd:string"
-					},
-					"ns2:artist": {
-						"@id": "ns2:John_Lennon"
-					},
-					"ns2:date": {
-						"@value": "1971-10-11",
-						"@type": "xsd:date"
-					},
-					"@type": "ns2:Album"
+					"@id": "ns2:The_Beatles"
 				},
 				{
 					"@id": "ns2:McCartney",
@@ -61,7 +49,19 @@
 					"@id": "ns2:Paul_McCartney"
 				},
 				{
-					"@id": "ns2:The_Beatles"
+					"@id": "ns2:Imagine",
+					"ns2:name": {
+						"@value": "Imagine",
+						"@type": "xsd:string"
+					},
+					"ns2:artist": {
+						"@id": "ns2:John_Lennon"
+					},
+					"ns2:date": {
+						"@value": "1971-10-11",
+						"@type": "xsd:date"
+					},
+					"@type": "ns2:Album"
 				},
 				{
 					"@id": "ns2:Love_Me_Do"
@@ -106,10 +106,6 @@
 			"@id": "ns1:artists",
 			"@graph": [
 				{
-					"@id": "ns2:Paul_McCartney",
-					"@type": "ns2:SoloArtist"
-				},
-				{
 					"@id": "ns2:The_Beatles",
 					"ns2:member": [
 						{
@@ -132,15 +128,19 @@
 					"@type": "ns2:Band"
 				},
 				{
+					"@id": "ns2:Paul_McCartney",
+					"@type": "ns2:SoloArtist"
+				},
+				{
+					"@id": "ns2:Ringo_Starr",
+					"@type": "ns2:SoloArtist"
+				},
+				{
 					"@id": "ns2:George_Harrison",
 					"@type": "ns2:SoloArtist"
 				},
 				{
 					"@id": "ns2:John_Lennon",
-					"@type": "ns2:SoloArtist"
-				},
-				{
-					"@id": "ns2:Ringo_Starr",
 					"@type": "ns2:SoloArtist"
 				}
 			]

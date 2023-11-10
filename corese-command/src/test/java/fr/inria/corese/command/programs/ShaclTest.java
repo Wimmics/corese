@@ -38,7 +38,7 @@ public class ShaclTest {
             .getPath();
 
     private static final String UUID_REGEX = "<urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}>";
-    private static final String BLANK_NODE_REGEX = "_:b\\d+";
+    private static final String BLANK_NODE_REGEX = "_:(b|bb)\\d+";
 
     @Before
     public void setUp() throws Exception {
@@ -80,7 +80,7 @@ public class ShaclTest {
         String inputRdf = Paths.get(this.inputRdfPath, "beatles-ok.ttl").toString();
         String inputShacl = Paths.get(this.inputShaclPath, "beatles-validator.ttl").toString();
 
-        String expected = Paths.get(this.referencesPath, "ok.ttl").toString();
+        String expected = Paths.get(this.referencesPath, "beatles-ok.ttl").toString();
         String result = Paths.get(this.resultsPath, "beatles-ok.ttl").toString();
 
         int exitCode = cmd.execute(
@@ -123,8 +123,8 @@ public class ShaclTest {
         String inputRdf2 = Paths.get(this.inputRdfPath, "person-ok.ttl").toString();
         String inputShacl2 = Paths.get(this.inputShaclPath, "person-validator.ttl").toString();
 
-        String expected = Paths.get(this.referencesPath, "ok.ttl").toString();
-        String result = Paths.get(this.resultsPath, "beatles-ok.ttl").toString();
+        String expected = Paths.get(this.referencesPath, "beatles-person-ok.ttl").toString();
+        String result = Paths.get(this.resultsPath, "beatles-person-ok.ttl").toString();
 
         int exitCode = cmd.execute(
                 "-i", inputRdf1,
@@ -148,8 +148,8 @@ public class ShaclTest {
         String inputRdf2 = Paths.get(this.inputRdfPath, "person-err.ttl").toString();
         String inputShacl2 = Paths.get(this.inputShaclPath, "person-validator.ttl").toString();
 
-        String expected = Paths.get(this.referencesPath, "person-beatles-err.ttl").toString();
-        String result = Paths.get(this.resultsPath, "person-beatles-err.ttl").toString();
+        String expected = Paths.get(this.referencesPath, "beatles-person-err.ttl").toString();
+        String result = Paths.get(this.resultsPath, "beatles-person-err.ttl").toString();
 
         int exitCode = cmd.execute(
                 "-i", inputRdf1,
@@ -170,7 +170,7 @@ public class ShaclTest {
         String inputRdf = "https://files.inria.fr/corese/data/unit-test/beatles.ttl";
         String inputShacl = Paths.get(this.inputShaclPath, "beatles-validator.ttl").toString();
 
-        String expected = Paths.get(this.referencesPath, "ok.ttl").toString();
+        String expected = Paths.get(this.referencesPath, "beatles-ok.ttl").toString();
         String result = Paths.get(this.resultsPath, "beatles-ok.ttl").toString();
 
         int exitCode = cmd.execute(
@@ -190,7 +190,7 @@ public class ShaclTest {
         String inputRdf = Paths.get(this.inputRdfPath, "beatles-ok.ttl").toString();
         String inputShacl = "https://files.inria.fr/corese/data/unit-test/beatles-validator.ttl";
 
-        String expected = Paths.get(this.referencesPath, "ok.ttl").toString();
+        String expected = Paths.get(this.referencesPath, "beatles-ok.ttl").toString();
         String result = Paths.get(this.resultsPath, "beatles-ok.ttl").toString();
 
         int exitCode = cmd.execute(
@@ -230,7 +230,7 @@ public class ShaclTest {
         String inputRdf = Paths.get(this.inputRdfPath, "beatles-ok.rdf").toString();
         String inputShacl = Paths.get(this.inputShaclPath, "beatles-validator.rdf").toString();
 
-        String expected = Paths.get(this.referencesPath, "ok.rdf").toString();
+        String expected = Paths.get(this.referencesPath, "beatles-ok.rdf").toString();
         String result = Paths.get(this.resultsPath, "beatles-ok.rdf").toString();
 
         int exitCode = cmd.execute(
@@ -253,7 +253,7 @@ public class ShaclTest {
         String inputRdf = Paths.get(this.inputRdfPath, "beatles-ok.jsonld").toString();
         String inputShacl = Paths.get(this.inputShaclPath, "beatles-validator.jsonld").toString();
 
-        String expected = Paths.get(this.referencesPath, "ok.jsonld").toString();
+        String expected = Paths.get(this.referencesPath, "beatles-ok.jsonld").toString();
         String result = Paths.get(this.resultsPath, "beatles-ok.jsonld").toString();
 
         int exitCode = cmd.execute(

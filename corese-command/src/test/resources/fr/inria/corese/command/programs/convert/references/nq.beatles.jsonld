@@ -10,21 +10,6 @@
 			"@id": "ns1:albums",
 			"@graph": [
 				{
-					"@id": "ns2:McCartney",
-					"ns2:name": {
-						"@value": "McCartney",
-						"@type": "xsd:string"
-					},
-					"ns2:artist": {
-						"@id": "ns2:Paul_McCartney"
-					},
-					"ns2:date": {
-						"@value": "1970-04-17",
-						"@type": "xsd:date"
-					},
-					"@type": "ns2:Album"
-				},
-				{
 					"@id": "ns2:Please_Please_Me",
 					"ns2:track": {
 						"@id": "ns2:Love_Me_Do"
@@ -43,18 +28,6 @@
 					"@type": "ns2:Album"
 				},
 				{
-					"@id": "ns2:Love_Me_Do"
-				},
-				{
-					"@id": "ns2:The_Beatles"
-				},
-				{
-					"@id": "ns2:Paul_McCartney"
-				},
-				{
-					"@id": "ns2:John_Lennon"
-				},
-				{
 					"@id": "ns2:Imagine",
 					"ns2:name": {
 						"@value": "Imagine",
@@ -68,6 +41,33 @@
 						"@type": "xsd:date"
 					},
 					"@type": "ns2:Album"
+				},
+				{
+					"@id": "ns2:McCartney",
+					"ns2:name": {
+						"@value": "McCartney",
+						"@type": "xsd:string"
+					},
+					"ns2:artist": {
+						"@id": "ns2:Paul_McCartney"
+					},
+					"ns2:date": {
+						"@value": "1970-04-17",
+						"@type": "xsd:date"
+					},
+					"@type": "ns2:Album"
+				},
+				{
+					"@id": "ns2:Paul_McCartney"
+				},
+				{
+					"@id": "ns2:The_Beatles"
+				},
+				{
+					"@id": "ns2:Love_Me_Do"
+				},
+				{
+					"@id": "ns2:John_Lennon"
 				}
 			]
 		},
@@ -106,19 +106,7 @@
 			"@id": "ns1:artists",
 			"@graph": [
 				{
-					"@id": "ns2:George_Harrison",
-					"@type": "ns2:SoloArtist"
-				},
-				{
 					"@id": "ns2:Paul_McCartney",
-					"@type": "ns2:SoloArtist"
-				},
-				{
-					"@id": "ns2:John_Lennon",
-					"@type": "ns2:SoloArtist"
-				},
-				{
-					"@id": "ns2:Ringo_Starr",
 					"@type": "ns2:SoloArtist"
 				},
 				{
@@ -142,6 +130,18 @@
 						"@type": "xsd:string"
 					},
 					"@type": "ns2:Band"
+				},
+				{
+					"@id": "ns2:George_Harrison",
+					"@type": "ns2:SoloArtist"
+				},
+				{
+					"@id": "ns2:John_Lennon",
+					"@type": "ns2:SoloArtist"
+				},
+				{
+					"@id": "ns2:Ringo_Starr",
+					"@type": "ns2:SoloArtist"
 				}
 			]
 		}

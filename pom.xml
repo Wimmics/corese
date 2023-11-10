@@ -585,36 +585,6 @@
   </build>
   <profiles>
     <profile>
-      <id>maven-inria-fr-release</id>
-      <distributionManagement>
-        <repository>
-          <id>maven-inria-fr-release</id>
-          <name>http://maven.inria.fr-releases</name>
-          <url>http://maven.inria.fr/artifactory/corese-private-release</url>
-        </repository>
-        <snapshotRepository>
-          <id>maven-inria-fr-snapshot</id>
-          <name>http://maven.inria.fr-snapshots</name>
-          <url>http://maven.inria.fr/artifactory/corese-private-snapshot</url>
-        </snapshotRepository>
-      </distributionManagement>
-    </profile>
-    <!-- Jenkins by default defines a property BUILD_NUMBER which is used to enable the profile. -->
-    <profile>
-      <id>jenkins</id>
-      <activation>
-        <property>
-          <name>env.BUILD_NUMBER</name>
-        </property>
-      </activation>
-      <properties>
-        <maven.test.skip>false</maven.test.skip>
-      </properties>
-      <build>
-        <plugins></plugins>
-      </build>
-    </profile>
-    <profile>
       <id>maven-central-release</id>
       <build>
         <plugins>

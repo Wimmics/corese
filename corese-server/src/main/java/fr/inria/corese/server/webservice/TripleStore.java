@@ -361,6 +361,7 @@ public class TripleStore implements URLParam {
             throw new EngineException(ex);
         }
         Shacl sh = new Shacl(getGraph());
+        sh.setDataManager(getDataManager());
         Graph res = sh.eval(shacl);
         QueryProcess exec = QueryProcess.create(res);
         exec.setDebug(ds.getContext().isDebug());

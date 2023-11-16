@@ -1,13 +1,9 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix ns2: <http://example.com/> .
 @prefix ns1: <http://example.com/graphs/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 ns1:albums {
-ns2:McCartney ns2:artist ns2:Paul_McCartney ;
-  ns2:date "1970-04-17"^^xsd:date ;
-  ns2:name "McCartney" ;
-  a ns2:Album .
-
 ns2:Please_Please_Me ns2:artist ns2:The_Beatles ;
   ns2:date "1963-03-22"^^xsd:date ;
   ns2:name "Please Please Me" ;
@@ -17,6 +13,11 @@ ns2:Please_Please_Me ns2:artist ns2:The_Beatles ;
 ns2:Imagine ns2:artist ns2:John_Lennon ;
   ns2:date "1971-10-11"^^xsd:date ;
   ns2:name "Imagine" ;
+  a ns2:Album .
+
+ns2:McCartney ns2:artist ns2:Paul_McCartney ;
+  ns2:date "1970-04-17"^^xsd:date ;
+  ns2:name "McCartney" ;
   a ns2:Album .
 
 }
@@ -31,13 +32,7 @@ ns2:Love_Me_Do ns2:length 125 ;
 }
 
 ns1:artists {
-ns2:George_Harrison a ns2:SoloArtist .
-
 ns2:Paul_McCartney a ns2:SoloArtist .
-
-ns2:John_Lennon a ns2:SoloArtist .
-
-ns2:Ringo_Starr a ns2:SoloArtist .
 
 ns2:The_Beatles ns2:member ns2:John_Lennon ;
   ns2:member ns2:Paul_McCartney ;
@@ -45,6 +40,12 @@ ns2:The_Beatles ns2:member ns2:John_Lennon ;
   ns2:member ns2:George_Harrison ;
   ns2:name "The Beatles" ;
   a ns2:Band .
+
+ns2:George_Harrison a ns2:SoloArtist .
+
+ns2:John_Lennon a ns2:SoloArtist .
+
+ns2:Ringo_Starr a ns2:SoloArtist .
 
 }
 

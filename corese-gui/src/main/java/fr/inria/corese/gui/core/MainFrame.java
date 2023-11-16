@@ -584,9 +584,9 @@ public class MainFrame extends JFrame implements ActionListener {
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
         // crée les options du menu et leurs listeners
-        loadRDF = new JMenuItem("Dataset");
+        loadRDF = new JMenuItem("RDF, RDFS, OWL");
         loadRDF.addActionListener(this);
-        loadRDF.setToolTipText("Load Dataset");
+        loadRDF.setToolTipText("Load an RDF dataset or an RDFS or OWL schema");
 
         loadProperty = new JMenuItem("Property");
         loadProperty.addActionListener(this);

@@ -13,7 +13,7 @@ public class CSVFormat extends QueryResultFormat {
     // (0x0A).
 
     static final String EOL = "\n";
-    static final String SEP = ", ";
+    static final String SEP = ",";
     static final String QUOTE = "\"";
 
     static final String[] SPECIAL = { ",", QUOTE, "\n" };

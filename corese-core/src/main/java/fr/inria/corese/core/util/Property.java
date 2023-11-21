@@ -59,6 +59,7 @@ import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
@@ -291,7 +292,10 @@ public class Property {
         STORAGE,
         STORAGE_SERVICE,
         // default storage: db|dataset
-        STORAGE_MODE
+        STORAGE_MODE,
+
+        // parser configuration
+        STRICT_MODE,
     };
 
     static {
@@ -665,6 +669,10 @@ public class Property {
 
             case SERVICE_DISPLAY_MESSAGE:
                 ServiceParser.DISPLAY_MESSAGE = b;
+                break;
+
+            case STRICT_MODE:
+                ASTQuery.STRICT_MODE = b;
                 break;
         }
     }

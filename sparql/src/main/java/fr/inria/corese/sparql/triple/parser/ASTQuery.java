@@ -52,6 +52,8 @@ import java.util.UUID;
 public class ASTQuery 
         extends ASTObject 
         implements Keyword, ASTVisitable, ASTQ, Message {
+
+    public static boolean STRICT_MODE;
    
     /**
      * Use to keep the class version, to be consistent with the interface
@@ -661,6 +663,10 @@ public class ASTQuery
         if (!errors.contains(error)) {
             errors.add(error);
             logger.error(error);
+
+            if (ASTQuery.STRICT_MODE) {
+                throw new IllegalArgumentException(error);
+            }
         }
     }
 

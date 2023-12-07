@@ -256,3 +256,8 @@ Graph Export in file (export.rdf)
 
 Gateway Server Stop!
 ```
+
+## 4. Options
+
+- `-p`, `--port` : port of the java gateway server (default: 25333).
+- `-c`, `--config`, `--init` : path of the Corese config file, (See a example on [GitHub](https://github.com/Wimmics/corese/blob/master/corese-core/src/main/resources/data/corese/property.properties)).

@@ -13,7 +13,7 @@
 - Added '-no-owl-import' option to Corese-command (see [issue #134](https://github.com/Wimmics/corese/issues/134)).
 - Added output format 'N-Triples' to Corese-command convert sub-command.
 - Added output format 'N-Quads' to Corese-command convert sub-command.
-- Improved existing serializers (see [issue #142](https://github.com/Wimmics/corese/issues/143)).
+- Improved RDF serializers (see [issue #142](https://github.com/Wimmics/corese/issues/143)).
 - Added support for property files to Corese-python.
 - Added '-p' option to Corese-python allowing to customize communication between Python and Java (see [issue #153](https://github.com/Wimmics/corese/issues/153)).
 - Updated loading message in Corese-GUI (see [issue #156](https://github.com/Wimmics/corese/pull/156)).
@@ -21,7 +21,7 @@
 ### Changes
 
 - Moved hint messages in Corese-Command to the standard error stream.
-- Moved error messages to the standard error stream in Corese-Command (see [issue #141](https://github.com/Wimmics/corese/issues/141) and [issue #142](https://github.com/Wimmics/corese/issues/142)).
+- Moved error messages to the standard error stream (see [issue #141](https://github.com/Wimmics/corese/issues/141) and [issue #142](https://github.com/Wimmics/corese/issues/142)).
 
 ### Removed
 

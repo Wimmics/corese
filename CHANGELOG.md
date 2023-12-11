@@ -2,7 +2,7 @@
 
 # Corese Changelog
 
-## 4.4.2 – <!-- TODO: add date and title  -->
+## 4.5.0 – <!-- TODO: add date and title  -->
 
 ### Added
 

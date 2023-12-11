@@ -31,7 +31,7 @@ modules:
 
     sources:
       - type: file
-        url: https://github.com/Wimmics/corese/releases/download/release-4.4.1/corese-command-4.4.1.jar
+        url: https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-command-4.5.0.jar
         sha256: 2b15c46a9643eafb1119db9579e4f259e576647d9f322f437089960120960393
         x-checker-data:
           type: json
@@ -42,6 +42,6 @@ modules:
       - type: git
         dest: git_repo
         url: https://github.com/Wimmics/corese
-        tag: metadata-4.4.1
+        tag: metadata-4.5.0
       - type: file
         path: run.sh

@@ -32,7 +32,7 @@ modules:
 
     sources:
       - type: file
-        url: https://github.com/Wimmics/corese/releases/download/release-4.4.1/corese-gui-4.4.1.jar
+        url: https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-gui-4.5.0.jar
         sha256: cb3270d2ceccc9e8194c7d657eeca3c037e957de994f7eca3bbd1cf58fdbea89
         x-checker-data:
           type: json
@@ -43,6 +43,6 @@ modules:
       - type: git
         dest: git_repo
         url: https://github.com/Wimmics/corese
-        tag: metadata-4.4.1
+        tag: metadata-4.5.0
       - type: file
         path: run.sh

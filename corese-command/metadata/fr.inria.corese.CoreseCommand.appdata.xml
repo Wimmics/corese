@@ -69,6 +69,16 @@
         <keyword>SPARQL Template</keyword>
         <keyword>Command Line Interface</keyword>
         <keyword>CLI</keyword>
+        <keyword>linked data</keyword>
+        <keyword>graph databasE</keyword>
+        <keyword>web of data</keyword>
+        <keyword>knowledge graph</keyword>
+        <keyword>ontology</keyword>
+        <keyword>reasoning</keyword>
+        <keyword>inference</keyword>
+        <keyword>inference engine</keyword>
+        <keyword>rule engine</keyword>
+        <keyword>knowledge representation</keyword>
     </keywords>
 
     <content_rating type="oars-1.1" />
@@ -99,6 +109,35 @@
     </screenshots>
 
     <releases>
+        <release version="4.5.0" date="2023-12-14">
+            <description>
+                <ul>
+                    <li>Added new sub-commands 'shacl', allowing to validate RDF graphs against
+                        SHACL shapes.</li>
+                    <li>Added new sub-commands 'remote-sparql', allowing to execute SPARQL queries
+                        on remote endpoints.</li>
+                    <li>Added the verbose option.</li>
+                    <li>Added support for property files</li>
+                    <li>Moved hint messages to the standard error stream.</li>
+                    <li>Trig serialization to escape special characters.</li>
+                    <li>Improved RDF serializers</li>
+                    <li>Updated json library to 20231013.</li>
+                </ul>
+                <!-- French translation -->
+                <ul xml:lang="fr">
+                    <li>Ajout de nouveaux sous-commandes 'shacl', permettant de valider des graphes
+                        RDF contre des formes SHACL.</li>
+                    <li>Ajout de nouvelles sous-commandes 'remote-sparql', permettant d'exécuter des
+                        requêtes SPARQL sur des points de terminaison distants.</li>
+                    <li>Ajout de l'option verbeuse.</li>
+                    <li>Ajout de la prise en charge des fichiers de propriétés.</li>
+                    <li>Déplacement des messages d'indice vers le flux d'erreur standard.</li>
+                    <li>Sérialisation Trig pour échapper aux caractères spéciaux.</li>
+                    <li>Amélioration des sérialiseurs RDF.</li>
+                    <li>Mise à jour de la bibliothèque json à 20231013.</li>
+                </ul>
+            </description>
+        </release>
         <release version="4.4.1" date="2023-07-25">
             <description>
                 <p>

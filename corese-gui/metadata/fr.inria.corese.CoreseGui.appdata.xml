@@ -66,6 +66,7 @@
     <keywords>
         <keyword>semantic web</keyword>
         <keyword>RDF</keyword>
+        <keyword>RDFS</keyword>
         <keyword>SPARQL</keyword>
         <keyword>OWL</keyword>
         <keyword>SHACL</keyword>
@@ -78,6 +79,16 @@
         <keyword>SPARQL Update</keyword>
         <keyword>SPARQL Graph</keyword>
         <keyword>SPARQL Template</keyword>
+        <keyword>linked data</keyword>
+        <keyword>graph databasE</keyword>
+        <keyword>web of data</keyword>
+        <keyword>knowledge graph</keyword>
+        <keyword>ontology</keyword>
+        <keyword>reasoning</keyword>
+        <keyword>inference</keyword>
+        <keyword>inference engine</keyword>
+        <keyword>rule engine</keyword>
+        <keyword>knowledge representation</keyword>
     </keywords>
 
     <content_rating type="oars-1.1" />
@@ -113,6 +124,21 @@
     </recommends>
 
     <releases>
+        <release version="4.5.0" date="2023-12-14">
+            <description>
+                <ul>
+                    <li>Updated loading message in Corese-GUI.</li>
+                    <li>Fixed federated query with PREFIX statements failing under some conditions.</li>
+                    <li>Updated json library to 20231013.</li>
+                </ul>
+                <!-- French translation -->
+                <ul xml:lang="fr">
+                    <li>Mise à jour du message de chargement dans Corese-GUI.</li>
+                    <li>Correction de la requête fédérée avec des déclarations PREFIX échouant dans certaines conditions.</li>
+                    <li>Mise à jour de la bibliothèque json à 20231013.</li>
+                </ul>
+            </description>
+        </release>
         <release version="4.4.1" date="2023-07-25">
             <description>
                 <ul>

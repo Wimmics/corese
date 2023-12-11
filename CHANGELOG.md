@@ -27,9 +27,9 @@
 
 ### Fixed
 
-- Fix support of datamanagers for SHACL in Corese-Server.
-- Fix Trig serialization to escape special characters (see [issue #151](https://github.com/Wimmics/corese/issues/151)).
-- Fix federated query with PREFIX statements fails on some conditions (see [issue #140](https://github.com/Wimmics/corese/issues/140)).
+- Fixed support of data managers for SHACL in Corese-Server.
+- Fixed Trig serialization to escape special characters (see [issue #151](https://github.com/Wimmics/corese/issues/151)).
+- Fixed federated query with PREFIX statements failing under some conditions (see [issue #140](https://github.com/Wimmics/corese/issues/140)).
 
 ### Security
 

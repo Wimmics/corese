@@ -28,9 +28,9 @@ authors:
       orcid: 'https://orcid.org/0000-0003-0543-1232'
 identifiers:
     - type: swh
-      value: swh:1:dir:2319e6ec1867816ffb87fa5e8bef3b6a41e4e6ce
+      value: swh:1:dir:7ec9a0bcccba1254457985de26d524d0d5c4a9c5
     - type: doi
-      value: 10.5281/zenodo.8181618
+      value: 10.5281/zenodo.10376241
 repository-code: 'https://github.com/Wimmics/corese'
 url: 'https://project.inria.fr/corese'
 abstract: >-

@@ -4,7 +4,7 @@
 <!-- markdownlint-disable MD012 -->
 <!-- markdownlint-disable MD041 -->
 
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/36371940.svg)](https://zenodo.org/badge/latestdoi/36371940) [![SWH](https://archive.softwareheritage.org/badge/swh:1:dir:2319e6ec1867816ffb87fa5e8bef3b6a41e4e6ce/)](https://archive.softwareheritage.org/swh:1:dir:2319e6ec1867816ffb87fa5e8bef3b6a41e4e6ce) [![License: CECILL-C](https://img.shields.io/badge/License-CECILL--C-blue.svg)](https://cecill.info/licences/Licence_CeCILL-C_V1-en.html) [![Discussions](https://img.shields.io/badge/Discussions-GitHub-blue)](https://github.com/Wimmics/corese/discussions)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10376241.svg)](https://doi.org/10.5281/zenodo.10376241) [![SWH](https://archive.softwareheritage.org/badge/swh:1:dir:7ec9a0bcccba1254457985de26d524d0d5c4a9c5/)](https://archive.softwareheritage.org/swh:1:dir:7ec9a0bcccba1254457985de26d524d0d5c4a9c5;origin=https://github.com/Wimmics/corese;visit=swh:1:snp:191fffb23bb08ffc9fd187019982de9d5786861e;anchor=swh:1:rev:f0c09b74b609c395f084e7d069d4b54c575ee20d) [![License: CECILL-C](https://img.shields.io/badge/License-CECILL--C-blue.svg)](https://cecill.info/licences/Licence_CeCILL-C_V1-en.html) [![Discussions](https://img.shields.io/badge/Discussions-GitHub-blue)](https://github.com/Wimmics/corese/discussions)
 
 
 

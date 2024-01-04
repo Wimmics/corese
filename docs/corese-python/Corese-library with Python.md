@@ -1,4 +1,4 @@
-# Corese-library with Python
+# Getting Started With Corese-python (beta)
 
 ## 1. Setup and run
 

@@ -28,8 +28,8 @@ There are several interfaces for Corese:
 - **Corese-library:** Java library to process RDF data and use Corese features via an API.
 - **Corese-server:** Tool to easily create, configure and manage SPARQL endpoints.
 - **Corese-gui:** Graphical interface that allows an easy and visual use of Corese features.
+- **Corese-Command:** Command Line Interface for Corese that allows users to interact with Corese features from the terminal.
 - **Corese-Python (beta):** Python wrapper for accessing and manipulating RDF data with Corese features using py4j.
-- **Corese-Command (beta):** Command Line Interface for Corese that allows users to interact with Corese features from the terminal.
 
 ## Download and install
 
@@ -59,10 +59,7 @@ There are several interfaces for Corese:
 </dependency>
 ```
 
-Documentation:
-
-- [Getting Started With Corese-library](/docs/getting%20started/Getting%20Started%20With%20Corese-library.md)
-- [Corese-library with Python](/docs/corese-python/Corese-library%20with%20Python.md)
+- Documentation: [Getting Started With Corese-library](/docs/getting%20started/Getting%20Started%20With%20Corese-library.md)
 
 ### Corese-server
 
@@ -74,17 +71,16 @@ docker run --name my-corese \
     -d wimmics/corese
 ```
 
-- Alternatively, download [Corese-server jar file](https://project.inria.fr/corese/download/).
+- Alternatively, download [Corese-server jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-server-4.5.0.jar"
 java -jar "-Dfile.encoding=UTF8" "corese-server-4.5.0.jar"
 ```
 
-Documentation:
-
-- [Getting Started With Corese-server](/docs/getting%20started/Getting%20Started%20With%20Corese-server.md)
-- [Corese-server with Python](/docs/corese-python/Corese-server%20with%20Python.md)
+- Documentation:
+  - [Getting Started With Corese-server](/docs/getting%20started/Getting%20Started%20With%20Corese-server.md)
+  - [Use Corese-server with Python](/docs/corese-python/Corese-server%20with%20Python.md)
 
 ### Corese-GUI
 
@@ -95,27 +91,14 @@ Documentation:
 </a>
 <!-- markdownlint-enable MD033 -->
 
-- Or download [Corese-gui jar file](https://project.inria.fr/corese/download/).
+- Or download [Corese-gui jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-gui-4.5.0.jar"
 java -jar "-Dfile.encoding=UTF8" "corese-gui-4.5.0.jar"
 ```
 
-Documentation:
-
-- [Getting Started With Corese-command](/docs/getting%20started/Getting%20Started%20With%20Corese-command.md)
-
-### Corese-Python (beta)
-
-- Download [Corese-python jar file](https://project.inria.fr/corese/download/).
-
-```sh
-wget "files.inria.fr/corese/distrib/corese-library-python-4.5.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.5.0.jar"
-```
-
-### Corese-Command (beta)
+### Corese-Command
 
 - Download on Flathub
 <!-- markdownlint-disable MD033 -->
@@ -124,7 +107,7 @@ java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.5.0.jar"
 </a>
 <!-- markdownlint-enable MD033 -->
 
-- Or download [Corese-command jar file](https://project.inria.fr/corese/download/).
+- Or download [Corese-command jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-command-4.5.0.jar"
@@ -144,6 +127,19 @@ curl -sSL https://files.inria.fr/corese/distrib/script/uninstall-corese-command.
 ```
 
 > If you're using zsh, replace `bash` with `zsh`.
+
+- Documentation: [Getting Started With Corese-command](/docs/getting%20started/Getting%20Started%20With%20Corese-command.md)
+
+### Corese-Python (beta)
+
+- Download [Corese-python jar file](https://project.inria.fr/corese/jar/).
+
+```sh
+wget "files.inria.fr/corese/distrib/corese-library-python-4.5.0.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.5.0.jar"
+```
+
+- Documentation: [Getting Started With Corese-python](/docs/corese-python/Corese-library%20with%20Python.md)
 
 ## Compilation from source
 

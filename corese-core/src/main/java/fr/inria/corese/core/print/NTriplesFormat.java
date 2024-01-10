@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
@@ -38,6 +39,16 @@ public class NTriplesFormat extends RDFFormat {
      */
     public static NTriplesFormat create(Graph graph) {
         return new NTriplesFormat(graph);
+    }
+
+    /**
+     * Factory method to create a new NTriplesFormat instance.
+     * 
+     * @param map the mappings to be formatted
+     * @return a new NTriplesFormat instance
+     */
+    public static NTriplesFormat create(Mappings map) {
+        return new NTriplesFormat((Graph) map.getGraph());
     }
 
     /**

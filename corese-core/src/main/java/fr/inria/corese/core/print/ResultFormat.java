@@ -485,6 +485,8 @@ public class ResultFormat implements ResultFormatDef {
             case TURTLE_FORMAT:
             case TRIG_FORMAT:
             case JSONLD_FORMAT:
+            case NTRIPLES_FORMAT:
+            case NQUADS_FORMAT:
                 // case RDF_FORMAT:
                 return true;
             default:
@@ -535,6 +537,10 @@ public class ResultFormat implements ResultFormatDef {
                 return TripleFormat.create(map, true).setNbTriple(getNbTriple()).toString();
             case JSONLD_FORMAT:
                 return JSONLDFormat.create(map).toString();
+            case NTRIPLES_FORMAT:
+                return NTriplesFormat.create(map).toString();
+            case NQUADS_FORMAT:
+                return NQuadsFormat.create(map).toString();
 
             case RDF_FORMAT:
                 // W3C RDF Graph Mappings

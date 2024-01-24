@@ -35,7 +35,7 @@ public class CoreseGraphDataManager implements DataManager {
      */
     protected CoreseGraphDataManager() {
         setGraph(new Graph());
-        init();
+        initlocal();
     }
 
     /**
@@ -46,10 +46,10 @@ public class CoreseGraphDataManager implements DataManager {
      */
     protected CoreseGraphDataManager(Graph g) {
         setGraph(g);
-        init();
+        initlocal();
     }
 
-    void init() {
+    void initlocal() {
         emptyNodeList = new ArrayList<>(0);
         emptyEdgeList = new ArrayList<>(0);
     }

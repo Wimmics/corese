@@ -37,9 +37,10 @@ public class NQuadsFormat extends NTriplesFormat {
 
             if (edge.getGraph().getValue().stringValue() != ExpType.DEFAULT_GRAPH) {
                 sb.append(printNode(edge.getGraph()));
+                sb.append(" ");
             }
 
-            sb.append(" .\n");
+            sb.append(".\n");
         }
 
         return sb.toString();

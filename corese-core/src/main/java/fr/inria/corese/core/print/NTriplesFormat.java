@@ -94,8 +94,10 @@ public class NTriplesFormat extends RDFFormat {
             return printURI(node);
         } else if (node.getDatatypeValue().isLiteral()) {
             return printDatatype(node);
+        } else if (node.isBlank()) {
+            return printBlank(node);
         } else {
-            throw new IllegalArgumentException("Node " + node + " is not a URI or a literal");
+            throw new IllegalArgumentException("Node " + node + " is not a URI, Literal, or blank node.");
         }
     }
 
@@ -133,6 +135,16 @@ public class NTriplesFormat extends RDFFormat {
         } else {
             return "\"" + label + "\"";
         }
+    }
+
+    /**
+     * Converts a blank node to a string.
+     *
+     * @param node the blank node to be formatted
+     * @return a string representation of the blank node
+     */
+    private String printBlank(Node node) {
+        return node.getLabel();
     }
 
     /**

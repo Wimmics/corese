@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -60,7 +61,12 @@ public class NTriplesFormat extends RDFFormat {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (var edge : graph.getEdges()) {
+        for (Edge e : graph.getEdges()) {
+
+            // Create a new clean iterable (because corse iterable does not have a perfectly
+            // defined behavior for optimization reasons)
+            Edge edge = this.graph.getEdgeFactory().copy(e);
+
             sb.append(printNode(edge.getNode(0)))
                     .append(" ")
                     .append(printNode(edge.getEdgeNode()))

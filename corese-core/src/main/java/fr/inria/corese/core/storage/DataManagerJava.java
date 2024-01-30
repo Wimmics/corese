@@ -128,7 +128,7 @@ public class DataManagerJava extends CoreseGraphDataManager {
         return str.replace("%20", " ");
     }
 
-    @Override
+    //@Override
     void init() {
         if (isLdscript()) {
             initldscript();

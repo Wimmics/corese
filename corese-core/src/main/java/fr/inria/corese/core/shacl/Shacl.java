@@ -42,6 +42,12 @@ public class Shacl {
     static final String PARSE = SH + "funparse";
 
     static final String SHACL = SH + "shacl";
+    // Probabilistic SHACL
+    static final String EXTENDED_SHACL = SH + "extendedshacl";
+    // modss
+    public static final int PROBABILISTIC_MODE = 1;
+    public static final int POSSIBILISTIC_MODE = 2; // not avalaible
+
     static final String SHEX = SH + "shex";
     static final String SHAPE = SH + "shaclshape";
     static final String NODE = SH + "shaclnode";
@@ -209,6 +215,35 @@ public class Shacl {
         return eval(SHACL, shacl);
     }
 
+    /**
+     * probabilistic SHACL Evaluation (usage for Corese GUI)
+     * @return
+     * @throws EngineException
+     */
+    public Graph eval(int mode) throws EngineException {
+        return eval(EXTENDED_SHACL, getShacl(), mode, DatatypeMap.createLiteral(String.valueOf(0.1), fr.inria.corese.sparql.datatype.RDF.xsddouble));
+    }
+
+    /**
+     * probabilistic SHACL Evaluation (usage for Corese server) with p-value
+     * @return
+     * @throws EngineException
+     */
+    public Graph eval(Graph shacl, int mode, IDatatype p) throws EngineException {
+        setShacl(shacl);
+        return eval(EXTENDED_SHACL, shacl, mode, p);
+    }
+
+    /**
+     * probabilistic SHACL Evaluation (usage for Corese server) with p-value and the number of considered triples
+     * @return
+     * @throws EngineException
+     */
+    public Graph eval(Graph shacl, int mode, IDatatype p, IDatatype nTriples) throws EngineException {
+        setShacl(shacl);
+        return eval(EXTENDED_SHACL, shacl, mode, p, nTriples);
+    }
+    
     /**
      * Evaluate shape/node
      */

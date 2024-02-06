@@ -70,6 +70,8 @@ public class Core extends PluginImpl implements FunctionEvaluator {
     static void defNamespace() {
         prefix = new HashMap<>();
         define("sh", NSManager.SHAPE);
+        // Probabilistic SHACL prefix
+        define("psh", NSManager.PROBSHACL);
         define("msh", MSH);
     }
     

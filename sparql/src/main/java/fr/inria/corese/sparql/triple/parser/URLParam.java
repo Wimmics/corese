@@ -22,6 +22,11 @@ public interface URLParam {
     static final String URL = "url";
     static final String DEFAULT_GRAPH = "default-graph-uri";
     static final String NAMED_GRAPH = "named-graph-uri";
+    // Probabilistic SHACL
+    static final String PROB_SHACL = "prob-shacl";
+    static final String PROB_SHACL_P = "p";
+    static final String PROB_SHACL_N_TRIPLES = "nT";
+    static final String CONTENT = "content";
 
     // specific for service clause
     static final String LOOP = "loop";

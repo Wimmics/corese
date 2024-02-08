@@ -6,11 +6,19 @@ This tutorial shows how to use the basic features of the Corese-server framework
    1. [1. Installation](#1-installation)
    2. [2. Load data](#2-load-data)
       1. [2.1. Command line](#21-command-line)
-      2. [2.2. Profile file](#22-profile-file)
-   3. [3. Create multiple endpoints](#3-create-multiple-endpoints)
-      1. [3.1. Multiple endpoints with different data](#31-multiple-endpoints-with-different-data)
-   4. [4. Restrict access to external endpoints](#4-restrict-access-to-external-endpoints)
-   5. [5. To go deeper](#5-to-go-deeper)
+   3. [3. Profile file](#3-profile-file)
+      1. [3.1 Create multiple endpoints](#31-create-multiple-endpoints)
+         1. [3.1.1 Multiple endpoints with different data](#311-multiple-endpoints-with-different-data)
+      2. [3.2 Restrict access to external endpoints](#32-restrict-access-to-external-endpoints)
+   4. [4. Property configuration file](#4-property-configuration-file)
+      1. [4.1. Blank node format](#41-blank-node-format)
+      2. [4.2. Loading in the default graph](#42-loading-in-the-default-graph)
+         1. [4.3. RDF\* (RDF Star)](#43-rdf-rdf-star)
+      3. [4.4. OWL utilities](#44-owl-utilities)
+      4. [4.5. SPARQL engine behavior](#45-sparql-engine-behavior)
+      5. [4.6. SPARQL federation behavior](#46-sparql-federation-behavior)
+      6. [4.7. SPARQL LOAD parameters](#47-sparql-load-parameters)
+   5. [6. To go deeper](#6-to-go-deeper)
 
 ## 1. Installation
 
@@ -157,22 +165,28 @@ An example of properties file is available on the [Corese-Command GitHub reposit
 Here we list only some of the most commonly used properties.
 
 ### 4.1. Blank node format
+
 ```properties
 BLANK_NODE              = _:b
 ```
+
 `BLANK_NODE` specifies the format of blank nodes. The default value is `_:b`.
 
 ### 4.2. Loading in the default graph
+
 ```properties
 LOAD_IN_DEFAULT_GRAPH   = true
 ```
+
 By default, the data is loaded into the default graph. If `LOAD_IN_DEFAULT_GRAPH` is set to `false`, the data is loaded into a named graph whose name is the path of the file.
 Note that internally, the default graph of the Corese server is named `http://ns.inria.fr/corese/kgram/default`, or `kg:default`.
 
 #### 4.3. RDF* (RDF Star)
+
 ```properties
 RDF_STAR                = false
 ```
+
 Corese implements a prototype extension for the RDF* specification. `RDF_STAR` enables this extension.
 
 ### 4.4. OWL utilities
@@ -180,23 +194,29 @@ Corese implements a prototype extension for the RDF* specification. `RDF_STAR` e
 ```properties
 DISABLE_OWL_AUTO_IMPORT = true
 ```
+
 By default, when a triple with the predicate `owl:imports` is loaded, the Corese-server automatically loads the ontology specified in the object of the triple. If `DISABLE_OWL_AUTO_IMPORT` is set to `true`, the Corese-server does not load the ontology specified in the object of the triple.
 
 ### 4.5. SPARQL engine behavior
+
 ```properties
 SPARQL_COMPLIANT        = false
 ```
+
 `SPARQL_COMPLIANT` specifies the behavior of the SPARQL engine. If `SPARQL_COMPLIANT` is set to `true`, the SPARQL engine is compliant with the W3C test cases. In practice, this means that the SPARQL engine will consider that two literals are different if they have the same value but different types (E.g: `1` and `"1"^^xsd:integer`).
 
 ```properties
 REENTRANT_QUERY         = false
 ```
+
 `REENRANT_QUERY` enables the update during a query. This option was implemented in cooperation with the [SPARQL micro-service project](https://github.com/frmichel/sparql-micro-service).
 
 ### 4.6. SPARQL federation behavior
+
 ```properties
 SERVICE_BINDING     = values 
 ```
+
 When binding values between clauses from different endpoints, the Corese-server uses the `SERVICE_BINDING` property to specify the method to use. The default value is `values`. The other possible value is `filter`.
 
 For example, with the following data in the local endpoint:
@@ -206,6 +226,7 @@ For example, with the following data in the local endpoint:
 
 ex:John :name "John" .
 ```
+
 if the following query is executed:
 
 ```sparql
@@ -233,6 +254,7 @@ SELECT * {
 ```properties
 SERVICE_SLICE       = 20
 ```
+
 `SERVICE_SLICE` specifies the number of bindings to send to a remote endpoint. The default value is `20`.
 
 ```properties
@@ -250,35 +272,41 @@ SELECT * {
     LIMIT 1000
 }
 ```
+
 Corese will try to obtain the next 1000 results by sending the same query with the `OFFSET` clause.
 
 ```properties
 SERVICE_TIMEOUT     = 2000
 ```
+
 `SERVICE_TIMEOUT` specifies the timeout in milliseconds for a remote endpoint. The default value is `10000`.
 
 ### 4.7. SPARQL LOAD parameters
+
 ```properties
 LOAD_LIMIT   = 10
+
 ```
+
 `LOAD_LIMIT` specifies the maximum number of triples to load from a file. This feature is not enabled by default.
 
 ```properties
 LOAD_WITH_PARAMETER = true
 ```
+
 `LOAD_WITH_PARAMETER` enables the use of the `LOAD` clause with a parameter. This feature is not enabled by default.
 
 ```properties
 LOAD_FORMAT   = text/turtle;q=1.0, application/rdf+xml;q=0.9, application/ld+json;q=0.7; application/json;q=0.6
 ```
+
 ```properties
 LOAD_FORMAT   = application/rdf+xml
 ```
+
 If `LOAD_WITH_PARAMETER` is enabled, `LOAD_FORMAT` can be used to specify which mime type should be resquest as format for the loaded data.
 
 ## 6. To go deeper
 
 - [Technical documentation](https://files.inria.fr/corese/doc/server.html)
 - [Storage](https://github.com/Wimmics/corese/blob/master/docs/storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md#configuring-and-connecting-to-different-storage-systems-in-corese)
-
-

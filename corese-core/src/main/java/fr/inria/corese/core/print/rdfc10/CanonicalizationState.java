@@ -40,7 +40,7 @@ public class CanonicalizationState {
      * @param quad        The quad to be associated with the blank node.
      */
     public void associateBlankNodeWithQuad(String blankNodeId, Edge quad) {
-        this.blankNodesToQuad.put(blankNodeId, quad);
+        this.blankNodesToQuad.add(blankNodeId, quad);
     }
 
     /**
@@ -64,7 +64,7 @@ public class CanonicalizationState {
      * @param blankNodeId The identifier of the blank node.
      */
     public void associateHashWithBlankNode(String hash, String blankNodeId) {
-        this.hashToBlankNode.put(hash, blankNodeId);
+        this.hashToBlankNode.add(hash, blankNodeId);
     }
 
     /**

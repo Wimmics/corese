@@ -91,7 +91,7 @@ public class ListMap<K, V> implements Map<K, List<V>> {
      * @param key   the key with which the specified value is to be associated
      * @param value the value to be associated with the specified key
      */
-    public void put(K key, V value) {
+    public void add(K key, V value) {
         map.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
     }
 

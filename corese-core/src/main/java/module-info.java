@@ -15,6 +15,7 @@ module fr.inria.corese.corese_core {
     requires semargl.rdfa;
     requires jdk.management;
     requires org.json;
+    requires org.apache.commons.lang3;
 
     exports fr.inria.corese.core.load;
     exports fr.inria.corese.core.load.result;
@@ -26,6 +27,7 @@ module fr.inria.corese.corese_core {
     exports fr.inria.corese.core.util;
     exports fr.inria.corese.core.index;
     exports fr.inria.corese.core.print;
+    exports fr.inria.corese.core.print.rdfc10;
     exports fr.inria.corese.core.api;
     exports fr.inria.corese.core.edge;
     exports fr.inria.corese.core.logic;

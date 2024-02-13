@@ -149,7 +149,7 @@ public class NTriplesFormat extends RDFFormat {
      * @param node the blank node to be formatted
      * @return a string representation of the blank node
      */
-    private String printBlank(Node node) {
+    protected String printBlank(Node node) {
         return node.getLabel();
     }
 

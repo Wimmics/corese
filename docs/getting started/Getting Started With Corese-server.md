@@ -18,11 +18,11 @@ This tutorial shows how to use the basic features of the Corese-server framework
       4. [4.5. SPARQL engine behavior](#45-sparql-engine-behavior)
       5. [4.6. SPARQL federation behavior](#46-sparql-federation-behavior)
       6. [4.7. SPARQL LOAD parameters](#47-sparql-load-parameters)
-   5. [6. To go deeper](#6-to-go-deeper)
+   5. [5. To go deeper](#5-to-go-deeper)
 
 ## 1. Installation
 
-Installations instructions are available on the [Corese-Command GitHub repository](https://github.com/Wimmics/corese).
+Installation instructions are available on the [Corese-Command GitHub repository](https://github.com/Wimmics/corese).
 
 ## 2. Load data
 
@@ -71,7 +71,7 @@ st:user a st:Server;
 ```
 
 The keyword `st:user` designates the default endpoint available in <http://localhost:8080/sparql>.
-In this example, we add on the default endpoint the workflow named `<#loadBeatles>` which loads the file "beatles.tll".
+In this example, we add on the default endpoint the workflow named `<#loadBeatles>` which loads the file "beatles.ttl".
 There can be several load in a workflow body.
 
 To load Corese-server with a profile, use the options `-lp -pp "profileFile"`.
@@ -167,7 +167,7 @@ Here we list only some of the most commonly used properties.
 ### 4.1. Blank node format
 
 ```properties
-BLANK_NODE              = _:b
+BLANK_NODE = _:b
 ```
 
 `BLANK_NODE` specifies the format of blank nodes. The default value is `_:b`.
@@ -175,7 +175,7 @@ BLANK_NODE              = _:b
 ### 4.2. Loading in the default graph
 
 ```properties
-LOAD_IN_DEFAULT_GRAPH   = true
+LOAD_IN_DEFAULT_GRAPH = true
 ```
 
 By default, the data is loaded into the default graph. If `LOAD_IN_DEFAULT_GRAPH` is set to `false`, the data is loaded into a named graph whose name is the path of the file.
@@ -184,10 +184,10 @@ Note that internally, the default graph of the Corese server is named `http://ns
 #### 4.3. RDF* (RDF Star)
 
 ```properties
-RDF_STAR                = false
+RDF_STAR = false
 ```
 
-Corese implements a prototype extension for the RDF* specification. `RDF_STAR` enables this extension.
+Corese implements a prototype extension for the RDF* specification. RDF_STAR enables this extension.
 
 ### 4.4. OWL utilities
 
@@ -200,21 +200,21 @@ By default, when a triple with the predicate `owl:imports` is loaded, the Corese
 ### 4.5. SPARQL engine behavior
 
 ```properties
-SPARQL_COMPLIANT        = false
+SPARQL_COMPLIANT = false
 ```
 
 `SPARQL_COMPLIANT` specifies the behavior of the SPARQL engine. If `SPARQL_COMPLIANT` is set to `true`, the SPARQL engine is compliant with the W3C test cases. In practice, this means that the SPARQL engine will consider that two literals are different if they have the same value but different types (E.g: `1` and `"1"^^xsd:integer`).
 
 ```properties
-REENTRANT_QUERY         = false
+REENTRANT_QUERY = false
 ```
 
-`REENRANT_QUERY` enables the update during a query. This option was implemented in cooperation with the [SPARQL micro-service project](https://github.com/frmichel/sparql-micro-service).
+`REENRANT_QUERY` enables the update during a query. This option was implemented in cooperation with the [SPARQL micro-service project](https://github.com/frmichel/sparql-micro-service). It is equivalent to using `-re` argument.
 
 ### 4.6. SPARQL federation behavior
 
 ```properties
-SERVICE_BINDING     = values 
+SERVICE_BINDING = values 
 ```
 
 When binding values between clauses from different endpoints, the Corese-server uses the `SERVICE_BINDING` property to specify the method to use. The default value is `values`. The other possible value is `filter`.
@@ -251,14 +251,18 @@ SELECT * {
 }
 ```
 
+This is equivalent to add `@binding values` in the query. If `SERVICE_BINDING` is defined in the properties file and `@binding` is also defined in the query, then the value of `@binding` in the query is used.
+
 ```properties
-SERVICE_SLICE       = 20
+SERVICE_SLICE = 20
 ```
 
 `SERVICE_SLICE` specifies the number of bindings to send to a remote endpoint. The default value is `20`.
 
+This is equivalent to add `@slice 20` in the query. If `SERVICE_SLICE` is defined in the properties file and `@slice` is also defined in the query, then the value of `@slice` in the query is used.
+
 ```properties
-SERVICE_LIMIT       = 1000
+SERVICE_LIMIT = 1000
 ```
 
 `SERVICE_LIMIT` specifies the maximum number of results to return from a remote endpoint. The default value is `1000`. In the previous example, the query sent to the remote endpoint should actually be:
@@ -273,6 +277,8 @@ SELECT * {
 }
 ```
 
+This is equivalent to add `@limit 1000` in the query. If `SERVICE_LIMIT` is defined in the properties file and `@limit` is also defined in the query, then the value of `@limit` in the query is used.
+
 Corese will try to obtain the next 1000 results by sending the same query with the `OFFSET` clause.
 
 ```properties
@@ -281,11 +287,12 @@ SERVICE_TIMEOUT     = 2000
 
 `SERVICE_TIMEOUT` specifies the timeout in milliseconds for a remote endpoint. The default value is `10000`.
 
+This is equivalent to add `@timeout 2000` in the query. If `SERVICE_TIMEOUT` is defined in the properties file and `@timeout` is also defined in the query, then the value of `@timeout` in the query is used.
+
 ### 4.7. SPARQL LOAD parameters
 
 ```properties
 LOAD_LIMIT   = 10
-
 ```
 
 `LOAD_LIMIT` specifies the maximum number of triples to load from a file. This feature is not enabled by default.
@@ -306,7 +313,7 @@ LOAD_FORMAT   = application/rdf+xml
 
 If `LOAD_WITH_PARAMETER` is enabled, `LOAD_FORMAT` can be used to specify which mime type should be resquest as format for the loaded data.
 
-## 6. To go deeper
+## 5. To go deeper
 
 - [Technical documentation](https://files.inria.fr/corese/doc/server.html)
 - [Storage](https://github.com/Wimmics/corese/blob/master/docs/storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md#configuring-and-connecting-to-different-storage-systems-in-corese)

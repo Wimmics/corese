@@ -451,7 +451,7 @@ public class Access {
         deny(READ_WRITE);
         deny(WRITE);
         deny(SUPER_WRITE);
-        deny(READ_FILE);
+        //deny(READ_FILE);
         deny(LOAD_FILE);
         deny(JAVA_FUNCTION);
         // user query on protected server have USER access level
@@ -464,7 +464,7 @@ public class Access {
         // draft test for st:logger
         set(LDSCRIPT_SPARQL, RESTRICTED);
         set(DEFINE_FUNCTION, RESTRICTED);
-        set(READ, RESTRICTED);
+        //set(READ, RESTRICTED);
     }
     
     /**
@@ -475,12 +475,14 @@ public class Access {
      */
     void init() {
         deny(LINKED_FUNCTION);
-        // xt:read st:format cannot read the file system
+        // xt:read cannot read the file system
         // use case: server mode
-        deny(READ_FILE);
+        //deny(READ_FILE);
         set(LDSCRIPT, PUBLIC);
         // authorize server for query + transform when transform is authorized
         set(LINKED_TRANSFORMATION, PUBLIC);
+        // read authorized source is allowed
+        set(READ, PUBLIC);
     }
     
     /**

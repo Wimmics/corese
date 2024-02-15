@@ -1371,7 +1371,8 @@ void BasicGraphGraphPattern(Exp stack) :
 	{ Atom src; Exp e; Source st; 
 	  boolean state = false, leaf = false, rec = false;}
 {	
-  	src = VarOrIRIref(stack) 
+  	//src = VarOrIRIref(stack) 
+        src = VarOrBlankNodeOrIRIref(stack)
   	{ handler.graphPattern(src); }
   	e = GroupGraphPattern()
   	{ 
@@ -2853,12 +2854,14 @@ Variable BlankNode(Exp stack): { Token t; Variable v; }
 	{
  		// check if the blank node is already in the table
   		v = astq.newBlankNode(stack, t.image);
+                handler.declareBlankNode(t);
 		
   	}
   	| t = <ANON>   	
   	{ 
   		// create a new blank node
   		v = astq.newBlankNode(); 
+                handler.declareBlankNode(t);
   	}
   )
   { 

@@ -20,7 +20,9 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.transform.ContextBuilder;
 import fr.inria.corese.core.util.Parameter;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
+import static fr.inria.corese.sparql.triple.function.term.TermEval.READ_MESS;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
@@ -385,8 +387,18 @@ public class Profile {
     }
 
     String loadQuery(String path) throws IOException, LoadException {
-        if (isProtected && !path.startsWith(getServer())) {
-            throw new IOException(path);
+//        if (isProtected && !path.startsWith(getServer())) {
+//            throw new IOException(path);
+//        }
+        if (path.startsWith(getServer())) {
+            // OK
+        } else {
+            try {
+                // do not accept (file) path when accept list is empty
+                Access.check(Feature.READ, Access.getQueryAccessLevel(true), path, READ_MESS, false);
+            } catch (SafetyException ex) {
+                throw new IOException(path);
+            }
         }
         return read(path);
     }

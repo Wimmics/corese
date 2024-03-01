@@ -147,7 +147,7 @@ public class NSManager extends ASTObject {
     static final String NL = System.getProperty("line.separator");
     static final char[] END_CHAR = { '#', '/', '?' }; // , ':'}; // may end an URI ...
     static final String[] PB_CHAR_NAME = { ".", "\u2013", ":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}",
-            "?", "&" };
+            "?", "&", "=" };
     static final String[] PB_CHAR_URI = { "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&" };
     static final String pchar = ":";
     int count = 0;
@@ -519,6 +519,11 @@ public class NSManager extends ASTObject {
             return nsname;
         }
 
+        String name = extractLocalName(nsname, namespace);
+        if (containsForbiddenCharacters(name)) {
+            return nsname;
+        }
+        
         String prefix = getPrefix(namespace);
         if (prefix == null) {
             if (skip) {
@@ -527,10 +532,6 @@ public class NSManager extends ASTObject {
             prefix = defineDefaultNamespace(namespace);
         }
 
-        String name = extractLocalName(nsname, namespace);
-        if (containsForbiddenCharacters(name)) {
-            return nsname;
-        }
 
         String result = assembleResult(prefix, name, xml);
         record(namespace);

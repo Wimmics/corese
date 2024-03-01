@@ -388,6 +388,7 @@ public interface IDatatype
     
     String toSparql(boolean prefix, boolean xsd, NSManager nsm);
 
+    String toSparql(boolean prefix, boolean xsd, boolean skipUndefPrefix, NSManager nsm);
     
     default String trace() {
         return String.format("trace: %s code: %s datatype: %s label: %s", 

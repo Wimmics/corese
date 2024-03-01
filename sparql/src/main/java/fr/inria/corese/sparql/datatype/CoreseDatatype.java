@@ -146,20 +146,27 @@ public class CoreseDatatype
         return toSparql(prefix, xsd, nsm());
     }
     
+    @Override
+    public String toSparql(boolean prefixDatatype, boolean displayDatatype, NSManager nsm) {
+        return toSparql(prefixDatatype, displayDatatype, true, nsm);
+    }
+    
     /**
      * Overloaded by CoreseExtension
+     * prefixDatatype:  display XSD Datatype with xsd: (default is true)
+     * displayDatatype: display datatype for boolean and integer (default is false)
      */
     @Override
-    public String toSparql(boolean prefix, boolean xsd, NSManager nsm) {
+    public String toSparql(boolean prefixDatatype, boolean displayDatatype, boolean skipUndefPrefix, NSManager nsm) {
         String value = getLabel();        
         if (isPointer() && getPointerObject() != null){
             value = getPointerObject().getDatatypeLabel();
         }
-        if (getCode() == INTEGER && !xsd && getDatatypeURI().equals(XSD.xsdinteger)
+        if (getCode() == INTEGER && !displayDatatype && getDatatypeURI().equals(XSD.xsdinteger)
                 && (! (value.startsWith("0") && value.length() > 1))) {
             // display integer value as is (without datatype)
         } 
-        else if (getCode() == BOOLEAN && !xsd && 
+        else if (getCode() == BOOLEAN && !displayDatatype && 
                 (getLabel().equals(CoreseBoolean.STRUE) || getLabel().equals(CoreseBoolean.SFALSE))) {
         } 
         else if (getCode() == STRING || (getCode() == LITERAL && !hasLang())) {
@@ -167,7 +174,7 @@ public class CoreseDatatype
         } else if (getDatatype() != null && !getDatatype().getLabel().equals(RDFS.rdflangString)) {
             String datatype = getDatatype().getLabel();
 
-            if (prefix && (datatype.startsWith(RDF.XSD))
+            if (prefixDatatype && (datatype.startsWith(RDF.XSD))
                     || datatype.startsWith(RDF.RDF)
                     || datatype.startsWith(NSManager.DT)) {
                 datatype = nsm.toPrefix(datatype);
@@ -185,7 +192,7 @@ public class CoreseDatatype
             value = protect(value);
         } else if (isURI()) {
             if (DISPLAY_AS_PREFIX) {
-                String str = nsm.toPrefix(value, true);
+                String str = nsm.toPrefix(value, skipUndefPrefix);
                 if (str == value) {
                     value = String.format("<%s>", value);
                 } else {

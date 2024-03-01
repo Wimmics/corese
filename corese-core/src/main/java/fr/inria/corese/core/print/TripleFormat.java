@@ -1,6 +1,7 @@
 package fr.inria.corese.core.print;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
@@ -311,14 +312,22 @@ public class TripleFormat extends RDFFormat {
         }
     }
 
+//    void predicate(Node node) {
+//        String pred = nsm.toPrefix(node.getLabel(), !addPrefix);
+//        if (pred.equals(RDF_TYPE)) {
+//            sdisplay("a");
+//        } else if (pred.equals(node.getLabel())) { // Si l'URI n'est pas abrégée
+//            uri(node.getLabel()); // Utiliser la méthode uri pour ajouter des chevrons si nécessaire
+//        } else { // Si l'URI est abrégée
+//            sdisplay(pred);
+//        }
+//    }
+    
     void predicate(Node node) {
-        String pred = nsm.toPrefix(node.getLabel(), !addPrefix);
-        if (pred.equals(RDF_TYPE)) {
+        if (node.getLabel().equals(RDF.TYPE)) {
             sdisplay("a");
-        } else if (pred.equals(node.getLabel())) { // Si l'URI n'est pas abrégée
-            uri(node.getLabel()); // Utiliser la méthode uri pour ajouter des chevrons si nécessaire
-        } else { // Si l'URI est abrégée
-            sdisplay(pred);
+        } else {
+            node(node);
         }
     }
 
@@ -336,7 +345,8 @@ public class TripleFormat extends RDFFormat {
         } else if (dt.isBlank()) {
             sdisplay(dt.getLabel());
         } else {
-            uri(dt.getLabel());
+            //uri(dt.getLabel());
+            sdisplay(dt.toSparql(true, false, false, nsm));
         }
     }
 

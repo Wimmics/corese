@@ -1,7 +1,7 @@
 package fr.inria.corese.core.print.rdfc10;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,7 +13,8 @@ public class CanonicalIssuer {
     private final String IDPREFIX;
     private int idCounter;
     // Maps blank node identifiers to their canonical identifiers
-    private final Map<String, String> issuedIdentifierMap;
+    // Use LinkedHashMap to preserve insertion order
+    private final LinkedHashMap<String, String> issuedIdentifierMap;
 
     /////////////////
     // Constructor //
@@ -27,7 +28,7 @@ public class CanonicalIssuer {
     public CanonicalIssuer(String idPrefix) {
         this.IDPREFIX = idPrefix;
         this.idCounter = 0;
-        this.issuedIdentifierMap = new HashMap<>();
+        this.issuedIdentifierMap = new LinkedHashMap<>();
     }
 
     /**
@@ -38,7 +39,7 @@ public class CanonicalIssuer {
     public CanonicalIssuer(CanonicalIssuer ci) {
         this.IDPREFIX = ci.IDPREFIX;
         this.idCounter = ci.idCounter;
-        this.issuedIdentifierMap = new HashMap<>(ci.issuedIdentifierMap);
+        this.issuedIdentifierMap = new LinkedHashMap<>(ci.issuedIdentifierMap);
     }
 
     /////////////
@@ -98,6 +99,11 @@ public class CanonicalIssuer {
      */
     public Map<String, String> getIssuedIdentifierMap() {
         return Collections.unmodifiableMap(this.issuedIdentifierMap);
+    }
+
+    @Override
+    public String toString() {
+        return this.issuedIdentifierMap.toString();
     }
 
 }

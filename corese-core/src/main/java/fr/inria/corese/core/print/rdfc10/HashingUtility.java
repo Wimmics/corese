@@ -10,18 +10,49 @@ import java.security.NoSuchAlgorithmException;
 public class HashingUtility {
 
     /**
-     * Generates a SHA-256 hash of the input string.
-     * 
-     * @param input the input string to hash
-     * @return the hashed string in hexadecimal format
+     * Represents the hash algorithm to use.
      */
-    public static String sha256(String input) {
+    public static enum HashAlgorithm {
+        /**
+         * Represents the SHA-256 hash algorithm.
+         */
+        SHA_256("SHA-256"),
+
+        /**
+         * Represents the SHA-384 hash algorithm.
+         */
+        SHA_384("SHA-384");
+
+        private final String algorithm;
+
+        private HashAlgorithm(String algorithm) {
+            this.algorithm = algorithm.replace("-", "");
+        }
+
+        /**
+         * Gets the algorithm name.
+         *
+         * @return the algorithm name
+         */
+        public String getAlgorithm() {
+            return algorithm;
+        }
+    }
+
+    /**
+     * Hashes a string using the specified algorithm.
+     * 
+     * @param input     the string to hash
+     * @param algorithm the algorithm to use
+     * @return the hash of the input string
+     */
+    public static String hash(String input, HashAlgorithm algorithm) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            MessageDigest digest = MessageDigest.getInstance(algorithm.getAlgorithm());
             byte[] encodedhash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
             return toHexString(encodedhash);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 algorithm not found", e);
+            throw new RuntimeException(algorithm.getAlgorithm() + " algorithm not found", e);
         }
     }
 

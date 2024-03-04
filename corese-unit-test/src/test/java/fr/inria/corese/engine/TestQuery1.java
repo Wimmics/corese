@@ -35,7 +35,6 @@ import fr.inria.corese.core.print.XMLFormat;
 import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.producer.DataFilterFactory;
 import fr.inria.corese.core.query.QueryEngine;
-import fr.inria.corese.core.query.QueryGraph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.transform.Loader;
 import fr.inria.corese.core.transform.Transformer;
@@ -8650,67 +8649,6 @@ public class TestQuery1 {
             Mappings map = exec.query(query);
             //// System.out.println(map);
             assertEquals("Result", 2, map.size());
-
-        } catch (EngineException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Create a Query graph from an RDF Graph Execute the query Use case: find
-     * similar Graphs (cf Corentin)
-     */
-
-    public void testQueryGraph() {
-
-        Graph graph = createGraph();
-        QueryProcess exec = QueryProcess.create(graph);
-
-        String init = "prefix : <http://example.org/> "
-                + ""
-                + "insert data {"
-                + ":a :p :b, :c ."
-                + ":b :q :d "
-                + ":c :q :d "
-                + ":d :p :e "
-                + ":e :q :f "
-                + ""
-                + "} ";
-
-        String cons = "prefix : <http://example.org/> "
-                + ""
-                + "construct {?x :p []}"
-                + "where {?x :p ?y}";
-
-        String init2 = "prefix : <http://example.org/> "
-                + ""
-                + "insert data {"
-                + ":a :p [] ."
-                + "}";
-
-        try {
-            // create a graph
-            exec.query(init);
-
-            // create a copy where triple objects (values) are Blank Nodes (aka Variables)
-            // consider the copy as a Query Graph and execute it
-            Mappings map = exec.queryGraph(cons);
-
-            assertEquals("Results", 4, map.size());
-
-            Graph g2 = createGraph();
-            QueryProcess exec2 = QueryProcess.create(g2);
-            exec2.query(init2);
-
-            QueryGraph qg = QueryGraph.create(g2);
-            new QGVisitor();
-            // qg.setVisitor(vis);
-            qg.setConstruct(true);
-            map = exec.query(qg);
-
-            Graph res = exec.getGraph(map);
-            assertEquals("Results", 2, res.size());
 
         } catch (EngineException e) {
             e.printStackTrace();

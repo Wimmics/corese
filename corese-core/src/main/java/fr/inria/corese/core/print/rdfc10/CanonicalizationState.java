@@ -78,13 +78,16 @@ public class CanonicalizationState {
     }
 
     /**
-     * Retrieves blanks nodes associated with a specific hash value.
+     * Retrieves sorted list of blank nodes identifiers associated with a specific
+     * hash value.
      * 
      * @param hash The hash value.
      * @return A list of blank nodes associated with the hash value.
      */
     public List<String> getBlankNodeForHash(String hash) {
-        return Collections.unmodifiableList(this.hashToBlankNode.get(hash));
+        List<String> list = this.hashToBlankNode.get(hash);
+        Collections.sort(list);
+        return Collections.unmodifiableList(list);
     }
 
     /**

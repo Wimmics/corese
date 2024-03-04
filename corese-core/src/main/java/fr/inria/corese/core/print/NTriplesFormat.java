@@ -9,6 +9,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
@@ -95,7 +96,7 @@ public class NTriplesFormat extends RDFFormat {
      * @param node the node to be formatted
      * @return a string representation of the node
      */
-    protected String printNode(Node node) {
+    public String printNode(Node node) {
         if (node.getDatatypeValue().isURI()) {
             return printURI(node);
         } else if (node.getDatatypeValue().isLiteral()) {
@@ -136,7 +137,7 @@ public class NTriplesFormat extends RDFFormat {
 
         if (language != null && !language.isEmpty()) {
             return "\"" + label + "\"@" + language;
-        } else if (datatype != null && !datatype.isEmpty()) {
+        } else if (datatype != null && !datatype.isEmpty() && !datatype.equals(RDF.xsdstring)) {
             return "\"" + label + "\"^^<" + datatype + ">";
         } else {
             return "\"" + label + "\"";

@@ -2,7 +2,7 @@ package fr.inria.corese.core.print.rdfc10;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import fr.inria.corese.core.Graph;
@@ -16,9 +16,8 @@ import fr.inria.corese.kgram.api.core.Node;
 public class CanonicalizedDataset {
 
     private final Graph dataset;
-    private Map<Node, String> blankNodesToIdentifiers = new HashMap<>();
-    private final boolean blankNodesToIdentifiersInitialized;
-    private Map<String, String> issuedIdentifierMap = new HashMap<>();
+    private Map<Node, String> blankNodesToIdentifiers = new LinkedHashMap<>();
+    private Map<String, String> issuedIdentifierMap = new LinkedHashMap<>();
 
     /////////////////
     // Constructor //
@@ -32,21 +31,6 @@ public class CanonicalizedDataset {
      */
     public CanonicalizedDataset(Graph graph) {
         this.dataset = graph;
-        this.blankNodesToIdentifiersInitialized = false;
-    }
-
-    /**
-     * Constructs a CanonicalizedDataset with a given graph and a pre-defined
-     * mapping of blank nodes to identifiers.
-     * 
-     * @param graph                   The graph to be associated with this dataset.
-     * @param blankNodesToIdentifiers The pre-defined mapping of blank nodes to
-     *                                their identifiers.
-     */
-    public CanonicalizedDataset(Graph graph, Map<Node, String> blankNodesToIdentifiers) {
-        this.dataset = graph;
-        this.blankNodesToIdentifiers = blankNodesToIdentifiers;
-        this.blankNodesToIdentifiersInitialized = true;
     }
 
     ////////////////////////
@@ -78,11 +62,7 @@ public class CanonicalizedDataset {
             throw new IllegalArgumentException("Node is not blank");
         }
 
-        if (this.blankNodesToIdentifiersInitialized) {
-            return;
-        }
-
-        String identifier = blankNode.getLabel();
+        String identifier = blankNode.getLabel().replace("_:", "");
         this.blankNodesToIdentifiers.put(blankNode, identifier);
     }
 
@@ -125,6 +105,15 @@ public class CanonicalizedDataset {
      */
     public String getIssuedIdentifier(String blankNodeId) {
         return issuedIdentifierMap.get(blankNodeId);
+    }
+
+    /**
+     * Retrieves the issued identifier map.
+     * 
+     * @return The issued identifier map.
+     */
+    public Map<String, String> getIssuedIdentifiersMap() {
+        return Collections.unmodifiableMap(issuedIdentifierMap);
     }
 
     ///////////////

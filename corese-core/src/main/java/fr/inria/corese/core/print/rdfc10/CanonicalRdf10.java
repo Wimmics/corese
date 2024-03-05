@@ -2,13 +2,13 @@ package fr.inria.corese.core.print.rdfc10;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.print.NTriplesFormat;
+import fr.inria.corese.core.print.rdfc10.HashingUtility.HashAlgorithm;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
@@ -28,8 +28,13 @@ public class CanonicalRdf10 {
     private CanonicalizationState canonicalizationState;
     private CanonicalizedDataset canonicalizedDataset;
 
-    //
     private EdgeFactory edgeFactory = Graph.create().getEdgeFactory();
+    private NTriplesFormat ntriplesFormat = NTriplesFormat.create(Graph.create());
+
+    private HashAlgorithm hashAlgorithm = HashAlgorithm.SHA_256;
+
+    private int depthFactor = 5;
+    private int permutationLimit = 50000;
 
     //////////////////
     // Constructors //
@@ -44,21 +49,6 @@ public class CanonicalRdf10 {
     private CanonicalRdf10(Graph graph) {
         this.canonicalizationState = new CanonicalizationState();
         this.canonicalizedDataset = new CanonicalizedDataset(graph);
-        canonicalRdf10();
-    }
-
-    /**
-     * Constructs a new {@code CanonicalRdf10Format} with the specified RDF graph
-     * and a map of blank nodes to identifiers. Initializes the canonicalization
-     * state and dataset for the graph.
-     * 
-     * @param graph                   the RDF graph to be canonicalized
-     * @param blankNodesToIdentifiers a map of blank nodes to their identifiers
-     */
-    private CanonicalRdf10(Graph graph, Map<Node, String> blankNodesToIdentifiers) {
-        this.canonicalizationState = new CanonicalizationState();
-        this.canonicalizedDataset = new CanonicalizedDataset(graph, blankNodesToIdentifiers);
-        canonicalRdf10();
     }
 
     /////////////////////
@@ -87,28 +77,92 @@ public class CanonicalRdf10 {
     }
 
     /**
-     * Creates a new {@code CanonicalRdf10Format} instance for the given graph and
-     * map of blank nodes to identifiers.
+     * Creates a new {@code CanonicalRdf10Format} instance for the given graph with
+     * a hash algorithm.
      * 
-     * @param graph                   the RDF graph to be canonicalized
-     * @param blankNodesToIdentifiers a map of blank nodes to their identifiers
+     * @param graph         the RDF graph to be canonicalized
+     * @param hashAlgorithm the hash algorithm to be used for the canonicalization
      * @return a new instance of {@code CanonicalRdf10Format}
      */
-    public static CanonicalRdf10 create(Graph graph, Map<Node, String> blankNodesToIdentifiers) {
-        return new CanonicalRdf10(graph, blankNodesToIdentifiers);
+    public static CanonicalRdf10 create(Graph graph, HashAlgorithm hashAlgorithm) {
+        CanonicalRdf10 canonicalRdf10 = new CanonicalRdf10(graph);
+        canonicalRdf10.setHashAlgorithm(hashAlgorithm);
+        return canonicalRdf10;
     }
 
     /**
      * Creates a new {@code CanonicalRdf10Format} instance for the graph associated
-     * with the given mappings and map of blank nodes to identifiers.
+     * with the given mappings with a hash algorithm.
      * 
-     * @param map                     the mappings containing the RDF graph to be
-     *                                canonicalized
-     * @param blankNodesToIdentifiers a map of blank nodes to their identifiers
+     * @param map           the mappings containing the RDF graph to be
+     *                      canonicalized
+     * @param hashAlgorithm the hash algorithm to be used for the canonicalization
      * @return a new instance of {@code CanonicalRdf10Format}
      */
-    public static CanonicalRdf10 create(Mappings map, Map<Node, String> blankNodesToIdentifiers) {
-        return new CanonicalRdf10((Graph) map.getGraph(), blankNodesToIdentifiers);
+    public static CanonicalRdf10 create(Mappings map, HashAlgorithm hashAlgorithm) {
+        CanonicalRdf10 canonicalRdf10 = new CanonicalRdf10((Graph) map.getGraph());
+        canonicalRdf10.setHashAlgorithm(hashAlgorithm);
+        return canonicalRdf10;
+    }
+
+    ///////////////
+    // Accessors //
+    ///////////////
+
+    /**
+     * Returns the depth factor for the canonicalization algorithm.
+     * 
+     * @return the depth factor for the canonicalization algorithm
+     */
+    public int getDepthFactor() {
+        return depthFactor;
+    }
+
+    /**
+     * Sets the depth factor for the canonicalization algorithm.
+     * 
+     * @param depthFactor the depth factor for the canonicalization algorithm
+     */
+    public void setDepthFactor(int depthFactor) {
+        this.depthFactor = depthFactor;
+    }
+
+    /**
+     * Returns the permutation limit for the canonicalization algorithm.
+     * 
+     * @return the permutation limit for the canonicalization algorithm
+     */
+    public int getPermutationLimit() {
+        return permutationLimit;
+    }
+
+    /**
+     * Sets the permutation limit for the canonicalization algorithm.
+     * 
+     * @param permutationLimit the permutation limit for the canonicalization
+     *                         algorithm
+     */
+    public void setPermutationLimit(int permutationLimit) {
+        this.permutationLimit = permutationLimit;
+    }
+
+    /**
+     * Returns the hash algorithm used for the canonicalization algorithm.
+     * 
+     * @return the hash algorithm used for the canonicalization algorithm
+     */
+    public HashAlgorithm getHashAlgorithm() {
+        return hashAlgorithm;
+    }
+
+    /**
+     * Sets the hash algorithm used for the canonicalization algorithm.
+     * 
+     * @param hashAlgorithm the hash algorithm used for the canonicalization
+     *                      algorithm
+     */
+    public void setHashAlgorithm(HashAlgorithm hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
     }
 
     ////////////////////
@@ -156,8 +210,7 @@ public class CanonicalRdf10 {
                                                          // the original list
         }
 
-        // Generate canonical identifiers for blank nodes with multiple first degree
-        // hashes
+        // Build N-degree hash for each blank node with multiple first degree hash
         // 4.4.3) Step 5
         for (String hash : this.canonicalizationState.getHashesSorted()) {
             // 4.4.3) Step 5.1
@@ -178,7 +231,7 @@ public class CanonicalRdf10 {
                 tempIssuer.issueCanonicalIdentifier(blankNodeIdentifier);
 
                 // 4.4.3) Step 5.2.4
-                Pair<String, CanonicalIssuer> result = this.hashNdegreeQuads(tempIssuer, blankNodeIdentifier);
+                Pair<String, CanonicalIssuer> result = this.hashNdegreeQuads(tempIssuer, blankNodeIdentifier, 0);
                 hashPathList.add(result);
             }
 
@@ -186,7 +239,6 @@ public class CanonicalRdf10 {
 
             // sort the list by the hash
             hashPathList.sort((p1, p2) -> p1.getLeft().compareTo(p2.getLeft()));
-
             for (Pair<String, CanonicalIssuer> result : hashPathList) {
                 CanonicalIssuer issuer = result.getRight();
 
@@ -278,7 +330,7 @@ public class CanonicalRdf10 {
 
         // 4.6.3) Step 4
         nquads.sort(String::compareTo);
-        return HashingUtility.sha256(String.join("\n", nquads) + "\n");
+        return HashingUtility.hash(String.join("\n", nquads) + "\n", this.hashAlgorithm);
     }
 
     /**
@@ -300,7 +352,7 @@ public class CanonicalRdf10 {
         boolean isDefaultGraph = graph.getLabel().equals(ExpType.DEFAULT_GRAPH);
 
         String subjectString = getNodeString(subject, referenceBlankNodeIdentifier);
-        String predicateString = predicate.toString(); // Predicates cannot be blank nodes
+        String predicateString = getNodeString(predicate, referenceBlankNodeIdentifier);
         String objectString = getNodeString(object, referenceBlankNodeIdentifier);
         String graphString = isDefaultGraph ? "" : getNodeString(graph, referenceBlankNodeIdentifier);
 
@@ -324,7 +376,30 @@ public class CanonicalRdf10 {
                     ? "_:a"
                     : "_:z";
         } else {
-            return node.toString();
+            return this.ntriplesFormat.printNode(node);
+        }
+    }
+
+    ///////////////
+    // Exception //
+    ///////////////
+
+    /**
+     * Thrown to indicate that an error occurred during the canonicalization of an
+     * RDF dataset.
+     */
+    public static class CanonicalizationException extends RuntimeException {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Constructs a new {@code CanonicalizationException} with the specified
+         * detail message.
+         * 
+         * @param message the detail message
+         */
+        public CanonicalizationException(String message) {
+            super(message);
         }
 
     }
@@ -346,14 +421,19 @@ public class CanonicalRdf10 {
      *      N-degree Quads</a>
      * 
      */
-    private Pair<String, CanonicalIssuer> hashNdegreeQuads(CanonicalIssuer issuer, String blankNodeId) {
-        // Reference issuer because issuer is modified in the method body
+    private Pair<String, CanonicalIssuer> hashNdegreeQuads(CanonicalIssuer issuer, String blankNodeId, int depth) {
+
+        // Check if depth factor is reached
+        if (depth >= this.depthFactor * this.canonicalizedDataset.getBlankNodeIdentifiers().size()) {
+            throw new CanonicalizationException("Depth factor reached, too many recursions");
+        }
+
         // in step 4.8.3) Step 5.6
         CanonicalIssuer refIssuer = issuer;
 
         // 4.8.3) Step 1
         // Use a tree map to ensure that the hashes are sorted
-        Map<String, String> relatedHashToRelatedBNIdMap = new TreeMap<>();
+        ListMap<String, String> relatedHashToRelatedBNIdMap = new ListMap<>();
 
         // 4.8.3) Step 2
         List<Edge> quads = this.canonicalizationState.getQuadsForBlankNode(blankNodeId);
@@ -382,7 +462,14 @@ public class CanonicalRdf10 {
             CanonicalIssuer chosenIssuer = null;
 
             // 4.8.3) Step 5.4
-            for (List<String> permutation : this.permute(new ArrayList<>(relatedHashToRelatedBNIdMap.values()))) {
+            List<List<String>> permutations = this.permute(relatedHashToRelatedBNIdMap.get(hash));
+
+            // Check if the permutation limit is reached
+            if (permutations.size() > this.permutationLimit) {
+                throw new CanonicalizationException("Permutation limit reached, too many permutations");
+            }
+
+            for (List<String> permutation : permutations) {
 
                 // 4.8.3) Step 5.4.1
                 CanonicalIssuer issuerCopy = new CanonicalIssuer(refIssuer);
@@ -420,13 +507,13 @@ public class CanonicalRdf10 {
                 // 4.8.3) Step 5.4.5
                 for (String relatedBNId : recursionList) {
                     // 4.8.3) Step 5.4.5.1
-                    Pair<String, CanonicalIssuer> result = this.hashNdegreeQuads(issuerCopy, relatedBNId);
+                    Pair<String, CanonicalIssuer> result = this.hashNdegreeQuads(issuerCopy, relatedBNId, depth + 1);
 
                     // 4.8.3) Step 5.4.5.2
                     path += "_:" + issuerCopy.issueCanonicalIdentifier(relatedBNId);
 
                     // 4.8.3) Step 5.4.5.3
-                    path += "<" + result + ">";
+                    path += "<" + result.getLeft() + ">";
 
                     // 4.8.3) Step 5.4.5.4
                     issuerCopy = result.getRight();
@@ -453,7 +540,7 @@ public class CanonicalRdf10 {
         }
 
         // 4.8.3) Step 6
-        return Pair.of(HashingUtility.sha256(data.toString()), refIssuer);
+        return Pair.of(HashingUtility.hash(data.toString(), this.hashAlgorithm), refIssuer);
     }
 
     /**
@@ -498,7 +585,7 @@ public class CanonicalRdf10 {
      * @param relatedBN                   The related blank node.
      */
     private void processQuadEntry(Edge quad, CanonicalIssuer issuer, String blankNodeId,
-            Map<String, String> relatedHashToRelatedBNIdMap, String position, Node relatedBN) {
+            ListMap<String, String> relatedHashToRelatedBNIdMap, String position, Node relatedBN) {
         String relatedBNId = this.canonicalizedDataset.getIdentifierForBlankNode(relatedBN);
 
         if (relatedBN.isBlank() && !relatedBNId.equals(blankNodeId)) {
@@ -506,7 +593,7 @@ public class CanonicalRdf10 {
             String relatedHash = this.hashRelatedBlankNode(relatedBNId, quad, issuer, position);
 
             // 4.8.3) Step 3.1.2
-            relatedHashToRelatedBNIdMap.put(relatedHash, relatedBNId);
+            relatedHashToRelatedBNIdMap.add(relatedHash, relatedBNId);
         }
     }
 
@@ -557,7 +644,7 @@ public class CanonicalRdf10 {
         }
 
         // 4.7.3) Step 5
-        return HashingUtility.sha256(input.toString());
+        return HashingUtility.hash(input.toString(), this.hashAlgorithm);
     }
 
     /////////////////////////

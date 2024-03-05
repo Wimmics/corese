@@ -102,7 +102,16 @@ public class CreateImpl extends CreateTriple implements Creator {
     }
 
     Node getGraph(Atom graph) {
-        return graph == null ? addDefaultGraphNode() : addGraph(graph);
+        //return graph == null ? addDefaultGraphNode() : addGraph(graph);
+        if (graph == null) {
+            return addDefaultGraphNode();
+        }
+        else if (graph.isBlankOrBlankNode()) {
+            return addGraph(getID(graph.getLabel()), true);
+        }
+        else {
+            return addGraph(graph);
+        }
     }
 
     @Override

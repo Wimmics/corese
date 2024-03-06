@@ -1,4 +1,4 @@
-package fr.inria.corese.w3cTestsGenerator;
+package fr.inria.corese.w3cJunitTestsGenerator;
 
 import java.net.URI;
 import java.nio.file.Path;

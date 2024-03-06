@@ -1,4 +1,4 @@
-package fr.inria.corese.w3cTestsGenerator;
+package fr.inria.corese.w3cJunitTestsGenerator;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,7 +14,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.inria.corese.w3cTestsGenerator.w3cTests.IW3cTest;
+import fr.inria.corese.w3cJunitTestsGenerator.w3cTests.IW3cTest;
 
 /**
  * Generates a JUnit test file for the W3C test suite.
@@ -26,23 +26,22 @@ public class JUnitTestFileGenerator {
     private final URI manifestUri;
     private final String testName;
     private final List<IW3cTest> tests;
+    private final Path exportPath;
 
-    public JUnitTestFileGenerator(String testName, URI manifestUri, List<IW3cTest> tests) {
+    public JUnitTestFileGenerator(String testName, URI manifestUri, Path exportPath, List<IW3cTest> tests) {
         this.testName = testName;
         this.manifestUri = manifestUri;
+        this.exportPath = exportPath.resolve(testName);
         this.tests = tests;
     }
 
     /**
      * Generates a JUnit test file for the W3C test suite.
-     * 
-     * @param testsPath The path to the directory where the test file should be
-     *                  generated.
      */
-    public void generate(Path testsPath) {
+    public void generate() {
 
         // Initialize directories
-        Path testDirectory = this.createDirectory(testsPath.resolve(testName));
+        Path testDirectory = this.createDirectory(this.exportPath);
 
         // Generate file test
         String fileName = testName + "Test.java";
@@ -119,6 +118,7 @@ public class JUnitTestFileGenerator {
         for (IW3cTest test : tests) {
             imports.addAll(test.getImports());
         }
+        imports.addAll(this.defineImports());
         imports.stream().sorted().forEach(imp -> content.append("import ").append(imp).append(";\n"));
         content.append("\n");
 
@@ -147,6 +147,9 @@ public class JUnitTestFileGenerator {
         content.append("\n");
         content.append("\n");
 
+        // Watcher
+        content.append(this.generateWatcher());
+
         // Test methods
         for (IW3cTest test : tests) {
             content.append(test.generate());
@@ -171,6 +174,93 @@ public class JUnitTestFileGenerator {
                 .replace("/", ".")
                 .replace("." + fileName, "");
         return "package " + packagePath + ";";
+    }
+
+    /**
+     * Generates the watcher for the test file.
+     * 
+     * @return The watcher for the test file.
+     */
+    private String generateWatcher() {
+        StringBuilder watcher = new StringBuilder();
+
+        // Create a file testReport.csv in the directory of the test file
+        watcher.append("    private static final String TEST_REPORT_FILE = \""
+                + this.exportPath.resolve("testReport.csv") + "\";\n");
+        watcher.append("    private static final String MANIFEST_URI = \""
+                + manifestUri.toString().substring(0, manifestUri.toString().lastIndexOf(".")) + "\";\n");
+        watcher.append("    private static final String EARL = \"https://www.w3.org/ns/earl#\";\n");
+        watcher.append("\n");
+
+        // Function to write the test report to the file testReport.csv
+        // Format: manifestUri#testName, datetime, https://www.w3.org/ns/earl#status
+        watcher.append("    /**\n");
+        watcher.append("     * Writes the test report to the file testReport.csv.\n");
+        watcher.append("     *\n");
+        watcher.append("     * @param testName The name of the test.\n");
+        watcher.append("     * @param success  The status of the test.\n");
+        watcher.append("     */\n");
+        watcher.append("    private void writeTestReport(String testName, String success) {\n");
+        watcher.append("        try {\n");
+        watcher.append("            Path testReportPath = Paths.get(TEST_REPORT_FILE);\n");
+        watcher.append(
+                "            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(\"yyyy-MM-dd'T'HH:mm:ssXXX\");\n");
+        watcher.append(
+                "            Files.write(testReportPath, (MANIFEST_URI + \"#\" + testName + \",\" + dtf.format(ZonedDateTime.now()) + \",\" + EARL + success + \"\\n\").getBytes(), StandardOpenOption.APPEND);\n");
+        watcher.append("        } catch (IOException e) {\n");
+        watcher.append("            e.printStackTrace();\n");
+        watcher.append("        }\n");
+        watcher.append("    }\n");
+        watcher.append("\n");
+
+        watcher.append("    @Rule\n");
+        watcher.append("    public TestWatcher watcher = new TestWatcher() {\n");
+        watcher.append("\n");
+        watcher.append("        @Override\n");
+        watcher.append("        protected void failed(Throwable e, Description description) {\n");
+        watcher.append("            writeTestReport(description.getMethodName(), \"failed\");\n");
+        watcher.append("        }\n");
+        watcher.append("\n");
+        watcher.append("        @Override\n");
+        watcher.append("        protected void succeeded(Description description) {\n");
+        watcher.append("            writeTestReport(description.getMethodName(), \"passed\");\n");
+        watcher.append("        }\n");
+        watcher.append("\n");
+        watcher.append("        @Override\n");
+        watcher.append("        protected void skipped(AssumptionViolatedException e, Description description) {\n");
+        watcher.append("            writeTestReport(description.getMethodName(), \"untested\");\n");
+        watcher.append("        }\n");
+        watcher.append("    };\n");
+        watcher.append("\n");
+        watcher.append("        // Create and clear the test report file\n");
+        watcher.append("        @BeforeClass\n");
+        watcher.append("        public static void createTestReportFile() {\n");
+        watcher.append("            try {\n");
+        watcher.append("                Path testReportPath = Paths.get(TEST_REPORT_FILE);\n");
+        watcher.append("                Files.write(testReportPath, \"\".getBytes());\n");
+        watcher.append("            } catch (IOException e) {\n");
+        watcher.append("                e.printStackTrace();\n");
+        watcher.append("            }\n");
+        watcher.append("        }\n");
+        watcher.append("\n");
+
+        return watcher.toString();
+    }
+
+    private Set<String> defineImports() {
+        Set<String> imports = new HashSet<>();
+        imports.add("java.nio.file.Path");
+        imports.add("java.nio.file.Paths");
+        imports.add("java.nio.file.Files");
+        imports.add("java.nio.file.StandardOpenOption");
+        imports.add("org.junit.Rule");
+        imports.add("org.junit.rules.TestWatcher");
+        imports.add("org.junit.runner.Description");
+        imports.add("org.junit.AssumptionViolatedException");
+        imports.add("org.junit.BeforeClass");
+        imports.add("java.time.format.DateTimeFormatter");
+        imports.add("java.time.ZonedDateTime");
+        return imports;
     }
 
 }

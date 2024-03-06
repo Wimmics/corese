@@ -1,4 +1,4 @@
-package fr.inria.corese.w3cTestsGenerator.w3cTests;
+package fr.inria.corese.w3cJunitTestsGenerator.w3cTests;
 
 import java.util.Set;
 

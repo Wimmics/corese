@@ -1,9 +1,9 @@
-package fr.inria.corese.w3cTestsGenerator.w3cTests.implementations;
+package fr.inria.corese.w3cJunitTestsGenerator.w3cTests.implementations;
 
 import java.net.URI;
 import java.util.Set;
 
-import fr.inria.corese.w3cTestsGenerator.w3cTests.IW3cTest;
+import fr.inria.corese.w3cJunitTestsGenerator.w3cTests.IW3cTest;
 
 /**
  * Represents a test for the RDFC10NegativeEvalTest type.

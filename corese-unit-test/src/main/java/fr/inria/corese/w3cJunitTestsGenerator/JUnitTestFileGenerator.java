@@ -189,11 +189,11 @@ public class JUnitTestFileGenerator {
                 + this.exportPath.resolve("testReport.csv") + "\";\n");
         watcher.append("    private static final String MANIFEST_URI = \""
                 + manifestUri.toString().substring(0, manifestUri.toString().lastIndexOf(".")) + "\";\n");
-        watcher.append("    private static final String EARL = \"https://www.w3.org/ns/earl#\";\n");
+        watcher.append("    private static final String EARL = \"http://www.w3.org/ns/earl#\";\n");
         watcher.append("\n");
 
         // Function to write the test report to the file testReport.csv
-        // Format: manifestUri#testName, datetime, https://www.w3.org/ns/earl#status
+        // Format: manifestUri#testName, datetime, http://www.w3.org/ns/earl#status
         watcher.append("    /**\n");
         watcher.append("     * Writes the test report to the file testReport.csv.\n");
         watcher.append("     *\n");

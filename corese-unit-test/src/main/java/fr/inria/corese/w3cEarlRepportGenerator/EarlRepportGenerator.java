@@ -124,7 +124,7 @@ public class EarlRepportGenerator {
     private NSManager getNSM() {
         NSManager nsm = NSManager.create();
         nsm.setRecord(true);
-        nsm.definePrefix("earl", "https://www.w3.org/ns/earl#");
+        nsm.definePrefix("earl", "http://www.w3.org/ns/earl#");
         nsm.definePrefix("dc", "http://purl.org/dc/terms/");
         nsm.definePrefix("foaf", "http://xmlns.com/foaf/0.1/");
         nsm.definePrefix("xsd", "http://www.w3.org/2001/XMLSchema#");
@@ -159,7 +159,7 @@ public class EarlRepportGenerator {
 
         // Build the SPARQL query
         StringBuilder sb = new StringBuilder();
-        sb.append("PREFIX earl: <https://www.w3.org/ns/earl#>\n");
+        sb.append("PREFIX earl: <http://www.w3.org/ns/earl#>\n");
         sb.append("PREFIX dc: <http://purl.org/dc/terms/>\n");
         sb.append("PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n");
         sb.append("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n");
@@ -178,7 +178,7 @@ public class EarlRepportGenerator {
      */
     private String insertQueryDescribeDeveloper() {
         StringBuilder sb = new StringBuilder();
-        sb.append("PREFIX earl: <https://www.w3.org/ns/earl#>\n");
+        sb.append("PREFIX earl: <http://www.w3.org/ns/earl#>\n");
         sb.append("PREFIX foaf: <http://xmlns.com/foaf/0.1/>\n");
         sb.append("INSERT DATA {\n");
         sb.append("    <").append(authorUri).append("> a foaf:Person , earl:Assertor ;\n");
@@ -197,7 +197,7 @@ public class EarlRepportGenerator {
      */
     private String insertQueryDescribeSoftware() {
         StringBuilder sb = new StringBuilder();
-        sb.append("PREFIX earl: <https://www.w3.org/ns/earl#>\n");
+        sb.append("PREFIX earl: <http://www.w3.org/ns/earl#>\n");
         sb.append("PREFIX doap: <http://usefulinc.com/ns/doap#>\n");
         sb.append("INSERT DATA {\n");
         sb.append("    <").append(softwareUri).append("> a doap:Project, earl:Software, earl:TestSubject ;\n");
@@ -244,7 +244,7 @@ public class EarlRepportGenerator {
      */
     private String insertQueryDescribeTestResult(String testUri, String testTime, String testResult) {
         StringBuilder sb = new StringBuilder();
-        sb.append("PREFIX earl: <https://www.w3.org/ns/earl#>\n");
+        sb.append("PREFIX earl: <http://www.w3.org/ns/earl#>\n");
         sb.append("PREFIX dc: <http://purl.org/dc/terms/>\n");
         sb.append("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n");
         sb.append("INSERT DATA {\n");

@@ -28,7 +28,7 @@ public class TripleFormat extends RDFFormat {
     static final String RDF_TYPE = "rdf:type";
     static final String TAB = "  ";
 
-    static final boolean addPrefix = true;
+    public boolean addPrefix = true;
 
     boolean isGraph = false;
     // when true: display default graph kg:default with embedding graph kg:default
@@ -216,14 +216,12 @@ public class TripleFormat extends RDFFormat {
     }
 
     private boolean isRdfPrefixNeeded() {
-        //for (Node node : graph.getGraphNodes()) {
-            for (Edge edge : graph.getEdges()) {
-                String pred = nsm.toPrefix(edge.getEdgeNode().getLabel(), !addPrefix);
-                if (pred.startsWith("rdf:") && !pred.equals(RDF_TYPE)) {
-                    return true;
-                }
+        for (Edge edge : graph.getEdges()) {
+            String pred = nsm.toPrefix(edge.getEdgeNode().getLabel(), !addPrefix);
+            if (pred.startsWith("rdf:") && !pred.equals(RDF_TYPE)) {
+                return true;
             }
-        //}
+        }
         return false;
     }
 
@@ -231,12 +229,6 @@ public class TripleFormat extends RDFFormat {
     void header(StringBuilder bb) {
         link(bb);
         bb.append(nsm.toString(PREFIX, false, false));
-//        if (isRdfPrefixNeeded()) {
-//            bb.append(nsm.toString(PREFIX, false, false));
-//        } else {
-//            // Si le préfixe rdf: n'est pas nécessaire, supprimez-le de la sortie
-//            bb.append(nsm.toString(PREFIX, false, false).replaceAll("@prefix rdf:.*\n", ""));
-//        }
     }
 
     void link(StringBuilder bb) {
@@ -266,10 +258,6 @@ public class TripleFormat extends RDFFormat {
                 }
                 if (first) {
                     first = false;
-//                    if (isBlankNode) {
-//                        sdisplay("[");
-//                    } 
-//                    else 
                     {
                         subject(edge);
                         sdisplay(SPACE);
@@ -285,9 +273,6 @@ public class TripleFormat extends RDFFormat {
         }
 
         if (!first) {
-//            if (isBlankNode) {
-//                sdisplay("]");
-//            }
             sdisplay(DOT);
             sdisplay(NL);
             sdisplay(NL);
@@ -312,17 +297,6 @@ public class TripleFormat extends RDFFormat {
         }
     }
 
-//    void predicate(Node node) {
-//        String pred = nsm.toPrefix(node.getLabel(), !addPrefix);
-//        if (pred.equals(RDF_TYPE)) {
-//            sdisplay("a");
-//        } else if (pred.equals(node.getLabel())) { // Si l'URI n'est pas abrégée
-//            uri(node.getLabel()); // Utiliser la méthode uri pour ajouter des chevrons si nécessaire
-//        } else { // Si l'URI est abrégée
-//            sdisplay(pred);
-//        }
-//    }
-    
     void predicate(Node node) {
         if (node.getLabel().equals(RDF.TYPE)) {
             sdisplay("a");
@@ -345,8 +319,8 @@ public class TripleFormat extends RDFFormat {
         } else if (dt.isBlank()) {
             sdisplay(dt.getLabel());
         } else {
-            //uri(dt.getLabel());
-            sdisplay(dt.toSparql(true, false, false, nsm));
+            // uri(dt.getLabel());
+            sdisplay(dt.toSparql(true, false, !addPrefix, nsm));
         }
     }
 
@@ -375,19 +349,6 @@ public class TripleFormat extends RDFFormat {
         sdisplay(SPACE);
         node(edge.getObjectNode(), true);
     }
-
-    // void triple2(Node node, Edge edge, boolean rec) {
-    // if (edge.isNested() || hasNestedTriple(edge) || rec) {
-    // nestedTriple(node, edge, rec);
-    // } else {
-    // basicTriple(node, edge, rec);
-    // }
-    // }
-    //
-
-    // void basicTriple(Node node, Edge edge) {
-    // basicTriple(node, edge, false);
-    // }
 
     boolean hasNestedTriple(Edge edge) {
         return edge.getSubjectValue().isTripleWithEdge() || edge.getObjectValue().isTripleWithEdge();

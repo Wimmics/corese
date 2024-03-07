@@ -153,7 +153,7 @@ mvn clean install -DskipTests
 
 ## How to cite Corese
 
-Use the "Cite this repository" option on the right side of this page.
+Use the "Cite this repository" option on the right side of this page or Hal [hal-04170333](https://hal.science/hal-04170333).
 
 ## Contributions and discussions
 

@@ -47,8 +47,8 @@ public class EarlRepportGenerator {
     private final String softwareBlog = "https://github.com/Wimmics/corese/discussions/";
     private final String softwareProgrammingLanguage = "Java";
 
-    private final String releaseURI = "fb1aded381b9775882627c7cdb4085c64ae152da";
-    private final String releaseDate = "2024-03-06";
+    private final String releaseURI = "160645274c021c59eaebc113054ec55d0be8995b";
+    private final String releaseDate = "2024-03-07";
 
     private final Path reportDir = Path.of("corese-unit-test/src/test/java/fr/inria/corese/w3c/canonicalRdf");
     private final Path inputReportPath = reportDir.resolve("testReport.csv");

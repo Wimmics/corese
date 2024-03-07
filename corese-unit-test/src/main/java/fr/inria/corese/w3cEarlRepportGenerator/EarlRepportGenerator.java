@@ -33,11 +33,8 @@ public class EarlRepportGenerator {
     // eg "2023-01-25T10:18:04-08:00"
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 
-    private final String authorUri = "http://ns.inria.fr/remi.ceres#me";
-    private final String athorEmail = "remi.ceres@inria.fr";
-    private final String authorName = "Rémi Cérès";
-
-    private final String organizationHomepage = "https://www.inria.fr/";
+    private final String authorUri = "https://team.inria.fr/wimmics";
+    private final String authorName = "Wimmics Team";
 
     private final String softwareUri = "https://github.com/Wimmics/corese";
     private final String softwareName = "Corese";
@@ -50,8 +47,8 @@ public class EarlRepportGenerator {
     private final String softwareBlog = "https://github.com/Wimmics/corese/discussions/";
     private final String softwareProgrammingLanguage = "Java";
 
-    private final String releaseURI = "1d76a19dccfbdaecf63544e80a7c7a45e54bbc89";
-    private final String releaseDate = "2024-03-05";
+    private final String releaseURI = "fb1aded381b9775882627c7cdb4085c64ae152da";
+    private final String releaseDate = "2024-03-06";
 
     private final Path reportDir = Path.of("corese-unit-test/src/test/java/fr/inria/corese/w3c/canonicalRdf");
     private final Path inputReportPath = reportDir.resolve("testReport.csv");
@@ -183,8 +180,6 @@ public class EarlRepportGenerator {
         sb.append("INSERT DATA {\n");
         sb.append("    <").append(authorUri).append("> a foaf:Person , earl:Assertor ;\n");
         sb.append("        foaf:name \"").append(authorName).append("\" ;\n");
-        sb.append("        foaf:mbox <mailto:").append(athorEmail).append("> ;\n");
-        sb.append("        foaf:workplaceHomepage <").append(organizationHomepage).append("> .\n");
 
         sb.append("}\n");
         return sb.toString();
@@ -202,7 +197,7 @@ public class EarlRepportGenerator {
         sb.append("INSERT DATA {\n");
         sb.append("    <").append(softwareUri).append("> a doap:Project, earl:Software, earl:TestSubject ;\n");
         sb.append("        doap:name \"").append(softwareName).append("\" ;\n");
-        sb.append("        doap:release <").append(softwareUri).append("commit/").append(releaseURI).append("> ;\n");
+        sb.append("        doap:release <").append(softwareUri).append("/commit/").append(releaseURI).append("> ;\n");
         sb.append("        doap:developer <").append(authorUri).append("> ;\n");
         sb.append("        doap:homepage <").append(softwareHomepage).append("> ;\n");
         sb.append("        doap:description \"").append(softwareDescription).append("\"@en ;\n");

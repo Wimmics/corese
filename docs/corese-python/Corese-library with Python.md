@@ -4,7 +4,7 @@
 
 1. Install java and python
 2. Install python dependencies `pip install --user py4j`
-3. Download [corese-library-python-4.5.0.jar](http://files.inria.fr/corese/distrib/corese-library-python-4.5.0.jar)
+3. Download [corese-library-python-4.5.0.jar](https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-library-python-4.5.0.jar)
 4. Place in the same directory `corese-library-python-4.5.0.jar` and your code `myCode.py`
 5. Run with `python myCode.py`
 

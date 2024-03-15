@@ -24,7 +24,9 @@ public enum EnumOutputFormat {
 
     NQUADS(7, "nquads", "nq"),
     NQ(7, "nq", "nq"),
-    APPLICATION_NQUADS(7, "application/n-quads", "nq");
+    APPLICATION_NQUADS(7, "application/n-quads", "nq"),
+
+    CANONICAL10(8, "canonical", "nq");
 
     private final int value;
     private final String name;

@@ -6,7 +6,9 @@
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix xsh:  <http://www.w3.org/ns/shacl#> 
 prefix shex: <http://ns.inria.fr/shex/shacl#>
+prefix dct: <http://purl.org/dc/terms/>
 prefix fun:  <function://fr.inria.corese.core.extension.Extension>
+prefix psh: <http://ns.inria.fr/probabilistic-shacl/>
 
 @import  <api/define.rq> <focus.rq> <ppathparser.rq> <ppath.rq> <operator.rq> <operatorext.rq> <core.rq>  <path.rq> <constraint.rq>  <target.rq> <report.rq>
 
@@ -18,12 +20,14 @@ prefix fun:  <function://fr.inria.corese.core.extension.Extension>
 #
 function dt:graph sh:shacl() {
    if (sh:trace(), xt:print("shacl:"), true);
+   set(extended = false);
    sh:shacl(xt:graph(), sh:focus(xt:graph()))
 }
 
 # shape is shacl graph
 function dt:graph sh:shacl(dt:graph shape) {
    if (sh:trace(), xt:print("shacl:"), true);
+   set(extended = false);
    sh:shacl(shape, sh:focus(shape))
 }
 
@@ -37,6 +41,7 @@ function dt:graph sh:shaclshape(sh) {
 # Current graph is RDF and shacl graph
 function dt:graph sh:shaclShapeGraph(shacl, sh) {
    if (sh:trace(), xt:print("shaclshape:", sh), true);
+   set(extended = false);
    sh:shacl(shacl, sh:focus(shacl, sh))
 }
 
@@ -50,6 +55,7 @@ function dt:graph sh:shaclshape(sh, node) {
 
 function dt:graph sh:shaclShapeGraph(shacl, sh, node) {
    if (sh:trace(), xt:print("shaclshape:", sh, node), true);
+   set(extended = false);
    sh:shacl(shacl, xt:list(xt:list(sh, xt:list(node))))
 }
 
@@ -62,9 +68,52 @@ function dt:graph sh:shaclnode(node) {
 
 function dt:graph sh:shaclNodeGraph(shacl, node) {
    if (sh:trace(), xt:print("shaclnode:", node), true);
+   set(extended = false);
    sh:shacl(shacl, sh:focusnode(shacl, node))
 }
 
+#
+# extended shacl function : probabilistic or possibilistic mode
+#
+function dt:graph sh:extendedshacl(dt:graph shape, m, p) {
+    if (sh:trace(), xt:print("shacl:"), true);
+    set(extended = true);
+    # define mod
+    set(mode = xsd:integer(m));
+    # define p-value
+    set(prob = p);
+    # set default value and enable COUNT query on the RDF data graph
+    set(numInstances = 0);
+    # check the used mod
+    if (mode == 1, 
+        sh:log("main.rq", "sh:extendedshacl", concat("Probabilistic mode used with p=", prob)),
+        if(mode == 2, 
+            sh:log("main.rq", "sh:extendedshacl", "Possibilistic mode"), 
+            sh:log("main.rq", "sh:extendedshacl", "ERROR this ID is not found !")
+        )
+    );
+    sh:shacl(shape, sh:focus(shape));
+}
+
+function dt:graph sh:extendedshacl(dt:graph shape, m, p, nTriples) {
+    if (sh:trace(), xt:print("shacl:"), true);
+    set(extended = true);
+    # define mod
+    set(mode = xsd:integer(m));
+    # define p-value
+    set(prob = p);
+    # set the number of instances provided by user
+    set(numInstances = nTriples);
+    # check the used mod
+    if (mode == 1, 
+        sh:log("main.rq", "sh:extendedshacl", concat("Probabilistic mode used with p= ", prob, " and n-triples= ", numInstances)),
+        if(mode == 2, 
+            sh:log("main.rq", "sh:extendedshacl", "Possibilistic mode"), 
+            sh:log("main.rq", "sh:extendedshacl", "ERROR this ID is not found !")
+        )
+    );
+    sh:shacl(shape, sh:focus(shape));
+}
 
 
 function dt:graph sh:shex() {
@@ -115,17 +164,51 @@ function dt:graph sh:shacl(dt:graph shape, focus) {
 # focus = mappings or list(sh=nodeShape; list=targetNodeList)
 #
 function sh:shacleval(shape, focus) {
+    # compute the total number of instances in the graph if numInstances == 0
+    if (extended && numInstances == 0) {
+        set(numInstances = sh:getNumInstances());
+    } ;
     let (suc = true) {
         for ((sh list) in focus) {
             if (sh:trace(), 
                 xt:print("target:", coalesce(sh, "undef"), xt:size(list), list), true);
+            # set the final report as global variable
+            set(rep = sh:validationReport());
+            set(abnode = sh:bnodeid());
             if (bound(sh) && xt:size(list) > 0) {
-                let (res = sh:core(sh:validationReport(), sh, true, list)) {
+                sh:log("main.rq", "sh:shacleval", concat("xt:size(list)= ", xt:size(list)));
+                if(extended) {
+                    # set default value for reference cardinality of current shape
+                    set(referenceCardinality = 0);
+                    # set the name of the given shape
+                    set(shapeName = sh);
+                    # For each shape, we will create a list of exceptions
+                    set(exceptions = xt:list());
+                } ;
+                # start core function
+                let (res = sh:core(rep, sh, true, list)) {
+                    set(result = res);
                     if (res, true, set(suc = false))
-                }
+                } ;
+                # write the additionnal component (Extended SHACL)
+                if(extended) {
+                    sh:addExtendedShaclReport(rep, exceptions);
+                } ;
             }
+            else {
+                sh:log("main.rq", "sh:shacleval", "The current shape is not considered: no nodes to be tested");
+            } ;
         } ;
         return (suc)
+    }
+}
+
+# Get the total number of instances in the dataset
+function sh:getNumInstances() {
+    let(select (count(*) as ?n) where {
+        ?s ?p ?o .
+    }) {
+        return (n)
     }
 }
 
@@ -731,4 +814,7 @@ function sh:checkinit() {
     if (bound(mapmap), true, sh:start(xt:graph()))
 }
 
-
+# Log a specific msg according to the parameters
+function sh:log(file, m, msg) {
+    xt:print(now()," - [",file,"] - ",m," - ",msg);
+}

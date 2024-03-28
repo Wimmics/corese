@@ -84,7 +84,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             List<String> uri, List<String> param, List<String> mode,
             String query, String access, 
             List<String> defaut, List<String> named,
-            String format, int type, List<String> transform) { 
+            String format, int type, List<String> transform, String content) { 
            
         try {  
             logger.info("Endpoint URL: " + getRequest().getRequestURL());
@@ -98,7 +98,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             beforeRequest(getRequest(), query);
             Dataset ds = createDataset(getRequest(), defaut, named, access);
                                   
-            beforeParameter(ds, oper, uri, param, mode, transform);
+            beforeParameter(ds, oper, uri, param, mode, transform, content);
             Mappings map = getTripleStore(name).query(getRequest(), query, ds);
             complete(map, ds.getContext());
             afterParameter(ds, map);
@@ -189,7 +189,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
      * parameter recorded in context 
      */
     Dataset beforeParameter(Dataset ds, String oper, List<String> uri, 
-            List<String> param, List<String> mode, List<String> transform) {
+            List<String> param, List<String> mode, List<String> transform, String content) {
         if (oper != null) {
             ds.getContext().set(OPER, oper);
             List<String> federation = new ArrayList<>();
@@ -283,6 +283,11 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             }
         }
         
+        // to use prob-shacl service directly with shapes as string
+        if(content != null) {
+            ds.getContext().set(URLParam.CONTENT, decode(content));
+        }
+
         if (mode != null) {
             for (String kw : mode) {
                 // decode mode=map

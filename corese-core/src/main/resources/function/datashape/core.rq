@@ -35,6 +35,7 @@ function sh:core(report, sh, vis, nodeList, present) {
                 sh:pop()
             }
         } ;
+        sh:log("core.rq", "sh:core", concat(sh, " is conform ? ", res));
         return (res)
     }
 }
@@ -323,18 +324,43 @@ function sh:coreboolean(shape, cst) {
         }
 }
 
+# Probabilistic SHACL 
+# Binomial formulas
+function sh:normDensity(x, mu, sigma) {
+    set(normDensity_exponent = -0.5 * power(((?x - ?mu) / ?sigma), 2));
+    set(normDensity_coefficient = 1 / (?sigma * power(2 * fun:pi(), 0.5)));
+    set(normDensity_res = normDensity_coefficient * fun:exponential(normDensity_exponent));
+    return (normDensity_res)
+}
 
+# Optimized combinaison (n k)
+function sh:comb(n, k) {
+    # apply properties to optimize the computation
+    if(?n = ?k || ?k = 0) {
+        return (1)
+    };
+    # not scalable :
+    # return (sh:fac(?n) / (sh:fac(?k) * sh:fac(?n - ?k)))
+    if(?k>?n-?k) {
+        ?k=?n - ?k;
+    };
+    set(coef = 1);
+    for (i in xt:iota(0, ?k - 1)) {
+        set(coef=coef*(?n - i));
+        set(coef=floor(coef/(i+1)));
+    };
+    return (coef)
+}
 
+# P(X = k)
+function sh:binomial(n, p, k) {
+    if(?n>=30 && ?n*?p>5 && ?n*(1-?p)>5) {
+        return (sh:normDensity(?k, ?n*?p, power(?n*?p*(1-?p), 0.5)))
+    };
+    return (sh:comb(?n, ?k) * power(?p, ?k) * power(1 - ?p, ?n - ?k))
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
+# P(X >= k)
+function sh:binomialEqualOrGreater(n, p, k) {
+    if(k = n, sh:binomial(?n, ?p, ?n), sh:binomial(?n, ?p, ?k) + sh:binomialEqualOrGreater(?n, ?p, ?k + 1))
+}

@@ -3,6 +3,7 @@
 #
 # Olivier Corby - Wimmics Inria I3S - 2016-2020
 #
+prefix psh: <http://ns.inria.fr/probabilistic-shacl/>
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix xsh:  <http://www.w3.org/ns/shacl#> 
 prefix shex: <http://ns.inria.fr/shex/shacl#>
@@ -25,6 +26,10 @@ function xsd:boolean sh:report(report, name, sh, cst, s, p, o, suc, vis){
 
 function xsd:boolean sh:report(report, subReport, name, sh, cst, s, p, o, suc, vis){
     sh:record(name,  sh, cst, sh:shaclGraph(), s, p, o, suc, vis);
+    # increase reference cardinality (extended SHACL)
+    if(extended == true) {
+        set(referenceCardinality = referenceCardinality + 1);
+    } ;
     if (vis && ! suc) { 
         sh:visit(name, s, suc) ;
         return (sh:result(report, subReport, name, sh, cst, sh:shaclGraph(), s,  p, o)) ;
@@ -46,60 +51,78 @@ function xsd:boolean sh:result(report, subReport, name, sh, cst, dt:graph shape,
         def = coalesce(sh:isdefby(name), name),
         sev = coalesce(xt:value(shape, sh, sh:severity), sh:Violation),
         mes = sh:getTheMessage(shape, sh, cst, foc, node),
-        mesfun = sh:messageFunction(shape, sh, cst, foc, node),
-        abnode = sh:bnodeid()) {
+        mesfun = sh:messageFunction(shape, sh, cst, foc, node)) {
 
-       sh:store(report, abnode, rdf:type, sh:ValidationReport);
-       sh:store(report, abnode, sh:conforms, false);
-       
-       if (report = sh:validationReport()) {
+        # abnode is defined in main.rq -> sh:shacleval(shape, focus)
+        sh:store(report, abnode, rdf:type, sh:ValidationReport);
+        sh:store(report, abnode, sh:conforms, false);
+        # set the global evaluation report as false
+        set(fail = true);
+        if (report = sh:validationReport()) {
             sh:store(report, abnode, sh:result, res);
             sh:store(report, res, rdf:type, sh:ValidationResult)      
-       }
-       else {
+        }
+        else {
             sh:store(report, res, rdf:type, sh:AbstractResult)      
-       } ;
-              
-       sh:store(report, res, sh:resultSeverity, sev);
-       sh:store(report, res, sh:focusNode, foc);
-       
-       sh:store(report, res, sh:resultMessage, mes) ;
-       if (coalesce(mesfun = "", false), true,  
-            sh:store(report, res, sh:resultMessage2, mesfun)) ;
-                        
-       sh:store(report, res, sh:sourceConstraintComponent, def) ;
-       sh:store(report, res, sh:sourceShape, sh) ;
-                                              
-       if (sh:isValue(path)) {
+        } ;
+        sh:store(report, res, sh:resultSeverity, sev);
+        sh:store(report, res, sh:focusNode, foc);
+        sh:store(report, res, sh:resultMessage, mes) ;
+        if (coalesce(mesfun = "", false), true, sh:store(report, res, sh:resultMessage2, mesfun));
+        sh:store(report, res, sh:sourceConstraintComponent, def) ;
+        sh:store(report, res, sh:sourceShape, shapeName) ;      
+        if (sh:isValue(path)) {
             sh:store(report, res, sh:resultPath, sh:prettyNodeOrList(shape, path))
-       } ; 
-       if (sh:isValue(node)) {
+        }; 
+        if (sh:isValue(node)) {
             sh:store(report, res, sh:value, node) 
-       } ;
-       
-       if (isBlank(node)) {
+        };
+        if (isBlank(node)) {
             sh:store(report, res, sh:valueDetail, sh:graphdt(shape, node)) 
-       } ;
-       if (isBlank(foc) && ! sh:isFast()) {
+        };
+        if (isBlank(foc) && ! sh:isFast()) {
             sh:store(report, res, sh:focusNodeDetail, sh:graphdt(shape, foc)) 
-       };
-       if (isBlank(sh)) {
-            #sh:document(sh);
+        };
+        if (isBlank(sh)) {
             coalesce(sh:store(report, res, sh:sourceShapeDetail, sh:getDefinition(sh)), true)
-       };
-       
-       sh:resultFunction(report, subReport, res, sh, name, foc, path, node);
-
-       return (res)
-
+        };
+        # Extended SHACL 
+        if(extended == true && sev == sh:Violation) {
+            # fill the list of exceptions 
+            xt:add(exceptions, res);
+        };
+        sh:resultFunction(report, subReport, res, sh, name, foc, path, node);
+        return (res)
     } ;
-    #return (true)
 }
 
-
-
-
-
+# Extended SHACL Report component
+function sh:addExtendedShaclReport(report, exceptions) {
+    # sh:log("core.rq", "sh:binomial", "extended report !");
+    set(summary = bnode());
+    sh:store(report, abnode, psh:summary, summary);
+    sh:store(report, summary, rdf:type, psh:ValidationSummary);
+    # sh:store(report, summary, psh:mode, "Probabilistic");
+    # shapeName is defined on <main.rq> sh:shacleval(shape, focus)
+    sh:store(report, summary, psh:focusShape, shapeName);
+    # referenceCardinality is defined on <main.rq> sh:shacleval(shape, focus)
+    sh:store(report, summary, psh:referenceCardinality, referenceCardinality);
+    # numException is defined by the size of exceptions list
+    set(numException = xt:size(exceptions));
+    sh:store(report, summary, psh:numViolation, numException);
+    # numConfirmation is defined by referenceCardinality and the size of exceptions list
+    set(numConfirmation = (referenceCardinality - numException));
+    # fix negative values for the number of confirmations
+    if(numConfirmation < 0) {
+        set(numConfirmation = 0);
+    };
+    sh:store(report, summary, psh:numConfirmation, numConfirmation);
+    # sh:log("core.rq", "sh:binomial", "start binomiale !");
+    set(likelihood = sh:binomial(referenceCardinality, prob, numException));
+    sh:store(report, summary, psh:likelihood, likelihood);
+    set(generality = (referenceCardinality / numInstances));
+    sh:store(report, summary, psh:generality, generality);
+}
 
 #
 # Additional report
@@ -143,12 +166,18 @@ function sh:tracerecord(shape, mapmap) {
 # finish
 function xsd:boolean sh:success(xsd:boolean bb) {
     if (bb) {
-        let (g = 
-            construct { [] a sh:ValidationReport ; sh:conforms true }
-            where { }
-            ) {
-            sh:insert(g, sh:validationReport())
+        if (extended) {
+            sh:store(rep, abnode, rdf:type, sh:ValidationReport);
+            sh:store(rep, abnode, sh:conforms, true);
         }
+        else {
+            let (g = 
+                construct { [] a sh:ValidationReport ; sh:conforms true }
+                where { }
+                ) {
+                sh:insert(g, sh:validationReport())
+            }
+        } ;
     } ;
     return (true)
 }

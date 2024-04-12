@@ -35,7 +35,7 @@ public class Convert implements Callable<Integer> {
     private String input;
 
     @Option(names = { "-f", "-if",
-            "--input-format" }, description = "RDF serialization format of the input file. Possible values: ${COMPLETION-CANDIDATES}.")
+            "--input-format" }, description = "RDF serialization format of the input file. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
     private EnumInputFormat inputFormat = null;
 
     @Option(names = { "-o",
@@ -43,7 +43,7 @@ public class Convert implements Callable<Integer> {
     private Path output;
 
     @Option(names = { "-r", "-of",
-            "--output-format" }, required = true, description = "Serialization format to which the input file should be converted. Possible values: ${COMPLETION-CANDIDATES}.")
+            "--output-format" }, required = true, description = "Serialization format to which the input file should be converted. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
     private EnumOutputFormat outputFormat;
 
     @Option(names = { "-v",

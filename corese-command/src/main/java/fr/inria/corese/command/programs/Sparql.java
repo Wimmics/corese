@@ -41,7 +41,7 @@ public class Sparql implements Callable<Integer> {
     private CommandSpec spec;
 
     @Option(names = { "-f", "-if",
-            "--input-format" }, description = "RDF serialization format of the input file. Possible values: ${COMPLETION-CANDIDATES}.")
+            "--input-format" }, description = "RDF serialization format of the input file. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
     private EnumInputFormat inputFormat = null;
 
     @Option(names = { "-i",
@@ -49,7 +49,7 @@ public class Sparql implements Callable<Integer> {
     private String[] inputs;
 
     @Option(names = { "-r", "-of",
-            "--result-format" }, description = "Result fileformat. Possible values: ${COMPLETION-CANDIDATES}. ")
+            "--result-format" }, description = "Result fileformat. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m. ")
     private EnumResultFormat resultFormat = null;
 
     @Option(names = { "-o",

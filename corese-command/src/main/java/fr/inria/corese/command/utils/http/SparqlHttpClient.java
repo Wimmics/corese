@@ -287,8 +287,8 @@ public class SparqlHttpClient {
         if (!this.requestMethodIsDefinedByUser) {
             // Check if the query is an update query.
             if (query.getAST().isSPARQLUpdate()) {
-                // If it is an update query, set the request method to POST_DIRECT.
-                this.requestMethod = EnumRequestMethod.POST_DIRECT;
+                // If it is an update query, set the request method to POST_Encoded.
+                this.requestMethod = EnumRequestMethod.POST_URLENCODED;
             } else {
                 // If the query is not an update query, set the request method to GET.
                 // No need to set it here as GET is already the default value.

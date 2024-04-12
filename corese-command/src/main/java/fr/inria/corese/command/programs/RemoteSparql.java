@@ -48,7 +48,7 @@ public class RemoteSparql implements Callable<Integer> {
     private String accept;
 
     @Option(names = { "-m",
-            "--request-method" }, description = "HTTP request method to use (GET, POST-urlencoded, POST-direct).")
+            "--request-method" }, description = "HTTP request method to use. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
     private EnumRequestMethod requestMethod;
 
     @Option(names = { "-v",
@@ -191,7 +191,7 @@ public class RemoteSparql implements Callable<Integer> {
 
         SparqlHttpClient client = new SparqlHttpClient(this.endpoint_url);
         this.parseHeader(client);
-        client.setQueryMethod(this.requestMethod);
+        client.setRequestMethod(this.requestMethod);
         client.setVerbose(this.verbose);
         client.setMaxRedirection(this.maxRedirection);
 

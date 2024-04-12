@@ -191,6 +191,7 @@
 						<configuration>
 							<target>
 								<exec executable="./src/test/resources/launch_ssl_server.sh"
+									osfamily="unix"
 									spawn="false">
 									<arg value="${argLine}" />
 									<arg value="${project.build.directory}" />
@@ -208,6 +209,7 @@
 						<configuration>
 							<target>
 								<exec executable="./src/test/resources/stop_ssl_server.sh"
+									osfamily="unix"
 									spawn="false">
 								</exec>
 							</target>

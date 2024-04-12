@@ -32,6 +32,7 @@ public class SparqlHttpClient {
 
     private final String endpointUrl;
     private EnumRequestMethod queryMethod = EnumRequestMethod.GET;
+    private Boolean queryMethodIsDefinedByUser = false;
     private List<Pair<String, String>> headers = new ArrayList<>();
 
     private boolean verbose = false;
@@ -66,7 +67,10 @@ public class SparqlHttpClient {
      * @param requestMethod the query method
      */
     public void setQueryMethod(EnumRequestMethod requestMethod) {
-        this.queryMethod = requestMethod;
+        if (requestMethod != null) {
+            this.queryMethod = requestMethod;
+            this.queryMethodIsDefinedByUser = true;
+        }
     }
 
     /**
@@ -279,6 +283,17 @@ public class SparqlHttpClient {
         }
 
         Query query = buildQuery(queryString);
+
+        if (!this.queryMethodIsDefinedByUser) {
+            // Check if the query is an update query.
+            if (query.getAST().isSPARQLUpdate()) {
+                // If it is an update query, set the request method to POST_DIRECT.
+                this.queryMethod = EnumRequestMethod.POST_DIRECT;
+            } else {
+                // If the query is not an update query, set the request method to GET.
+                // No need to set it here as GET is already the default value.
+            }
+        }
 
         // Check if the query is an update query and the method is GET
         // which is not allowed by the SPARQL specification

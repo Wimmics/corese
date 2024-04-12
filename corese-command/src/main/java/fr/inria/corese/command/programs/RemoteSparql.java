@@ -48,7 +48,7 @@ public class RemoteSparql implements Callable<Integer> {
     private String accept;
 
     @Option(names = { "-m",
-            "--request-method" }, description = "HTTP request method to use (GET, POST-urlencoded, POST-direct).", defaultValue = "GET")
+            "--request-method" }, description = "HTTP request method to use (GET, POST-urlencoded, POST-direct).")
     private EnumRequestMethod requestMethod;
 
     @Option(names = { "-v",

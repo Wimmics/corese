@@ -35,6 +35,8 @@ public class ResultFormat implements ResultFormatDef {
     public static final String SPARQL_RESULTS_TSV = "text/tab-separated-values"; // application/sparql-results+tsv";
     public static final String SPARQL_RESULTS_MD = "text/markdown";
     public static final String SPARQL_RESULTS_NT = "application/n-triples";
+    public static final String SPARQL_RESULTS_NQ = "application/n-quads";
+    public static final String SPARQL_RESULTS_HTML = "application/n-quads";
 
     static final String HEADER = "<html>\n"
             + "<head>\n"
@@ -98,6 +100,7 @@ public class ResultFormat implements ResultFormatDef {
         table.put(Metadata.DISPLAY_JSON, JSON_FORMAT);
         table.put(Metadata.DISPLAY_MARKDOWN, MARKDOWN_FORMAT);
         table.put(Metadata.DISPLAY_NT, NTRIPLES_FORMAT);
+        table.put(Metadata.DISPLAY_NQ, NQUADS_FORMAT);
 
     }
 
@@ -115,6 +118,7 @@ public class ResultFormat implements ResultFormatDef {
         defContent(SPARQL_RESULTS_TSV, TSV_FORMAT);
         defContent(SPARQL_RESULTS_MD, MARKDOWN_FORMAT);
         defContent(SPARQL_RESULTS_NT, NTRIPLES_FORMAT);
+        defContent(SPARQL_RESULTS_NQ, NQUADS_FORMAT);
 
         // Graph
         defContent(RDF_XML, RDF_XML_FORMAT);
@@ -139,6 +143,7 @@ public class ResultFormat implements ResultFormatDef {
         format.put("tsv", TSV_FORMAT);
         format.put("markdown", MARKDOWN_FORMAT);
         format.put("nt", NTRIPLES_FORMAT);
+        format.put("nq", NQUADS_FORMAT);
 
         format.put("jsonld", JSONLD_FORMAT);
         format.put("rdf", TURTLE_FORMAT);

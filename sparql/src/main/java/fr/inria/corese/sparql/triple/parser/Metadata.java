@@ -106,6 +106,7 @@ public class Metadata extends ASTObject
     public static final String DISPLAY_XML = PREF + "xml";
     public static final String DISPLAY_RDF = PREF + "rdf";
     public static final String DISPLAY_MARKDOWN = PREF + "markdown";
+    public static final String DISPLAY_NT = PREF + "nt";
 
     public static final String RELAX_URI = PREF + "uri";
     public static final String RELAX_PROPERTY = PREF + "property";

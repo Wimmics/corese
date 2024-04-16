@@ -1761,6 +1761,14 @@ public class MainFrame extends JFrame implements ActionListener {
                 if (!model.contains(lPath) && !wf) {
                     model.addElement(lPath);
                 }
+
+                if (extension(lPath) == null) {
+                    appendMsg("Error: No extension for file: " + lPath + "\n");
+                    appendMsg("Please select a file with an extension (e.g: .ttl, .rdf, .trig, .jsonld, .html, ...)\n");
+                    appendMsg("Load is aborted\n");
+                    return;
+                }
+
                 appendMsg("Loading " + extension(lPath) + " File from path : " + lPath + "\n");
                 if (wf) {
                     if (exec) {

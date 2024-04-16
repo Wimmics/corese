@@ -139,9 +139,11 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem refresh;
     private JMenuItem exportRDF;
     private JMenuItem exportTurtle;
-    private JMenuItem exportOwl;
-    private JMenuItem exportJson;
     private JMenuItem exportTrig;
+    private JMenuItem exportJson;
+    private JMenuItem exportNt;
+    private JMenuItem exportNq;
+    private JMenuItem exportOwl;
     private JMenuItem copy;
     private JMenuItem cut;
     private JMenuItem paste;
@@ -636,17 +638,25 @@ public class MainFrame extends JFrame implements ActionListener {
         exportTurtle.addActionListener(this);
         exportTurtle.setToolTipText("Export graph in Turtle format");
 
-        exportOwl = new JMenuItem("OWL");
-        exportOwl.addActionListener(this);
-        exportOwl.setToolTipText("Export graph in OWL format");
-
-        exportJson = new JMenuItem("JSON");
-        exportJson.addActionListener(this);
-        exportJson.setToolTipText("Export graph in JSON format");
-
         exportTrig = new JMenuItem("TriG");
         exportTrig.addActionListener(this);
         exportTrig.setToolTipText("Export graph in TriG format");
+
+        exportJson = new JMenuItem("JsonLD");
+        exportJson.addActionListener(this);
+        exportJson.setToolTipText("Export graph in JSON format");
+
+        exportNt = new JMenuItem("NTriple");
+        exportNt.addActionListener(this);
+        exportNt.setToolTipText("Export graph in NTriple format");
+
+        exportNq = new JMenuItem("NQuad");
+        exportNq.addActionListener(this);
+        exportNq.setToolTipText("Export graph in NQuad format");
+
+        exportOwl = new JMenuItem("OWL");
+        exportOwl.addActionListener(this);
+        exportOwl.setToolTipText("Export graph in OWL format");
 
         execWorkflow = new JMenuItem("Process Workflow");
         execWorkflow.addActionListener(this);
@@ -823,9 +833,11 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(fileMenuSaveGraph);
         fileMenuSaveGraph.add(exportRDF);
         fileMenuSaveGraph.add(exportTurtle);
-        fileMenuSaveGraph.add(exportOwl);
-        fileMenuSaveGraph.add(exportJson);
         fileMenuSaveGraph.add(exportTrig);
+        fileMenuSaveGraph.add(exportJson);
+        fileMenuSaveGraph.add(exportNt);
+        fileMenuSaveGraph.add(exportNq);
+        fileMenuSaveGraph.add(exportOwl);
 
         fileMenu.add(saveQuery);
         fileMenu.add(saveResult);
@@ -1316,15 +1328,21 @@ public class MainFrame extends JFrame implements ActionListener {
         } // Exporter le graph au format Turle
         else if (e.getSource() == exportTurtle) {
             saveGraph(Transformer.TURTLE);
-        } // Exporter le graph au format OWL
-        else if (e.getSource() == exportOwl) {
-            saveGraph(Transformer.OWL);
-        } // Exporter le graph au format Json
-        else if (e.getSource() == exportJson) {
-            saveGraph(Transformer.JSON);
         } // Exporter le graph au format TriG
         else if (e.getSource() == exportTrig) {
             saveGraph(Transformer.TRIG);
+        } // Exporter le graph au format Json
+        else if (e.getSource() == exportJson) {
+            saveGraph(Transformer.JSON);
+        } // Exporter le graph au format NTriple
+        else if (e.getSource() == exportNt) {
+            saveGraph(ResultFormat.NTRIPLES_FORMAT);
+        } // Exporter le graph au format NQuad
+        else if (e.getSource() == exportNq) {
+            saveGraph(ResultFormat.NQUADS_FORMAT);
+        } // Exporter le graph au format OWL
+        else if (e.getSource() == exportOwl) {
+            saveGraph(Transformer.OWL);
         } // Charge et exécute une règle directement
         else if (e.getSource() == loadAndRunRule) {
             loadRunRule();
@@ -1481,6 +1499,20 @@ public class MainFrame extends JFrame implements ActionListener {
         } catch (EngineException ex) {
             LOGGER.error(ex);
         }
+    }
+
+    /**
+     * Save the graph in the specified format
+     * 
+     * @param format the format in which the graph will be saved
+     *               (See ResultFormat.java for the list of formats)
+     */
+    void saveGraph(int format) {
+        Graph graph = myCorese.getGraph();
+
+        ResultFormat ft = ResultFormat.create(graph, format);
+        save(ft.toString());
+
     }
 
     void saveQuery() {

@@ -133,8 +133,13 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem loadRule;
     private JMenuItem loadStyle;
     private JMenuItem cpTransform, shex;
+    private JMenu fileMenuSaveResult;
     private JMenuItem saveQuery;
-    private JMenuItem saveResult;
+    private JMenuItem saveResultXml;
+    private JMenuItem saveResultJson;
+    private JMenuItem saveResultCsv;
+    private JMenuItem saveResultTsv;
+    private JMenuItem saveResultMarkdown;
     private JMenuItem loadAndRunRule;
     private JMenuItem refresh;
     private JMenuItem exportRDF;
@@ -353,7 +358,7 @@ public class MainFrame extends JFrame implements ActionListener {
                             duplicateFrom.setEnabled(true);
                             comment.setEnabled(true);
                             saveQuery.setEnabled(true);
-                            saveResult.setEnabled(true);
+                            fileMenuSaveResult.setEnabled(true);
 
                             MyJPanelQuery temp = (MyJPanelQuery) getConteneurOnglets().getComponentAt(selected);
 
@@ -372,7 +377,7 @@ public class MainFrame extends JFrame implements ActionListener {
                             duplicateFrom.setEnabled(false);
                             comment.setEnabled(false);
                             saveQuery.setEnabled(false);
-                            saveResult.setEnabled(false);
+                            fileMenuSaveResult.setEnabled(false);
                         }
                         // Si l'onglet sélectionné est le "+" on crée un nouvel onglet Query
                         if (c == plus) {
@@ -670,8 +675,20 @@ public class MainFrame extends JFrame implements ActionListener {
         saveQuery = new JMenuItem("Save Query");
         saveQuery.addActionListener(this);
 
-        saveResult = new JMenuItem("Save Result");
-        saveResult.addActionListener(this);
+        saveResultXml = new JMenuItem("XML");
+        saveResultXml.addActionListener(this);
+
+        saveResultJson = new JMenuItem("JSON");
+        saveResultJson.addActionListener(this);
+
+        saveResultCsv = new JMenuItem("CSV");
+        saveResultCsv.addActionListener(this);
+
+        saveResultTsv = new JMenuItem("TSV");
+        saveResultTsv.addActionListener(this);
+
+        saveResultMarkdown = new JMenuItem("Markdown");
+        saveResultMarkdown.addActionListener(this);
 
         itable = new HashMap<>();
 
@@ -808,6 +825,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         JMenu fileMenuLoad = new JMenu("Load");
         JMenu fileMenuSaveGraph = new JMenu("Save Graph");
+        fileMenuSaveResult = new JMenu("Save Result");
 
         // On ajoute tout au menu
         fileMenu.add(fileMenuLoad);
@@ -840,7 +858,13 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenuSaveGraph.add(exportOwl);
 
         fileMenu.add(saveQuery);
-        fileMenu.add(saveResult);
+
+        fileMenu.add(fileMenuSaveResult);
+        fileMenuSaveResult.add(saveResultXml);
+        fileMenuSaveResult.add(saveResultJson);
+        fileMenuSaveResult.add(saveResultCsv);
+        fileMenuSaveResult.add(saveResultTsv);
+        fileMenuSaveResult.add(saveResultMarkdown);
 
         queryMenu.add(iselect);
         queryMenu.add(iconstruct);
@@ -1162,7 +1186,7 @@ public class MainFrame extends JFrame implements ActionListener {
             duplicateFrom.setEnabled(false);
             comment.setEnabled(false);
             saveQuery.setEnabled(false);
-            saveResult.setEnabled(false);
+            fileMenuSaveResult.setEnabled(false);
         }
     }
 
@@ -1320,8 +1344,20 @@ public class MainFrame extends JFrame implements ActionListener {
             String style = loadText();
             defaultStylesheet = style;
         } // Sauvegarde le résultat sous forme XML dans un fichier texte
-        else if (e.getSource() == saveResult) {
-            save(current.getTextAreaXMLResult().getText());
+        else if (e.getSource() == saveResultXml) {
+            saveResult(ResultFormat.XML_FORMAT);
+        } // Sauvegarde le résultat sous forme JSON dans un fichier texte
+        else if (e.getSource() == saveResultJson) {
+            saveResult(ResultFormat.JSON_FORMAT);
+        } // Sauvegarde le résultat sous forme CSV dans un fichier texte
+        else if (e.getSource() == saveResultCsv) {
+            saveResult(ResultFormat.CSV_FORMAT);
+        } // Sauvegarde le résultat sous forme TSV dans un fichier texte
+        else if (e.getSource() == saveResultTsv) {
+            saveResult(ResultFormat.TSV_FORMAT);
+        } // Sauvegarde le résultat sous forme Markdown dans un fichier texte
+        else if (e.getSource() == saveResultMarkdown) {
+            saveResult(ResultFormat.MARKDOWN_FORMAT);
         } // Exporter le graph au format RDF/XML
         else if (e.getSource() == exportRDF) {
             saveGraph(Transformer.RDFXML);
@@ -1512,7 +1548,17 @@ public class MainFrame extends JFrame implements ActionListener {
 
         ResultFormat ft = ResultFormat.create(graph, format);
         save(ft.toString());
+    }
 
+    /**
+     * Save the result of a query in the specified format
+     * 
+     * @param format the format in which the result will be saved
+     *               (See ResultFormat.java for the list of formats)
+     */
+    void saveResult(int format) {
+        ResultFormat ft = ResultFormat.create(current.getMappings(), format);
+        save(ft.toString());
     }
 
     void saveQuery() {

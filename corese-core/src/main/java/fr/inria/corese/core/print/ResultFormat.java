@@ -34,8 +34,6 @@ public class ResultFormat implements ResultFormatDef {
     public static final String SPARQL_RESULTS_CSV = "text/csv"; // application/sparql-results+csv";
     public static final String SPARQL_RESULTS_TSV = "text/tab-separated-values"; // application/sparql-results+tsv";
     public static final String SPARQL_RESULTS_MD = "text/markdown";
-    public static final String SPARQL_RESULTS_NT = "application/n-triples";
-    public static final String SPARQL_RESULTS_NQ = "application/n-quads";
     public static final String SPARQL_RESULTS_HTML = "application/n-quads";
 
     static final String HEADER = "<html>\n"
@@ -98,9 +96,6 @@ public class ResultFormat implements ResultFormatDef {
         table.put(Metadata.DISPLAY_RDF, RDF_FORMAT);
         table.put(Metadata.DISPLAY_XML, XML_FORMAT);
         table.put(Metadata.DISPLAY_JSON, JSON_FORMAT);
-        table.put(Metadata.DISPLAY_MARKDOWN, MARKDOWN_FORMAT);
-        table.put(Metadata.DISPLAY_NT, NTRIPLES_FORMAT);
-        table.put(Metadata.DISPLAY_NQ, NQUADS_FORMAT);
 
     }
 
@@ -117,14 +112,14 @@ public class ResultFormat implements ResultFormatDef {
         defContent(SPARQL_RESULTS_CSV, CSV_FORMAT);
         defContent(SPARQL_RESULTS_TSV, TSV_FORMAT);
         defContent(SPARQL_RESULTS_MD, MARKDOWN_FORMAT);
-        defContent(SPARQL_RESULTS_NT, NTRIPLES_FORMAT);
-        defContent(SPARQL_RESULTS_NQ, NQUADS_FORMAT);
 
         // Graph
         defContent(RDF_XML, RDF_XML_FORMAT);
         defContent(TURTLE_TEXT, TURTLE_FORMAT);
         defContent(TRIG, TRIG_FORMAT);
         defContent(JSON_LD, JSONLD_FORMAT);
+        defContent(N_TRIPLES, NTRIPLES_FORMAT);
+        defContent(N_QUADS, NQUADS_FORMAT);
         // defContent(JSON, JSON_LD_FORMAT);
 
         format.put(TRIG_TEXT, TRIG_FORMAT);
@@ -142,14 +137,14 @@ public class ResultFormat implements ResultFormatDef {
         format.put("csv", CSV_FORMAT);
         format.put("tsv", TSV_FORMAT);
         format.put("markdown", MARKDOWN_FORMAT);
-        format.put("nt", NTRIPLES_FORMAT);
-        format.put("nq", NQUADS_FORMAT);
 
         format.put("jsonld", JSONLD_FORMAT);
         format.put("rdf", TURTLE_FORMAT);
         format.put("turtle", TURTLE_FORMAT);
         format.put("trig", TRIG_FORMAT);
         format.put("rdfxml", RDF_XML_FORMAT);
+        format.put("nt", NTRIPLES_FORMAT);
+        format.put("nq", NQUADS_FORMAT);
     }
 
     static void defContent(String f, int t) {

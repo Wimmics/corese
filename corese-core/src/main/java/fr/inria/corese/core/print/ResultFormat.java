@@ -447,8 +447,7 @@ public class ResultFormat implements ResultFormatDef {
             case NTRIPLES_FORMAT:
                 return NTriplesFormat.create(getGraph()).toString();
             case NQUADS_FORMAT:
-                return TripleFormat.create(getGraph(), true)
-                        .setNbTriple(getNbTriple()).toString(node);
+                return NQuadsFormat.create(getGraph()).toString();
             case TURTLE_FORMAT:
             default:
                 // e.g. HTML

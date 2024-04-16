@@ -337,6 +337,18 @@ public class Extension extends Core {
         }
     }
     
-    
+    /**
+     * @return the result of exp(dt), dt is a number
+     */
+    public IDatatype exponential(IDatatype dt) {
+        return DatatypeMap.newInstance(Math.exp(dt.doubleValue()));
+    }
+
+    /**
+     * @return PI value
+     */
+    public IDatatype pi() {
+        return DatatypeMap.newInstance(Math.PI);
+    }
     
 }

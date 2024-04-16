@@ -1,5 +1,9 @@
 package fr.inria.corese.server.webservice;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -27,6 +31,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
+import fr.inria.corese.sparql.datatype.RDF;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -192,7 +197,7 @@ public class TripleStore implements URLParam {
         QueryProcess exec = getQueryProcess();
         exec.setDebug(c.isDebug());
 
-        Mappings map;
+        Mappings map = null;
         try {
             before(exec, query, ds);
             TripleStoreLog tsl = new TripleStoreLog(exec, c);
@@ -211,6 +216,8 @@ public class TripleStore implements URLParam {
                     }
                 } else if (isShacl(c)) {
                     map = shacl(query, ds);
+                } else if (isProbabilisticShacl(c)) {
+                    map = probabilisticShacl(query, ds);
                 } else if (isConstruct(c)) {
                     map = construct(query, ds);
                 } else if (isSpin(c)) {
@@ -227,6 +234,8 @@ public class TripleStore implements URLParam {
                 } else {
                     throw e;
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             // add param=value parameter to Context
@@ -319,6 +328,11 @@ public class TripleStore implements URLParam {
         return c.hasValue(SHACL) && hasValueList(c, URI);
     }
 
+    boolean isProbabilisticShacl(Context c) {
+        if(c.hasValue(PROB_SHACL) && c.hasValue(CONTENT)) return true;
+        else return c.hasValue(PROB_SHACL) && hasValueList(c, URI);
+    }
+
     boolean isConstruct(Context c) {
         return c.hasValue(CONSTRUCT);
     }
@@ -363,6 +377,66 @@ public class TripleStore implements URLParam {
         Shacl sh = new Shacl(getGraph());
         sh.setDataManager(getDataManager());
         Graph res = sh.eval(shacl);
+        QueryProcess exec = QueryProcess.create(res);
+        exec.setDebug(ds.getContext().isDebug());
+        Mappings map = exec.query(query);
+        return map;
+    }
+
+    /**
+     * sparql?mode=prob-shacl&param=p:[value],n-triples:[value]&query=select * where { ?s sh:conforms ?b }
+     * sparql?mode=prob-shacl&uri=uri&query=select * where { ?s sh:conforms ?b }
+     * Load shacl shape
+     * Evaluate shape
+     * Execute query on shacl validation report
+     */ 
+    Mappings probabilisticShacl(String query, Dataset ds) throws EngineException, IOException {
+        Graph shacl = Graph.create();
+        Load ld = Load.create(shacl);
+        double p = 0;
+        Integer nTriples = null;
+        try {
+            if(ds.getContext().get(URLParam.CONTENT) != null) {
+                InputStream stream = new ByteArrayInputStream(ds.getContext().get(URLParam.CONTENT).stringValue().getBytes(StandardCharsets.UTF_8));
+                ld.parse(stream, "", Load.TURTLE_FORMAT);
+                stream.close();
+            } else {
+                for (IDatatype dt : ds.getContext().get(URLParam.URI)) {
+                    ld.parse(dt.getLabel());
+                }
+            }
+            // Manage params
+            if(ds.getContext().get(PARAM) != null) {
+                // parsing params as: p=[value];n-triples=[value]
+                for (IDatatype paramDt : ds.getContext().get(PARAM).getValueList()) {
+                    String param = paramDt.getLabel();
+                    // p-value
+                    if(param.contains(PROB_SHACL_P)) {
+                        p = Double.parseDouble(param.replace(PROB_SHACL_P + ":", ""));
+                    }
+                    // n-triples
+                    if(param.contains(PROB_SHACL_N_TRIPLES)) {
+                        nTriples = Integer.parseInt(param.replace(PROB_SHACL_N_TRIPLES + ":", ""));
+                    } 
+                }
+            }
+
+        } catch (LoadException ex) {
+            logger.error(ex.getMessage());
+            throw new EngineException(ex) ;
+        }
+        logger.info("The prob-shacl validator will use the default p-value: p=" + p);
+        Shacl sh = new Shacl(getGraph());
+        sh.setDataManager(getDataManager());
+        Graph res;
+        if (nTriples != null) {
+            logger.info("The prob-shacl validator will consider the total number of RDF triples: n-triples=" + nTriples);
+            res = sh.eval(shacl, Shacl.PROBABILISTIC_MODE,
+                DatatypeMap.createLiteral(String.valueOf(p), RDF.xsddouble),
+                DatatypeMap.createLiteral(String.valueOf(nTriples), RDF.xsdinteger));
+        } else {
+            res = sh.eval(shacl, Shacl.PROBABILISTIC_MODE, DatatypeMap.createLiteral(String.valueOf(p), RDF.xsddouble));
+        }
         QueryProcess exec = QueryProcess.create(res);
         exec.setDebug(ds.getContext().isDebug());
         Mappings map = exec.query(query);

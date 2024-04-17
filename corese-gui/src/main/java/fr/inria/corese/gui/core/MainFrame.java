@@ -71,7 +71,9 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.result.SPARQLResultParser;
+import fr.inria.corese.core.print.CanonicalRdf10Format;
 import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.print.rdfc10.HashingUtility.HashAlgorithm;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
@@ -149,6 +151,9 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem exportNt;
     private JMenuItem exportNq;
     private JMenuItem exportOwl;
+    private JMenu exportCanonic;
+    private JMenuItem saveRDFC_1_0_sha256;
+    private JMenuItem saveRDFC_1_1_sha384;
     private JMenuItem copy;
     private JMenuItem cut;
     private JMenuItem paste;
@@ -663,6 +668,15 @@ public class MainFrame extends JFrame implements ActionListener {
         exportOwl.addActionListener(this);
         exportOwl.setToolTipText("Export graph in OWL format");
 
+        exportCanonic = new JMenu("Canonic");
+        exportCanonic.addActionListener(this);
+
+        saveRDFC_1_0_sha256 = new JMenuItem("RDFC-1.0 (sha256)");
+        saveRDFC_1_0_sha256.addActionListener(this);
+
+        saveRDFC_1_1_sha384 = new JMenuItem("RDFC-1.0 (sha384)");
+        saveRDFC_1_1_sha384.addActionListener(this);
+
         execWorkflow = new JMenuItem("Process Workflow");
         execWorkflow.addActionListener(this);
 
@@ -856,6 +870,9 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenuSaveGraph.add(exportNt);
         fileMenuSaveGraph.add(exportNq);
         fileMenuSaveGraph.add(exportOwl);
+        fileMenuSaveGraph.add(exportCanonic);
+        exportCanonic.add(saveRDFC_1_0_sha256);
+        exportCanonic.add(saveRDFC_1_1_sha384);
 
         fileMenu.add(saveQuery);
 
@@ -1379,6 +1396,12 @@ public class MainFrame extends JFrame implements ActionListener {
         } // Exporter le graph au format OWL
         else if (e.getSource() == exportOwl) {
             saveGraph(Transformer.OWL);
+        } // Exporter le graph au format RDFC-1.0 (sha256)
+        else if (e.getSource() == saveRDFC_1_0_sha256) {
+            saveGraphCanonic(HashAlgorithm.SHA_256);
+        } // Exporter le graph au format RDFC-1.0 (sha384)
+        else if (e.getSource() == saveRDFC_1_1_sha384) {
+            saveGraphCanonic(HashAlgorithm.SHA_384);
         } // Charge et exécute une règle directement
         else if (e.getSource() == loadAndRunRule) {
             loadRunRule();
@@ -1535,6 +1558,17 @@ public class MainFrame extends JFrame implements ActionListener {
         } catch (EngineException ex) {
             LOGGER.error(ex);
         }
+    }
+
+    /**
+     * Save the graph in canonic format with the specified algorithm
+     * 
+     * @param format the format in which the graph will be saved
+     */
+    void saveGraphCanonic(HashAlgorithm algo) {
+        Graph graph = myCorese.getGraph();
+        CanonicalRdf10Format transformer = new CanonicalRdf10Format(graph, algo);
+        save(transformer.toString());
     }
 
     /**

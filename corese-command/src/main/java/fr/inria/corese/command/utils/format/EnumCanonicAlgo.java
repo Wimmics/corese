@@ -3,28 +3,11 @@ package fr.inria.corese.command.utils.format;
 /**
  * Enumeration of exportable RDF serialization formats.
  */
-public enum EnumOutputFormat {
-    RDFXML(1, "rdfxml", "rdf"),
-    RDF(1, "rdf", "rdf"),
-    APPLICATION_RDF_XML(1, "application/rdf+xml", "rdf"),
+public enum EnumCanonicAlgo {
+    RDFC10(1, "rdfc-1.0", "nq"),
+    RDFC10SHA256(1, "rdfc-1.0-sha256", "nq"),
 
-    TURTLE(2, "turtle", "ttl"),
-    TTL(2, "ttl", "ttl"),
-    TEXT_TURTLE(2, "text/turtle", "ttl"),
-
-    TRIG(3, "trig", "trig"),
-    APPLICATION_TRIG(3, "application/trig", "trig"),
-
-    JSONLD(4, "jsonld", "jsonld"),
-    APPLICATION_LD_JSON(4, "application/ld+json", "jsonld"),
-
-    NTRIPLES(6, "ntriples", "nt"),
-    NT(6, "nt", "nt"),
-    APPLICATION_NTRIPLES(6, "application/n-triples", "nt"),
-
-    NQUADS(7, "nquads", "nq"),
-    NQ(7, "nq", "nq"),
-    APPLICATION_NQUADS(7, "application/n-quads", "nq");
+    RDFC10SHA384(2, "rdfc-1.0-sha384", "nq");
 
     private final int value;
     private final String name;
@@ -37,7 +20,7 @@ public enum EnumOutputFormat {
      * @param name      The name of the enum.
      * @param extention The extension of the format.
      */
-    private EnumOutputFormat(int value, String name, String extention) {
+    private EnumCanonicAlgo(int value, String name, String extention) {
         this.value = value;
         this.name = name;
         this.extention = extention;
@@ -53,18 +36,19 @@ public enum EnumOutputFormat {
     }
 
     /**
-     * Get the name of the enum.
+     * Get the name of the canonic algorithm.
      * 
-     * @return The name of the enum.
+     * @return The name of the canonic algorithm.
      */
     public String getName() {
         return this.name;
     }
 
     /**
-     * Get the extension of the format.
+     * Get the extension of the file format associated with the canonic algorithm.
      * 
-     * @return The extension.
+     * @return The extension of the file format associated with the canonic
+     *         algorithm.
      */
     public String getExtention() {
         return this.extention;

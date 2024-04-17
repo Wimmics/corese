@@ -6,7 +6,6 @@ import java.nio.file.Path;
 
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.print.CanonicalRdf10Format;
 import fr.inria.corese.core.print.JSONLDFormat;
 import fr.inria.corese.core.print.NQuadsFormat;
 import fr.inria.corese.core.print.NTriplesFormat;
@@ -114,9 +113,6 @@ public class RdfDataExporter {
                 case NQ:
                 case APPLICATION_NQUADS:
                     NQuadsFormat.create(graph).write(outputStream);
-                    break;
-                case CANONICAL10:
-                    CanonicalRdf10Format.create(graph).write(outputStream);
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported output format: " + outputFormat);

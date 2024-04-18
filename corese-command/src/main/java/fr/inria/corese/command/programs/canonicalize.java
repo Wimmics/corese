@@ -59,6 +59,10 @@ public class canonicalize implements Callable<Integer> {
             "--no-owl-import" }, description = "Disables the automatic importation of ontologies specified in 'owl:imports' statements. When this flag is set, the application will not fetch and include referenced ontologies.", required = false, defaultValue = "false")
     private boolean noOwlImport;
 
+    @Option(names = { "-R",
+            "--recursive" }, description = "If an input is a directory, load all the files in the directory recursively.")
+    private boolean recursive = false;
+
     private Graph graph = Graph.create();
 
     private boolean canonicalAlgoIsDefined = false;
@@ -137,10 +141,14 @@ public class canonicalize implements Callable<Integer> {
                     // if input is a URL, load from the given URL
                     RdfDataLoader.loadFromURL(url.get(), this.inputFormat, this.graph, this.spec, this.verbose);
                 } else if (path.isPresent()) {
-                    // if input is provided, load from the given file
-                    RdfDataLoader.loadFromFile(path.get(), this.inputFormat, this.graph, this.spec, this.verbose);
-                } else {
-                    throw new IllegalArgumentException("Input path is not a valid URL or file path: " + input);
+                    if (path.get().toFile().isDirectory()) {
+                        // if input is a directory, load all the files in the directory
+                        RdfDataLoader.loadFromDirectory(path.get(), this.inputFormat, this.graph, this.recursive,
+                                this.spec, this.verbose);
+                    } else {
+                        // if input is provided, load from the given file
+                        RdfDataLoader.loadFromFile(path.get(), this.inputFormat, this.graph, this.spec, this.verbose);
+                    }
                 }
             }
         }

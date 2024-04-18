@@ -21,6 +21,7 @@ Designed to simplify and streamline tasks related to querying, converting, and v
       2. [4.2. Different Types of Input](#42-different-types-of-input)
       3. [4.3. Different Types of Output](#43-different-types-of-output)
       4. [4.4. Summary of Available Formats](#44-summary-of-available-formats)
+      5. [4.5. Multiple Input Files](#45-multiple-input-files)
    5. [5. The `shacl` Command](#5-the-shacl-command)
       1. [5.1. Basic Usage](#51-basic-usage)
       2. [5.2. Different Types of Input](#52-different-types-of-input)
@@ -44,6 +45,7 @@ Designed to simplify and streamline tasks related to querying, converting, and v
       2. [7.2. Different Types of Input](#72-different-types-of-input)
       3. [7.3. Different Types of Output](#73-different-types-of-output)
       4. [7.4. Canonicalization Algorithms](#74-canonicalization-algorithms)
+      5. [7.5. Multiple Input Files](#75-multiple-input-files)
    8. [8. General Options](#8-general-options)
       1. [8.1. Configuration file](#81-configuration-file)
       2. [8.2. Verbose](#82-verbose)
@@ -343,6 +345,38 @@ The `convert` command supports the following formats for input and output:
 | NQUADS   | ✅             | ✅              |
 | RDFA     | ✅             | ❌              |
 
+### 4.5. Multiple Input Files
+
+- **Multiple Input:** It's possible to provide multiple input files by repeating the `-i` flag:
+
+```shell
+corese-command convert -i myData1.ttl -i myData2.ttl -r jsonld
+```
+
+- **Shell Globbing:** It's also possible to use shell globbing to provide multiple input files:
+
+```shell
+corese-command convert -i rdf/*.ttl -r jsonld
+```
+
+```shell
+corese-command convert -i myData?.ttl -r jsonld
+```
+
+- **Directory Input:** If you want to use a whole directory as input, you can do so.
+
+```shell
+corese-command convert -i ./myDirectory/ -r jsonld
+```
+
+- **Directory Input Recursive:** If you want to use a whole directory as input, you can do so. The `-R` flag allows you to use the directory recursively.
+
+```shell
+corese-command convert -i ./myDirectory/ -r jsonld -R
+```
+
+> The command integrates all specified input files into a single dataset for processing. During conversion, these files are collectively transformed into the designated output format, effectively merging all data into one coherent file.
+
 ## 5. The `shacl` Command
 
 The `shacl` command allows you to validate RDF data against SHACL shapes.
@@ -583,41 +617,6 @@ corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.o
 
 This option is useful when you want to send a query that is not valid according to the SPARQL grammar, but is still accepted by the SPARQL endpoint.
 
-<!-- ⋊> ~ corese-command-develop canonicalize -h                                                                                                                                                                                                                                                               10:15:18
-Usage: Corese-command canonicalize [-hvVw] [-o[=<output>]]
-                                   [-c=<configFilePath>] [-f=<inputFormat>]
-                                   [-i=<input>] -r=<canonicalAlgo>
-Canonicalize an RDF file to a specific format.
-  -c, --init, --config=<configFilePath>
-                             Path to a configuration file. If not provided, the
-                               default configuration file will be used.
-  -f, -if, --input-format=<inputFormat>
-                             RDF serialization format of the input file.
-                               Possible values: rdfxml, rdf,
-                               application/rdf+xml, turtle, ttl, text/turtle,
-                               trig, application/trig, jsonld,
-                               application/ld+json, ntriples, nt,
-                               application/n-triples, nquads, nq,
-                               application/n-quads, rdfa, html,
-                               application/xhtml+xml.
-  -h, --help                 Show this help message and exit.
-  -i, --input-data=<input>   Path or URL of the file that needs to be
-                               canonicalized.
-  -o, --output-data[=<output>]
-                             Output file path. If not provided, the result will
-                               be written to standard output.
-  -r, -a, -ca, -of, --canonical-algo=<canonicalAlgo>
-                             Canonicalization algorithm to use. Possible
-                               values: rdfc-1.0, rdfc-1.0-sha256, rdfc-1.
-                               0-sha384.
-  -v, --verbose              Prints more information about the execution of the
-                               command.
-  -V, --version              Print version information and exit.
-  -w, --no-owl-import        Disables the automatic importation of ontologies
-                               specified in 'owl:imports' statements. When this
-                               flag is set, the application will not fetch and
-                               include referenced ontologies. -->
-
 ## 7. `canonicalize` Command
 
 The `canonicalize` command allows you to apply a specific canonicalization algorithm to RDF files.
@@ -693,6 +692,38 @@ The following canonicalization algorithms are available:
 >
 > - `rdfc-1.0` or `rdfc-1.0-sha256` for [RDFC 1.0](https://www.w3.org/TR/rdf-canon/) with SHA-256
 > - `rdfc-1.0-sha384` for [RDFC 1.0](https://www.w3.org/TR/rdf-canon/) with SHA-384
+
+### 7.5. Multiple Input Files
+
+- **Multiple Input:** It's possible to provide multiple input files by repeating the `-i` flag:
+
+```shell
+corese-command canonicalize -i myData1.ttl -i myData2.ttl -r rdfc-1.0-sha256
+```
+
+- **Shell Globbing:** It's also possible to use shell globbing to provide multiple input files:
+
+```shell
+corese-command canonicalize -i rdf/*.ttl -r rdfc-1.0-sha256
+```
+
+```shell
+corese-command canonicalize -i myData?.ttl -r rdfc-1.0-sha256
+```
+
+- **Directory Input:** If you want to use a whole directory as input, you can do so.
+
+```shell
+corese-command canonicalize -i ./myDirectory/ -r rdfc-1.0-sha256
+```
+
+- **Directory Input Recursive:** If you want to use a whole directory as input, you can do so. The `-R` flag allows you to use the directory recursively.
+
+```shell
+corese-command canonicalize -i ./myDirectory/ -r rdfc-1.0-sha256 -R
+```
+
+> All input files are loaded into the same dataset. Canonicalization algorithms are applied to the entire dataset.
 
 ## 8. General Options
 

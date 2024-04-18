@@ -31,8 +31,9 @@ public class Convert implements Callable<Integer> {
     @Spec
     CommandSpec spec;
 
-    @Option(names = { "-i", "--input-data" }, description = "Path or URL of the file that needs to be converted.")
-    private String input;
+    @Option(names = { "-i",
+            "--input-data" }, description = "Path or URL of the file that needs to be converted.", arity = "1...")
+    private String[] rdfData;
 
     @Option(names = { "-f", "-if",
             "--input-format" }, description = "RDF serialization format of the input file. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
@@ -107,10 +108,12 @@ public class Convert implements Callable<Integer> {
      * @throws IllegalArgumentException if input path is same as output path.
      */
     private void checkInputValues() throws IllegalArgumentException {
-        if (this.input != null
-                && this.output != null
-                && this.input.equals(this.output.toString())) {
-            throw new IllegalArgumentException("Input path cannot be the same as output path.");
+        if (this.rdfData != null && this.output != null) {
+            for (String input : this.rdfData) {
+                if (Path.of(input).compareTo(this.output) == 0) {
+                    throw new IllegalArgumentException("Input path is same as output path: " + input);
+                }
+            }
         }
     }
 
@@ -122,20 +125,24 @@ public class Convert implements Callable<Integer> {
      *                                  input file.
      */
     private void loadInputFile() throws IllegalArgumentException, IOException {
-        Optional<URL> url = ConvertString.toUrl(this.input);
-        Optional<Path> path = ConvertString.toPath(this.input);
 
-        if (input == null) {
+        if (rdfData == null) {
             // if input is not provided, load from standard input
             RdfDataLoader.LoadFromStdin(this.inputFormat, this.graph, this.spec, this.verbose);
-        } else if (url.isPresent()) {
-            // if input is a URL, load from the given URL
-            RdfDataLoader.loadFromURL(url.get(), this.inputFormat, this.graph, this.spec, this.verbose);
-        } else if (path.isPresent()) {
-            // if input is provided, load from the given file
-            RdfDataLoader.loadFromFile(path.get(), this.inputFormat, this.graph, this.spec, this.verbose);
         } else {
-            throw new IllegalArgumentException("Input path is not a valid URL or file path: " + this.input);
+            for (String input : this.rdfData) {
+                Optional<URL> url = ConvertString.toUrl(input);
+                Optional<Path> path = ConvertString.toPath(input);
+                if (url.isPresent()) {
+                    // if input is a URL, load from the given URL
+                    RdfDataLoader.loadFromURL(url.get(), this.inputFormat, this.graph, this.spec, this.verbose);
+                } else if (path.isPresent()) {
+                    // if input is provided, load from the given file
+                    RdfDataLoader.loadFromFile(path.get(), this.inputFormat, this.graph, this.spec, this.verbose);
+                } else {
+                    throw new IllegalArgumentException("Input path is not a valid URL or file path: " + input);
+                }
+            }
         }
     }
 

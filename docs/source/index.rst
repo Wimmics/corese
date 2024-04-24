@@ -100,4 +100,4 @@ CORESE documentation
    install
    user_guide
    api
-
+   Demo <https://corese.inria.fr/>

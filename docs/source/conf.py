@@ -11,6 +11,7 @@
 import pathlib
 import sys
 
+sys.path.insert(0, pathlib.Path(__file__).parents[1].resolve().as_posix())
 sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 #sys.path.insert(0, pathlib.Path(__file__).parents[2].joinpath('code').resolve().as_posix())
 
@@ -27,14 +28,19 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinx_design'
+    'sphinx_design', # to render panels
+    'myst_parser', # to parse markdown
     ]
 
 templates_path = ['_templates']
 exclude_patterns = []
 
 # The suffix(es) of source filenames.
-source_suffix = ['.rst', '.md']
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
+}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

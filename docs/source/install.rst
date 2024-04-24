@@ -18,3 +18,4 @@ Installation
 6. If everything is set up correctly, you should see a message indicating that CORESE has started successfully.
 
 Please note that these instructions are for a basic setup. For more advanced configurations, please refer to the official CORESE documentation.
+

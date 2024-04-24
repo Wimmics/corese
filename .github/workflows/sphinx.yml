@@ -1,9 +1,6 @@
 name: "Sphinx: Render docs"
 
-on:
-  push:
-    branches:
-      - dev_documentation
+on: push
 
 jobs:
   build:
@@ -11,10 +8,10 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: Checkout dev_documentation branch
+    - name: Checkout doc_development branch
       uses: actions/checkout@v4
       with:
-        ref: dev_documentation
+        ref: doc_development
     - name: Build HTML
       uses: ammaraskar/sphinx-action@master
     - name: Upload artifacts
@@ -28,3 +25,4 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: docs/build/html
+        

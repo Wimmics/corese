@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.print.rdfc10.HashingUtility.HashAlgorithm;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.MappingsGraph;
 import fr.inria.corese.kgram.api.core.Node;
@@ -448,6 +449,10 @@ public class ResultFormat implements ResultFormatDef {
                 return NTriplesFormat.create(getGraph()).toString();
             case NQUADS_FORMAT:
                 return NQuadsFormat.create(getGraph()).toString();
+            case RDFC10_FORMAT:
+                return CanonicalRdf10Format.create(getGraph(), HashAlgorithm.SHA_256).toString();
+            case RDFC10_SHA384_FORMAT:
+                return CanonicalRdf10Format.create(getGraph(), HashAlgorithm.SHA_384).toString();
             case TURTLE_FORMAT:
             default:
                 // e.g. HTML
@@ -491,6 +496,8 @@ public class ResultFormat implements ResultFormatDef {
             case JSONLD_FORMAT:
             case NTRIPLES_FORMAT:
             case NQUADS_FORMAT:
+            case RDFC10_FORMAT:
+            case RDFC10_SHA384_FORMAT:
                 // case RDF_FORMAT:
                 return true;
             default:
@@ -545,6 +552,10 @@ public class ResultFormat implements ResultFormatDef {
                 return NTriplesFormat.create(map).toString();
             case NQUADS_FORMAT:
                 return NQuadsFormat.create(map).toString();
+            case RDFC10_FORMAT:
+                return CanonicalRdf10Format.create(map, HashAlgorithm.SHA_256).toString();
+            case RDFC10_SHA384_FORMAT:
+                return CanonicalRdf10Format.create(map, HashAlgorithm.SHA_384).toString();
 
             case RDF_FORMAT:
                 // W3C RDF Graph Mappings

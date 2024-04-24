@@ -24,7 +24,12 @@ public enum EnumOutputFormat {
 
     NQUADS(7, "nquads", "nq"),
     NQ(7, "nq", "nq"),
-    APPLICATION_NQUADS(7, "application/n-quads", "nq");
+    APPLICATION_NQUADS(7, "application/n-quads", "nq"),
+
+    CANONICAL(8, "rdfc-1.0", "nq"),
+    CANONICAL_SHA256(8, "rdfc-1.0-sha256", "nq"),
+
+    CANONICAL_SHA384(9, "rdfc-1.0-sha384", "nq");
 
     private final int value;
     private final String name;

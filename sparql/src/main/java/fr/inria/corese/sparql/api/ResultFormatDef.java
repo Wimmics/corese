@@ -15,6 +15,8 @@ public interface ResultFormatDef {
     public static final int JSONLD_FORMAT = 4;
     public static final int NTRIPLES_FORMAT = 6;
     public static final int NQUADS_FORMAT = 7;
+    public static final int RDFC10_FORMAT = 8;
+    public static final int RDFC10_SHA384_FORMAT = 9;
 
     public static final int XML_FORMAT = 11;
     public static final int RDF_FORMAT = 12;

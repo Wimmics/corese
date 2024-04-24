@@ -196,7 +196,9 @@ public class Sparql implements Callable<Integer> {
         } else if (path.isPresent()) {
             // if query is a path
             this.query = SparqlQueryLoader.loadFromFile(path.get(), this.spec, this.verbose);
-        }
+        }else {
+                throw new RuntimeException("The query is not a valid SPARQL query, a URL or a file path.");
+            }
     }
 
     /**

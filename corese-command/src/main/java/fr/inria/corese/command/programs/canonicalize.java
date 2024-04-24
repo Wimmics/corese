@@ -44,7 +44,7 @@ public class canonicalize implements Callable<Integer> {
     private Path output;
 
     @Option(names = { "-r", "-a", "-ca", "-of",
-            "--canonical-algo" }, required = true, description = "Canonicalization algorithm to use. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--canonical-algo" }, required = true, description = "Canonicalization algorithm to which the input file should be converted. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
     private EnumCanonicAlgo canonicalAlgo;
 
     @Option(names = { "-v",

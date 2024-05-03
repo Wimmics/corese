@@ -2,8 +2,6 @@ package fr.inria.corese.core.print;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -115,13 +113,7 @@ public class NTriplesFormat extends RDFFormat {
      * @return a string representation of the URI node
      */
     private String printURI(Node node) {
-        try {
-            // Validate URI and percent-encode if necessary
-            URI uri = new URI(node.getLabel());
-            return "<" + uri.toASCIIString() + ">";
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid URI: " + node.getLabel(), e);
-        }
+        return "<" + node.getLabel() + ">";
     }
 
     /**
@@ -163,29 +155,38 @@ public class NTriplesFormat extends RDFFormat {
     private String escape(String str) {
         StringBuilder escaped = new StringBuilder();
         for (char ch : str.toCharArray()) {
-            if (ch >= 0x00 && ch <= 0x1F || ch >= 0x7F && ch <= 0x9F) {
-                escaped.append(String.format("\\u%04x", (int) ch));
-            } else {
-                switch (ch) {
-                    case '\\':
-                        escaped.append("\\\\");
-                        break;
-                    case '\"':
-                        escaped.append("\\\"");
-                        break;
-                    case '\n':
-                        escaped.append("\\n");
-                        break;
-                    case '\r':
-                        escaped.append("\\r");
-                        break;
-                    case '\t':
-                        escaped.append("\\t");
-                        break;
-                    default:
+            switch (ch) {
+                case '\\': // Backslash
+                    escaped.append("\\\\");
+                    break;
+                case '\"': // Double quote
+                    escaped.append("\\\"");
+                    break;
+                case '\n': // Line Feed
+                    escaped.append("\\n");
+                    break;
+                case '\r': // Carriage Return
+                    escaped.append("\\r");
+                    break;
+                case '\t': // Horizontal Tab
+                    escaped.append("\\t");
+                    break;
+                case '\b': // Backspace
+                    escaped.append("\\b");
+                    break;
+                case '\f': // Form Feed
+                    escaped.append("\\f");
+                    break;
+                default:
+                    // Uses UCHAR for specific characters and those outside the Char production of
+                    // XML 1.1
+                    if ((ch >= '\u0000' && ch <= '\u0007') || ch == '\u000B' || (ch >= '\u000E' && ch <= '\u001F')
+                            || ch == '\u007F') {
+                        escaped.append(String.format("\\u%04X", (int) ch));
+                    } else {
+                        // Uses the native representation for all other characters
                         escaped.append(ch);
-                        break;
-                }
+                    }
             }
         }
         return escaped.toString();

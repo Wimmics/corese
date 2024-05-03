@@ -6,8 +6,8 @@
 
 options
 {
-  JAVA_UNICODE_ESCAPE = true;
-  UNICODE_INPUT = false ;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = true ;
   STATIC = false ;
   COMMON_TOKEN_ACTION = true;
 // Do \ u processing outside javacc
@@ -103,6 +103,47 @@ PARSER_BEGIN(SparqlCorese)
 			logger.debug("*** \""+s1+"\" is deprecated, you should use \""+s2+"\" instead");
 		}
 	}
+
+  // Method for converting Unicode escape sequences \\uxxxx and \\Uxxxxxxxx
+  String convertUnicodeSequences(String str) {
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < str.length(); i++) {
+          char ch = str.charAt(i);
+          // Checks whether the current character is a backslash and whether there is another character before it
+          if (ch == '\\' && i + 1 < str.length()) {
+              // Checks whether it is a literal escape sequence (preceded by a backslash)
+              if (i > 0 && str.charAt(i - 1) == '\\') {
+                  sb.append(ch);
+                  continue;
+              }
+              
+              char nextCh = str.charAt(i + 1);
+              if (nextCh == 'u' && i + 5 < str.length()) { // Manage \\uxxxx
+                  int code = Integer.parseInt(str.substring(i + 2, i + 6), 16);
+                  sb.append(Character.toChars(code));
+                  i += 5; // Skip escape sequence
+                  
+              } else if (nextCh == 'U' && i + 9 < str.length()) { // Manage \\Uxxxxxxxx
+                  int code = Integer.parseInt(str.substring(i + 2, i + 10), 16);
+                  for (char c : Character.toChars(code)) {
+                      sb.append(c);
+                  }
+                  i += 9; // Skip escape sequence
+              } else {
+                  sb.append(ch); // If this is not an escape sequence, add the character as is
+              }
+          } else {
+              // Handles the case where a literal backslash is immediately followed by another character (not 'u' or 'U')
+              if (ch == '\\' && i > 0 && str.charAt(i - 1) == '\\') {
+                  // Do nothing here to avoid adding the literal backslash a second time
+              } else {
+                  sb.append(ch);
+              }
+          }
+      }
+      return sb.toString();
+  }
+
 
         public ParseException createStopException() {
             return new ParseException("stop");
@@ -2820,7 +2861,26 @@ String String() : { Token t; }
   |  t = <STRING_LITERAL_LONG1>
   |  t = <STRING_LITERAL_LONG2> 
   )
-  { return handler.remEscapes(t.image); }
+  {
+    final String SQ3  = "\"\"\"";
+    final String SSQ3 = "'''";
+
+    String str = t.image;
+
+    // remove leading/trailing " or '
+    int start = 1, end = str.length() - 1;
+
+    if ((str.startsWith(SQ3) && str.endsWith(SQ3))
+      || (str.startsWith(SSQ3) && str.endsWith(SSQ3))) {
+        // remove leading/trailing """ or '''
+        start = 3;
+        end = str.length() - 3;
+    }
+
+    str = str.substring(start, end);
+    
+    return handler.remEscapes(convertUnicodeSequences(str));
+    }
 }
 
 String IRIref() : { String res; }
@@ -2872,15 +2932,15 @@ Variable BlankNode(Exp stack): { Token t; Variable v; }
 
 String Q_IRI_ref() : { Token t; String s; }
 {
-   	t = <Q_IRIref>
-	{ 
-		s = t.image;
-      	s = s.substring(1,s.length()-1); 
-      	s = astq.defURI(s);
-   	  	return s; 
-   	}
+    t = <Q_IRIref>
+    { 
+        s = t.image;
+        s = s.substring(1,s.length()-1); // Remove "<" and ">"
+        s = convertUnicodeSequences(s); // Convert Unicode escape sequences
+        s = astq.defURI(s);
+        return s; 
+    }
 }
-
 
 // ------------------------------------------
 // Tokens
@@ -3186,7 +3246,7 @@ TOKEN :
 | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 | < #QUOTE_3D: "\"\"\"">
 | < #QUOTE_3S: "'''">
-| <ECHAR: "\\" ("t"|"b"|"n"|"r"|"f"|"\\"|"\""|"'")>
+| <ECHAR: "\\" ("t"|"b"|"n"|"r"|"f"|"\\"|"\""|"'"| "U" (["0"-"9", "A"-"F", "a"-"f"]){8} | "u" (["0"-"9", "A"-"F", "a"-"f"]){4})>
 
 | < STRING_LITERAL1:
       // Single quoted string

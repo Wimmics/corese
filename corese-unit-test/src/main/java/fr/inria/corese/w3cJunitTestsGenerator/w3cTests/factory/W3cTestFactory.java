@@ -1,4 +1,4 @@
-package fr.inria.corese.w3cTestsGenerator.w3cTests.factory;
+package fr.inria.corese.w3cJunitTestsGenerator.w3cTests.factory;
 
 import java.net.URI;
 import java.util.Map;
@@ -8,10 +8,10 @@ import fr.inria.corese.core.print.rdfc10.HashingUtility.HashAlgorithm;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.w3cTestsGenerator.w3cTests.IW3cTest;
-import fr.inria.corese.w3cTestsGenerator.w3cTests.implementations.RDFC10EvalTest;
-import fr.inria.corese.w3cTestsGenerator.w3cTests.implementations.RDFC10MapTest;
-import fr.inria.corese.w3cTestsGenerator.w3cTests.implementations.RDFC10NegativeEvalTest;
+import fr.inria.corese.w3cJunitTestsGenerator.w3cTests.IW3cTest;
+import fr.inria.corese.w3cJunitTestsGenerator.w3cTests.implementations.RDFC10EvalTest;
+import fr.inria.corese.w3cJunitTestsGenerator.w3cTests.implementations.RDFC10MapTest;
+import fr.inria.corese.w3cJunitTestsGenerator.w3cTests.implementations.RDFC10NegativeEvalTest;
 
 /**
  * Factory for creating W3C tests.

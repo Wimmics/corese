@@ -1,5 +1,6 @@
 package fr.inria.corese.command;
 
+import fr.inria.corese.command.programs.canonicalize;
 import fr.inria.corese.command.programs.Convert;
 import fr.inria.corese.command.programs.RemoteSparql;
 import fr.inria.corese.command.programs.Shacl;
@@ -8,7 +9,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "Corese-command", version = App.version, mixinStandardHelpOptions = true, subcommands = {
-        Convert.class, Sparql.class, Shacl.class, RemoteSparql.class
+        Convert.class, Sparql.class, Shacl.class, RemoteSparql.class, canonicalize.class
 })
 
 public final class App implements Runnable {

@@ -9,9 +9,9 @@ import java.util.concurrent.Callable;
 import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.ConfigManager;
 import fr.inria.corese.command.utils.ConvertString;
+import fr.inria.corese.command.utils.format.EnumCanonicAlgo;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
-import fr.inria.corese.command.utils.format.EnumOutputFormat;
-import fr.inria.corese.command.utils.rdf.RdfDataExporter;
+import fr.inria.corese.command.utils.rdf.RdfDataCanonicalizer;
 import fr.inria.corese.command.utils.rdf.RdfDataLoader;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.util.Property;
@@ -21,8 +21,8 @@ import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Spec;
 
-@Command(name = "convert", version = App.version, description = "Convert an RDF file from one serialization format to another.", mixinStandardHelpOptions = true)
-public class Convert implements Callable<Integer> {
+@Command(name = "canonicalize", version = App.version, description = "Canonicalize an RDF file to a specific format.", mixinStandardHelpOptions = true)
+public class canonicalize implements Callable<Integer> {
 
     private final String DEFAULT_OUTPUT_FILE_NAME = "output";
     private final int ERROR_EXIT_CODE_SUCCESS = 0;
@@ -32,7 +32,7 @@ public class Convert implements Callable<Integer> {
     CommandSpec spec;
 
     @Option(names = { "-i",
-            "--input-data" }, description = "Path or URL of the file that needs to be converted.", arity = "1...")
+            "--input-data" }, description = "Path or URL of the file that needs to be canonicalized.", arity = "1...")
     private String[] rdfData;
 
     @Option(names = { "-f", "-if",
@@ -43,9 +43,9 @@ public class Convert implements Callable<Integer> {
             "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.", arity = "0..1", fallbackValue = DEFAULT_OUTPUT_FILE_NAME)
     private Path output;
 
-    @Option(names = { "-r", "-of",
-            "--output-format" }, required = true, description = "Serialization format to which the input file should be converted. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
-    private EnumOutputFormat outputFormat;
+    @Option(names = { "-r", "-a", "-ca", "-of",
+            "--canonical-algo" }, required = true, description = "Canonicalization algorithm to which the input file should be converted. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
+    private EnumCanonicAlgo canonicalAlgo;
 
     @Option(names = { "-v",
             "--verbose" }, description = "Prints more information about the execution of the command.")
@@ -65,10 +65,10 @@ public class Convert implements Callable<Integer> {
 
     private Graph graph = Graph.create();
 
-    private boolean outputFormatIsDefined = false;
+    private boolean canonicalAlgoIsDefined = false;
     private boolean isDefaultOutputName = false;
 
-    public Convert() {
+    public canonicalize() {
     }
 
     @Override
@@ -87,8 +87,8 @@ public class Convert implements Callable<Integer> {
             // Set owl import
             Property.set(Value.DISABLE_OWL_AUTO_IMPORT, this.noOwlImport);
 
-            // Check if output format is defined
-            this.outputFormatIsDefined = this.output != null;
+            // Check if canonical algorithm is defined
+            this.canonicalAlgoIsDefined = this.output != null;
 
             // Check if output file name is default
             this.isDefaultOutputName = this.output != null
@@ -155,32 +155,33 @@ public class Convert implements Callable<Integer> {
     }
 
     /**
-     * Export the graph.
+     * Canonicalize the graph.
      *
      * @throws IOException if an I/O error occurs while exporting the graph.
      */
     private void exportGraph() throws IOException {
 
         if (this.verbose) {
-            this.spec.commandLine().getOut().println("Converting file to " + this.outputFormat + " format...");
+            this.spec.commandLine().getOut()
+                    .println("Canonicalizing file with " + this.canonicalAlgo + " algorithm...");
         }
 
         Path outputFileName;
 
         // Set output file name
-        if (this.outputFormatIsDefined && !this.isDefaultOutputName) {
+        if (this.canonicalAlgoIsDefined && !this.isDefaultOutputName) {
             outputFileName = this.output;
         } else {
-            outputFileName = Path.of(this.DEFAULT_OUTPUT_FILE_NAME + "." + this.outputFormat.getExtention());
+            outputFileName = Path.of(this.DEFAULT_OUTPUT_FILE_NAME + "." + this.canonicalAlgo.getExtention());
         }
 
         // Export the graph
         if (this.output == null) {
-            RdfDataExporter.exportToStdout(this.outputFormat, this.graph, this.spec, this.verbose);
+            RdfDataCanonicalizer.canonicalizeToStdout(this.canonicalAlgo, this.graph, this.spec, this.verbose);
         } else {
-            RdfDataExporter.exportToFile(
+            RdfDataCanonicalizer.canonicalizeToFile(
                     outputFileName,
-                    this.outputFormat,
+                    this.canonicalAlgo,
                     this.graph,
                     this.spec,
                     this.verbose);

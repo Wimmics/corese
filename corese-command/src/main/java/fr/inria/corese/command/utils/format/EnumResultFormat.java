@@ -30,6 +30,11 @@ public enum EnumResultFormat {
     NQ(7, "nq", "nq", true),
     APPLICATION_NQUADS(7, "application/n-quads", "nq", true),
 
+    CANONICAL(8, "rdfc-1.0", "nq", true),
+    CANONICAL_SHA256(8, "rdfc-1.0-sha256", "nq", true),
+
+    CANONICAL_SHA384(9, "rdfc-1.0-sha384", "nq", true),
+
     BIDING_XML(11, "xml", "srx", false),
     SRX(11, "srx", "srx", false),
     APPLICATION_SPARQL_RESULTS_XML(11, ResultFormat.SPARQL_RESULTS_XML, "srx", false),
@@ -134,6 +139,12 @@ public enum EnumResultFormat {
             case NQ:
             case APPLICATION_NQUADS:
                 return EnumOutputFormat.NQUADS;
+            case CANONICAL:
+                return EnumOutputFormat.CANONICAL;
+            case CANONICAL_SHA256:
+                return EnumOutputFormat.CANONICAL_SHA256;
+            case CANONICAL_SHA384:
+                return EnumOutputFormat.CANONICAL_SHA384;
 
             default:
                 throw new InvalidParameterException("Output format " + this + " cannot be converted to OutputFormat.");

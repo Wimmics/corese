@@ -6,7 +6,14 @@
 		</Console>
 	</Appenders>
 	<Loggers>
-		<Logger name="fr.inria.corese.w3cTestsGenerator" level="info" additivity="false">
+		<Logger name="fr.inria.corese.w3cJunitTestsGenerator" level="info" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+		<Root level="error">
+		</Root>
+	</Loggers>
+	<Loggers>
+		<Logger name="fr.inria.corese.w3cEarlRepportGenerator" level="info" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Root level="error">

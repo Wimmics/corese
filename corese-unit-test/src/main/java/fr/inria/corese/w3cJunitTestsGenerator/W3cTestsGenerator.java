@@ -1,4 +1,4 @@
-package fr.inria.corese.w3cTestsGenerator;
+package fr.inria.corese.w3cJunitTestsGenerator;
 
 import java.net.URI;
 import java.nio.file.Path;
@@ -13,9 +13,9 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.w3cTestsGenerator.w3cTests.IW3cTest;
-import fr.inria.corese.w3cTestsGenerator.w3cTests.factory.W3cTestFactory;
-import fr.inria.corese.w3cTestsGenerator.w3cTests.factory.W3cTestFactory.TestCreationException;
+import fr.inria.corese.w3cJunitTestsGenerator.w3cTests.IW3cTest;
+import fr.inria.corese.w3cJunitTestsGenerator.w3cTests.factory.W3cTestFactory;
+import fr.inria.corese.w3cJunitTestsGenerator.w3cTests.factory.W3cTestFactory.TestCreationException;
 
 /**
  * Generates JUnit test cases from W3C test manifest files.
@@ -53,8 +53,8 @@ public class W3cTestsGenerator {
         List<IW3cTest> testCases = getListOfTestCases(graph);
 
         // Generate JUnit test file
-        JUnitTestFileGenerator generator = new JUnitTestFileGenerator(testName, manifestUri, testCases);
-        generator.generate(testsPath);
+        JUnitTestFileGenerator generator = new JUnitTestFileGenerator(testName, manifestUri, testsPath, testCases);
+        generator.generate();
     }
 
     ////////////////////////

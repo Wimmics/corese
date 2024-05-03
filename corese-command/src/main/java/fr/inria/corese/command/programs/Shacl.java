@@ -31,7 +31,7 @@ public class Shacl implements Callable<Integer> {
     private CommandSpec spec;
 
     @Option(names = { "-f", "-if",
-            "--input-format" }, description = "RDF serialization format of the input file. Possible values: ${COMPLETION-CANDIDATES}.")
+            "--input-format" }, description = "RDF serialization format of the input file. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
     private EnumInputFormat inputFormat = null;
 
     @Option(names = { "-i",
@@ -39,7 +39,7 @@ public class Shacl implements Callable<Integer> {
     private String[] rdfData;
 
     @Option(names = { "-a", "-sf",
-            "--shapes-format" }, description = "Serialization format of the SHACL shapes. Possible values: ${COMPLETION-CANDIDATES}.", defaultValue = "TURTLE")
+            "--shapes-format" }, description = "Serialization format of the SHACL shapes. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.", defaultValue = "TURTLE")
     private EnumInputFormat reportFormat = null;
 
     @Option(names = { "-s",
@@ -47,7 +47,7 @@ public class Shacl implements Callable<Integer> {
     private String[] shaclShapes;
 
     @Option(names = { "-r", "-of",
-            "--output-format" }, description = "Serialization format of the validation report. Possible values: ${COMPLETION-CANDIDATES}.", defaultValue = "TURTLE")
+            "--output-format" }, description = "Serialization format of the validation report. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.", defaultValue = "TURTLE")
     private EnumOutputFormat outputFormat = null;
 
     @Option(names = { "-o",

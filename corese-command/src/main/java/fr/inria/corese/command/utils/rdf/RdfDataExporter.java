@@ -6,11 +6,13 @@ import java.nio.file.Path;
 
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.print.CanonicalRdf10Format;
 import fr.inria.corese.core.print.JSONLDFormat;
 import fr.inria.corese.core.print.NQuadsFormat;
 import fr.inria.corese.core.print.NTriplesFormat;
 import fr.inria.corese.core.print.RDFFormat;
 import fr.inria.corese.core.print.TripleFormat;
+import fr.inria.corese.core.print.rdfc10.HashingUtility.HashAlgorithm;
 import picocli.CommandLine.Model.CommandSpec;
 
 /**
@@ -113,6 +115,13 @@ public class RdfDataExporter {
                 case NQ:
                 case APPLICATION_NQUADS:
                     NQuadsFormat.create(graph).write(outputStream);
+                    break;
+                case CANONICAL:
+                case CANONICAL_SHA256:
+                    CanonicalRdf10Format.create(graph).write(outputStream);
+                    break;
+                case CANONICAL_SHA384:
+                    CanonicalRdf10Format.create(graph, HashAlgorithm.SHA_384).write(outputStream);
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported output format: " + outputFormat);

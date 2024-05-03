@@ -74,7 +74,7 @@ docker run --name my-corese \
 - Alternatively, download [Corese-server jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-server-4.5.0.jar"
+wget "https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-server-4.5.0.jar"
 java -jar "-Dfile.encoding=UTF8" "corese-server-4.5.0.jar"
 ```
 
@@ -94,7 +94,7 @@ java -jar "-Dfile.encoding=UTF8" "corese-server-4.5.0.jar"
 - Or download [Corese-gui jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-gui-4.5.0.jar"
+wget "https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-gui-4.5.0.jar"
 java -jar "-Dfile.encoding=UTF8" "corese-gui-4.5.0.jar"
 ```
 
@@ -110,7 +110,7 @@ java -jar "-Dfile.encoding=UTF8" "corese-gui-4.5.0.jar"
 - Or download [Corese-command jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-command-4.5.0.jar"
+wget "https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-command-4.5.0.jar"
 java -jar "-Dfile.encoding=UTF8" "corese-command-4.5.0.jar"
 ```
 
@@ -135,7 +135,7 @@ curl -sSL https://files.inria.fr/corese/distrib/script/uninstall-corese-command.
 - Download [Corese-python jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-library-python-4.5.0.jar"
+wget "https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-library-python-4.5.0.jar"
 java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.5.0.jar"
 ```
 
@@ -153,7 +153,7 @@ mvn clean install -DskipTests
 
 ## How to cite Corese
 
-Use the "Cite this repository" option on the right side of this page.
+Use the "Cite this repository" option on the right side of this page or Hal [hal-04170333](https://hal.science/hal-04170333).
 
 ## Contributions and discussions
 

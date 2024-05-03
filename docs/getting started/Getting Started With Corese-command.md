@@ -21,6 +21,7 @@ Designed to simplify and streamline tasks related to querying, converting, and v
       2. [4.2. Different Types of Input](#42-different-types-of-input)
       3. [4.3. Different Types of Output](#43-different-types-of-output)
       4. [4.4. Summary of Available Formats](#44-summary-of-available-formats)
+      5. [4.5. Multiple Input Files](#45-multiple-input-files)
    5. [5. The `shacl` Command](#5-the-shacl-command)
       1. [5.1. Basic Usage](#51-basic-usage)
       2. [5.2. Different Types of Input](#52-different-types-of-input)
@@ -39,12 +40,18 @@ Designed to simplify and streamline tasks related to querying, converting, and v
          1. [6.7.1. Custom HTTP Headers](#671-custom-http-headers)
          2. [6.7.2. Redirection Limit](#672-redirection-limit)
          3. [6.7.3. Query Validation](#673-query-validation)
-   7. [7. General Options](#7-general-options)
-      1. [7.1. Configuration file](#71-configuration-file)
-      2. [7.2. Verbose](#72-verbose)
-      3. [7.3. Version](#73-version)
-      4. [7.4. Get Help](#74-get-help)
-      5. [7.5. Disabling OWL Auto Import](#75-disabling-owl-auto-import)
+   7. [7. `canonicalize` Command](#7-canonicalize-command)
+      1. [7.1. Basic Usage](#71-basic-usage)
+      2. [7.2. Different Types of Input](#72-different-types-of-input)
+      3. [7.3. Different Types of Output](#73-different-types-of-output)
+      4. [7.4. Canonicalization Algorithms](#74-canonicalization-algorithms)
+      5. [7.5. Multiple Input Files](#75-multiple-input-files)
+   8. [8. General Options](#8-general-options)
+      1. [8.1. Configuration file](#81-configuration-file)
+      2. [8.2. Verbose](#82-verbose)
+      3. [8.3. Version](#83-version)
+      4. [8.4. Get Help](#84-get-help)
+      5. [8.5. Disabling OWL Auto Import](#85-disabling-owl-auto-import)
 
 ## 2. Installation
 
@@ -338,6 +345,38 @@ The `convert` command supports the following formats for input and output:
 | NQUADS   | ✅             | ✅              |
 | RDFA     | ✅             | ❌              |
 
+### 4.5. Multiple Input Files
+
+- **Multiple Input:** It's possible to provide multiple input files by repeating the `-i` flag:
+
+```shell
+corese-command convert -i myData1.ttl -i myData2.ttl -r jsonld
+```
+
+- **Shell Globbing:** It's also possible to use shell globbing to provide multiple input files:
+
+```shell
+corese-command convert -i rdf/*.ttl -r jsonld
+```
+
+```shell
+corese-command convert -i myData?.ttl -r jsonld
+```
+
+- **Directory Input:** If you want to use a whole directory as input, you can do so.
+
+```shell
+corese-command convert -i ./myDirectory/ -r jsonld
+```
+
+- **Directory Input Recursive:** If you want to use a whole directory as input, you can do so. The `-R` flag allows you to use the directory recursively.
+
+```shell
+corese-command convert -i ./myDirectory/ -r jsonld -R
+```
+
+> The command integrates all specified input files into a single dataset for processing. During conversion, these files are collectively transformed into the designated output format, effectively merging all data into one coherent file.
+
 ## 5. The `shacl` Command
 
 The `shacl` command allows you to validate RDF data against SHACL shapes.
@@ -578,11 +617,119 @@ corese-command remote-sparql -q 'SELECT * WHERE {?s ?p ?o}' -e "http://example.o
 
 This option is useful when you want to send a query that is not valid according to the SPARQL grammar, but is still accepted by the SPARQL endpoint.
 
-## 7. General Options
+## 7. `canonicalize` Command
+
+The `canonicalize` command allows you to apply a specific canonicalization algorithm to RDF files.
+
+### 7.1. Basic Usage
+
+Use the following syntax to canonicalize an RDF file using the SHA-256 algorithm under the RDFC 1.0 specification:
+
+```shell
+corese-command canonicalize -i myData.ttl -r rdfc-1.0-sha256
+```
+
+This example canonicalizes `myData.ttl` to the `rdfc-1.0-sha256` (See [RDFC1.0](https://www.w3.org/TR/rdf-canon/)) canonical algorithm. The `-i` flag specifies the input file, and the `-r` flag specifies the canonical algorithm.
+
+### 7.2. Different Types of Input
+
+The input can be provided in different ways:
+
+- **File Input:** The input file can be specified with the `-i` flag:
+
+```shell
+corese-command canonicalize -i myData.ttl -r rdfc-1.0-sha256
+```
+
+- **URL Input:** URLs can be specified with the `-i` flag:
+
+```shell
+corese-command canonicalize -i 'http://example.org/myData.ttl' -r rdfc-1.0-sha256
+```
+
+- **Standard Input:** If no input file is specified with `-i`, the program uses the standard input:
+
+```shell
+cat myData.ttl | corese-command canonicalize -r rdfc-1.0-sha256 -if turtle
+```
+
+> The input file format is automatically detected for file and URL inputs. If
+> the input is provided on the standard input or you want to force the input
+> format, you can use the `-f` or `-if` flag. Possible values are:
+>
+> - `rdfxml`, `rdf` or `application/rdf+xml`
+> - `turtle`, `ttl` or `text/turtle`
+> - `trig`, `application/trig`
+> - `jsonld`, `application/ld+json`
+> - `ntriples`, `nt` or `application/n-triples`
+> - `nquads`, `nq`, or `application/n-quads`
+> - `rdfa`, `html` or `application/xhtml+xml`
+
+### 7.3. Different Types of Output
+
+The output can be provided in different ways:
+
+- **File Output:** The output file can be specified with the `-o` flag:
+
+```shell
+corese-command canonicalize -i myData.ttl -r rdfc-1.0-sha256 -o myResult.ttl
+```
+
+- **Standard Output:** If no output file is specified with `-o`, the program uses the standard output:
+
+```shell
+corese-command canonicalize -i myData.ttl -r rdfc-1.0-sha256 | other-command
+```
+
+### 7.4. Canonicalization Algorithms
+
+The following canonicalization algorithms are available:
+
+- [RDFC 1.0](https://www.w3.org/TR/rdf-canon/) with SHA-256.
+- [RDFC 1.0](https://www.w3.org/TR/rdf-canon/) with SHA-384.
+
+> The output file format can be specified with the `-r` flag. Possible values are:
+>
+> - `rdfc-1.0` or `rdfc-1.0-sha256` for [RDFC 1.0](https://www.w3.org/TR/rdf-canon/) with SHA-256
+> - `rdfc-1.0-sha384` for [RDFC 1.0](https://www.w3.org/TR/rdf-canon/) with SHA-384
+
+### 7.5. Multiple Input Files
+
+- **Multiple Input:** It's possible to provide multiple input files by repeating the `-i` flag:
+
+```shell
+corese-command canonicalize -i myData1.ttl -i myData2.ttl -r rdfc-1.0-sha256
+```
+
+- **Shell Globbing:** It's also possible to use shell globbing to provide multiple input files:
+
+```shell
+corese-command canonicalize -i rdf/*.ttl -r rdfc-1.0-sha256
+```
+
+```shell
+corese-command canonicalize -i myData?.ttl -r rdfc-1.0-sha256
+```
+
+- **Directory Input:** If you want to use a whole directory as input, you can do so.
+
+```shell
+corese-command canonicalize -i ./myDirectory/ -r rdfc-1.0-sha256
+```
+
+- **Directory Input Recursive:** If you want to use a whole directory as input, you can do so. The `-R` flag allows you to use the directory recursively.
+
+```shell
+corese-command canonicalize -i ./myDirectory/ -r rdfc-1.0-sha256 -R
+```
+
+> All input files are loaded into the same dataset. Canonicalization algorithms are applied to the entire dataset.
+
+## 8. General Options
 
 General options are available for all commands.
 
-### 7.1. Configuration file
+### 8.1. Configuration file
 
 All interface of Corese (Gui, Server, Command) can be configured with a configuration file. The configuration file is a property file (See a example on [GitHub](https://github.com/Wimmics/corese/blob/master/corese-core/src/main/resources/data/corese/property.properties)).
 
@@ -598,7 +745,7 @@ For exampample, you can disable the auto import of owl with the following proper
 DISABLE_OWL_AUTO_IMPORT = true
 ```
 
-### 7.2. Verbose
+### 8.2. Verbose
 
 The `-v` flag allows you to get more information about the execution of the command.
 
@@ -606,11 +753,11 @@ The `-v` flag allows you to get more information about the execution of the comm
 corese-command sparql -q 'SELECT * WHERE {?s ?p ?o}' -i myData.ttl -v
 ```
 
-### 7.3. Version
+### 8.3. Version
 
 The `-V` flag allows you to get the version of the command.
 
-### 7.4. Get Help
+### 8.4. Get Help
 
 For any command, you can use the `-h` or `--help` flag to get a description and the syntax. This is also available for the general `corese-command` and each specific sub-command.
 
@@ -621,7 +768,7 @@ corese-command convert -h
 corese-command shacl -h
 ```
 
-### 7.5. Disabling OWL Auto Import
+### 8.5. Disabling OWL Auto Import
 
 Corese-Command is configured to automatically import the vocabulary referenced in `owl:imports` statements by default. However, this behavior can be turned off by using the `-w` or `--no-owl-import` flag.
 

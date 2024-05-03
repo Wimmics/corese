@@ -67,6 +67,7 @@ public class ResultFormat implements ResultFormatDef {
     private Graph graph;
     private Binding bind;
     private Context context;
+    private NSManager nsmanager;
     int type = UNDEF_FORMAT;
     private int transformType = UNDEF_FORMAT;
     private int construct_format = DEFAULT_CONSTRUCT_FORMAT;
@@ -168,6 +169,12 @@ public class ResultFormat implements ResultFormatDef {
 
     ResultFormat(Graph g, int type) {
         this(g);
+        this.type = type;
+    }
+    
+    ResultFormat(Graph g, NSManager nsm, int type) {
+        this(g);
+        setNsmanager(nsm);
         this.type = type;
     }
 
@@ -276,6 +283,10 @@ public class ResultFormat implements ResultFormatDef {
 
     static public ResultFormat create(Graph g, int type) {
         return new ResultFormat(g, type);
+    }
+    
+    static public ResultFormat create(Graph g, NSManager nsm, int type) {
+        return new ResultFormat(g, nsm, type);
     }
 
     static public ResultFormat create(Graph g, String type) {
@@ -435,7 +446,7 @@ public class ResultFormat implements ResultFormatDef {
             case RDF_XML_FORMAT:
                 return RDFFormat.create(getGraph()).toString();
             case TRIG_FORMAT:
-                return TripleFormat.create(getGraph(), true)
+                return TripleFormat.create(getGraph(), getNsmanager(), true)
                         .setNbTriple(getNbTriple()).toString(node);
             case JSONLD_FORMAT:
                 return JSONLDFormat.create(getGraph()).toString();
@@ -447,8 +458,8 @@ public class ResultFormat implements ResultFormatDef {
             case TURTLE_FORMAT:
             default:
                 // e.g. HTML
-                String str = TripleFormat.create(getGraph())
-                        .setNbTriple(getNbTriple()).toString(node);
+                TripleFormat tf = TripleFormat.create(getGraph(), getNsmanager());
+                String str = tf.setNbTriple(getNbTriple()).toString(node);
                 if (type() == HTML_FORMAT) {
                     return html(str);
                 }
@@ -759,6 +770,14 @@ public class ResultFormat implements ResultFormatDef {
     public ResultFormat setNbTriple(int nbTriple) {
         this.nbTriple = nbTriple;
         return this;
+    }
+
+    public NSManager getNsmanager() {
+        return nsmanager;
+    }
+
+    public void setNsmanager(NSManager nsmanager) {
+        this.nsmanager = nsmanager;
     }
 
 }

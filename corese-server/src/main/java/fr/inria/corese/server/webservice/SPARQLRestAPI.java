@@ -72,8 +72,9 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     static final String HTML = ResultFormat.HTML;
 
     // Profiles
-    private final String CN10_SHA256 = "https://www.w3.org/TR/rdf-canon/#sha-256";
-    private final String CN10_SHA384 = "https://www.w3.org/TR/rdf-canon/#sha-384";
+    private final String CN10_SHA = "https://www.w3.org/TR/rdf-canon";
+    private final String CN10_SHA256 = "https://www.w3.org/TR/rdf-canon#sha-256";
+    private final String CN10_SHA384 = "https://www.w3.org/TR/rdf-canon#sha-384";
 
     public static final String PROFILE_DEFAULT = "profile.ttl";
     public static final String DEFAULT = NSManager.STL + "default";
@@ -405,7 +406,8 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         return profiles;
 
         // eg: Accept:
-        // application/n-quads;profile="https://www.w3.org/TR/rdf-canon/#sha-256 https://www.w3.org/TR/rdf-canon/#sha-384"
+        // application/n-quads;profile="https://www.w3.org/TR/rdf-canon/#sha-256
+        // https://www.w3.org/TR/rdf-canon/#sha-384"
     }
 
     @GET
@@ -616,7 +618,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         ArrayList<String> profiles = getProfiles(request.getHeader("Accept"));
 
         for (String profile : profiles) {
-            if (profile.equals(this.CN10_SHA256)) {
+            if (profile.equals(this.CN10_SHA) || profile.equals(this.CN10_SHA256)) {
                 logger.info("Profile: " + profile);
                 return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, RDFC10_FORMAT);
             }
@@ -979,12 +981,12 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             String message) {
         query = getQuery(query, update, message);
         logger.info("getRDFGraphNQuadsForPost");
-        
+
         // Get the profiles from the Accept header
         ArrayList<String> profiles = getProfiles(request.getHeader("Accept"));
 
         for (String profile : profiles) {
-            if (profile.equals(this.CN10_SHA256)) {
+            if (profile.equals(this.CN10_SHA) || profile.equals(this.CN10_SHA256)) {
                 logger.info("Profile: " + profile);
                 return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, RDFC10_FORMAT);
             }

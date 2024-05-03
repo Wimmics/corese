@@ -298,6 +298,14 @@ public class Term extends Expression {
             case ExprType.ISUNDEFINED:
             case ExprType.ISSKOLEM:
             case ExprType.ISEXTENSION:
+                
+            case ExprType.SQRT:
+            case ExprType.COS:
+            case ExprType.SIN:
+            case ExprType.TAN:
+            case ExprType.ARC_COS:
+            case ExprType.ARC_SIN:
+            case ExprType.ARC_TAN: 
                 return new UnaryFunction(name);
 
             case ExprType.CONCAT:

@@ -155,7 +155,16 @@ public interface ExprType {
 	public static int START = 122; // ^
 	public static int IN 	= 123; 
 	public static int POWER = 124; 
-        public static int STAR  = 125;         
+        public static int STAR  = 125; 
+        
+        public static int COS   = 126; 
+        public static int SIN   = 127; 
+        public static int TAN   = 128; 
+        public static int ARC_COS   = 129; 
+        public static int ARC_SIN   = 130; 
+        public static int ARC_TAN   = 131; 
+        public static int SQRT   = 132; 
+        
         
         
 	

@@ -10,6 +10,7 @@
 # add these directories to sys.path here.
 import pathlib
 import sys
+import os
 
 sys.path.insert(0, pathlib.Path(__file__).parents[1].resolve().as_posix())
 sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
@@ -30,6 +31,8 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx_design', # to render panels
     'myst_parser', # to parse markdown
+    'breathe', # to include doxygen generated documentation for java code
+    'exhale'
     ]
 
 templates_path = ['_templates']
@@ -83,3 +86,52 @@ html_theme_options = {
 
  }
 
+# Setup absolute paths for communicating with breathe / exhale where
+# items are expected / should be trimmed by.
+# This file is {repo_root}/docs/cpp/source/conf.py
+this_file_dir = os.path.abspath(os.path.dirname(__file__))
+repo_root = os.path.dirname(  # {repo_root}
+            os.path.dirname(  # {repo_root}/docs
+            this_file_dir     # {repo_root}/docs/source
+        )
+    )
+
+# Setup the breathe extension 
+# https://breathe.readthedocs.io/en/latest/
+breathe_projects = {
+    "corese": "../build/doxygen_xml"
+}
+
+breathe_default_project = "corese"
+
+# Setup the exhale extension
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./java_api",
+    "rootFileName":          "library_root.rst",
+    "doxygenStripFromPath":  repo_root, # "..",
+
+    # Heavily encouraged optional argument (see docs)
+    "rootFileTitle":         "Java API",
+
+    # Suggested optional arguments
+    "createTreeView":        True,
+    # TIP: if using the sphinx-bootstrap-theme, you need
+    # "treeViewIsBootstrap": True,
+    "exhaleExecutesDoxygen": True,
+    "exhaleUseDoxyfile": True,
+
+    "verboseBuild": False,
+
+    "createTreeView": True,
+
+    # Exclude the file view from the root page
+    #"unabridgedOrphanKinds": ["file"],
+}
+
+
+# Tell sphinx what the primary language being documented is.
+primary_domain = 'cpp'
+
+# Tell sphinx what the pygments highlight language should be.
+highlight_language = 'cpp'

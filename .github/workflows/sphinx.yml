@@ -8,17 +8,25 @@ jobs:
     permissions:
       contents: write
     steps:
+       
     - name: Checkout doc_development branch
       uses: actions/checkout@v4
       with:
         ref: doc_development
-    - name: Build HTML
+
+    - name: Build Sphinx Docs
       uses: ammaraskar/sphinx-action@master
+      with:
+        pre-build-command: "apt-get install doxygen -y"
+        build-command: "make html"
+        docs-folder: "docs/"
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
         name: html-docs
         path: docs/build/html/
+        
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       if: github.ref == 'refs/heads/doc_development'

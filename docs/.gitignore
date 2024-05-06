@@ -2,4 +2,6 @@
 generated/
 bak/
 build/
-
+java_api/
+*.exe
+*.dll

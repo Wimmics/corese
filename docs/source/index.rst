@@ -99,5 +99,5 @@ CORESE documentation
 
    install
    user_guide
-   api
+   java_api/library_root
    Demo <https://corese.inria.fr/>

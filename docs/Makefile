@@ -16,5 +16,27 @@ help:
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
+%: Makefile symbolic_links
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+# As a prerequisite create symbolic links to the subdirectories 
+# of /docs in the /docs/source directory. This is done to allow
+# the Makefile to include all the MARKDOWN files in the /docs 
+# directory in the documentation being renderd as HTML by Sphinx.
+symbolic_links:
+	cd $(SOURCEDIR); \
+	echo "Creating symbolic link to README.md"; \
+	if [ ! -e "user_guide.md" ]; then \
+		ln -sf "../README.md" "user_guide.md"; \
+	else echo "--- user_guide.md already exists"; \
+	fi; \
+	\
+	echo "Creating symbolic link to sub-dirs"; \
+	for dir in "getting started" "rdf4j" "corese-python" "federation" "storage" "advanced"; do \
+	if [ ! -d "$$dir" ]; then \
+		ln -sf "../$$dir" "$$dir"; \
+		echo "--- $$dir created"; \
+	else echo "--- $$dir already exists"; \
+	fi; \
+	done; \
+	cd -

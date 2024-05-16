@@ -2,6 +2,10 @@
 generated/
 bak/
 build/
-java_api/
-*.exe
-*.dll
+
+source/*
+!source/*.rst
+!source/*.py
+!source/install.md
+!source/Doxyfile
+

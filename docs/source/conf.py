@@ -16,6 +16,7 @@ sys.path.insert(0, pathlib.Path(__file__).parents[1].resolve().as_posix())
 sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 #sys.path.insert(0, pathlib.Path(__file__).parents[2].joinpath('code').resolve().as_posix())
 
+
 project = 'CORESE'
 copyright = '2024, WIMMICS'
 author = 'WIMMICS'
@@ -29,8 +30,12 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    'sphinx.ext.autosectionlabel', 
     'sphinx_design', # to render panels
+    #'sphinx_mdinclude',
+    #'m2r3', # to include markdown files
     'myst_parser', # to parse markdown
+    'sphinxcontrib.mermaid', # to render mermaid diagrams
     'breathe', # to include doxygen generated documentation for java code
     'exhale'
     ]
@@ -39,11 +44,7 @@ templates_path = ['_templates']
 exclude_patterns = []
 
 # The suffix(es) of source filenames.
-source_suffix = {
-    '.rst': 'restructuredtext',
-    '.txt': 'markdown',
-    '.md': 'markdown',
-}
+source_suffix = ['.rst', '.md']
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -66,6 +67,7 @@ html_favicon = "_static/corese.svg"
 html_title = "CORESE"
 html_short_title = "CORESE"
 
+# -- Theme Options -----------------------------------------------------------
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -83,18 +85,27 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         }
     ],
-
+    "navigation_depth": 2,
  }
 
+# -- MySt-parcer extension Options -------------------------------------------
+# https://myst-parser.readthedocs.io/en/latest/
+
+myst_heading_anchors = 4
+myst_fence_as_directive = ["mermaid"]
+
+# -- Doxygen/breath/exhale extensions Options --------------------------------
 # Setup absolute paths for communicating with breathe / exhale where
 # items are expected / should be trimmed by.
-# This file is {repo_root}/docs/cpp/source/conf.py
+# https://breathe.readthedocs.io/en/latest/quickstart.html
+# https://exhale.readthedocs.io/en/latest/usage.html
+
 this_file_dir = os.path.abspath(os.path.dirname(__file__))
 repo_root = os.path.dirname(  # {repo_root}
             os.path.dirname(  # {repo_root}/docs
             this_file_dir     # {repo_root}/docs/source
         )
-    )
+    ) # TODOD: delete in a final version if not used
 
 # Setup the breathe extension 
 # https://breathe.readthedocs.io/en/latest/
@@ -119,11 +130,10 @@ exhale_args = {
     # TIP: if using the sphinx-bootstrap-theme, you need
     # "treeViewIsBootstrap": True,
     "exhaleExecutesDoxygen": True,
-    "exhaleUseDoxyfile": True,
+    # all Doxygen configuration will be done in the Doxyfile
+    "exhaleUseDoxyfile": True, 
 
     "verboseBuild": False,
-
-    "createTreeView": True,
 
     # Exclude the file view from the root page
     #"unabridgedOrphanKinds": ["file"],
@@ -131,7 +141,9 @@ exhale_args = {
 
 
 # Tell sphinx what the primary language being documented is.
+# Java is not one of the available options. Keep it as cpp.
 primary_domain = 'cpp'
 
 # Tell sphinx what the pygments highlight language should be.
+# Java is not one of the available options. Keep it as cpp.
 highlight_language = 'cpp'

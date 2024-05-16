@@ -25,11 +25,44 @@ if errorlevel 9009 (
 
 if "%1" == "" goto help
 
+if "%1" == "link" goto link 
+
+if not exist "%SOURCEDIR%\getting started" (
+	mklink /D "%SOURCEDIR%\getting started" ".\getting_started"
+)
+if not exist "%SOURCEDIR%\rdf4j" (
+
+	mklink /D "%SOURCEDIR%\rdf4j" ".\rdf4j"
+)
+
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
 :help
 %SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+
+REM Link the README.md file to user_guide.md
+:link
+pushd %SOURCEDIR%
+
+if not exist "user_guide.md" (
+	mklink "user_guide.md" "..\README.md"
+)
+
+REM Link the docs/source/sub-directories to source directories to the docs/sub-directories
+REM This is necessary to accomodate the sphinx build system
+set "dirs=getting started;rdf4j;corese-python;federation;storage;advanced"
+
+for /F "delims=;" %%i in ("%dirs%") do (
+	echo %%i
+	echo ..\%%i
+	if not exist "%%i" (
+		mklink /D "%%i" "..\%%i"
+	)
+)
+
+popd
+goto end
 
 :end
 popd

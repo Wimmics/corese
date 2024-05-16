@@ -6,5 +6,6 @@ docutils<0.21,>=0.18.1
 Jinja2>=3.0
 sphinx-design==0.5.0
 myst-parser==2.0.0
+sphinxcontrib-mermaid==0.9.2
 breathe==4.35.0
 exhale==0.3.7

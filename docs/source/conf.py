@@ -26,18 +26,23 @@ release = '4.5'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.duration',
-    'sphinx.ext.doctest',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.autosectionlabel', 
+    'sphinx.ext.duration', # to display the duration of Sphinx processing
+    # Uncomment the following lines if/when include the python code (not used in this project yet)
+    #'sphinx.ext.doctest', # to test code snippets in the documentation
+    #'sphinx.ext.autodoc', # to automatically generate documentation from docstrings
+    #'sphinx.ext.autosummary', # this extension generates function/method/attribute summary lists
+    #'sphinx.ext.autosectionlabel', # to automatically generate section labels
     'sphinx_design', # to render panels
-    #'sphinx_mdinclude',
-    #'m2r3', # to include markdown files
     'myst_parser', # to parse markdown
     'sphinxcontrib.mermaid', # to render mermaid diagrams
+    # Alternative ways to include markdown files, cannot be used together with myst_parser
+    # advantages of sphynx_mdinclude/m2r3: it can include partial markdown files
+    # 
+    #'sphinx_mdinclude', # to include partial markdown files
+    #'m2r3', # to include markdown files
+    'sphinx_copybutton', # to add copy buttons to code blocks
     'breathe', # to include doxygen generated documentation for java code
-    'exhale'
+    'exhale' # to process doxygen xml files
     ]
 
 templates_path = ['_templates']
@@ -85,8 +90,15 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         }
     ],
-    "navigation_depth": 2,
+    #"navigation_depth": 0,
+    "show_toc_level": 3
  }
+
+# since the markdown files dont have TOC we can hide the Section Navigation bar (left)
+html_sidebars = {
+  "user_guide": [],
+  "install": [],
+}
 
 # -- MySt-parcer extension Options -------------------------------------------
 # https://myst-parser.readthedocs.io/en/latest/

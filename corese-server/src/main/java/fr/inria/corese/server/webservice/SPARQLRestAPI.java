@@ -407,7 +407,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
 
         // eg: Accept:
         // application/n-quads;profile="https://www.w3.org/TR/rdf-canon/#sha-256
-        // https://www.w3.org/TR/rdf-canon/#sha-384"
+        // https://www.w3.org/TR/rdf-canon#sha-384"
     }
 
     @GET

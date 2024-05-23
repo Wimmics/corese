@@ -46,6 +46,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
@@ -73,6 +74,7 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.result.SPARQLResultParser;
 import fr.inria.corese.core.print.CanonicalRdf10Format;
 import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.print.rdfc10.CanonicalRdf10.CanonicalizationException;
 import fr.inria.corese.core.print.rdfc10.HashingUtility.HashAlgorithm;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
@@ -1567,8 +1569,19 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     void saveGraphCanonic(HashAlgorithm algo) {
         Graph graph = myCorese.getGraph();
-        CanonicalRdf10Format transformer = new CanonicalRdf10Format(graph, algo);
-        save(transformer.toString());
+        CanonicalRdf10Format transformer = null;
+
+        try {
+            transformer = new CanonicalRdf10Format(graph, algo);
+        } catch (CanonicalizationException ex) {
+            // Create a new alert dialog with the error message and ok button
+            String errorMessage = "Unable to canonicalize the RDF data. " + ex.getMessage();
+            JOptionPane.showMessageDialog(this, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (transformer != null) {
+            save(transformer.toString());
+        }
     }
 
     /**

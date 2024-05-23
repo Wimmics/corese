@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import fr.inria.corese.command.utils.format.EnumCanonicAlgo;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.CanonicalRdf10Format;
+import fr.inria.corese.core.print.rdfc10.CanonicalRdf10.CanonicalizationException;
 import fr.inria.corese.core.print.rdfc10.HashingUtility.HashAlgorithm;
 import picocli.CommandLine.Model.CommandSpec;
 
@@ -95,6 +96,10 @@ public class RdfDataCanonicalizer {
             }
 
             outputStream.flush();
+
+        } catch (CanonicalizationException e) {
+            throw new IllegalArgumentException("Unable to canonicalize the RDF data. " + e.getMessage(),
+                    e);
 
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to write to RDF data to output stream", e);

@@ -1072,7 +1072,15 @@ public class Processor {
 		defoper(UUID, ExprType.FUUID);
 		defoper(STRUUID, ExprType.STRUUID);
 
-		
+		defoper(EXT+"power",  ExprType.POWER);
+		defoper(EXT+"sqrt",  ExprType.SQRT);
+		defoper(EXT+"sin",  ExprType.SIN);
+		defoper(EXT+"cos",  ExprType.COS);
+		defoper(EXT+"tan",  ExprType.TAN);
+		defoper(EXT+"asin",  ExprType.ARC_SIN);
+		defoper(EXT+"acos",  ExprType.ARC_COS);
+		defoper(EXT+"atan",  ExprType.ARC_TAN);
+                
 		defoper(POWER,  ExprType.POWER);
 		defoper(RANDOM, ExprType.RANDOM);
 		defoper(ABS, 	ExprType.ABS);

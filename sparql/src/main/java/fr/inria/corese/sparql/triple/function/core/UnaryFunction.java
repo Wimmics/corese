@@ -45,6 +45,14 @@ public class UnaryFunction extends TermEval {
             case ExprType.ABS:          return abs(dt);
             case ExprType.ROUND:        return round(dt);
             case ExprType.FLOOR:        return floor(dt);
+            
+            case ExprType.SQRT:     return DatatypeMap.newInstance(Math.sqrt(dt.doubleValue()));
+            case ExprType.SIN:      return DatatypeMap.newInstance(Math.sin(dt.doubleValue()));
+            case ExprType.COS:      return DatatypeMap.newInstance(Math.cos(dt.doubleValue()));
+            case ExprType.TAN:      return DatatypeMap.newInstance(Math.tan(dt.doubleValue()));
+            case ExprType.ARC_SIN:  return DatatypeMap.newInstance(Math.asin(dt.doubleValue()));
+            case ExprType.ARC_COS:  return DatatypeMap.newInstance(Math.acos(dt.doubleValue()));
+            case ExprType.ARC_TAN:  return DatatypeMap.newInstance(Math.atan(dt.doubleValue()));
                 
             case ExprType.DATATYPE:     return dt.getDatatype();
             case ExprType.LANG:         return dt.getDataLang();

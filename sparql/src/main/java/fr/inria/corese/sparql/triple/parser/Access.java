@@ -487,6 +487,8 @@ public class Access {
         set(LDSCRIPT, PUBLIC);
         // authorize server for query + transform when transform is authorized
         set(LINKED_TRANSFORMATION, PUBLIC);
+        // public but check authorized path namespace
+        set(LINKED_RULE, PUBLIC);
         // read authorized source is allowed
         set(READ, PUBLIC);
     }

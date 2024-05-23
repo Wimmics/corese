@@ -8,6 +8,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.util.List;
 
 /**
  * Turtle & Trig Format
@@ -56,6 +57,9 @@ public class TripleFormat extends RDFFormat {
     }
 
     public static TripleFormat create(Graph g, NSManager n) {
+        if (n == null) {
+            return new TripleFormat(g, nsm());
+        }
         return new TripleFormat(g, n);
     }
 
@@ -92,6 +96,12 @@ public class TripleFormat extends RDFFormat {
     // isGraph = true -> Trig
     public static TripleFormat create(Graph g, boolean isGraph) {
         TripleFormat t = new TripleFormat(g, nsm());
+        t.setGraph(isGraph);
+        return t;
+    }
+    
+    public static TripleFormat create(Graph g, NSManager nsm, boolean isGraph) {
+        TripleFormat t = TripleFormat.create(g, nsm);
         t.setGraph(isGraph);
         return t;
     }
@@ -322,6 +332,10 @@ public class TripleFormat extends RDFFormat {
             // uri(dt.getLabel());
             sdisplay(dt.toSparql(true, false, !addPrefix, nsm));
         }
+    }
+    
+    void blank(Node node) {
+        List<Node> list = graph.getList(node);
     }
 
     // node is triple reference of edge

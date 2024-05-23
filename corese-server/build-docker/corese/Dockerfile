@@ -7,7 +7,7 @@ ENV CORESE="/usr/local/corese"
 RUN mkdir -p $CORESE
 WORKDIR $CORESE
 
-RUN wget https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-server-4.5.0.jar
+RUN wget https://github.com/Wimmics/corese/releases/download/release-4.5.1/corese-server-4.5.1.jar
 
 COPY log4j2.xml $CORESE/log4j2.xml
 COPY corese-default-profile.ttl $CORESE/corese-default-profile.ttl

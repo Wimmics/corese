@@ -41,21 +41,21 @@ There are several interfaces for Corese:
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-core</artifactId>
-    <version>4.5.0</version>
+    <version>4.5.1</version>
 </dependency>
 
 <!-- jena storage -->
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-jena</artifactId>
-    <version>4.5.0</version>
+    <version>4.5.1</version>
 </dependency>
 
 <!-- rdf4j storage -->
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-rdf4j</artifactId>
-    <version>4.5.0</version>
+    <version>4.5.1</version>
 </dependency>
 ```
 
@@ -74,8 +74,8 @@ docker run --name my-corese \
 - Alternatively, download [Corese-server jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
-wget "https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-server-4.5.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-server-4.5.0.jar"
+wget "https://github.com/Wimmics/corese/releases/download/release-4.5.1/corese-server-4.5.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-server-4.5.1.jar"
 ```
 
 - Documentation:
@@ -94,8 +94,8 @@ java -jar "-Dfile.encoding=UTF8" "corese-server-4.5.0.jar"
 - Or download [Corese-gui jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
-wget "https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-gui-4.5.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-gui-4.5.0.jar"
+wget "https://github.com/Wimmics/corese/releases/download/release-4.5.1/corese-gui-4.5.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-gui-4.5.1.jar"
 ```
 
 ### Corese-Command
@@ -110,8 +110,8 @@ java -jar "-Dfile.encoding=UTF8" "corese-gui-4.5.0.jar"
 - Or download [Corese-command jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
-wget "https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-command-4.5.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-command-4.5.0.jar"
+wget "https://github.com/Wimmics/corese/releases/download/release-4.5.1/corese-command-4.5.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-command-4.5.1.jar"
 ```
 
 - Alternatively, use the installation script for Linux and MacOS systems.
@@ -135,8 +135,8 @@ curl -sSL https://files.inria.fr/corese/distrib/script/uninstall-corese-command.
 - Download [Corese-python jar file](https://project.inria.fr/corese/jar/).
 
 ```sh
-wget "https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-library-python-4.5.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.5.0.jar"
+wget "https://github.com/Wimmics/corese/releases/download/release-4.5.1/corese-library-python-4.5.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.5.1.jar"
 ```
 
 - Documentation: [Getting Started With Corese-python](/docs/corese-python/Corese-library%20with%20Python.md)

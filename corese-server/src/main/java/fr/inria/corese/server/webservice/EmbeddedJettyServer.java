@@ -188,7 +188,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 port = Integer.parseInt(cmd.getOptionValue("p"));
             }
             if (cmd.hasOption("v")) {
-                logger.info("version 4.5.0");
+                logger.info("version 4.5.1");
                 System.exit(0);
             }
             if (cmd.hasOption("e")) {

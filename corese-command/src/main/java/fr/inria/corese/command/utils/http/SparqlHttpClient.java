@@ -39,7 +39,7 @@ public class SparqlHttpClient {
 
     private int redirectCount = 0;
     private int maxRedirects = 5;
-    private final String USERAGENT = "Corese-Command/4.5.0";
+    private final String USERAGENT = "Corese-Command/4.5.1";
 
     /////////////////
     // Constructor //

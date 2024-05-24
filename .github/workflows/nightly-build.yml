@@ -49,16 +49,16 @@ jobs:
           corese-rdf4j/target/corese-rdf4j-*-nightly.jar
           corese-server/target/corese-server-*-nightly.jar
 
-  delete_previous_release:
+  delete_previous_prerelease:
     runs-on: ubuntu-latest
     needs: build
     steps:
     - name: Delete previous prerelease
       if: ${{ needs.build.result == 'success' }}
       run: |
-        latest_release=$(gh release list --limit 1 --prerelease --json tagName -q '.[0].tagName')
-        if [ -n "$latest_release" ]; then
-          gh release delete $latest_release -y
+        latest_prerelease=$(gh release list --limit 1 --exclude-drafts --json tagName,isPrerelease -q '.[] | select(.isPrerelease) | .tagName')
+        if [ -n "$latest_prerelease" ]; then
+          gh release delete $latest_prerelease -y
         else
           echo "No previous prerelease found."
         fi
@@ -67,7 +67,7 @@ jobs:
 
   create_prerelease:
     runs-on: ubuntu-latest
-    needs: [build, delete_previous_release]
+    needs: [build, delete_previous_prerelease]
     steps:
     - name: Download Build Artifacts
       uses: actions/download-artifact@v4

@@ -11,83 +11,84 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        ref: development
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: development
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '11'
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
 
-    - name: Build with Maven
-      run: mvn clean install
+      - name: Build with Maven
+        run: mvn clean install
 
-    - name: Rename Artifacts
-      run: |
-        short_commit=$(git rev-parse --short HEAD)
-        mv $(find ./corese-core/target/ -name 'corese-core-*-jar-with-dependencies.jar') ./corese-core/target/corese-core-${short_commit}-nightly.jar
-        mv $(find ./corese-command/target/ -name 'corese-command-*.jar') ./corese-command/target/corese-command-${short_commit}-nightly.jar
-        mv $(find ./corese-gui/target/ -name 'corese-gui-*.jar') ./corese-gui/target/corese-gui-${short_commit}-nightly.jar
-        mv $(find ./corese-jena/target/ -name 'corese-jena-*.jar') ./corese-jena/target/corese-jena-${short_commit}-nightly.jar
-        mv $(find ./corese-rdf4j/target/ -name 'corese-rdf4j-*.jar') ./corese-rdf4j/target/corese-rdf4j-${short_commit}-nightly.jar
-        mv $(find ./corese-server/target/ -name 'corese-server-*.jar') ./corese-server/target/corese-server-${short_commit}-nightly.jar
+      - name: Rename Artifacts
+        run: |
+          short_commit=$(git rev-parse --short HEAD)
+          mv $(find ./corese-core/target/ -name 'corese-core-*-jar-with-dependencies.jar') ./corese-core/target/corese-core-${short_commit}-nightly.jar
+          mv $(find ./corese-command/target/ -name 'corese-command-*.jar') ./corese-command/target/corese-command-${short_commit}-nightly.jar
+          mv $(find ./corese-gui/target/ -name 'corese-gui-*.jar') ./corese-gui/target/corese-gui-${short_commit}-nightly.jar
+          mv $(find ./corese-jena/target/ -name 'corese-jena-*.jar') ./corese-jena/target/corese-jena-${short_commit}-nightly.jar
+          mv $(find ./corese-rdf4j/target/ -name 'corese-rdf4j-*.jar') ./corese-rdf4j/target/corese-rdf4j-${short_commit}-nightly.jar
+          mv $(find ./corese-server/target/ -name 'corese-server-*.jar') ./corese-server/target/corese-server-${short_commit}-nightly.jar
 
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: nightly-build
-        path: |
-          ./corese-core/target/corese-core-*-nightly.jar
-          ./corese-command/target/corese-command-*-nightly.jar
-          ./corese-gui/target/corese-gui-*-nightly.jar
-          ./corese-jena/target/corese-jena-*-nightly.jar
-          ./corese-rdf4j/target/corese-rdf4j-*-nightly.jar
-          ./corese-server/target/corese-server-*-nightly.jar
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-build
+          path: |
+            ./corese-core/target/corese-core-*-nightly.jar
+            ./corese-command/target/corese-command-*-nightly.jar
+            ./corese-gui/target/corese-gui-*-nightly.jar
+            ./corese-jena/target/corese-jena-*-nightly.jar
+            ./corese-rdf4j/target/corese-rdf4j-*-nightly.jar
+            ./corese-server/target/corese-server-*-nightly.jar
 
   delete_previous_prerelease:
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        ref: development
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: development
 
-    - name: Delete previous nightly tag
-      run: |
-        latest_nightly_tag=$(gh release list --limit 1 --exclude-drafts --json tagName,isPrerelease -q '.[] | select(.isPrerelease) | .tagName')
-        if [ -n "$latest_nightly_tag" ]; then
-          gh release delete "$latest_nightly_tag" -y
-          gh api --method DELETE "/repos/${{ github.repository }}/git/refs/tags/$latest_nightly_tag"
-        else
-          echo "No previous nightly tag found."
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Delete previous nightly tag
+        run: |
+          latest_nightly_tag=$(gh release list --limit 1 --exclude-drafts --json tagName,isPrerelease -q '.[] | select(.isPrerelease) | .tagName')
+          if [ -n "$latest_nightly_tag" ]; then
+            gh release delete "$latest_nightly_tag" -y
+            gh api --method DELETE "/repos/${{ github.repository }}/git/refs/tags/$latest_nightly_tag"
+          else
+            echo "No previous nightly tag found."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create_prerelease:
     runs-on: ubuntu-latest
     needs: delete_previous_prerelease
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-      with:
-        ref: development
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: development
 
-    - name: Download Build Artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: nightly-build
-        path: ./artifacts
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nightly-build
+          path: ./artifacts
 
-    - name: Create new prerelease
-      run: |
-        short_commit=$(git rev-parse --short HEAD)
-        date=$(date +'%Y%m%d')
-        tag_name="nightly-${date}-${short_commit}"
-        gh release create "$tag_name" -p -t "Nightly Build ${short_commit}" -n "This is an automated nightly build. It is a development version and not stable." --target development
-        gh release upload "$tag_name" ./artifacts/corese-core-${short_commit}-nightly.jar ./artifacts/corese-command-${short_commit}-nightly.jar ./artifacts/corese-gui-${short_commit}-nightly.jar ./artifacts/corese-jena-${short_commit}-nightly.jar ./artifacts/corese-rdf4j-${short_commit}-nightly.jar ./artifacts/corese-server-${short_commit}-nightly.jar
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create new prerelease
+        run: |
+          short_commit=$(git rev-parse --short HEAD)
+          date=$(date +'%Y%m%d')
+          tag_name="nightly-${date}-${short_commit}"
+          gh release create "$tag_name" -p -t "Nightly Build ${short_commit}" -n "This is an automated nightly build. It is a development version and not stable." --target development
+          gh release upload "$tag_name" ./artifacts/corese-core-${short_commit}-nightly.jar ./artifacts/corese-command-${short_commit}-nightly.jar ./artifacts/corese-gui-${short_commit}-nightly.jar ./artifacts/corese-jena-${short_commit}-nightly.jar ./artifacts/corese-rdf4j-${short_commit}-nightly.jar ./artifacts/corese-server-${short_commit}-nightly.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

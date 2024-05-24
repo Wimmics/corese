@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    outputs:
+      short_commit: ${{ steps.vars.outputs.short_commit }}
+      date: ${{ steps.date.outputs.date }}
+
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -27,16 +31,17 @@ jobs:
 
     - name: Get short commit hash
       id: vars
-      run: echo "SHORT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      run: echo "::set-output name=short_commit::$(git rev-parse --short HEAD)"
 
     - name: Get date
-      run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y%m%d')"
 
     - name: Rename Artifacts
       run: |
         for file in $(find . -name '*.jar' | grep -v 'original'); do
           base=$(basename $file)
-          new_base=$(echo $base | sed "s/4\.5\.1/${{ env.SHORT_COMMIT }}-nightly-${{ env.DATE }}/")
+          new_base=$(echo $base | sed "s/4\.5\.1/${{ steps.vars.outputs.short_commit }}-nightly-${{ steps.date.outputs.date }}/")
           mv $file $(dirname $file)/$new_base
         done
 
@@ -92,8 +97,8 @@ jobs:
     - name: Create new prerelease
       if: ${{ needs.build.result == 'success' }}
       run: |
-        tag_name="nightly-${{ env.DATE }}-${{ env.SHORT_COMMIT }}"
-        gh release create $tag_name -p -t "Nightly Build ${{ env.SHORT_COMMIT }}" -n "This is an automated nightly build. It is a development version and not stable." --target development
+        tag_name="nightly-${{ needs.build.outputs.date }}-${{ needs.build.outputs.short_commit }}"
+        gh release create $tag_name -p -t "Nightly Build ${{ needs.build.outputs.short_commit }}" -n "This is an automated nightly build. It is a development version and not stable." --target development
         gh release upload $tag_name ./artifacts/corese-core-*-nightly-*.jar ./artifacts/corese-command-*-nightly-*.jar ./artifacts/corese-gui-*-nightly-*.jar ./artifacts/corese-jena-*-nightly-*.jar ./artifacts/corese-rdf4j-*-nightly-*.jar ./artifacts/corese-server-*-nightly-*.jar
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

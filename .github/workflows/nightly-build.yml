@@ -25,27 +25,21 @@ jobs:
       - name: Build with Maven
         run: mvn clean install
 
-      - name: Rename Artifacts
+      - name: Rename and Copy Artifacts
         run: |
           short_commit=$(git rev-parse --short HEAD)
-          mv $(find ./corese-core/target/ -name 'corese-core-*-jar-with-dependencies.jar') ./corese-core/target/corese-core-${short_commit}-nightly.jar
-          mv $(find ./corese-command/target/ -name 'corese-command-*.jar') ./corese-command/target/corese-command-${short_commit}-nightly.jar
-          mv $(find ./corese-gui/target/ -name 'corese-gui-*.jar') ./corese-gui/target/corese-gui-${short_commit}-nightly.jar
-          mv $(find ./corese-jena/target/ -name 'corese-jena-*.jar') ./corese-jena/target/corese-jena-${short_commit}-nightly.jar
-          mv $(find ./corese-rdf4j/target/ -name 'corese-rdf4j-*.jar') ./corese-rdf4j/target/corese-rdf4j-${short_commit}-nightly.jar
-          mv $(find ./corese-server/target/ -name 'corese-server-*.jar') ./corese-server/target/corese-server-${short_commit}-nightly.jar
+          cp $(find ./corese-core/target/ -name 'corese-core-*-jar-with-dependencies.jar') ./corese-core-${short_commit}-nightly.jar
+          cp $(find ./corese-command/target/ -name 'corese-command-*.jar') ./corese-command-${short_commit}-nightly.jar
+          cp $(find ./corese-gui/target/ -name 'corese-gui-*.jar') ./corese-gui-${short_commit}-nightly.jar
+          cp $(find ./corese-jena/target/ -name 'corese-jena-*.jar') ./corese-jena-${short_commit}-nightly.jar
+          cp $(find ./corese-rdf4j/target/ -name 'corese-rdf4j-*.jar') ./corese-rdf4j-${short_commit}-nightly.jar
+          cp $(find ./corese-server/target/ -name 'corese-server-*.jar') ./corese-server-${short_commit}-nightly.jar
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: nightly-build
-          path: |
-            ./corese-core/target/corese-core-*-nightly.jar
-            ./corese-command/target/corese-command-*-nightly.jar
-            ./corese-gui/target/corese-gui-*-nightly.jar
-            ./corese-jena/target/corese-jena-*-nightly.jar
-            ./corese-rdf4j/target/corese-rdf4j-*-nightly.jar
-            ./corese-server/target/corese-server-*-nightly.jar
+          path: ./corese-*-nightly.jar
 
   delete_previous_prerelease:
     runs-on: ubuntu-latest
@@ -89,6 +83,6 @@ jobs:
           date=$(date +'%Y%m%d')
           tag_name="nightly-${date}-${short_commit}"
           gh release create "$tag_name" -p -t "Nightly Build ${short_commit}" -n "This is an automated nightly build. It is a development version and not stable." --target development
-          gh release upload "$tag_name" ./artifacts/corese-core-${short_commit}-nightly.jar ./artifacts/corese-command-${short_commit}-nightly.jar ./artifacts/corese-gui-${short_commit}-nightly.jar ./artifacts/corese-jena-${short_commit}-nightly.jar ./artifacts/corese-rdf4j-${short_commit}-nightly.jar ./artifacts/corese-server-${short_commit}-nightly.jar
+          gh release upload "$tag_name" ./artifacts/corese-*-nightly.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

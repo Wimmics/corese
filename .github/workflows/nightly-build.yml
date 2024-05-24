@@ -1,0 +1,58 @@
+name: Nightly Build
+
+on:
+  push:
+    branches:
+      - development
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        ref: development
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: Build with Maven
+      run: mvn clean install
+
+    - name: Get short commit hash
+      id: vars
+      run: echo "::set-output name=short_commit::$(git rev-parse --short HEAD)"
+
+    - name: Rename Artifacts
+      run: |
+        for file in $(find . -name '*.jar' | grep -v 'original'); do
+          base=$(basename $file)
+          new_base=$(echo $base | sed "s/4\.5\.1/${{ steps.vars.outputs.short_commit }}-nightly/")
+          mv $file $(dirname $file)/$new_base
+        done
+
+    - name: Archive Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nightly-build
+        path: |
+          corese-core/target/corese-core-*-nightly.jar
+          corese-command/target/corese-command-*-nightly.jar
+          corese-gui/target/corese-gui-*-nightly.jar
+          corese-jena/target/corese-jena-*-nightly.jar
+          corese-rdf4j/target/corese-rdf4j-*-nightly.jar
+          corese-server/target/corese-server-*-nightly.jar
+
+    - name: Notify Success
+      if: ${{ success() }}
+      run: echo "Nightly build completed successfully!"
+
+    - name: Notify Failure
+      if: ${{ failure() }}
+      run: echo "Nightly build failed."

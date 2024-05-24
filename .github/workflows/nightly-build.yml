@@ -29,11 +29,14 @@ jobs:
       id: vars
       run: echo "SHORT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
+    - name: Get date
+      run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
     - name: Rename Artifacts
       run: |
         for file in $(find . -name '*.jar' | grep -v 'original'); do
           base=$(basename $file)
-          new_base=$(echo $base | sed "s/4\.5\.1/${SHORT_COMMIT}-nightly/")
+          new_base=$(echo $base | sed "s/4\.5\.1/${{ env.SHORT_COMMIT }}-nightly-${{ env.DATE }}/")
           mv $file $(dirname $file)/$new_base
         done
 
@@ -42,12 +45,12 @@ jobs:
       with:
         name: nightly-build
         path: |
-          corese-core/target/corese-core-*-nightly.jar
-          corese-command/target/corese-command-*-nightly.jar
-          corese-gui/target/corese-gui-*-nightly.jar
-          corese-jena/target/corese-jena-*-nightly.jar
-          corese-rdf4j/target/corese-rdf4j-*-nightly.jar
-          corese-server/target/corese-server-*-nightly.jar
+          corese-core/target/corese-core-*-nightly-*.jar
+          corese-command/target/corese-command-*-nightly-*.jar
+          corese-gui/target/corese-gui-*-nightly-*.jar
+          corese-jena/target/corese-jena-*-nightly-*.jar
+          corese-rdf4j/target/corese-rdf4j-*-nightly-*.jar
+          corese-server/target/corese-server-*-nightly-*.jar
 
   delete_previous_prerelease:
     runs-on: ubuntu-latest
@@ -58,14 +61,15 @@ jobs:
       with:
         ref: development
         
-    - name: Delete previous prerelease
+    - name: Delete previous nightly tag
       if: ${{ needs.build.result == 'success' }}
       run: |
-        latest_prerelease=$(gh release list --limit 1 --exclude-drafts --json tagName,isPrerelease -q '.[] | select(.isPrerelease) | .tagName')
-        if [ -n "$latest_prerelease" ]; then
-          gh release delete $latest_prerelease -y
+        latest_nightly_tag=$(gh release list --limit 1 --exclude-drafts --json tagName,isPrerelease -q '.[] | select(.isPrerelease) | .tagName')
+        if [ -n "$latest_nightly_tag" ]; then
+          gh release delete $latest_nightly_tag -y
+          gh api --method DELETE "/repos/${{ github.repository }}/git/refs/tags/$latest_nightly_tag"
         else
-          echo "No previous prerelease found."
+          echo "No previous nightly tag found."
         fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,9 +92,9 @@ jobs:
     - name: Create new prerelease
       if: ${{ needs.build.result == 'success' }}
       run: |
-        tag_name="nightly-${{ env.SHORT_COMMIT }}"
+        tag_name="nightly-${{ env.DATE }}-${{ env.SHORT_COMMIT }}"
         gh release create $tag_name -p -t "Nightly Build ${{ env.SHORT_COMMIT }}" -n "This is an automated nightly build. It is a development version and not stable." --target development
-        gh release upload $tag_name ./artifacts/corese-core-*-nightly.jar ./artifacts/corese-command-*-nightly.jar ./artifacts/corese-gui-*-nightly.jar ./artifacts/corese-jena-*-nightly.jar ./artifacts/corese-rdf4j-*-nightly.jar ./artifacts/corese-server-*-nightly.jar
+        gh release upload $tag_name ./artifacts/corese-core-*-nightly-*.jar ./artifacts/corese-command-*-nightly-*.jar ./artifacts/corese-gui-*-nightly-*.jar ./artifacts/corese-jena-*-nightly-*.jar ./artifacts/corese-rdf4j-*-nightly-*.jar ./artifacts/corese-server-*-nightly-*.jar
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

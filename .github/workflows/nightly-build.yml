@@ -27,13 +27,13 @@ jobs:
 
     - name: Get short commit hash
       id: vars
-      run: echo "::set-output name=short_commit::$(git rev-parse --short HEAD)"
+      run: echo "SHORT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
     - name: Rename Artifacts
       run: |
         for file in $(find . -name '*.jar' | grep -v 'original'); do
           base=$(basename $file)
-          new_base=$(echo $base | sed "s/4\.5\.1/${{ steps.vars.outputs.short_commit }}-nightly/")
+          new_base=$(echo $base | sed "s/4\.5\.1/${SHORT_COMMIT}-nightly/")
           mv $file $(dirname $file)/$new_base
         done
 
@@ -48,6 +48,25 @@ jobs:
           corese-jena/target/corese-jena-*-nightly.jar
           corese-rdf4j/target/corese-rdf4j-*-nightly.jar
           corese-server/target/corese-server-*-nightly.jar
+
+    - name: Delete previous prerelease (on success)
+      if: ${{ success() }}
+      run: |
+        latest_release=$(gh release list --limit 1 --prerelease --json tagName -q '.[0].tagName')
+        if [ -n "$latest_release" ]; then
+          gh release delete $latest_release -y
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create new prerelease
+      if: ${{ success() }}
+      run: |
+        tag_name="nightly-${SHORT_COMMIT}"
+        gh release create $tag_name -p -t "Nightly Build ${SHORT_COMMIT}" -n "This is an automated nightly build. It is a development version and not stable." --target development
+        gh release upload $tag_name corese-core/target/corese-core-*-nightly.jar corese-command/target/corese-command-*-nightly.jar corese-gui/target/corese-gui-*-nightly.jar corese-jena/target/corese-jena-*-nightly.jar corese-rdf4j/target/corese-rdf4j-*-nightly.jar corese-server/target/corese-server-*-nightly.jar
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Notify Success
       if: ${{ success() }}

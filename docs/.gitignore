@@ -8,4 +8,7 @@ source/*
 !source/*.py
 !source/install.md
 !source/Doxyfile
+
+!source/*.rst
 !source/rest_api/
+

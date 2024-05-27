@@ -4,8 +4,8 @@ bak/
 build/
 
 source/*
-!source/*.rst
+!source/*/.rst
 !source/*.py
 !source/install.md
 !source/Doxyfile
-
+!source/rest_api/

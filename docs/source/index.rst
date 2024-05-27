@@ -99,6 +99,8 @@ CORESE documentation
 
    Installation <install.md>
    User Guide <user_guide.md>
-   API <java_api/library_root>
+   API Reference <apis>
    Demo <https://corese.inria.fr/>
+
+..   Java API <java_api/library_root>
 

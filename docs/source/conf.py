@@ -27,6 +27,7 @@ release = '4.5'
 
 extensions = [
     'sphinx.ext.duration', # to display the duration of Sphinx processing
+    'sphinx.ext.todo', # to include todo items in the documentation
     # Uncomment the following lines if/when include the python code (not used in this project yet)
     #'sphinx.ext.doctest', # to test code snippets in the documentation
     #'sphinx.ext.autodoc', # to automatically generate documentation from docstrings
@@ -98,6 +99,7 @@ html_theme_options = {
 html_sidebars = {
   "user_guide": [],
   "install": [],
+
 }
 
 # -- MySt-parcer extension Options -------------------------------------------
@@ -117,7 +119,7 @@ repo_root = os.path.dirname(  # {repo_root}
             os.path.dirname(  # {repo_root}/docs
             this_file_dir     # {repo_root}/docs/source
         )
-    ) # TODOD: delete in a final version if not used
+    ) # TODO: delete in a final version if not used
 
 # Setup the breathe extension 
 # https://breathe.readthedocs.io/en/latest/
@@ -131,7 +133,7 @@ breathe_default_project = "corese"
 exhale_args = {
     # These arguments are required
     "containmentFolder":     "./java_api",
-    "rootFileName":          "library_root.rst",
+    "rootFileName":          "library_root.rst", # EXCLUDE - if we want to change the sections
     "doxygenStripFromPath":  repo_root, # "..",
 
     # Heavily encouraged optional argument (see docs)
@@ -144,11 +146,11 @@ exhale_args = {
     "exhaleExecutesDoxygen": True,
     # all Doxygen configuration will be done in the Doxyfile
     "exhaleUseDoxyfile": True, 
-
     "verboseBuild": False,
 
-    # Exclude the file view from the root page
-    #"unabridgedOrphanKinds": ["file"],
+    # Exclude certain entities from Full API
+    # https://exhale.readthedocs.io/en/latest/reference/configs.html#root-api-document-customization
+    "unabridgedOrphanKinds": {'dir', 'file', 'page', 'namespace' },
 }
 
 
@@ -159,3 +161,8 @@ primary_domain = 'cpp'
 # Tell sphinx what the pygments highlight language should be.
 # Java is not one of the available options. Keep it as cpp.
 highlight_language = 'cpp'
+
+# Setup the sphinx.ext.todo extension 
+
+# Set to false in the final version
+todo_include_todos = True

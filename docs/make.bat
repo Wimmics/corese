@@ -27,14 +27,6 @@ if "%1" == "" goto help
 
 if "%1" == "link" goto link 
 
-if not exist "%SOURCEDIR%\getting started" (
-	mklink /D "%SOURCEDIR%\getting started" ".\getting_started"
-)
-if not exist "%SOURCEDIR%\rdf4j" (
-
-	mklink /D "%SOURCEDIR%\rdf4j" ".\rdf4j"
-)
-
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
@@ -51,14 +43,26 @@ if not exist "user_guide.md" (
 
 REM Link the docs/source/sub-directories to source directories to the docs/sub-directories
 REM This is necessary to accomodate the sphinx build system
+
 set "dirs=getting started;rdf4j;corese-python;federation;storage;advanced"
 
-for /F "delims=;" %%i in ("%dirs%") do (
-	echo %%i
-	echo ..\%%i
-	if not exist "%%i" (
-		mklink /D "%%i" "..\%%i"
+echo Linking docs directories to source directories
+
+for %%i in ("%dirs:;=";"%") do (
+	echo %%~i
+
+	if not exist "%%~i" (
+		mklink /D "%%~i" "..\%%~i"
 	)
+)
+
+REM the markdown file for docker is now outside of the docs directory so we need to link it
+REM Link the corese-server/build-docker directory to the docker directory
+REM TODO: consider moving the docker directory to the docs directory
+
+echo docker
+if not exist "docker" (
+	mklink /D "docker" "..\..\corese-server\build-docker"
 )
 
 popd

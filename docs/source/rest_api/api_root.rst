@@ -1,13 +1,11 @@
 .. _rest-api-reference:
-.. _user-guide: /docs/build/html/getting%20started/Getting%20Started%20With%20Corese-server.html 
-
 
 REST API Reference
 ==================
 
-This document provides a reference guide for the REST API of CORESE server. It outlines the available endpoints, their request and response formats, and any additional details that may be relevant.
+This document provides a reference guide for the REST API of the Corese server. It outlines the available endpoints, their request and response formats, and any additional details that may be relevant.
 
-For user guide on how to setup a CORESE server, please refer to the `user-guide`_.
+For the User Guide on how to setup a Corese server, please refer to the `User Guide <../getting%20started/Getting%20Started%20With%20Corese-server.html>`_.
 
 Base URL
 --------
@@ -28,13 +26,18 @@ Endpoints
    * - Endpoint
      - Summary
    * - :ref:`/sparql <endpoint-sparql>`
-     - Allows to query the CORESE server using SPARQL queries.
+     - Allows quering the CORESE server using SPARQL queries.
    * - :ref:`/sparql/load <endpoint-sparql-load>`
-     - Allows to load RDF data to the CORESE server.    
+     - Allows loading RDF data to the CORESE server.    
    * - :ref:`/sparql/reset <endpoint-sparql-reset>`
      - Allows to define and reset the endpoint.
    * - :ref:`/sparql/d3 <endpoint-sparql-d3>`
-     - Allows to define and reset the endpoint.
+     - Allows returning JSON query results to visualize with d3.
+   * - :ref:`/spin/tospin <endpoint-spin-tospin>`
+     - Allows to convert SPARQL query to SPIN RDF.
+   * - :ref:`/rdf-graph-store <endpoint-rdf-graph-store>`
+     - Allows updating the RDF graph store.       
+
 
 .. note::
     
@@ -42,7 +45,7 @@ Endpoints
         - /sparql/d3 (output for visualization) - document
         - /sparql/draw - the same as /sparql/d3 but with only *query* parameter
         - /sparql/debug - I think it just a server test for
-        - /spin/tosparql - document
+        - /spin/tosparql - document (not working properly, ask Fabien if we need it)
         - /spin/tospin - document
         - /ldp (Linked Data Platform) (ask Fabien)
         - ldp/upload (ask Fabien)
@@ -55,7 +58,7 @@ Endpoints
 
         - /rdf-graph-store - document because it is in the standard
         - /agent
-        - /sdk (misnomer, it is actually a sudoku game. could be fun to include)
+        - /sdk (misnomer, it is actually a sudoku game)
         - /compute/{name}
         - /service/{serv}
         - /template
@@ -63,10 +66,11 @@ Endpoints
 
 
 .. toctree::
-   :maxdepth: 3
-   :hidden:
+  :hidden:
 
-
-   sparql
-   sparql_load
-   sparql_reset
+  sparql
+  sparql_load
+  sparql_reset
+  sparql_d3
+  spin_tospin
+  rdf_graph_store

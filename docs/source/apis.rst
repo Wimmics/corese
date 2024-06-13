@@ -4,8 +4,8 @@ CORESE APIs
 .. toctree::
    :hidden:
 
-   CLI <cli/reference>
-   REST API <rest_api/reference>
+   CLI <cli_ref>
+   REST API <rest_api/api_root>
    Java API <java_api/library_root>
    Python API <python_api/library_root>
 
@@ -15,7 +15,7 @@ CORESE APIs
       :shadow: sm
       :class-card: sd-rounded-3
 
-      Corese command line interface 
+      Corese command-line interface 
       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       Corese-Command is a command-line interface (CLI) for the Corese Semantic Web Factory. It facilitates:
 
@@ -25,25 +25,23 @@ CORESE APIs
 
       and more...
 
+         In writing ....
+
     .. grid-item-card::  
       :shadow: sm
       :class-card: sd-rounded-3
-      :link: rest_api/reference.html
+      :link: rest_api/api_root.html
 
       Corese REST API
       ^^^^^^^^^^^^^^^^^^^^^^^
       The Corese server provides several functionalities available through a REST API:
 
       * SPARQL endpoint
-      * STTL endpoint (can't find it)
-      * SPIN endpoint
-      * DQP (distributed query processor) endpoint
-      * LDP (Linked Data Platform) endpoint
+      * SPARQL to SPIN conversion endpoint
+      * Graph Store HTTP Protocol endpoint
 
       and more...
 
-      [Source](https://github.com/Wimmics/corese/wiki/CORESE-server#what-is-the-corese-server)
-      [Doc](https://files.inria.fr/corese/doc/server.html)
 
     .. grid-item-card::  
       :shadow: sm
@@ -65,8 +63,7 @@ CORESE APIs
 
       and more...
 
-      [Source](https://github.com/Wimmics/corese/blob/master/docs/getting%20started/Getting%20Started%20With%20Corese-library.md#22-load-graph-from-file)
-
+      
     .. grid-item-card::  
       :shadow: sm
       :class-card: sd-rounded-3

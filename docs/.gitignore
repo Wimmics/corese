@@ -11,4 +11,5 @@ source/*
 
 !source/*.rst
 !source/rest_api/
+!source/cli_ref/
 

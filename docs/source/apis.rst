@@ -4,16 +4,18 @@ CORESE APIs
 .. toctree::
    :hidden:
 
-   CLI <cli_ref>
+   CLI <cli_ref/cli_root>
    REST API <rest_api/api_root>
    Java API <java_api/library_root>
    Python API <python_api/library_root>
+   
 
 .. grid:: 2
 
     .. grid-item-card::  
       :shadow: sm
       :class-card: sd-rounded-3
+      :link: cli_ref/cli_root.html
 
       Corese command-line interface 
       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -25,7 +27,6 @@ CORESE APIs
 
       and more...
 
-         In writing ....
 
     .. grid-item-card::  
       :shadow: sm

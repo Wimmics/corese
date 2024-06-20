@@ -102,5 +102,7 @@ CORESE documentation
    API Reference <apis>
    Demo <https://corese.inria.fr/>
 
-..   Java API <java_api/library_root>
+
+
+
 

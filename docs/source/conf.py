@@ -83,7 +83,8 @@ html_theme_options = {
          "image_light": "_static/corese.svg",
          "image_dark": "_static/corese.svg",
      },
-    "navbar_center": ["navbar-nav"],
+    "navbar_center": [ "navbar-nav" ],
+    "navbar_end": ["navbar-icon-links", "version-switcher"],
     "icon_links": [
         {
             "name": "GitHub",
@@ -92,7 +93,12 @@ html_theme_options = {
         }
     ],
     #"navigation_depth": 0,
-    "show_toc_level": 3
+    #"show_toc_level": 3,
+    # TODO:  The versioning switch has to be reviewd after the final version of the documentation is ready
+    #https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/version-dropdown.html
+    "switcher": {"json_url": "http://127.0.0.1:3000/docs/source/_static/switcher.json",
+                 "version_match": r"v\d+\.\d+\.\d+",
+                 },
  }
 
 # since the markdown files dont have TOC we can hide the Section Navigation bar (left)

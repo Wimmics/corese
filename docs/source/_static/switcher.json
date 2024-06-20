@@ -1,0 +1,14 @@
+[
+    {
+        "name": "4.5 (stable)",
+        "version": "stable",
+        "url": "https://wimmics.github.io/corese/",
+        "preferred": true
+    },
+    {
+        "name": "4.6 (dev)",
+        "version": "dev",
+        "url": "https://annabobasheva.github.io/corese/"
+    }
+    
+]

@@ -26,6 +26,8 @@ This endpoint allows you to define and reset the endpoint.
 
 **Request Example:**
 
+To execute this example we recommend launching the `Corese Docker <../docker/README.html>`_ container. 
+
 .. tab-set::
 
     .. tab-item:: HTTP 

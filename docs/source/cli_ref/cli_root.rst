@@ -52,6 +52,8 @@ Commands
      - Validate RDF dataset against SHACL shapes.
    * - :ref:`remote-sparql <corese-command-remote-sparql>`
      - Execute a SPARQL query on a remote endpoint.
+   * - :ref:`remote-sparql <corese-command-canonicalize>`
+     - Applying a specific canonicalization algorithm to RDF dataset.
      
 .. toctree::
    :maxdepth: 1
@@ -61,6 +63,6 @@ Commands
    cli_convert
    cli_shacl
    cli_remote_sparql
-
+   cli_canonicalize
 
 

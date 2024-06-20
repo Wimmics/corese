@@ -31,9 +31,9 @@ Response status code 500 and the response body containing an error message if th
 
 **Request Example:**
 
-.. _RDF: https://www.w3.org/RDF/
+To execute this example we recommend launching the `Corese Docker <../docker/README.html>`_ container. 
 
-This example will load test dataset stored in the http://ns.inria.fr/humans/data into a graph `<http://ns.inria.fr/humans>`.
+This example will load test dataset stored in the http://ns.inria.fr/humans/data remote directory into a graph `<http://ns.inria.fr/humans>`.
 
 .. tab-set::
 

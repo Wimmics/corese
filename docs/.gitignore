@@ -4,12 +4,14 @@ bak/
 build/
 
 source/*
-!source/*/.rst
-!source/*.py
+!source/**/*.rst
+!source/**/*.py
 !source/install.md
 !source/Doxyfile
 
-!source/*.rst
+
 !source/rest_api/
 !source/cli_ref/
 
+!source/_templates/
+!source/_static/

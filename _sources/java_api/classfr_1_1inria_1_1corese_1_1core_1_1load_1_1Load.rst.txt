@@ -1,0 +1,27 @@
+.. _exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load:
+
+Class Load
+==========
+
+- Defined in :ref:`file_corese-core_src_main_java_fr_inria_corese_core_load_Load.java`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Types
+**********
+
+- ``public RDFListener``
+- ``public Loader`` (:ref:`exhale_interface_interfacefr_1_1inria_1_1corese_1_1core_1_1api_1_1Loader`)
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: fr::inria::corese::core::load::Load
+   :project: corese
+   :members:
+   :protected-members:
+   :undoc-members:

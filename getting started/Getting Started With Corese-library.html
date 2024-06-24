@@ -1,0 +1,1295 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Getting Started With Corese-library &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting started/Getting Started With Corese-library';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Getting...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="getting-started-with-corese-library">
+<h1>Getting Started With Corese-library<a class="headerlink" href="#getting-started-with-corese-library" title="Permalink to this heading">#</a></h1>
+<p>This tutorial show how to use the Corese-library framework through simple examples of the main features.
+We assume a basic knowledge in Java programming and in semantic web.</p>
+<p>The first part describes how to create, load and export a Graph.
+The second part show how to query a graph with <a class="reference external" href="https://www.w3.org/TR/sparql11-query/">SPARQL</a>.
+The third part details how to validate a graph with the <a class="reference external" href="https://www.w3.org/TR/shacl/">Shapes Constraint Language (SHACL)</a>.
+The fourth part shows how to transforme a graph with the extension language <a class="reference external" href="https://files.inria.fr/corese/doc/sttl.html">SPARQL Template Transformation Language (STTL)</a>.
+The fifth part details how to apply a set of rules on a graph using the <a class="reference external" href="https://files.inria.fr/corese/doc/rule.html">SPARQL Rule</a> extension language.
+Finally, the sixth part describes how to define and use functions with the <a class="reference external" href="https://files.inria.fr/corese/doc/ldscript.html">LDScript</a> extension language.</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#getting-started-with-corese-library">Getting Started With Corese-library</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#installation">1. Installation</a></p></li>
+<li><p><a class="reference internal" href="#graph">2. Graph</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#build-a-graph-by-program">2.1. Build a Graph by program</a></p></li>
+<li><p><a class="reference internal" href="#load-graph-from-file">2.2. Load Graph from file</a></p></li>
+<li><p><a class="reference internal" href="#export-graph-to-file">2.3. Export Graph to file</a></p></li>
+</ol>
+</li>
+<li><p><a class="reference internal" href="#sparql-protocol-and-rdf-query-language">3. SPARQL Protocol and RDF Query Language</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#sparql-select-query">3.1. SPARQL Select query</a></p></li>
+<li><p><a class="reference internal" href="#sparql-ask-query">3.2. SPARQL Ask query</a></p></li>
+<li><p><a class="reference internal" href="#sparql-construct-query">3.3. SPARQL Construct query</a></p></li>
+<li><p><a class="reference internal" href="#sparql-update-query">3.4. SPARQL Update query</a></p></li>
+</ol>
+</li>
+<li><p><a class="reference internal" href="#shapes-constraint-language-shacl">4. Shapes Constraint Language (SHACL)</a></p></li>
+<li><p><a class="reference internal" href="#sparql-template-transformation-language-sttl">5. SPARQL Template Transformation Language (STTL)</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#transform-a-graph-in-a-visual-html-format">5.1. Transform a graph in a visual HTML format</a></p></li>
+</ol>
+</li>
+<li><p><a class="reference internal" href="#sparql-rule">6. SPARQL Rule</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#load-rules-from-a-file">6.1. Load rules from a file</a></p></li>
+<li><p><a class="reference internal" href="#owl-rules">6.2. OWL Rules</a></p></li>
+</ol>
+</li>
+<li><p><a class="reference internal" href="#ldscript">7. LDScript</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#fibonacci-function-call-from-java">7.1. Fibonacci function call from Java</a></p></li>
+<li><p><a class="reference internal" href="#ldscript-in-sparql">7.2. LDScript in SPARQL</a></p></li>
+<li><p><a class="reference internal" href="#advanced-example">7.3. Advanced example</a></p></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<section id="installation">
+<h2>1. Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<p>Installations instructions are available on the <a class="reference external" href="https://github.com/Wimmics/corese">Corese-Command GitHub repository</a>.</p>
+</section>
+<section id="graph">
+<h2>2. Graph<a class="headerlink" href="#graph" title="Permalink to this heading">#</a></h2>
+<p>This section describes how to create a graph manually, load a graph from file and serialize a graph to file.</p>
+<section id="build-a-graph-by-program">
+<h3>2.1. Build a Graph by program<a class="headerlink" href="#build-a-graph-by-program" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>It is also possible to use the <a class="reference external" href="https://notes.inria.fr/s/OB038LBLV#11-build-a-corese-model-manually">RDF4J Model API</a> to create and manipulate a graph.</p>
+</div></blockquote>
+<p>The example shows how to create the RDF graph bellow:</p>
+<div class="mermaid">
+            graph LR;
+    classDef IRI fill:#FEAE65,stroke-width:0px
+    classDef DT fill:#FEFEFE,stroke-width:0px
+
+    iri:EdithPiaf([&quot;ex:EdithPiaf&quot;])
+    iri:Singer([&quot;ex:Singer&quot;])
+    dt:Edith[&quot;''Edith''&quot;]
+    dt:Piaf[&quot;''Piaf''&quot;]
+
+    class iri:EdithPiaf,iri:Singer IRI
+    class dt:Edith,dt:Piaf DT
+
+    iri:EdithPiaf--rdf:type--&gt;iri:Singer;
+    iri:EdithPiaf--ex:firstName--&gt;dt:Edith;
+    iri:EdithPiaf--ex:lastName--&gt;dt:Piaf;
+        </div><p>This graph represents three statements :</p>
+<ul class="simple">
+<li><p>Edith Piaf is a singer</p></li>
+<li><p>Edith Piaf’s first name is Edith</p></li>
+<li><p>Edith Piaf’s last name is Piaf</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Define the namespace ex</span>
+<span class="n">String</span><span class="w"> </span><span class="n">ex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;http://example.org/&quot;</span><span class="p">;</span>
+
+<span class="c1">// Create a new empty Graph</span>
+<span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Graph</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+
+<span class="c1">// Create and add IRIs to Graph</span>
+<span class="n">Node</span><span class="w"> </span><span class="n">edithPiafIRI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">addResource</span><span class="p">(</span><span class="n">ex</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;EdithPiaf&quot;</span><span class="p">);</span>
+<span class="n">Node</span><span class="w"> </span><span class="n">singerIRI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">addResource</span><span class="p">(</span><span class="n">ex</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;Singer&quot;</span><span class="p">);</span>
+
+<span class="c1">// Create and add properties to Graph</span>
+<span class="n">Node</span><span class="w"> </span><span class="n">rdfTypeProperty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">addProperty</span><span class="p">(</span><span class="n">RDF</span><span class="p">.</span><span class="na">TYPE</span><span class="p">);</span>
+<span class="n">Node</span><span class="w"> </span><span class="n">firstNameProperty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">addProperty</span><span class="p">(</span><span class="n">ex</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;firstName&quot;</span><span class="p">);</span>
+<span class="n">Node</span><span class="w"> </span><span class="n">lastNameProperty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">addProperty</span><span class="p">(</span><span class="n">ex</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;lastName&quot;</span><span class="p">);</span>
+
+<span class="c1">// Create and add datatypes to Graph</span>
+<span class="n">Node</span><span class="w"> </span><span class="n">edithDatatype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">addLiteral</span><span class="p">(</span><span class="s">&quot;Edith&quot;</span><span class="p">);</span>
+<span class="n">Node</span><span class="w"> </span><span class="n">piafDatatype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">addLiteral</span><span class="p">(</span><span class="s">&quot;Piaf&quot;</span><span class="p">);</span>
+
+<span class="c1">// Add first statement : Edith Piaf is an Singer</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">addEdge</span><span class="p">(</span><span class="n">edithPiafIRI</span><span class="p">,</span><span class="w"> </span><span class="n">rdfTypeProperty</span><span class="p">,</span><span class="w"> </span><span class="n">singerIRI</span><span class="p">);</span>
+<span class="c1">// Add second statement : Edith Piaf&#39;s first name is Edith</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">addEdge</span><span class="p">(</span><span class="n">edithPiafIRI</span><span class="p">,</span><span class="w"> </span><span class="n">firstNameProperty</span><span class="p">,</span><span class="w"> </span><span class="n">edithDatatype</span><span class="p">);</span>
+<span class="c1">// Add third statement : Edith Piaf&#39;s last name is Piaf</span>
+<span class="n">graph</span><span class="p">.</span><span class="na">addEdge</span><span class="p">(</span><span class="n">edithPiafIRI</span><span class="p">,</span><span class="w"> </span><span class="n">lastNameProperty</span><span class="p">,</span><span class="w"> </span><span class="n">piafDatatype</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="load-graph-from-file">
+<h3>2.2. Load Graph from file<a class="headerlink" href="#load-graph-from-file" title="Permalink to this heading">#</a></h3>
+<p>This example shows how to load a graph from a file.
+Corese Loader can load formats :</p>
+<ul class="simple">
+<li><p>RDF/XML (.rdf)</p></li>
+<li><p>TURTLE (.ttl)</p></li>
+<li><p>TRIG (.trig)</p></li>
+<li><p>JSONLD (.jsonld)</p></li>
+<li><p>NTRIPLES (.nt)</p></li>
+<li><p>NQUADS (.nq)</p></li>
+<li><p>JSON-LD (.jsonld)</p></li>
+<li><p>RDFa (.html)</p></li>
+</ul>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a new empty Graph</span>
+<span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Graph</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+
+<span class="c1">// Create loader and parse file</span>
+<span class="n">Load</span><span class="w"> </span><span class="n">ld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Load</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="n">ld</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">&quot;input graph file path&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="export-graph-to-file">
+<h3>2.3. Export Graph to file<a class="headerlink" href="#export-graph-to-file" title="Permalink to this heading">#</a></h3>
+<p>This example shows how to serialize a graph in file, here in TURTLE format.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// We assume that the &#39;graph&#39; variable has been define previously</span>
+
+<span class="c1">// Create exporter</span>
+<span class="n">ResultFormat</span><span class="w"> </span><span class="n">exporter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ResultFormat</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span><span class="w"> </span><span class="n">ResultFormat</span><span class="p">.</span><span class="na">TURTLE_FORMAT</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exporter</span><span class="p">.</span><span class="na">toString</span><span class="p">();</span>
+
+<span class="c1">// Write result in file</span>
+<span class="n">FileWriter</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">FileWriter</span><span class="p">(</span><span class="s">&quot;output file path&quot;</span><span class="p">);</span>
+<span class="n">writer</span><span class="p">.</span><span class="na">write</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+<span class="n">writer</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Corese Transformer can serialize graphs in different formats :</p>
+<ul class="simple">
+<li><p>RDF/XML <code class="docutils literal notranslate"><span class="pre">ResultFormat.RDF_XML_FORMAT</span></code></p></li>
+<li><p>TURTLE <code class="docutils literal notranslate"><span class="pre">ResultFormat.TURTLE_FORMAT</span></code></p></li>
+<li><p>TRIG <code class="docutils literal notranslate"><span class="pre">ResultFormat.TRIG_FORMAT</span></code></p></li>
+<li><p>JSONLD <code class="docutils literal notranslate"><span class="pre">ResultFormat.JSONLD_FORMAT</span></code></p></li>
+<li><p>NTRIPLES <code class="docutils literal notranslate"><span class="pre">ResultFormat.NTRIPLES_FORMAT</span></code></p></li>
+<li><p>NQUADS <code class="docutils literal notranslate"><span class="pre">ResultFormat.NQUADS_FORMAT</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="sparql-protocol-and-rdf-query-language">
+<h2>3. SPARQL Protocol and RDF Query Language<a class="headerlink" href="#sparql-protocol-and-rdf-query-language" title="Permalink to this heading">#</a></h2>
+<p>This section describes how to query a graph with <a class="reference external" href="https://www.w3.org/TR/sparql11-query/">SPARQL</a> in Corese.</p>
+<section id="sparql-select-query">
+<h3>3.1. SPARQL Select query<a class="headerlink" href="#sparql-select-query" title="Permalink to this heading">#</a></h3>
+<p>This example shows how to execute a SPARQL SELECT query, print and export results.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// We assume that the &#39;graph&#39; variable has been define previously</span>
+
+<span class="c1">// Sparql query</span>
+<span class="n">QueryProcess</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryProcess</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="n">Mappings</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&quot;select * where { ?s ?p ?o }&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Example of how to get a variable value in the results:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Iterate on each result</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Mapping</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">map</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Get the value of the variable ?o</span>
+<span class="w">    </span><span class="n">IDatatype</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="na">getValue</span><span class="p">(</span><span class="s">&quot;?o&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Test and convert the value to java type</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dt</span><span class="p">.</span><span class="na">isURI</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">uriLabel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">getLabel</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dt</span><span class="p">.</span><span class="na">isBlank</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">BNLabel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">getLabel</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dt</span><span class="p">.</span><span class="na">isBoolean</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kt">boolean</span><span class="w"> </span><span class="n">boolResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">booleanValue</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dt</span><span class="p">.</span><span class="na">isNumber</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">intResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">intValue</span><span class="p">();</span>
+<span class="w">            </span><span class="kt">double</span><span class="w"> </span><span class="n">doubleResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">doubleValue</span><span class="p">();</span>
+<span class="w">            </span><span class="kt">float</span><span class="w"> </span><span class="n">floatResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">floatValue</span><span class="p">();</span>
+<span class="w">            </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">bigDecimalResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">decimalValue</span><span class="p">();</span>
+<span class="w">            </span><span class="kt">long</span><span class="w"> </span><span class="n">longResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">longValue</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">String</span><span class="w"> </span><span class="n">stringResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">stringValue</span><span class="p">();</span>
+<span class="w">            </span><span class="n">String</span><span class="w"> </span><span class="n">stringLangResult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dt</span><span class="p">.</span><span class="na">getLang</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Print list of variables in the result:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">map</span><span class="p">.</span><span class="na">getSelect</span><span class="p">());</span>
+<span class="c1">// Exemple: [&quot;?s&quot;, &quot;?p&quot;, &quot;?o&quot;]</span>
+</pre></div>
+</div>
+<p>Print results:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Mapping</span><span class="w"> </span><span class="n">m</span><span class="p">:</span><span class="w"> </span><span class="n">map</span><span class="p">){</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Export result in XML:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">ResultFormat</span><span class="w"> </span><span class="n">result_xml</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ResultFormat</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">map</span><span class="p">);</span>
+<span class="n">result_xml</span><span class="p">.</span><span class="na">write</span><span class="p">(</span><span class="s">&quot;output file path&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="sparql-ask-query">
+<h3>3.2. SPARQL Ask query<a class="headerlink" href="#sparql-ask-query" title="Permalink to this heading">#</a></h3>
+<p>This example shows how to execute a SPARQL ASK query and print results.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// We assume that the &#39;graph&#39; variable has been define previously</span>
+
+<span class="c1">// Sparql query</span>
+<span class="n">QueryProcess</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryProcess</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="n">Mappings</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&quot;ask { ?person foaf:name ?name. }&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Print results:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// if the mappings is empty then the result is false</span>
+<span class="c1">// if the mappings is not empty then the result is true</span>
+<span class="n">system</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="o">!</span><span class="n">map</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">());</span>
+</pre></div>
+</div>
+</section>
+<section id="sparql-construct-query">
+<h3>3.3. SPARQL Construct query<a class="headerlink" href="#sparql-construct-query" title="Permalink to this heading">#</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// We assume that the &#39;graph&#39; variable has been define previously</span>
+
+<span class="c1">// Sparql query</span>
+<span class="n">QueryProcess</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryProcess</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="n">Mappings</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt;</span>
+<span class="s">    prefix vcard: &lt;http://www.w3.org/2001/vcard-rdf/3.0#&gt;</span>
+
+<span class="s">    construct {</span>
+<span class="s">        ?person vcard:FN ?name</span>
+<span class="s">    }</span>
+<span class="s">    where {</span>
+<span class="s">        ?person foaf:name ?name.</span>
+<span class="s">    }</span>
+<span class="s">    &quot;&quot;&quot;</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+<p>Print graph result of a construct-where query :</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">Graph</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Graph</span><span class="p">)</span><span class="w"> </span><span class="n">map</span><span class="p">.</span><span class="na">getGraph</span><span class="p">();</span>
+<span class="n">Graph</span><span class="w"> </span><span class="n">result_graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Graph</span><span class="p">)</span><span class="w"> </span><span class="n">map</span><span class="p">.</span><span class="na">getGraph</span><span class="p">();</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">result_graph</span><span class="p">.</span><span class="na">display</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>Export result in XML:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Export result in XML</span>
+<span class="n">ResultFormat</span><span class="w"> </span><span class="n">result_xml</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ResultFormat</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">map</span><span class="p">);</span>
+<span class="n">result_xml</span><span class="p">.</span><span class="na">write</span><span class="p">(</span><span class="s">&quot;output file path&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="sparql-update-query">
+<h3>3.4. SPARQL Update query<a class="headerlink" href="#sparql-update-query" title="Permalink to this heading">#</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// We assume that the &#39;graph&#39; variable has been define previously</span>
+
+<span class="c1">// Sparql query</span>
+<span class="n">QueryProcess</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryProcess</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="n">exec</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">    prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt;</span>
+<span class="s">    prefix vcard: &lt;http://www.w3.org/2001/vcard-rdf/3.0#&gt;</span>
+
+<span class="s">    insert {</span>
+<span class="s">        ?person vcard:FN ?name</span>
+<span class="s">    }</span>
+<span class="s">    where {</span>
+<span class="s">        ?person foaf:name ?name.</span>
+<span class="s">    }</span>
+<span class="s">    &quot;&quot;&quot;</span>
+<span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="shapes-constraint-language-shacl">
+<h2>4. Shapes Constraint Language (SHACL)<a class="headerlink" href="#shapes-constraint-language-shacl" title="Permalink to this heading">#</a></h2>
+<p>This section show how to validate a graph with the <a class="reference external" href="https://www.w3.org/TR/shacl/">Shapes Constraint Language (SHACL) in <em>Corese</em></a>.
+The example below shows us how to load a shapes graph (SHACL file), check the validity of the data graph and finally print results.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load data graph</span>
+<span class="n">Graph</span><span class="w"> </span><span class="n">dataGraph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Graph</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+<span class="n">Load</span><span class="w"> </span><span class="n">ld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Load</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">dataGraph</span><span class="p">);</span>
+<span class="n">ld</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">&quot;input graph file path&quot;</span><span class="p">);</span>
+
+<span class="c1">// Load shape graph</span>
+<span class="n">Graph</span><span class="w"> </span><span class="n">shapeGraph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Graph</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+<span class="n">ld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Load</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">shapeGraph</span><span class="p">);</span>
+<span class="n">ld</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">&quot;input shape file path.ttl&quot;</span><span class="p">);</span>
+
+<span class="c1">// Evaluation</span>
+<span class="n">Shacl</span><span class="w"> </span><span class="n">shacl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Shacl</span><span class="p">(</span><span class="n">dataGraph</span><span class="p">,</span><span class="w"> </span><span class="n">shapeGraph</span><span class="p">);</span>
+<span class="n">Graph</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shacl</span><span class="p">.</span><span class="na">eval</span><span class="p">();</span>
+
+<span class="c1">// print results</span>
+<span class="n">Transformer</span><span class="w"> </span><span class="n">transformer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Transformer</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="n">Transformer</span><span class="p">.</span><span class="na">TURTLE</span><span class="p">);</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">transformer</span><span class="p">.</span><span class="na">toString</span><span class="p">());</span>
+</pre></div>
+</div>
+<p><strong>Input graph file path:</strong></p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">ex:</span><span class="w"> </span><span class="nv">&lt;http://example.org/ns#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">rdf:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;</span><span class="w"> </span><span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">Alice</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">ssn</span> <span class="s">&quot;987-65-4323&quot;</span> <span class="p">;</span>
+    <span class="nn">ex</span><span class="p">:</span><span class="nt">worksFor</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Haribo</span><span class="p">,</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">KitKat</span> <span class="p">;</span>
+    <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Person</span> <span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">Bob</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">ssn</span> <span class="s">&quot;124-35-6789&quot;</span> <span class="p">;</span>
+    <span class="nn">ex</span><span class="p">:</span><span class="nt">worksFor</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Twitch</span> <span class="p">;</span>
+    <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Person</span> <span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">Calvin</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">ssn</span> <span class="s">&quot;648-67-6545&quot;</span> <span class="p">;</span>
+    <span class="nn">ex</span><span class="p">:</span><span class="nt">worksFor</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">UntypedCompany</span> <span class="p">;</span>
+    <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Person</span> <span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">Haribo</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Company</span> <span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">KitKat</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Company</span> <span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">Twitch</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Company</span> <span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">UntypedCompany</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Company</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p><strong>Input shape file path:</strong></p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">sh:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/shacl#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">xsd:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">ex:</span><span class="w"> </span><span class="nv">&lt;http://example.org/ns#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">rdf:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;</span><span class="w"> </span><span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">PersonShape</span>
+    <span class="kt">a</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">NodeShape</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">targetClass</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">property</span> <span class="p">[</span>
+        <span class="nn">sh</span><span class="p">:</span><span class="nt">path</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">ssn</span> <span class="p">;</span>
+        <span class="nn">sh</span><span class="p">:</span><span class="nt">maxCount</span> <span class="mi">1</span> <span class="p">;</span>
+        <span class="nn">sh</span><span class="p">:</span><span class="nt">datatype</span> <span class="nn">xsd</span><span class="p">:</span><span class="nt">string</span> <span class="p">;</span>
+        <span class="nn">sh</span><span class="p">:</span><span class="nt">pattern</span> <span class="s">&quot;^\\d{3}-\\d{2}-\\d{4}$&quot;</span> <span class="p">;</span>
+    <span class="p">]</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">property</span> <span class="p">[</span>
+        <span class="nn">sh</span><span class="p">:</span><span class="nt">path</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">worksFor</span> <span class="p">;</span>
+        <span class="nn">sh</span><span class="p">:</span><span class="nt">class</span> <span class="nn">ex</span><span class="p">:</span><span class="nt">Company</span> <span class="p">;</span>
+        <span class="nn">sh</span><span class="p">:</span><span class="nt">nodeKind</span> <span class="nn">sh</span><span class="p">:</span><span class="nt">IRI</span> <span class="p">;</span>
+    <span class="p">]</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">closed</span> <span class="l">true</span> <span class="p">;</span>
+    <span class="nn">sh</span><span class="p">:</span><span class="nt">ignoredProperties</span> <span class="p">(</span> <span class="nn">rdf</span><span class="p">:</span><span class="nt">type</span> <span class="p">)</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p><strong>Result:</strong></p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span>@prefix xsh: &lt;http://www.w3.org/ns/shacl#&gt; .
+@prefix sh: &lt;http://www.w3.org/ns/shacl#&gt; .
+
+[a sh:ValidationReport ;
+    sh:conforms true] .
+</pre></div>
+</div>
+</section>
+<section id="sparql-template-transformation-language-sttl">
+<h2>5. SPARQL Template Transformation Language (STTL)<a class="headerlink" href="#sparql-template-transformation-language-sttl" title="Permalink to this heading">#</a></h2>
+<p>This sections shows how to transforme a graph with a subset of the extension language <a class="reference external" href="https://files.inria.fr/corese/doc/sttl.html">SPARQL Template Transformation Language (STTL)</a>.</p>
+<section id="transform-a-graph-in-a-visual-html-format">
+<h3>5.1. Transform a graph in a visual HTML format<a class="headerlink" href="#transform-a-graph-in-a-visual-html-format" title="Permalink to this heading">#</a></h3>
+<p>This example detail how load a data graph from a file, transforme it in a visual HTML format and export the result in a file.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Open template file</span>
+<span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;input template file path&quot;</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">sttl_query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Files</span><span class="p">.</span><span class="na">readString</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">);</span>
+
+<span class="c1">// Load data graph</span>
+<span class="n">Graph</span><span class="w"> </span><span class="n">dataGraph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Graph</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+<span class="n">Load</span><span class="w"> </span><span class="n">ld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Load</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">dataGraph</span><span class="p">);</span>
+<span class="n">ld</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">&quot;input graph file path&quot;</span><span class="p">);</span>
+
+<span class="c1">// Apply STTL query</span>
+<span class="n">QueryProcess</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryProcess</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">dataGraph</span><span class="p">);</span>
+<span class="n">Mappings</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">sttl_query</span><span class="p">);</span>
+
+<span class="c1">// Export result</span>
+<span class="n">ResultFormat</span><span class="w"> </span><span class="n">result_xml</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ResultFormat</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">map</span><span class="p">);</span>
+<span class="n">result_xml</span><span class="p">.</span><span class="na">write</span><span class="p">(</span><span class="s">&quot;output file path&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Input template file:</strong></p>
+<div class="highlight-rq notranslate"><div class="highlight"><pre><span></span>template {
+    format {
+        &quot;&lt;html&gt;\n\n&lt;body&gt;\n\t&lt;table&gt;\n%s\t&lt;/table&gt;\n&lt;/body&gt;\n\n&lt;/html&gt;&quot;
+        group {
+            format {
+                &quot;\t\t&lt;tr&gt;\n\t\t\t&lt;td&gt;%s&lt;/td&gt;\n\t\t\t&lt;td&gt;%s&lt;/td&gt;\n\t\t\t&lt;td&gt;%s&lt;/td&gt;\n\t\t&lt;/tr&gt;\n&quot;
+                ?s ?p ?o
+            }
+        }
+    }
+}
+where {
+    ?s ?p ?o
+}
+order by ?s ?p ?o
+</pre></div>
+</div>
+<p><strong>Result :</strong></p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">table</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>http://example.org/EdithPiaf<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>http://example.org/firstName<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Edith<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>http://example.org/EdithPiaf<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>http://example.org/lastName<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Piaf<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>http://example.org/EdithPiaf<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>http://www.w3.org/1999/02/22-rdf-syntax-ns#type<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>http://example.org/Singer<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>?s</p></th>
+<th class="head"><p>?p</p></th>
+<th class="head"><p>?o</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="http://example.org/EdithPiaf">http://example.org/EdithPiaf</a></p></td>
+<td><p><a class="reference external" href="http://example.org/firstName">http://example.org/firstName</a></p></td>
+<td><p>Edith</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="http://example.org/EdithPiaf">http://example.org/EdithPiaf</a></p></td>
+<td><p><a class="reference external" href="http://example.org/lastName">http://example.org/lastName</a></p></td>
+<td><p>Piaf</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="http://example.org/EdithPiaf">http://example.org/EdithPiaf</a></p></td>
+<td><p><a class="reference external" href="http://www.w3.org/1999/02/22-rdf-syntax-ns#type">http://www.w3.org/1999/02/22-rdf-syntax-ns#type</a></p></td>
+<td><p><a class="reference external" href="http://example.org/Singer">http://example.org/Singer</a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="sparql-rule">
+<h2>6. SPARQL Rule<a class="headerlink" href="#sparql-rule" title="Permalink to this heading">#</a></h2>
+<p>This section details how to apply a set of rules on a graph using the <a class="reference external" href="https://files.inria.fr/corese/doc/rule.html">SPARQL Rule extension language</a>.</p>
+<section id="load-rules-from-a-file">
+<h3>6.1. Load rules from a file<a class="headerlink" href="#load-rules-from-a-file" title="Permalink to this heading">#</a></h3>
+<p>The example below shows the application of two rules (symmetry and transitivity) on a simple graph.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create and load data in a graph</span>
+<span class="n">Graph</span><span class="w"> </span><span class="n">dataGraph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Graph</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+<span class="n">Load</span><span class="w"> </span><span class="n">dataLoader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Load</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">dataGraph</span><span class="p">);</span>
+<span class="n">dataLoader</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">&quot;input graph file path&quot;</span><span class="p">);</span>
+
+
+<span class="c1">// Create and load rules into a rules engine</span>
+<span class="n">RuleEngine</span><span class="w"> </span><span class="n">ruleEngine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RuleEngine</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">dataGraph</span><span class="p">);</span>
+<span class="n">RuleLoad</span><span class="w"> </span><span class="n">ruleLoader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RuleLoad</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">ruleEngine</span><span class="p">);</span>
+<span class="n">ruleLoader</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">&quot;input rules file path.rul&quot;</span><span class="p">);</span>
+
+
+<span class="c1">// Apply rules on graph</span>
+<span class="n">ruleEngine</span><span class="p">.</span><span class="na">process</span><span class="p">();</span>
+</pre></div>
+</div>
+<p><strong>Original graph:</strong></p>
+<div class="mermaid">
+            graph LR;
+    classDef IRI fill:#FEAE65,stroke-width:0px
+
+    iri:alice([&quot;ex:Alice&quot;])
+    iri:bob([&quot;ex:Bob&quot;])
+    iri:camille([&quot;ex:Camille&quot;])
+    iri:daniel([&quot;ex:Daniel&quot;])
+    iri:elise([&quot;ex:Elise&quot;])
+
+    class iri:alice,iri:bob,iri:camille,iri:daniel,iri:elise IRI
+
+    iri:alice--ex:friend--&gt;iri:bob;
+    iri:bob--ex:friend--&gt;iri:camille;
+    iri:daniel--ex:isMarriedTo--&gt;iri:elise;
+        </div><p><strong>Rules file:</strong></p>
+<ul class="simple">
+<li><p>Symmetry : <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">exist</span> <span class="pre">X➝Y</span> <span class="pre">then</span> <span class="pre">Y➝X</span></code></p></li>
+<li><p>Transitivity : <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">X➝Y➝Z</span> <span class="pre">then</span> <span class="pre">X➝Z</span></code></p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+
+<span class="nt">&lt;rdf:RDF</span>
+<span class="w">    </span><span class="na">xmlns:rdf=</span><span class="s">&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;</span>
+<span class="w">    </span><span class="na">xmlns=</span><span class="s">&quot;http://ns.inria.fr/corese/rule/&quot;</span><span class="nt">&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;rule&gt;</span>
+<span class="w">        </span><span class="nt">&lt;body&gt;</span>
+<span class="w">            </span><span class="cp">&lt;![CDATA[</span>
+<span class="cp">                prefix owl: &lt;http://www.w3.org/2002/07/owl#&gt;</span>
+<span class="cp">                construct {</span>
+<span class="cp">                    ?x ?p ?z</span>
+<span class="cp">                }</span>
+<span class="cp">                where {</span>
+<span class="cp">                    ?p a owl:TransitiveProperty .</span>
+<span class="cp">                    ?x ?p ?y .</span>
+<span class="cp">                    ?y ?p ?z</span>
+<span class="cp">                }</span>
+<span class="cp">            ]]&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/body&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/rule&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;rule&gt;</span>
+<span class="w">        </span><span class="nt">&lt;body&gt;</span>
+<span class="w">            </span><span class="cp">&lt;![CDATA[</span>
+<span class="cp">                prefix owl: &lt;http://www.w3.org/2002/07/owl#&gt;</span>
+<span class="cp">                construct {</span>
+<span class="cp">                   ?y ?p ?x</span>
+<span class="cp">                }</span>
+<span class="cp">                where {</span>
+<span class="cp">                    ?p a owl:SymmetricProperty .</span>
+<span class="cp">                    ?x ?p ?y .</span>
+<span class="cp">                }</span>
+<span class="cp">            ]]&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/body&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/rule&gt;</span>
+
+<span class="nt">&lt;/rdf:RDF&gt;</span>
+</pre></div>
+</div>
+<p><strong>Result graph:</strong></p>
+<div class="mermaid">
+            graph LR;
+    classDef IRI fill:#FEAE65,stroke-width:0px
+
+    iri:alice([&quot;ex:Alice&quot;])
+    iri:bob([&quot;ex:Bob&quot;])
+    iri:camille([&quot;ex:Camille&quot;])
+    iri:daniel([&quot;ex:Daniel&quot;])
+    iri:elise([&quot;ex:Elise&quot;])
+
+    class iri:alice,iri:bob,iri:camille,iri:daniel,iri:elise IRI
+
+    iri:alice--ex:friend--&gt;iri:bob;
+    iri:bob--ex:friend--&gt;iri:camille;
+    iri:alice-.ex:friend.-&gt;iri:camille;
+    iri:daniel--ex:isMarriedTo.-&gt;iri:elise;
+    iri:elise-.ex:isMarriedTo.-&gt;iri:daniel;
+
+    linkStyle 4,2 stroke:#a3ddcb,stroke-width:3px;
+        </div></section>
+<section id="owl-rules">
+<h3>6.2. OWL Rules<a class="headerlink" href="#owl-rules" title="Permalink to this heading">#</a></h3>
+<p>The example below shows the application of OWL RL rules.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// We assume that the &#39;graph&#39; variable has been define previously</span>
+
+<span class="c1">// Apply rules</span>
+<span class="n">RuleEngine</span><span class="w"> </span><span class="n">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RuleEngine</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="n">engine</span><span class="p">.</span><span class="na">setProfile</span><span class="p">(</span><span class="n">RuleEngine</span><span class="p">.</span><span class="na">OWL_RL</span><span class="p">);</span>
+<span class="n">engine</span><span class="p">.</span><span class="na">process</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="ldscript">
+<h2>7. LDScript<a class="headerlink" href="#ldscript" title="Permalink to this heading">#</a></h2>
+<p>This section describes how to define and use functions with the <a class="reference external" href="https://files.inria.fr/corese/doc/ldscript.html">LDScript extension language</a>.</p>
+<section id="fibonacci-function-call-from-java">
+<h3>7.1. Fibonacci function call from Java<a class="headerlink" href="#fibonacci-function-call-from-java" title="Permalink to this heading">#</a></h3>
+<p>This example shows how to define and compute the twelfth number of the Fibonnacci sequence.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Open LDScript file</span>
+<span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;input LDScript file path.rq&quot;</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">ldScript</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Files</span><span class="p">.</span><span class="na">readString</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">);</span>
+
+<span class="c1">// Compile LDScript</span>
+<span class="n">QueryProcess</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryProcess</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+<span class="n">exec</span><span class="p">.</span><span class="na">compile</span><span class="p">(</span><span class="n">ldScript</span><span class="p">);</span>
+
+<span class="c1">// Compute the twelfth number of the Fibonnacci sequence</span>
+<span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;http://ns.inria.fr/fibonacci&quot;</span><span class="p">;</span>
+<span class="n">IDatatype</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec</span><span class="p">.</span><span class="na">funcall</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">DatatypeMap</span><span class="p">.</span><span class="na">newInstance</span><span class="p">(</span><span class="mi">25</span><span class="p">));</span>
+
+<span class="c1">// Print result</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">dt</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Input LDScript file path:</strong></p>
+<div class="highlight-rq notranslate"><div class="highlight"><pre><span></span>prefix fun: &lt;http://ns.inria.fr/&gt;
+
+@public function fun:fibonacci(n) {
+    if (n &lt; 0) {
+        error()
+    }
+    else if (n = 0) {
+        return(0)
+    }
+    else if (n = 1) {
+        return(1)
+    }
+    else {
+        return (fun:fibonacci(n - 1) + fun:fibonacci(n - 2))
+    }
+}
+</pre></div>
+</div>
+</section>
+<section id="ldscript-in-sparql">
+<h3>7.2. LDScript in SPARQL<a class="headerlink" href="#ldscript-in-sparql" title="Permalink to this heading">#</a></h3>
+<p>This example shows how to call an LDScript function from a SPARQL query.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">String</span><span class="w"> </span><span class="n">check_query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">prefix ex: &lt;http://example.com/city/&gt;</span>
+<span class="s">prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;</span>
+<span class="s">prefix fun: &lt;http://ns.inria.fr/&gt;</span>
+
+<span class="s">select ?name ?area</span>
+<span class="s">where {</span>
+<span class="s">    ?city rdf:type ex:city ;</span>
+<span class="s">            ex:area ?area .</span>
+<span class="s">    filter(?area &gt; fun:toSquareKm(40))</span>
+<span class="s">}</span>
+
+<span class="s"># Convert square mile to square Kilometer</span>
+<span class="s">function fun:toSquareKm(squareMile) {</span>
+<span class="s">    return (squareMile * 2.59)</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">;</span>
+
+
+<span class="c1">// Load graph</span>
+<span class="n">Graph</span><span class="w"> </span><span class="n">graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Graph</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+<span class="n">Load</span><span class="w"> </span><span class="n">ld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Load</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="n">ld</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">&quot;input file path&quot;</span><span class="p">);</span>
+
+<span class="c1">// Sparql query</span>
+<span class="n">QueryProcess</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryProcess</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">graph</span><span class="p">);</span>
+<span class="n">Mappings</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">check_query</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="advanced-example">
+<h3>7.3. Advanced example<a class="headerlink" href="#advanced-example" title="Permalink to this heading">#</a></h3>
+<p>The java program below computes the percentage of people subscribed to social networks of city compared to its number of inhabitants.
+Data is collected from Wikidata.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Open LDScript file</span>
+<span class="n">Path</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&quot;input LDScript file path.rq&quot;</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">ldScript</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Files</span><span class="p">.</span><span class="na">readString</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">StandardCharsets</span><span class="p">.</span><span class="na">UTF_8</span><span class="p">);</span>
+
+<span class="c1">// Compile LDScript</span>
+<span class="n">QueryProcess</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryProcess</span><span class="p">.</span><span class="na">create</span><span class="p">();</span>
+<span class="n">exec</span><span class="p">.</span><span class="na">compile</span><span class="p">(</span><span class="n">ldScript</span><span class="p">);</span>
+
+<span class="c1">// Execute program</span>
+<span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;http://ns.inria.fr/main&quot;</span><span class="p">;</span>
+<span class="n">IDatatype</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec</span><span class="p">.</span><span class="na">funcall</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+
+<span class="c1">// Print result</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">dt</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><strong>Input LDScript file path:</strong></p>
+<div class="highlight-rq notranslate"><div class="highlight"><pre><span></span>prefix fun: &lt;http://ns.inria.fr/&gt;
+
+prefix wd: &lt;http://www.wikidata.org/entity/&gt;
+prefix wdt: &lt;http://www.wikidata.org/prop/direct/&gt;
+prefix wikibase: &lt;http://wikiba.se/ontology#&gt;
+prefix bd: &lt;http://www.bigdata.com/rdf#&gt;
+prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
+
+@public
+function fun:percentage(sub, total) {
+    return (sub / total * 100)
+}
+
+@public
+function fun:citypopulationsocialmedia() {
+
+    query(
+        select ?city ?citylabel ?population ?socialmediafolower where {
+            service &lt;https://query.wikidata.org/sparql&gt; {
+                ?city wdt:P31 wd:Q1549591;
+                wdt:P8687 ?socialmediafolower;
+                wdt:P1082 ?population.
+                optional {
+                    ?city rdfs:label ?citylabel
+                    filter (lang(?citylabel) = &quot;en&quot;).
+                }
+            }
+        }
+        order by desc (?socialmediafolower)
+        limit 100
+    )
+}
+
+@public
+function fun:main() {
+    xt:sort(
+        maplist (
+            function(x) {
+                let ((citylabel population socialmediafolower) = x) {
+                    return (xt:list(citylabel, fun:percentage(socialmediafolower, population)))
+                }
+            },
+            fun:citypopulationsocialmedia()
+        ),
+        function(x,y)  {
+            let ((x_name, x_value) = x, (y_name, y_value) = y) {
+                if (x_value &lt; y_value, 1, if(x=y, o, -1))
+            }
+        }
+    )
+}
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">1. Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph">2. Graph</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-a-graph-by-program">2.1. Build a Graph by program</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-graph-from-file">2.2. Load Graph from file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#export-graph-to-file">2.3. Export Graph to file</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-protocol-and-rdf-query-language">3. SPARQL Protocol and RDF Query Language</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-select-query">3.1. SPARQL Select query</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-ask-query">3.2. SPARQL Ask query</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-construct-query">3.3. SPARQL Construct query</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-update-query">3.4. SPARQL Update query</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#shapes-constraint-language-shacl">4. Shapes Constraint Language (SHACL)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-template-transformation-language-sttl">5. SPARQL Template Transformation Language (STTL)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transform-a-graph-in-a-visual-html-format">5.1. Transform a graph in a visual HTML format</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-rule">6. SPARQL Rule</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-rules-from-a-file">6.1. Load rules from a file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#owl-rules">6.2. OWL Rules</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ldscript">7. LDScript</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fibonacci-function-call-from-java">7.1. Fibonacci function call from Java</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ldscript-in-sparql">7.2. LDScript in SPARQL</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-example">7.3. Advanced example</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/getting started/Getting Started With Corese-library.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

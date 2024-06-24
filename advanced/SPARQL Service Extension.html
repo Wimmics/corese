@@ -1,0 +1,1034 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SPARQL Service Extension &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'advanced/SPARQL Service Extension';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">SPARQL...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="sparql-service-extension">
+<h1>SPARQL Service Extension<a class="headerlink" href="#sparql-service-extension" title="Permalink to this heading">#</a></h1>
+<section id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this heading">#</a></h2>
+<p>This document presents extensions of SPARQL service implemented in Corese.</p>
+</section>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<p>In a SERVICE clause, Corese allows for the addition of URL parameters to the service URL. These parameters are used to tune the behaviour of the service. For example, we can specify the format of the query result returned by the service.</p>
+<p>For example, the following query will make Corese write a trace of the execution of the query in its logs:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="nl">http</span><span class="p">:</span><span class="c1">//corese.inria.fr/sparql?mode=debug&amp;query=select * {?s ?p ?o}</span>
+</pre></div>
+</div>
+<!-- Furthermore, SPARQL protocol can be used not only to execute standard SPARQL queries and SPARQL services but also additional kinds of services. For example, a SPARQL endpoint where the query result is processed by a transformation before return. Query Results can be augmented with Linked Results by means of the standard ''link'' tag.
+
+In addition, a server can send a message back to a client by means of a JSON object returned as Linked Result. Hence, we design a communication model between sparql client-server back and forth. User writes SPARQL service or HTTP request with client/server URL parameters. Client parses and processes client parameters and sends HTTP request with server URL parameters to server. Server parses and process server parameters. Server responds to client with SPARQL Query Results augmented with a Linked Result message URL & document. Client reads server message and processes it. -->
+<section id="prefix-used-in-this-document">
+<h3>Prefix used in this document.<a class="headerlink" href="#prefix-used-in-this-document" title="Permalink to this heading">#</a></h3>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span>prefix st:  &lt;http://ns.inria.fr/sparql-template/&gt;
+prefix stm: &lt;http://ns.inria.fr/sparql-template/navlab#&gt;
+prefix d3:  &lt;http://ns.inria.fr/sparql-template/d3#&gt;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="server-url-parameter">
+<h2>Server URL Parameter<a class="headerlink" href="#server-url-parameter" title="Permalink to this heading">#</a></h2>
+<section id="standard-parameters">
+<h3>Standard parameters<a class="headerlink" href="#standard-parameters" title="Permalink to this heading">#</a></h3>
+<p>In this section, we consider endpoint URL parameters decoded by a SPARQL endpoint receiving an HTTP request.</p>
+<p>Standard endpoint URL parameters are available.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">query</span>
+<span class="k">default</span><span class="o">-</span><span class="n">graph</span><span class="o">-</span><span class="n">uri</span><span class="w"> </span>
+<span class="n">named</span><span class="o">-</span><span class="n">graph</span><span class="o">-</span><span class="n">uri</span>
+</pre></div>
+</div>
+<p>Currently corese does not implement the Update parameters below. Users can use query parameters listed above instead.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">update</span>
+<span class="k">using</span><span class="o">-</span><span class="n">graph</span><span class="o">-</span><span class="n">uri</span><span class="w"> </span>
+<span class="k">using</span><span class="o">-</span><span class="n">named</span><span class="o">-</span><span class="n">graph</span><span class="o">-</span><span class="n">uri</span>
+</pre></div>
+</div>
+</section>
+<section id="shorthand-format-parameters">
+<h3>Shorthand format parameters<a class="headerlink" href="#shorthand-format-parameters" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">format</span></code> specifies query result format when HTTP Accept header cannot be set. For example, <code class="docutils literal notranslate"><span class="pre">format=json</span></code> is equivalent to: <code class="docutils literal notranslate"><span class="pre">header</span> <span class="pre">&quot;Accept:</span> <span class="pre">application/sparql-results+json&quot;</span></code>.</p>
+<p>For SELECT and ASK queries:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">json</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">xml</span><span class="w"> </span>
+</pre></div>
+</div>
+<p>For SELECT, ASK, DESCRIBE and CONSTRUCT queries:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jsonld</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">rdfxml</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">turtle</span>
+</pre></div>
+</div>
+</section>
+<section id="trace-parameter">
+<h3>Trace parameter<a class="headerlink" href="#trace-parameter" title="Permalink to this heading">#</a></h3>
+<p>It is possible to specify several kinds of traces of execution.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">debug</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">trace</span><span class="w"> </span>
+</pre></div>
+</div>
+<p>For example, for the query <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">{</span> <span class="pre">?s</span> <span class="pre">?p</span> <span class="pre">?o</span> <span class="pre">}</span> <span class="pre">LIMIT</span> <span class="pre">1</span></code> the normal trace is:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLRestAPI</span><span class="p">.</span><span class="n">getTriplesXMLForGet</span><span class="o">:</span><span class="mi">311</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">getTriplesXMLForGet</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLResult</span><span class="p">.</span><span class="n">getResultFormat</span><span class="o">:</span><span class="mi">90</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Endpoint</span><span class="w"> </span><span class="n">URL</span><span class="o">:</span><span class="w"> </span><span class="n">http</span><span class="o">:</span><span class="c1">//localhost:8080/sparql</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLResult</span><span class="p">.</span><span class="n">getResultFormat</span><span class="o">:</span><span class="mi">96</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Query</span><span class="o">:</span><span class="w"> </span><span class="n">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">?</span><span class="n">s</span><span class="w"> </span><span class="o">?</span><span class="n">p</span><span class="w"> </span><span class="o">?</span><span class="n">o</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="n">LIMIT</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">EventManager</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">72</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Workflow</span><span class="w"> </span><span class="n">Context</span><span class="o">:</span>
+<span class="nl">st</span><span class="p">:</span><span class="n">remoteHost</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;[0:0:0:0:0:0:0:1]&quot;</span>
+<span class="nl">st</span><span class="p">:</span><span class="n">service</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;http://ns.inria.fr/sparql-template/default&quot;</span>
+<span class="nl">request</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[org.eclipse.jetty.server.Request:Request(GET http://localhost:8080/sparql?query=SELECT%20*%20%7B%20?s%20?p%20?o%20%7D%20LIMIT%201)@429f0053]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">pointer</span>
+<span class="nl">url</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//localhost:8080/sparql&gt;</span>
+<span class="n">user</span><span class="w"> </span><span class="n">query</span><span class="o">:</span><span class="w"> </span><span class="nb">true</span>
+<span class="nl">level</span><span class="p">:</span><span class="w"> </span><span class="n">PRIVATE</span>
+
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">EventManager</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">73</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">{</span><span class="n">st</span><span class="o">:</span><span class="n">count</span><span class="o">=</span><span class="s">&quot;[Map: size=2]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">map</span><span class="p">,</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">date</span><span class="o">=</span><span class="s">&quot;[Map: size=2]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">map</span><span class="p">,</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">host</span><span class="o">=</span><span class="s">&quot;[Map: size=2]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">map</span><span class="p">,</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">hostlite</span><span class="o">=</span><span class="s">&quot;[Map: size=1]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">map</span><span class="p">}</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">EventManager</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">74</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">{</span><span class="n">st</span><span class="o">:</span><span class="n">sparql</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;http://ns.inria.fr/sparql-template/default&quot;</span><span class="o">=</span><span class="mi">17</span><span class="p">}</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">EventManager</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">76</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;127.0.0.1&quot;</span><span class="o">=</span><span class="mi">11</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">debug</span></code> parameter change the trace in the following:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLRestAPI</span><span class="p">.</span><span class="n">getTriplesXMLForGet</span><span class="o">:</span><span class="mi">311</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">getTriplesXMLForGet</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLResult</span><span class="p">.</span><span class="n">getResultFormat</span><span class="o">:</span><span class="mi">90</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Endpoint</span><span class="w"> </span><span class="n">URL</span><span class="o">:</span><span class="w"> </span><span class="n">http</span><span class="o">:</span><span class="c1">//localhost:8080/sparql</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLResult</span><span class="p">.</span><span class="n">getResultFormat</span><span class="o">:</span><span class="mi">96</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Query</span><span class="o">:</span><span class="w"> </span><span class="n">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">?</span><span class="n">s</span><span class="w"> </span><span class="o">?</span><span class="n">p</span><span class="w"> </span><span class="o">?</span><span class="n">o</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="n">LIMIT</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">EventManager</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">72</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Workflow</span><span class="w"> </span><span class="n">Context</span><span class="o">:</span>
+<span class="nl">debug</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nb">true</span>
+<span class="nl">st</span><span class="p">:</span><span class="n">remoteHost</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;[0:0:0:0:0:0:0:1]&quot;</span>
+<span class="nl">st</span><span class="p">:</span><span class="n">service</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;http://ns.inria.fr/sparql-template/default&quot;</span>
+<span class="nl">mode</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">&quot;(&quot;</span><span class="n">debug</span><span class="s">&quot; )&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">list</span>
+<span class="nl">request</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[org.eclipse.jetty.server.Request:Request(GET http://localhost:8080/sparql?query=SELECT%20*%20%7B%20?s%20?p%20?o%20%7D%20LIMIT%201&amp;mode=debug)@5c192889]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">pointer</span>
+<span class="nl">url</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//localhost:8080/sparql&gt;</span>
+<span class="n">user</span><span class="w"> </span><span class="n">query</span><span class="o">:</span><span class="w"> </span><span class="nb">true</span>
+<span class="nl">level</span><span class="p">:</span><span class="w"> </span><span class="n">PRIVATE</span>
+
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">EventManager</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">73</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">{</span><span class="n">st</span><span class="o">:</span><span class="n">count</span><span class="o">=</span><span class="s">&quot;[Map: size=2]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">map</span><span class="p">,</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">date</span><span class="o">=</span><span class="s">&quot;[Map: size=2]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">map</span><span class="p">,</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">host</span><span class="o">=</span><span class="s">&quot;[Map: size=2]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">map</span><span class="p">,</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">hostlite</span><span class="o">=</span><span class="s">&quot;[Map: size=1]&quot;</span><span class="o">^^</span><span class="n">dt</span><span class="o">:</span><span class="n">map</span><span class="p">}</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">EventManager</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">74</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">{</span><span class="n">st</span><span class="o">:</span><span class="n">sparql</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;http://ns.inria.fr/sparql-template/default&quot;</span><span class="o">=</span><span class="mi">18</span><span class="p">}</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">EventManager</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">76</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;127.0.0.1&quot;</span><span class="o">=</span><span class="mi">11</span><span class="p">}</span>
+<span class="n">select</span><span class="w"> </span><span class="p">[</span><span class="n">NODE</span><span class="w"> </span><span class="p">{</span><span class="o">?</span><span class="n">s</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="n">NODE</span><span class="w"> </span><span class="p">{</span><span class="o">?</span><span class="n">p</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="n">NODE</span><span class="w"> </span><span class="p">{</span><span class="o">?</span><span class="n">o</span><span class="w"> </span><span class="p">}]</span>
+<span class="n">QUERY</span><span class="w"> </span><span class="p">{</span>
+<span class="n">AND</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">EDGE</span><span class="w"> </span><span class="p">{</span><span class="o">?</span><span class="n">s</span><span class="w"> </span><span class="o">?</span><span class="n">p</span><span class="w"> </span><span class="o">?</span><span class="n">o</span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">WARN</span><span class="w">  </span><span class="n">tool</span><span class="p">.</span><span class="n">Message</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">64</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Eval</span><span class="o">:</span><span class="w"> </span><span class="mo">00</span><span class="w"> </span><span class="n">AND</span><span class="w"> </span><span class="p">{</span>
+<span class="n">EDGE</span><span class="w"> </span><span class="p">{</span><span class="o">?</span><span class="n">s</span><span class="w"> </span><span class="o">?</span><span class="n">p</span><span class="w"> </span><span class="o">?</span><span class="n">o</span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">WARN</span><span class="w">  </span><span class="n">tool</span><span class="p">.</span><span class="n">Message</span><span class="p">.</span><span class="n">log</span><span class="o">:</span><span class="mi">64</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Loop</span><span class="o">:</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLResult</span><span class="p">.</span><span class="n">getFormat</span><span class="o">:</span><span class="mi">411</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">transform</span><span class="o">:</span><span class="w"> </span><span class="n">null</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">trace</span></code> parameter change the trace in the following:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLRestAPI</span><span class="p">.</span><span class="n">getTriplesXMLForGet</span><span class="o">:</span><span class="mi">311</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">getTriplesXMLForGet</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLResult</span><span class="p">.</span><span class="n">getResultFormat</span><span class="o">:</span><span class="mi">90</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Endpoint</span><span class="w"> </span><span class="n">URL</span><span class="o">:</span><span class="w"> </span><span class="n">http</span><span class="o">:</span><span class="c1">//localhost:8080/sparql</span>
+<span class="p">[</span><span class="n">datetime</span><span class="p">]</span><span class="w"> </span><span class="n">INFO</span><span class="w">  </span><span class="n">webservice</span><span class="p">.</span><span class="n">SPARQLResult</span><span class="p">.</span><span class="n">getResultFormat</span><span class="o">:</span><span class="mi">96</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Query</span><span class="o">:</span><span class="w"> </span><span class="n">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">?</span><span class="n">s</span><span class="w"> </span><span class="o">?</span><span class="n">p</span><span class="w"> </span><span class="o">?</span><span class="n">o</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="n">LIMIT</span><span class="w"> </span><span class="mi">1</span>
+<span class="n">Endpoint</span><span class="w"> </span><span class="n">HTTP</span><span class="w"> </span><span class="n">Request</span>
+<span class="nl">header</span><span class="p">:</span><span class="w"> </span><span class="n">Accept</span><span class="o">:</span><span class="w"> </span><span class="o">*</span><span class="cm">/*</span>
+<span class="cm">header: User-Agent: Wget/1.21.3</span>
+<span class="cm">header: Connection: keep-alive</span>
+<span class="cm">header: Host: localhost:8080</span>
+<span class="cm">header: Accept-Encoding: identity</span>
+<span class="cm">param: query=SELECT * { ?s ?p ?o } LIMIT 1</span>
+<span class="cm">param: mode=trace</span>
+<span class="cm">[datetime] INFO  webservice.EventManager.log:72 [] - Workflow Context:</span>
+<span class="cm">st:remoteHost : &quot;[0:0:0:0:0:0:0:1]&quot;</span>
+<span class="cm">st:service : &quot;http://ns.inria.fr/sparql-template/default&quot;</span>
+<span class="cm">mode : &quot;(&quot;trace&quot; )&quot;^^dt:list</span>
+<span class="cm">request : &quot;[org.eclipse.jetty.server.Request:Request(GET http://localhost:8080/sparql?query=SELECT%20*%20%7B%20?s%20?p%20?o%20%7D%20LIMIT%201&amp;mode=trace)@11b799cb]&quot;^^dt:pointer</span>
+<span class="cm">trace : true</span>
+<span class="cm">url : &lt;http://localhost:8080/sparql&gt;</span>
+<span class="cm">user query: true</span>
+<span class="cm">level: PRIVATE</span>
+
+<span class="cm">[datetime] INFO  webservice.EventManager.log:73 [] - {st:count=&quot;[Map: size=2]&quot;^^dt:map, st:date=&quot;[Map: size=2]&quot;^^dt:map, st:host=&quot;[Map: size=2]&quot;^^dt:map, st:hostlite=&quot;[Map: size=1]&quot;^^dt:map}</span>
+<span class="cm">[datetime] INFO  webservice.EventManager.log:74 [] - {st:sparql=2, &quot;http://ns.inria.fr/sparql-template/default&quot;=19}</span>
+<span class="cm">[datetime] INFO  webservice.EventManager.log:76 [] - {&quot;127.0.0.1&quot;=11}</span>
+<span class="cm">SPARQL endpoint</span>
+<span class="cm">select * </span>
+<span class="cm">where {</span>
+<span class="cm">  ?s ?p ?o .</span>
+<span class="cm">}</span>
+<span class="cm">limit 1 </span>
+<span class="cm">01 ?s = &lt;http://linkedgeodata.org/ontology/RailwayConstruction&gt;; ?p = rdf:type; ?o = owl:Class; </span>
+
+<span class="cm">service result: </span>
+<span class="cm">&lt;?xml version=&quot;1.0&quot; ?&gt;</span>
+<span class="cm">&lt;sparql xmlns=&#39;http://www.w3.org/2005/sparql-results#&#39;&gt;</span>
+<span class="cm">&lt;head&gt;</span>
+<span class="cm">&lt;variable name=&#39;s&#39;/&gt;</span>
+<span class="cm">&lt;variable name=&#39;p&#39;/&gt;</span>
+<span class="cm">&lt;variable name=&#39;o&#39;/&gt;</span>
+<span class="cm">&lt;/head&gt;</span>
+<span class="cm">&lt;results&gt;</span>
+<span class="cm">&lt;result&gt;</span>
+<span class="cm">&lt;binding name=&#39;s&#39;&gt;&lt;uri&gt;http://linkedgeodata.org/ontology/RailwayConstruction&lt;/uri&gt;&lt;/binding&gt;</span>
+<span class="cm">&lt;binding name=&#39;p&#39;&gt;&lt;uri&gt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&lt;/uri&gt;&lt;/binding&gt;</span>
+<span class="cm">&lt;binding name=&#39;o&#39;&gt;&lt;uri&gt;http://www.w3.org/2002/07/owl#Class&lt;/uri&gt;&lt;/binding&gt;</span>
+<span class="cm">&lt;/result&gt;</span>
+<span class="cm">&lt;/results&gt;</span>
+<span class="cm">&lt;/sparql&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="client-url-parameter">
+<h2>Client URL Parameter<a class="headerlink" href="#client-url-parameter" title="Permalink to this heading">#</a></h2>
+<p>In this section we consider service URL parameters decoded by SPARQL service interpreter when calling a service.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">service</span><span class="w"> </span><span class="o">&lt;</span><span class="n">url</span><span class="o">?</span><span class="n">param</span><span class="o">=</span><span class="n">value</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">BGP</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Such parameters are used to modify the way the Corese server will interact with the remote service. For example, we can specify the format of the query result returned by the service.</p>
+<section id="id1">
+<h3>Standard parameters<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>Standard dataset uri parameters are available. Hence we can specify a dataset for a service.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">default</span><span class="o">-</span><span class="n">graph</span><span class="o">-</span><span class="n">uri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uri</span>
+<span class="n">named</span><span class="o">-</span><span class="n">graph</span><span class="o">-</span><span class="n">uri</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">uri</span>
+</pre></div>
+</div>
+</section>
+<section id="http-method">
+<h3>HTTP method<a class="headerlink" href="#http-method" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">method</span></code> specifies HTTP GET or POST method for calling the service.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">post</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">header</span></code> cna be used to specify any HTTP header parameter.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">header</span><span class="o">=</span><span class="n">name</span><span class="o">:</span><span class="n">value</span>
+</pre></div>
+</div>
+<p>For example, to specify the HTTP Accept header:</p>
+<div class="highlight-sparql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="o">*</span> <span class="p">{</span> 
+    <span class="nv">?s</span> <span class="nv">?p</span> <span class="nv">?o</span> <span class="p">.</span> 
+    <span class="k">SERVICE</span> <span class="nl">&lt;http://examp.le/sparql?header=Accept:application/json&gt;</span> <span class="p">{</span> 
+        <span class="nv">?o</span> <span class="k">a</span> <span class="nv">?c</span> 
+    <span class="p">}</span> 
+<span class="p">}</span> <span class="k">LIMIT</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>This previous query is equivalent to the usage of <code class="docutils literal notranslate"><span class="pre">format=json</span></code>. <code class="docutils literal notranslate"><span class="pre">format</span></code> can be used to specify the HTTP Accept header.
+Specify the format of the service query result returned by the endpoint using content negotiation.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xml</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">json</span>
+</pre></div>
+</div>
+</section>
+<section id="trace-mode">
+<h3>Trace mode<a class="headerlink" href="#trace-mode" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">mode</span></code> in client URL parameter is equivalent to <code class="docutils literal notranslate"><span class="pre">mode</span></code> in server URL parameter. It specifies the trace mode of the service. It add to the trace trace intermediate results of service, and shows the string result returned by service.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">debug</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">trace</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">trap</span></code> mode “traps” syntax error when parsing service query results and in case of an error, return a subset of results if possible.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trap</span>
+</pre></div>
+</div>
+</section>
+<section id="bindings">
+<h3>Bindings<a class="headerlink" href="#bindings" title="Permalink to this heading">#</a></h3>
+<section id="bindings-values-transmission">
+<h4>Bindings values transmission<a class="headerlink" href="#bindings-values-transmission" title="Permalink to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">binding</span></code> specifies the syntax used for variable bindings sent with the service. Variable bindings are the results of intermediate statement evaluation that can be passed as argument of the service.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">binding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">values</span><span class="w"> </span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">binding=filter</span></code> generates bindings with the following syntax:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">filter</span><span class="w"> </span><span class="p">(</span><span class="o">?</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">?</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">y1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">binding=values</span></code> generates bindings with the following syntax:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">values</span><span class="w"> </span><span class="p">(</span><span class="o">?</span><span class="n">x</span><span class="w"> </span><span class="o">?</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="w"> </span><span class="n">y1</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>For example, with the following data in the local endpoint:</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">:</span><span class="w"> </span><span class="nv">&lt;http://example.org/&gt;</span><span class="w"> </span><span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">John</span> <span class="p">:</span><span class="nt">name</span> <span class="s">&quot;John&quot;</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p>if the following query is executed:</p>
+<div class="highlight-sparql notranslate"><div class="highlight"><pre><span></span><span class="k">PREFIX</span> <span class="p">:</span> <span class="nl">&lt;http://example.org/&gt;</span>
+<span class="k">SELECT</span> <span class="nv">?x</span> <span class="nv">?age</span> <span class="p">{</span>
+    <span class="nv">?x</span> <span class="p">:</span><span class="nt">name</span> <span class="nv">?name</span> <span class="p">.</span>
+    <span class="k">SERVICE</span> <span class="nl">&lt;http://example.org/sparql?binding=values&gt;</span> <span class="p">{</span>
+        <span class="nv">?x</span> <span class="p">:</span><span class="nt">name</span> <span class="nv">?name</span> <span class="p">;</span>
+            <span class="p">:</span><span class="nt">age</span> <span class="nv">?age</span> <span class="p">.</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>then the query sent to the remote endpoint will be:</p>
+<div class="highlight-sparql notranslate"><div class="highlight"><pre><span></span><span class="k">PREFIX</span> <span class="p">:</span> <span class="nl">&lt;http://example.org/&gt;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="p">{</span>
+    <span class="k">VALUES</span> <span class="nv">?name</span> <span class="p">{</span> <span class="s">&quot;John&quot;</span> <span class="p">}</span>
+    <span class="nv">?x</span> <span class="p">:</span><span class="nt">name</span> <span class="nv">?name</span> <span class="p">;</span>
+        <span class="p">:</span><span class="nt">age</span> <span class="nv">?age</span> <span class="p">.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="bindings-variable-selection">
+<h4>Bindings variable selection<a class="headerlink" href="#bindings-variable-selection" title="Permalink to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">focus</span></code> and <code class="docutils literal notranslate"><span class="pre">skip</span></code> specify variables that must or must not be passed as variable bindings to the service.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">focus</span><span class="o">=</span><span class="n">x</span>
+<span class="n">skip</span><span class="o">=</span><span class="n">y</span>
+</pre></div>
+</div>
+</section>
+<section id="bindings-in-scope">
+<h4>Bindings in-scope<a class="headerlink" href="#bindings-in-scope" title="Permalink to this heading">#</a></h4>
+<p>In order to have their bindings passed into a service clause, variables must be <a class="reference external" href="https://www.w3.org/TR/sparql11-query/#variableScope">in-scope</a> in the service statement. When a variable is not in-scope, it is possible to make it in-scope with a values expression in the service statement.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">values</span><span class="w"> </span><span class="n">var</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">undef</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="binding-slicing">
+<h4>Binding slicing<a class="headerlink" href="#binding-slicing" title="Permalink to this heading">#</a></h4>
+<p>Specify the size of the slice of intermediate results variable bindings sent with the service. Default is 20 sets of variable bindings (i.e. from 20 intermediate results).</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">slice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">integer</span>
+</pre></div>
+</div>
+<p>Specify a limit for the number of results returned by the service.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">integer</span>
+</pre></div>
+</div>
+<p>Specify a timeout in millisecond for the service.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">123</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="exotic-extension">
+<h3>Exotic Extension<a class="headerlink" href="#exotic-extension" title="Permalink to this heading">#</a></h3>
+<p>Any parameter value can be a LDScript global variable. The SPARQL interpreter evaluates the variable at runtime and replaces it by its value.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">param</span><span class="o">=</span><span class="p">{</span><span class="o">?</span><span class="n">paramValue</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Remote server return an RDF document instead of SPARQL query results. Parse the RDF document, create an RDF graph, evaluate service BGP locally on the RDF graph.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">construct</span>
+</pre></div>
+</div>
+<p>Remote server return a document (e.g. JSON) instead of SPARQL query results. Parse the document using a LDScript function that returns an RDF graph. Evaluate service BGP locally on the graph returned by the function.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">wrapper</span><span class="o">=</span><span class="n">functionNameURI</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="service-log">
+<h2>Service Log<a class="headerlink" href="#service-log" title="Permalink to this heading">#</a></h2>
+<p>Obtain additional information about query execution and query results such as explanation, trace, etc.</p>
+<section id="log">
+<h3>Log<a class="headerlink" href="#log" title="Permalink to this heading">#</a></h3>
+<p>Detailed log of federated query execution returned as Linked Result RDF/Turtle document, with source selection, rewritten query, intermediate query results.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>Query string returned as Linked Result.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">logquery</span>
+</pre></div>
+</div>
+</section>
+<section id="explain">
+<h3>Explain<a class="headerlink" href="#explain" title="Permalink to this heading">#</a></h3>
+<p>Explain why federated query fail. Save intermediate query and results as Linked Result documents. Return one JSON object that contains the list of URLs of these Linked Results. This mode is processed by corese GUI.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">why</span>
+</pre></div>
+</div>
+<p>Show where query fail: display last executed statement.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">explain</span>
+</pre></div>
+</div>
+</section>
+<section id="message">
+<h3>Message<a class="headerlink" href="#message" title="Permalink to this heading">#</a></h3>
+<p>Return a JSON object message as Linked Result. JSON message contain the Context, the date, execution time. It contains also endpoint exceptions and service that fail in case of federated query. Message is displayed by corese GUI. It is possible to obtain a message systematically by specifying the default mode as such (see below).</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">message</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="service-extension">
+<h2>Service Extension<a class="headerlink" href="#service-extension" title="Permalink to this heading">#</a></h2>
+<section id="endpoint-url-default-parameter">
+<h3>Endpoint URL Default Parameter<a class="headerlink" href="#endpoint-url-default-parameter" title="Permalink to this heading">#</a></h3>
+<p>Define default parameter values for SPARQL endpoint URL in urlprofile.ttl. Mode *, if any, is applied to every service. Parameter “document” is an URL that is added in Query Results “link” tag.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[]</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">mode</span><span class="w"> </span><span class="s">&quot;*&quot;</span><span class="w"> </span><span class="p">;</span>
+<span class="nl">st</span><span class="p">:</span><span class="n">param</span><span class="w"> </span><span class="p">(</span>
+<span class="p">(</span><span class="s">&quot;mode&quot;</span><span class="w"> </span><span class="s">&quot;message&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;document&quot;</span><span class="w"> </span><span class="o">&lt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//corese.inria.fr&gt;)</span>
+<span class="p">)</span>
+<span class="p">.</span>
+</pre></div>
+</div>
+<p>Define parameter values associated to specific mode.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="p">[]</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">mode</span><span class="w"> </span><span class="s">&quot;map&quot;</span><span class="w"> </span><span class="p">;</span>
+<span class="nl">st</span><span class="p">:</span><span class="n">param</span><span class="w"> </span><span class="p">((</span><span class="s">&quot;mode&quot;</span><span class="w"> </span><span class="s">&quot;link&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;transform&quot;</span><span class="w"> </span><span class="n">stm</span><span class="o">:</span><span class="n">mapper</span><span class="p">))</span><span class="w"> </span>
+<span class="p">.</span>
+</pre></div>
+</div>
+<p>Define service URL with predefined parameter values.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//localhost:8080/halopendata/psparql&gt;</span>
+<span class="nl">st</span><span class="p">:</span><span class="n">param</span><span class="w"> </span><span class="p">((</span><span class="s">&quot;mode&quot;</span><span class="w"> </span><span class="s">&quot;map&quot;</span><span class="p">))</span>
+<span class="p">.</span>
+</pre></div>
+</div>
+</section>
+<section id="federated-sparql-endpoint">
+<h3>Federated SPARQL endpoint<a class="headerlink" href="#federated-sparql-endpoint" title="Permalink to this heading">#</a></h3>
+<p>A federated SPARQL endpoint is an endpoint who dispatches a SPARQL query to several endpoints member of a federation. It processes and returns the union of the query results, processing aggregates, if any, on the union of the results. It is equivalent to a query with a union of service clauses on every endpoint of the federation.<br />
+A federation is an URL associated to a list of SPARQL endpoints. It is defined using a Turtle format configuration file, as shown below.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//corese.inria.fr/d2kab/sparql&gt; a st:Federation ;</span>
+<span class="nl">st</span><span class="p">:</span><span class="n">definition</span><span class="w"> </span><span class="p">(</span>
+<span class="o">&lt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//147.100.179.235:8082/blazegraph/namespace/AnaEE_sites/sparql&gt;</span>
+<span class="o">&lt;</span><span class="n">https</span><span class="o">:</span><span class="c1">//ico.iate.inra.fr/fuseki/annotation/query&gt; </span>
+<span class="o">&lt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//taxref-graphdb.i3s.unice.fr/repositories/geco&gt;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The idea is that a federation is hidden behind a single SPARQL endpoint URL.<br />
+The provenance parameter returns the URL of the target endpoint for each result.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="nl">http</span><span class="p">:</span><span class="c1">//corese.inria.fr/d2kab/sparql?mode=provenance&amp;</span>
+<span class="n">query</span><span class="o">=</span><span class="n">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">where</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">?</span><span class="n">s</span><span class="w"> </span><span class="n">rdfs</span><span class="o">:</span><span class="n">label</span><span class="w"> </span><span class="o">?</span><span class="n">l</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">regex</span><span class="p">(</span><span class="o">?</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bio&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="n">limit</span><span class="w"> </span><span class="mi">10</span>
+</pre></div>
+</div>
+<p>A variant of federated SPARQL endpoint splits and rewrites the SPARQL query with appropriate service clauses. The endpoint URL is defined with /federate instead of /sparql.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="nl">http</span><span class="p">:</span><span class="c1">//corese.inria.fr/d2kab/federate?query=select where {}</span>
+</pre></div>
+</div>
+</section>
+<section id="federated-endpoint-explain-mode">
+<h3>Federated endpoint explain mode<a class="headerlink" href="#federated-endpoint-explain-mode" title="Permalink to this heading">#</a></h3>
+<p>Federated endpoint with mode explain generate Linked Result for source selection query and results, rewritten federated query. Linked Result also for intermediate service call and service results.<br />
+It works for federated engine but also for sparql engine with a standard query with services, sent to corese server with /sparql?mode=why.<br />
+The interpreter logs intermediate services and results and at the end, in case of mode=why, it generates Linked Results.</p>
+<p>Corese GUI display Linked Results in several query panels with their results.<br />
+Intermediate service call can be executed again in GUI.<br />
+GUI can save and load query results with Linked Result. Hence we can keep track of federated query results during the lifetime of the endpoint because documents are managed on server side in temporary files.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">why</span>
+</pre></div>
+</div>
+</section>
+<section id="compiler-service">
+<h3>Compiler Service<a class="headerlink" href="#compiler-service" title="Permalink to this heading">#</a></h3>
+<p>Compile a federated query as 1) select source query, 2) federated query with service clauses. Return result of select query. Generate two link href documents for select and federated query.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">compile</span>
+
+<span class="o">&lt;</span><span class="n">link</span><span class="w"> </span><span class="n">href</span><span class="o">=</span><span class="s">&quot;http://corese.inria.fr/log/select-f&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">link</span><span class="w"> </span><span class="n">href</span><span class="o">=</span><span class="s">&quot;http://corese.inria.fr/log/rewrite-f&quot;</span><span class="o">/&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="evaluation-report-service">
+<h3>Evaluation Report Service<a class="headerlink" href="#evaluation-report-service" title="Permalink to this heading">#</a></h3>
+<p>A report can be generated for federated query. Report is stored in a document and an URL for this document is stored in the link href tag of the query result.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">log</span>
+
+<span class="o">&lt;</span><span class="n">link</span><span class="w"> </span><span class="n">href</span><span class="o">=</span><span class="s">&quot;http://corese.inria.fr/log/log-f1.ttl&quot;</span><span class="o">/&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="transformation-service">
+<h3>Transformation Service<a class="headerlink" href="#transformation-service" title="Permalink to this heading">#</a></h3>
+<p>SPARQL endpoint where the result of the SPARQL query is transformed using an STTL transformation specified using a transform parameter.<br />
+There may be several transformation parameters.</p>
+<p>Specific transformation URI for sparql query result format.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span><span class="o">=</span><span class="n">st</span><span class="o">:</span><span class="n">xml</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">json</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">rdf</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">st</span><span class="o">:</span><span class="n">all</span>
+</pre></div>
+</div>
+<section id="linked-result">
+<h4>Linked Result<a class="headerlink" href="#linked-result" title="Permalink to this heading">#</a></h4>
+<p>The result of a transformation may be stored in a document and an URL for this document is stored in the link href tag of the query result.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">link</span>
+
+<span class="o">&lt;</span><span class="n">link</span><span class="w"> </span><span class="n">href</span><span class="o">=</span><span class="s">&quot;http://corese.inria.fr/log/xml-f2&quot;</span><span class="o">/&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="transformation">
+<h4>Transformation<a class="headerlink" href="#transformation" title="Permalink to this heading">#</a></h4>
+<p>The stm:mapper transformation generates a map when query solution contains variables “location”, “lat”, and “lon”.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span><span class="o">=</span><span class="n">stm</span><span class="o">:</span><span class="n">mapper</span>
+</pre></div>
+</div>
+<p>Transformation d3:chart for graphic chart</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span><span class="o">=</span><span class="n">d3</span><span class="o">:</span><span class="n">chart</span>
+</pre></div>
+</div>
+<p>Transformation d3:hierarchy for class hierarchy, d3:graphic for graph, d3:all for both.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">transform</span><span class="o">=</span><span class="n">d3</span><span class="o">:</span><span class="n">hierarchy</span>
+<span class="n">transform</span><span class="o">=</span><span class="n">d3</span><span class="o">:</span><span class="n">graphic</span>
+<span class="n">transform</span><span class="o">=</span><span class="n">d3</span><span class="o">:</span><span class="n">all</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="shacl-service">
+<h3>SHACL Service<a class="headerlink" href="#shacl-service" title="Permalink to this heading">#</a></h3>
+<p>Execution of SHACL shapes and execution of a SPARQL query on the SHACL validation report graph. Parameter shacl-shape-url is the URL of a SHACL document that contains the shapes to be evaluated.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">sparql</span><span class="o">?</span>
+<span class="n">mode</span><span class="o">=</span><span class="n">shacl</span><span class="o">&amp;</span>
+<span class="n">uri</span><span class="o">=</span><span class="n">shacl</span><span class="o">-</span><span class="n">shape</span><span class="o">-</span><span class="n">url</span><span class="o">&amp;</span>
+<span class="n">query</span><span class="o">=</span><span class="n">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">where</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">?</span><span class="n">report</span><span class="w"> </span><span class="n">sh</span><span class="o">:</span><span class="n">conforms</span><span class="w"> </span><span class="o">?</span><span class="n">b</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="service-with-before-after">
+<h3>Service with Before &amp; After<a class="headerlink" href="#service-with-before-after" title="Permalink to this heading">#</a></h3>
+<p>Exemple of service where queries are executed before and after the main query. Parameters uri are URL of SPARQL query documents.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">mode</span><span class="o">=</span><span class="n">before</span><span class="o">&amp;</span><span class="n">uri</span><span class="o">=</span><span class="n">url1</span><span class="o">&amp;</span><span class="n">mode</span><span class="o">=</span><span class="n">after</span><span class="o">&amp;</span><span class="n">uri</span><span class="o">=</span><span class="n">url2</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#abstract">Abstract</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prefix-used-in-this-document">Prefix used in this document.</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#server-url-parameter">Server URL Parameter</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#standard-parameters">Standard parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shorthand-format-parameters">Shorthand format parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trace-parameter">Trace parameter</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#client-url-parameter">Client URL Parameter</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Standard parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#http-method">HTTP method</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trace-mode">Trace mode</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bindings">Bindings</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bindings-values-transmission">Bindings values transmission</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bindings-variable-selection">Bindings variable selection</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bindings-in-scope">Bindings in-scope</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#binding-slicing">Binding slicing</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exotic-extension">Exotic Extension</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#service-log">Service Log</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#log">Log</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explain">Explain</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#message">Message</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#service-extension">Service Extension</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#endpoint-url-default-parameter">Endpoint URL Default Parameter</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#federated-sparql-endpoint">Federated SPARQL endpoint</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#federated-endpoint-explain-mode">Federated endpoint explain mode</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compiler-service">Compiler Service</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-report-service">Evaluation Report Service</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transformation-service">Transformation Service</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#linked-result">Linked Result</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#transformation">Transformation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shacl-service">SHACL Service</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#service-with-before-after">Service with Before &amp; After</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/advanced/SPARQL Service Extension.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

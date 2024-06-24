@@ -1,0 +1,849 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Getting Started With Corese-server &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting started/Getting Started With Corese-server';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Getting...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="getting-started-with-corese-server">
+<h1>Getting Started With Corese-server<a class="headerlink" href="#getting-started-with-corese-server" title="Permalink to this heading">#</a></h1>
+<p>This tutorial shows how to use the basic features of the Corese-server framework.</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#getting-started-with-corese-server">Getting Started With Corese-server</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#installation">1. Installation</a></p></li>
+<li><p><a class="reference internal" href="#load-data">2. Load data</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#command-line">2.1. Command line</a></p></li>
+</ol>
+</li>
+<li><p><a class="reference internal" href="#profile-file">3. Profile file</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#create-multiple-endpoints">3.1 Create multiple endpoints</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#multiple-endpoints-with-different-data">3.1.1 Multiple endpoints with different data</a></p></li>
+</ol>
+</li>
+<li><p><a class="reference internal" href="#restrict-access-to-external-endpoints">3.2 Restrict access to external endpoints</a></p></li>
+</ol>
+</li>
+<li><p><a class="reference internal" href="#property-configuration-file">4. Property configuration file</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#blank-node-format">4.1. Blank node format</a></p></li>
+<li><p><a class="reference internal" href="#loading-in-the-default-graph">4.2. Loading in the default graph</a></p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#rdf-rdf-star">4.3. RDF* (RDF Star)</a></p></li>
+</ol>
+</li>
+<li><p><a class="reference internal" href="#owl-utilities">4.4. OWL utilities</a></p></li>
+<li><p><a class="reference internal" href="#sparql-engine-behavior">4.5. SPARQL engine behavior</a></p></li>
+<li><p><a class="reference internal" href="#sparql-federation-behavior">4.6. SPARQL federation behavior</a></p></li>
+<li><p><a class="reference internal" href="#sparql-load-parameters">4.7. SPARQL LOAD parameters</a></p></li>
+</ol>
+</li>
+<li><p><a class="reference internal" href="#to-go-deeper">5. To go deeper</a></p></li>
+</ol>
+</li>
+</ol>
+<section id="installation">
+<h2>1. Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<p>Installation instructions are available on the <a class="reference external" href="https://github.com/Wimmics/corese">Corese-Command GitHub repository</a>.</p>
+</section>
+<section id="load-data">
+<h2>2. Load data<a class="headerlink" href="#load-data" title="Permalink to this heading">#</a></h2>
+<p>There are two methods to load data into the Corese-server: command line and profile file.
+The two examples below show how to load data from a file named “beatles.ttl”.</p>
+<section id="command-line">
+<h3>2.1. Command line<a class="headerlink" href="#command-line" title="Permalink to this heading">#</a></h3>
+<p>To load data with command line use the <code class="docutils literal notranslate"><span class="pre">-l</span></code> option.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>java<span class="w"> </span>-jar<span class="w"> </span>corese-server.jar<span class="w"> </span>-l<span class="w"> </span><span class="s2">&quot;[…]/beatles.ttl&quot;</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>It’s also possible to load data from several files or URL.</p>
+<p>E.g: <code class="docutils literal notranslate"><span class="pre">java</span> <span class="pre">-jar</span> <span class="pre">corese-server.jar</span> <span class="pre">-l</span> <span class="pre">&quot;./file_1.ttl&quot;</span> <span class="pre">-l</span> <span class="pre">&quot;file_2.ttl&quot;</span> <span class="pre">-l</span> <span class="pre">&quot;http://file_3.ttl&quot;</span></code>.</p>
+</div></blockquote>
+</section>
+</section>
+<section id="profile-file">
+<h2>3. Profile file<a class="headerlink" href="#profile-file" title="Permalink to this heading">#</a></h2>
+<p>A profile is a Turtle file that allows users to configure the Corese-server.</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span>prefix st: &lt;http://ns.inria.fr/sparql-template/&gt;
+prefix sw: &lt;http://ns.inria.fr/sparql-workflow/&gt;
+
+#############
+# EndPoints #
+#############
+
+# Default EndPoints, available at http://localhost:8080/sparql
+st:user a st:Server;
+    st:content &lt;#loadBeatles&gt;.
+
+############
+# Workflow #
+############
+
+&lt;#loadBeatles&gt; a st:Workflow;
+    sw:body (
+        [
+            a sw:Load;
+            sw:path &lt;[…]/beatles.ttl&gt;;
+        ]
+    ).
+</pre></div>
+</div>
+<p>The keyword <code class="docutils literal notranslate"><span class="pre">st:user</span></code> designates the default endpoint available in <a class="reference external" href="http://localhost:8080/sparql">http://localhost:8080/sparql</a>.
+In this example, we add on the default endpoint the workflow named <code class="docutils literal notranslate"><span class="pre">&lt;#loadBeatles&gt;</span></code> which loads the file “beatles.ttl”.
+There can be several load in a workflow body.</p>
+<p>To load Corese-server with a profile, use the options <code class="docutils literal notranslate"><span class="pre">-lp</span> <span class="pre">-pp</span> <span class="pre">&quot;profileFile&quot;</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>java<span class="w"> </span>-jar<span class="w"> </span>corese-server.jar<span class="w"> </span>-lp<span class="w"> </span>-pp<span class="w"> </span><span class="s2">&quot;myprofile.ttl&quot;</span>
+</pre></div>
+</div>
+<section id="create-multiple-endpoints">
+<h3>3.1 Create multiple endpoints<a class="headerlink" href="#create-multiple-endpoints" title="Permalink to this heading">#</a></h3>
+<section id="multiple-endpoints-with-different-data">
+<h4>3.1.1 Multiple endpoints with different data<a class="headerlink" href="#multiple-endpoints-with-different-data" title="Permalink to this heading">#</a></h4>
+<p>It is possible to create multiple endpoints with a single Corese-server instance.
+The profile file below shows how to create three endpoints and load data into each.</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span>prefix st: &lt;http://ns.inria.fr/sparql-template/&gt; 
+prefix sw: &lt;http://ns.inria.fr/sparql-workflow/&gt; 
+
+#############
+# EndPoints #
+#############
+
+# Default endpoint, available in http://localhost:8080/sparql
+st:user a st:Server;
+    st:content &lt;#loadBeatles&gt;.
+
+# Beatles endpoint, available in http://localhost:8080/person/sparql
+&lt;#person&gt; a st:Server;
+    st:service &quot;person&quot;;
+    st:content &lt;#loadPerson&gt;.
+
+# Music endpoint, available in http://localhost:8080/music/sparql
+&lt;#music&gt; a st:Server;
+    st:service &quot;music&quot;;
+    st:content &lt;#loadMusic&gt;.
+
+############
+# Workflow #
+############
+
+&lt;#loadBeatles&gt; a sw:Workflow;
+    sw:body (
+        [
+            a sw:Load;
+            sw:path &lt;[…]/beatles.ttl&gt;
+        ]
+    ).
+
+&lt;#loadPerson&gt; a st:Workflow;
+    sw:body (
+        [
+            a sw:Load;
+            sw:path &lt;[…]/person.ttl&gt;
+        ]
+    ).
+
+&lt;#loadMusic&gt; a sw:Workflow;
+    sw:body (
+        [
+            a sw:Load;
+            sw:path &lt;[…]/music.ttl&gt;
+        ]
+    ).
+</pre></div>
+</div>
+<p>This profile defines three endpoints: the default endpoint (<code class="docutils literal notranslate"><span class="pre">st:user</span></code>), the person (<code class="docutils literal notranslate"><span class="pre">&lt;#person&gt;</span></code>) endpoint and the music endpoint (<code class="docutils literal notranslate"><span class="pre">&lt;#music&gt;</span></code>). Each endpoint is associated with a workflow to load data via the <code class="docutils literal notranslate"><span class="pre">st:content</span></code> property.</p>
+<p>The default endpoint (<code class="docutils literal notranslate"><span class="pre">st:user</span></code>) is accessible with the url <a class="reference external" href="http://localhost:8080/sparql">http://localhost:8080/sparql</a>.
+The other endpoints (<code class="docutils literal notranslate"><span class="pre">&lt;#person&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;#music&gt;</span></code>) are accessible through the URL <a class="reference external" href="http://localhost:8080/$%7BSERVER_NAME%7D/sparql">http://localhost:8080/${SERVER_NAME}/sparql</a> where <code class="docutils literal notranslate"><span class="pre">${SERVER_NAME}</span></code> is the value of the <code class="docutils literal notranslate"><span class="pre">st:service</span></code> property (E.g: <a class="reference external" href="http://localhost:8080/music/sparql">http://localhost:8080/music/sparql</a>).</p>
+</section>
+</section>
+<section id="restrict-access-to-external-endpoints">
+<h3>3.2 Restrict access to external endpoints<a class="headerlink" href="#restrict-access-to-external-endpoints" title="Permalink to this heading">#</a></h3>
+<p>It is possible to allow access to external endpoints by defining a list of authorized terminals in the profile.</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span>prefix st: &lt;http://ns.inria.fr/sparql-template/&gt; 
+
+# List external endpoints allowed
+st:access st:namespace
+    &lt;http://fr.dbpedia.org/sparql&gt;,
+    &lt;http://dbpedia.org/sparql&gt;,
+    &lt;https://query.wikidata.org/sparql&gt;.
+</pre></div>
+</div>
+</section>
+</section>
+<section id="property-configuration-file">
+<h2>4. Property configuration file<a class="headerlink" href="#property-configuration-file" title="Permalink to this heading">#</a></h2>
+<p>The behavior of the Corese-server can be modified by adding options in a properties file. The default properties file is named <code class="docutils literal notranslate"><span class="pre">corese.properties</span></code> and is located in the same directory as the Corese-server jar file. It is possible to specify another properties file with the <code class="docutils literal notranslate"><span class="pre">-init</span></code> option.
+An example of properties file is available on the <a class="reference external" href="https://raw.githubusercontent.com/Wimmics/corese/master/corese-server/build-docker/corese/corese-default-properties.properties">Corese-Command GitHub repository</a>.</p>
+<p>Here we list only some of the most commonly used properties.</p>
+<section id="blank-node-format">
+<h3>4.1. Blank node format<a class="headerlink" href="#blank-node-format" title="Permalink to this heading">#</a></h3>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">BLANK_NODE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">_:b</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">BLANK_NODE</span></code> specifies the format of blank nodes. The default value is <code class="docutils literal notranslate"><span class="pre">_:b</span></code>.</p>
+</section>
+<section id="loading-in-the-default-graph">
+<h3>4.2. Loading in the default graph<a class="headerlink" href="#loading-in-the-default-graph" title="Permalink to this heading">#</a></h3>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">LOAD_IN_DEFAULT_GRAPH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</pre></div>
+</div>
+<p>By default, the data is loaded into the default graph. If <code class="docutils literal notranslate"><span class="pre">LOAD_IN_DEFAULT_GRAPH</span></code> is set to <code class="docutils literal notranslate"><span class="pre">false</span></code>, the data is loaded into a named graph whose name is the path of the file.
+Note that internally, the default graph of the Corese server is named <code class="docutils literal notranslate"><span class="pre">http://ns.inria.fr/corese/kgram/default</span></code>, or <code class="docutils literal notranslate"><span class="pre">kg:default</span></code>.</p>
+<section id="rdf-rdf-star">
+<h4>4.3. RDF* (RDF Star)<a class="headerlink" href="#rdf-rdf-star" title="Permalink to this heading">#</a></h4>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">RDF_STAR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+</pre></div>
+</div>
+<p>Corese implements a prototype extension for the RDF* specification. RDF_STAR enables this extension.</p>
+</section>
+</section>
+<section id="owl-utilities">
+<h3>4.4. OWL utilities<a class="headerlink" href="#owl-utilities" title="Permalink to this heading">#</a></h3>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">DISABLE_OWL_AUTO_IMPORT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</pre></div>
+</div>
+<p>By default, when a triple with the predicate <code class="docutils literal notranslate"><span class="pre">owl:imports</span></code> is loaded, the Corese-server automatically loads the ontology specified in the object of the triple. If <code class="docutils literal notranslate"><span class="pre">DISABLE_OWL_AUTO_IMPORT</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the Corese-server does not load the ontology specified in the object of the triple.</p>
+</section>
+<section id="sparql-engine-behavior">
+<h3>4.5. SPARQL engine behavior<a class="headerlink" href="#sparql-engine-behavior" title="Permalink to this heading">#</a></h3>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">SPARQL_COMPLIANT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SPARQL_COMPLIANT</span></code> specifies the behavior of the SPARQL engine. If <code class="docutils literal notranslate"><span class="pre">SPARQL_COMPLIANT</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the SPARQL engine is compliant with the W3C test cases. In practice, this means that the SPARQL engine will consider that two literals are different if they have the same value but different types (E.g: <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;1&quot;^^xsd:integer</span></code>).</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">REENTRANT_QUERY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">REENRANT_QUERY</span></code> enables the update during a query. This option was implemented in cooperation with the <a class="reference external" href="https://github.com/frmichel/sparql-micro-service">SPARQL micro-service project</a>. It is equivalent to using <code class="docutils literal notranslate"><span class="pre">-re</span></code> argument.</p>
+</section>
+<section id="sparql-federation-behavior">
+<h3>4.6. SPARQL federation behavior<a class="headerlink" href="#sparql-federation-behavior" title="Permalink to this heading">#</a></h3>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">SERVICE_BINDING</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">values </span>
+</pre></div>
+</div>
+<p>When binding values between clauses from different endpoints, the Corese-server uses the <code class="docutils literal notranslate"><span class="pre">SERVICE_BINDING</span></code> property to specify the method to use. The default value is <code class="docutils literal notranslate"><span class="pre">values</span></code>. The other possible value is <code class="docutils literal notranslate"><span class="pre">filter</span></code>.</p>
+<p>For example, with the following data in the local endpoint:</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">:</span><span class="w"> </span><span class="nv">&lt;http://example.org/&gt;</span><span class="w"> </span><span class="p">.</span>
+
+<span class="nn">ex</span><span class="p">:</span><span class="nt">John</span> <span class="p">:</span><span class="nt">name</span> <span class="s">&quot;John&quot;</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p>if the following query is executed:</p>
+<div class="highlight-sparql notranslate"><div class="highlight"><pre><span></span><span class="k">PREFIX</span> <span class="p">:</span> <span class="nl">&lt;http://example.org/&gt;</span>
+<span class="k">SELECT</span> <span class="nv">?x</span> <span class="nv">?age</span> <span class="p">{</span>
+    <span class="nv">?x</span> <span class="p">:</span><span class="nt">name</span> <span class="nv">?name</span> <span class="p">.</span>
+    <span class="k">SERVICE</span> <span class="nl">&lt;http://example.org/sparql&gt;</span> <span class="p">{</span>
+        <span class="nv">?x</span> <span class="p">:</span><span class="nt">name</span> <span class="nv">?name</span> <span class="p">;</span>
+            <span class="p">:</span><span class="nt">age</span> <span class="nv">?age</span> <span class="p">.</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>then the query sent to the remote endpoint will be:</p>
+<div class="highlight-sparql notranslate"><div class="highlight"><pre><span></span><span class="k">PREFIX</span> <span class="p">:</span> <span class="nl">&lt;http://example.org/&gt;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="p">{</span>
+    <span class="k">VALUES</span> <span class="nv">?name</span> <span class="p">{</span> <span class="s">&quot;John&quot;</span> <span class="p">}</span>
+    <span class="nv">?x</span> <span class="p">:</span><span class="nt">name</span> <span class="nv">?name</span> <span class="p">;</span>
+        <span class="p">:</span><span class="nt">age</span> <span class="nv">?age</span> <span class="p">.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is equivalent to add <code class="docutils literal notranslate"><span class="pre">&#64;binding</span> <span class="pre">values</span></code> in the query. If <code class="docutils literal notranslate"><span class="pre">SERVICE_BINDING</span></code> is defined in the properties file and <code class="docutils literal notranslate"><span class="pre">&#64;binding</span></code> is also defined in the query, then the value of <code class="docutils literal notranslate"><span class="pre">&#64;binding</span></code> in the query is used.</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">SERVICE_SLICE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">20</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SERVICE_SLICE</span></code> specifies the number of bindings to send to a remote endpoint. The default value is <code class="docutils literal notranslate"><span class="pre">20</span></code>.</p>
+<p>This is equivalent to add <code class="docutils literal notranslate"><span class="pre">&#64;slice</span> <span class="pre">20</span></code> in the query. If <code class="docutils literal notranslate"><span class="pre">SERVICE_SLICE</span></code> is defined in the properties file and <code class="docutils literal notranslate"><span class="pre">&#64;slice</span></code> is also defined in the query, then the value of <code class="docutils literal notranslate"><span class="pre">&#64;slice</span></code> in the query is used.</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">SERVICE_LIMIT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1000</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SERVICE_LIMIT</span></code> specifies the maximum number of results to return from a remote endpoint. The default value is <code class="docutils literal notranslate"><span class="pre">1000</span></code>. In the previous example, the query sent to the remote endpoint should actually be:</p>
+<div class="highlight-sparql notranslate"><div class="highlight"><pre><span></span><span class="k">PREFIX</span> <span class="p">:</span> <span class="nl">&lt;http://example.org/&gt;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="p">{</span>
+    <span class="k">VALUES</span> <span class="nv">?name</span> <span class="p">{</span> <span class="s">&quot;John&quot;</span> <span class="p">}</span>
+    <span class="nv">?x</span> <span class="p">:</span><span class="nt">name</span> <span class="nv">?name</span> <span class="p">;</span>
+        <span class="p">:</span><span class="nt">age</span> <span class="nv">?age</span> <span class="p">.</span>
+    <span class="k">LIMIT</span> <span class="mi">1000</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This is equivalent to add <code class="docutils literal notranslate"><span class="pre">&#64;limit</span> <span class="pre">1000</span></code> in the query. If <code class="docutils literal notranslate"><span class="pre">SERVICE_LIMIT</span></code> is defined in the properties file and <code class="docutils literal notranslate"><span class="pre">&#64;limit</span></code> is also defined in the query, then the value of <code class="docutils literal notranslate"><span class="pre">&#64;limit</span></code> in the query is used.</p>
+<p>Corese will try to obtain the next 1000 results by sending the same query with the <code class="docutils literal notranslate"><span class="pre">OFFSET</span></code> clause.</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">SERVICE_TIMEOUT</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">2000</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">SERVICE_TIMEOUT</span></code> specifies the timeout in milliseconds for a remote endpoint. The default value is <code class="docutils literal notranslate"><span class="pre">10000</span></code>.</p>
+<p>This is equivalent to add <code class="docutils literal notranslate"><span class="pre">&#64;timeout</span> <span class="pre">2000</span></code> in the query. If <code class="docutils literal notranslate"><span class="pre">SERVICE_TIMEOUT</span></code> is defined in the properties file and <code class="docutils literal notranslate"><span class="pre">&#64;timeout</span></code> is also defined in the query, then the value of <code class="docutils literal notranslate"><span class="pre">&#64;timeout</span></code> in the query is used.</p>
+</section>
+<section id="sparql-load-parameters">
+<h3>4.7. SPARQL LOAD parameters<a class="headerlink" href="#sparql-load-parameters" title="Permalink to this heading">#</a></h3>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">LOAD_LIMIT</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">10</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">LOAD_LIMIT</span></code> specifies the maximum number of triples to load from a file. This feature is not enabled by default.</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">LOAD_WITH_PARAMETER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">LOAD_WITH_PARAMETER</span></code> enables the use of the <code class="docutils literal notranslate"><span class="pre">LOAD</span></code> clause with a parameter. This feature is not enabled by default.</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">LOAD_FORMAT</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">text/turtle;q=1.0, application/rdf+xml;q=0.9, application/ld+json;q=0.7; application/json;q=0.6</span>
+</pre></div>
+</div>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">LOAD_FORMAT</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">application/rdf+xml</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">LOAD_WITH_PARAMETER</span></code> is enabled, <code class="docutils literal notranslate"><span class="pre">LOAD_FORMAT</span></code> can be used to specify which mime type should be resquest as format for the loaded data.</p>
+</section>
+</section>
+<section id="to-go-deeper">
+<h2>5. To go deeper<a class="headerlink" href="#to-go-deeper" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://files.inria.fr/corese/doc/server.html">Technical documentation</a></p></li>
+<li><p><a class="reference external" href="https://github.com/Wimmics/corese/blob/master/docs/storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md#configuring-and-connecting-to-different-storage-systems-in-corese">Storage</a></p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">1. Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data">2. Load data</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#command-line">2.1. Command line</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#profile-file">3. Profile file</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-multiple-endpoints">3.1 Create multiple endpoints</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-endpoints-with-different-data">3.1.1 Multiple endpoints with different data</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#restrict-access-to-external-endpoints">3.2 Restrict access to external endpoints</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-configuration-file">4. Property configuration file</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#blank-node-format">4.1. Blank node format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-in-the-default-graph">4.2. Loading in the default graph</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#rdf-rdf-star">4.3. RDF* (RDF Star)</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#owl-utilities">4.4. OWL utilities</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-engine-behavior">4.5. SPARQL engine behavior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-federation-behavior">4.6. SPARQL federation behavior</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sparql-load-parameters">4.7. SPARQL LOAD parameters</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#to-go-deeper">5. To go deeper</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/getting started/Getting Started With Corese-server.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

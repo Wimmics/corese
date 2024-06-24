@@ -1,0 +1,1025 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>/sparql &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'rest_api/sparql';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="/sparql/load" href="sparql_load.html" />
+    <link rel="prev" title="REST API Reference" href="api_root.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli_ref/cli_root.html">CLI</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_sparql.html">sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_convert.html">convert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_shacl.html">shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_remote_sparql.html">remote-sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_canonicalize.html">canonicalize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="api_root.html">REST API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">/sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sparql_load.html">/sparql/load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sparql_reset.html">/sparql/reset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sparql_d3.html">/sparql/d3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spin_tospin.html">/spin/tospin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rdf_graph_store.html">/rdf-graph-store</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../java_api/library_root.html">Java API</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../java_api/classfr_1_1inria_1_1corese_1_1core_1_1Graph.html">Class Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../java_api/classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1CompareNode.html">Class Graph::CompareNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../java_api/classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1GTable.html">Class Graph::GTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../java_api/classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1TreeNode.html">Class Graph::TreeNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../java_api/classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load.html">Class Load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../java_api/classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat.html">Class ResultFormat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../java_api/classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess.html">Class QueryProcess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../java_api/classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl.html">Class Shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../java_api/classfr_1_1inria_1_1corese_1_1core_1_1transform_1_1Transformer.html">Class Transformer</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../apis.html" class="nav-link">CORESE APIs</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="api_root.html" class="nav-link">REST API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">/sparql</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="sparql">
+<span id="endpoint-sparql"></span><h1>/sparql<a class="headerlink" href="#sparql" title="Permalink to this heading">#</a></h1>
+<p>Corese implements <a class="reference external" href="https://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/#protocol">SPARQL 1.1 Protocol</a>. This endpoint allows you to query and update an RDF Dataset using SPARQL.
+The supported query forms are SELECT, ASK, CONSTRUCT, DESCRIBE or update (DELETE/INSERT).</p>
+<p>The return data format can be specified in the <cite>Accept</cite> HTTP header and depends on the query form. The default return format is XML.</p>
+<p><strong>URL:</strong> <cite>{base URL}/sparql</cite></p>
+<section id="select-or-ask">
+<h2>SELECT or ASK<a class="headerlink" href="#select-or-ask" title="Permalink to this heading">#</a></h2>
+<p>The most often used SPARQL query form is SELECT for selecting or finding data. It returns the results in a tabular form that can be represented in many different formats.</p>
+<p>ASK query form is used to determine whether a particular triple pattern exists in the specified data set. ASK returns true or false, depending on whether the solution or match exists. The result format can be modified depending on the client application.</p>
+<p><strong>Method:</strong> GET or POST</p>
+<p><strong>Headers:</strong></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><cite>Content-Type:</cite></dt><dd><ul>
+<li><p><cite>application/x-www-form-urlencoded</cite></p></li>
+<li><p><cite>application/sparql-query</cite></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>Accept:</cite></dt><dd><ul>
+<li><p><cite>application/sparql-results+json</cite></p></li>
+<li><p><cite>application/sparql-results+xml</cite></p></li>
+<li><p><cite>text/csv</cite></p></li>
+<li><p><cite>text/tab-separated-values</cite></p></li>
+<li><p><cite>text/plain</cite></p></li>
+<li><p><cite>text/html</cite></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>query</cite>: Required query string.</p></li>
+<li><p><cite>default-graph-uri</cite>: Optional list of default graph URIs. Default: none.</p></li>
+<li><p><cite>named-graph-uri</cite>: Optional list of named graph URIs. Default: none.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The RDF Dataset for a query can be passed in the HTTP request as <cite>default-graph-uri</cite> and <cite>named-graph-uri</cite> parameters or in the SPARQL query string using the FROM and FROM NAMED keywords. If they differ the request parameters take precedence.</p>
+<p>The <cite>default-graph-uri</cite> and <cite>named-graph-uri</cite> Have to be passed as query string parameters if using <cite>Content-Type: application/sparql-query</cite> header.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The parameters below are optional and non-standard. They are not part of the SPARQL 1.1 Protocol specification.</p>
+<ul class="simple">
+<li><p><cite>format</cite>: Optional output format json|xml|text|csv|tsv|html|turtle|nt (case sensitive) to specify return format. Default: xml. Alternatively, the output format can  be specified in the  <cite>Accept</cite> HTTP header.</p></li>
+<li><p><cite>transform</cite>: Optional list of result transformations such as <em>st:map</em>. Default: none.</p></li>
+<li><p><cite>mode</cite>: Optional list like mode=debug;link;log. Default: none. (Perhaps only used in development. Does not seem like working)</p></li>
+<li><p><cite>uri</cite>: Optional list of URIs. Default: none. Use case: URL of federated query.</p></li>
+<li><p><cite>access</cite>: Optional access key that may give access to the protected features on the remote servers. Default: none.</p></li>
+<li><p><cite>param</cite>: Optional parameter in format: param=key~val.</p></li>
+</ul>
+</div>
+<p id="endpoint-sparql-select">There are three ways to send a SPARQL query to a Corese endpoint:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Send a query as a URL-encoded query string in the <cite>query</cite> parameter</dt><dd><p>The query string must be passed in the URL as <cite>query=…</cite>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Send a query as a URL-encoded POST request.</dt><dd><p>The <cite>Content-Type</cite> header must be set to <cite>application/x-www-form-urlencoded</cite>.
+The query string must be passed in the POST request body as <cite>query=…</cite></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Send a query directly in the POST request body.</dt><dd><p>The <cite>Content-Type</cite> header must be set to <cite>application/sparql-query</cite>.
+The query string must be passed in the POST request body.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>All other parameters can be passed in the URL as query string parameters.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The direct POST query only works with <cite>Accept:application/sparql-results+xml</cite> and  <cite>Accept:application/sparql-results+json</cite> headers .</p>
+</div>
+<p><strong>SELECT Request Example:</strong></p>
+<p>This example demonstrates three way to run the same query on the remote SPARQL endpoint  <a class="reference external" href="https://corese.inria.fr/sparql">https://corese.inria.fr/sparql</a>.</p>
+<p>The query is to find all the children who have a mother in the <cite>Humans</cite> dataset .</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+HTTP</label><div class="sd-tab-content docutils">
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>GET /sparql?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20SELECT%20%2A%20WHERE%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D HTTP/1.1
+Host: https://corese.inria.fr
+Accept: application/sparql-results+json
+
+&lt;!--URL-encoded POST--&gt;
+POST /sparql HTTP/1.1
+Host: https://corese.inria.fr
+Content-Type: application/x-www-form-urlencoded
+Accept: application/sparql-results+json
+query= &quot;PREFIX  humans: &lt;http://www.inria.fr/2015/humans#&gt;  SELECT * WHERE { ?child humans:hasMother ?mother. }&quot;
+
+&lt;!--POST directly--&gt;
+POST /sparql HTTP/1.1
+Host: https://corese.inria.fr
+Content-Type: application/sparql-query
+Accept: application/sparql-results+json
+
+PREFIX  humans: &lt;http://www.inria.fr/2015/humans#&gt;
+SELECT * WHERE { ?child humans:hasMother ?mother. }
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+curl</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">QUERY</span><span class="o">=</span><span class="s1">&#39;PREFIX  humans: &lt;http://www.inria.fr/2015/humans#&gt;</span>
+<span class="s1">       SELECT * WHERE { ?child humans:hasMother ?mother. }&#39;</span>
+
+curl<span class="w"> </span>-G<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--url<span class="w"> </span>https://corese.inria.fr/sparql<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--header<span class="w"> </span><span class="s2">&quot;Accept: application/sparql-results+json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--data-urlencode<span class="w"> </span><span class="s2">&quot;query=</span><span class="nv">$QUERY</span><span class="s2">&quot;</span>
+
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--url<span class="w"> </span>https://corese.inria.fr/sparql<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/x-www-form-urlencoded&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--header<span class="w"> </span><span class="s2">&quot;Accept: application/sparql-results+json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--data<span class="w"> </span><span class="s2">&quot;query=</span><span class="nv">$QUERY</span><span class="s2">&quot;</span>
+
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--url<span class="w"> </span>https://corese.inria.fr/sparql<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/sparql-query&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--header<span class="w"> </span><span class="s2">&quot;Accept: application/sparql-results+json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--data<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$QUERY</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;head&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;vars&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&quot;child&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mother&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;bindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;child&quot;</span><span class="p">:</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uri&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.inria.fr/2015/humans-instances#Lucas&quot;</span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;mother&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uri&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.inria.fr/2015/humans-instances#Catherine&quot;</span><span class="p">}</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;child&quot;</span><span class="p">:</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uri&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.inria.fr/2015/humans-instances#Catherine&quot;</span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;mother&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uri&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.inria.fr/2015/humans-instances#Laura&quot;</span><span class="p">}</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">]</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>ASK Request Example:</strong></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-2">
+HTTP GET</label><div class="sd-tab-content docutils">
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>GET /sparql?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20ASK%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D&#39; HTTP/1.1
+Host: https://corese.inria.fr
+Accept: application/sparql-results+json
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+curl</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">ASK</span><span class="o">=</span><span class="s1">&#39;PREFIX  humans: &lt;http://www.inria.fr/2015/humans#&gt;</span>
+<span class="s1">     ASK { ?child humans:hasMother ?mother. }&#39;</span>
+
+curl<span class="w"> </span>-G<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--url<span class="w"> </span>https://corese.inria.fr/sparql<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--header<span class="w"> </span><span class="s2">&quot;Accept: application/sparql-results+json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>--data-urlencode<span class="w"> </span><span class="s2">&quot;query=</span><span class="nv">$ASK</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="nt">&quot;head&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">,</span>
+
+<span class="nt">&quot;boolean&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="construct-or-describe">
+<h2>CONSTRUCT or DESCRIBE<a class="headerlink" href="#construct-or-describe" title="Permalink to this heading">#</a></h2>
+<p>CONSTRUCT query form is used to create new data from your existing data. DESCRIBE query form is used to retrieve all the triples associated with a resource. Both return results in RDF format.</p>
+<p><strong>Method:</strong> GET or POST</p>
+<p><strong>Headers:</strong></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><cite>Content-Type:</cite></dt><dd><ul>
+<li><p><cite>application/x-www-form-urlencoded</cite></p></li>
+<li><p><cite>application/sparql-query</cite></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>Accept:</cite></dt><dd><ul>
+<li><p><cite>application/ld+json</cite></p></li>
+<li><p><cite>application/rdf+xml</cite></p></li>
+<li><p><cite>application/turtle</cite></p></li>
+<li><p><cite>application/trig</cite></p></li>
+<li><p><cite>application/n-triples</cite></p></li>
+<li><p><cite>application/n-quads</cite></p></li>
+<li><p><cite>text/nt</cite></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>There are also three ways to send these types of queries as described in the <a class="reference internal" href="#endpoint-sparql-select"><span class="std std-ref">SELECT or ASK</span></a> section.</p>
+<p><strong>CONSTRUCT Request Example:</strong></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-4">
+HTTP POST</label><div class="sd-tab-content docutils">
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>&lt;!--URL-encoded POST--&gt;
+POST /sparql HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Accept: application/turtle
+Host: https://corese.inria.fr
+
+query=&quot;PREFIX  humans: &lt;http://www.inria.fr/2015/humans#&gt;  CONSTRUCT { ?mother humans:hasChild ?child. } WHERE { ?child humans:hasMother ?mother. }&quot;
+
+&lt;!--direct POST--&gt;
+POST /sparql HTTP/1.1
+Content-Type: application/sparql-query
+Accept: application/turtle
+Host: https://corese.inria.fr
+
+PREFIX  humans: &lt;http://www.inria.fr/2015/humans#&gt;
+CONSTRUCT { ?mother humans:hasChild ?child. }
+WHERE { ?child humans:hasMother ?mother. }
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-5">
+curl</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">QUERY</span><span class="o">=</span><span class="s1">&#39;PREFIX  humans: &lt;http://www.inria.fr/2015/humans#&gt;</span>
+<span class="s1">       CONSTRUCT { ?mother humans:hasChild ?child. }</span>
+<span class="s1">       WHERE { ?child humans:hasMother ?mother. }&#39;</span>
+
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+--url<span class="w"> </span>https://corese.inria.fr/sparql<span class="w"> </span><span class="se">\</span>
+--header<span class="w"> </span><span class="s2">&quot;Accept: application/turtle&quot;</span><span class="w"> </span><span class="se">\</span>
+--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/x-www-form-urlencoded&quot;</span><span class="w"> </span><span class="se">\</span>
+--data<span class="w"> </span><span class="s2">&quot;query=</span><span class="nv">$QUERY</span><span class="s2">&quot;</span>
+
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+--url<span class="w"> </span>https://corese.inria.fr/sparql<span class="w"> </span><span class="se">\</span>
+--header<span class="w"> </span><span class="s2">&quot;Accept: application/turtle&quot;</span><span class="w"> </span><span class="se">\</span>
+--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/sparql-query&quot;</span><span class="w"> </span><span class="se">\</span>
+--data<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$QUERY</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">ns1:</span><span class="w"> </span><span class="nv">&lt;http://www.inria.fr/2015/humans-instances#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">humans:</span><span class="w"> </span><span class="nv">&lt;http://www.inria.fr/2015/humans#&gt;</span><span class="w"> </span><span class="p">.</span>
+
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">Catherine</span> <span class="nn">humans</span><span class="p">:</span><span class="nt">hasChild</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Lucas</span> <span class="p">.</span>
+
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">Laura</span> <span class="nn">humans</span><span class="p">:</span><span class="nt">hasChild</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Catherine</span> <span class="p">.</span>
+</pre></div>
+</div>
+<p><strong>DESCRIBE Request Example:</strong></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-6">
+HTTP GET</label><div class="sd-tab-content docutils">
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>GET /sparql?query=&quot;PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20DESCRIBE%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans-instances%23Catherine%3E&quot; HTTP/1.1
+Accept: text/nt
+Host: https://corese.inria.fr
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-7">
+curl</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">QUERY</span><span class="o">=</span><span class="s1">&#39;PREFIX  humans: &lt;http://www.inria.fr/2015/humans#&gt;</span>
+<span class="s1">       DESCRIBE &lt;http://www.inria.fr/2015/humans-instances#Catherine&gt;&#39;</span>
+
+curl<span class="w"> </span>-G<span class="w"> </span><span class="se">\</span>
+--url<span class="w"> </span>https://corese.inria.fr/sparql<span class="w"> </span><span class="se">\</span>
+--header<span class="w"> </span><span class="s2">&quot;Accept: application/turtle&quot;</span><span class="w"> </span><span class="se">\</span>
+--data-urlencode<span class="w"> </span><span class="s2">&quot;query=</span><span class="nv">$QUERY</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">ns1:</span><span class="w"> </span><span class="nv">&lt;http://www.inria.fr/2015/humans-instances#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">humans:</span><span class="w"> </span><span class="nv">&lt;http://www.inria.fr/2015/humans#&gt;</span><span class="w"> </span><span class="p">.</span>
+
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">Lucas</span> <span class="nn">humans</span><span class="p">:</span><span class="nt">hasMother</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Catherine</span> <span class="p">.</span>
+
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">Karl</span> <span class="nn">humans</span><span class="p">:</span><span class="nt">hasSpouse</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Catherine</span> <span class="p">.</span>
+
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">Catherine</span> <span class="nn">humans</span><span class="p">:</span><span class="nt">hasMother</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Laura</span> <span class="p">;</span>
+              <span class="nn">humans</span><span class="p">:</span><span class="nt">name</span> <span class="s">&quot;Catherine&quot;</span><span class="o">@</span><span class="ge">fr</span> <span class="p">;</span>
+              <span class="kt">a</span> <span class="nn">humans</span><span class="p">:</span><span class="nt">Woman</span> <span class="p">.</span>
+</pre></div>
+</div>
+</section>
+<section id="update-delete-insert">
+<span id="sparql-update"></span><h2>Update (DELETE/INSERT)<a class="headerlink" href="#update-delete-insert" title="Permalink to this heading">#</a></h2>
+<p>This operation allows to update the RDF dataset. The supported update operations are INSERT DATA, DELETE DATA, DELETE WHERE, INSERT WHERE.</p>
+<p><strong>Method:</strong> POST</p>
+<p><strong>Headers:</strong></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><cite>Content-Type:</cite></dt><dd><ul>
+<li><p><cite>application/x-www-form-urlencoded</cite></p></li>
+<li><p><cite>application/sparql-update</cite></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>Accept:</cite></dt><dd><ul>
+<li><p><cite>application/sparql-results+json</cite></p></li>
+<li><p><cite>application/sparql-results+xml</cite></p></li>
+<li><p><cite>application/turtle</cite></p></li>
+<li><p><cite>text/plain</cite></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>Parameters:</strong></p>
+<ul class="simple">
+<li><p><cite>update</cite>: Required parameter for the update operation.</p></li>
+<li><p><cite>using-graph-uri</cite>: Optional list of graph URIs for the update operation. Default: none.</p></li>
+<li><p><cite>using-named-graph-uri</cite>: Optional list of named graph URIs for the update operation. Default: none.</p></li>
+<li><p><cite>access</cite>: Optional access key that may give access to the protected features on the remote servers. Default: none.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The update query can be passed as a <cite>query</cite> parameter. In this case, the <cite>update</cite> parameter is not required.</p>
+<p>Using the <cite>using-graph-uri</cite> and <cite>using-named-graph-uri</cite> parameters together with the USING, USING NAMED, or WITH clauses in the query is not permitted.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>SPARQL Update operations may not be authorized by a remote server. To execute an update operation on a remote server, the <cite>access</cite> parameter must be set to the access key that gives access to the protected features on the remote server.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The parameter below is optional and non-standard. It is not part of the SPARQL 1.1 Protocol specification.</p>
+<ul class="simple">
+<li><p><cite>access</cite>: Optional key that may give access to the protected features. (what are the protected features and how to set the access key?)</p></li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The update query returns an empty result set formatted according to the <cite>Accept</cite> header if the <cite>Content-Type:application/x-www-form-urlencoded</cite> and if the update operation is successful.</p>
+<p>The update query returns no body and <cite>Length=0</cite> if the <cite>Content-Type:application/sparql-update</cite> and if the update operation is successful.</p>
+<p>If the update operation fails, the response status code is 500 and the response body contains an error message.</p>
+</div>
+<p>There are two ways to send the update query to a Corese endpoint:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Send an update query as a URL-encoded POST request.</dt><dd><p>The <cite>Content-Type</cite> header must be set to <cite>application/x-www-form-urlencoded</cite>.
+The update string must be passed in the POST request body as <cite>update=…</cite></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Send an update query directly in the POST request body.</dt><dd><p>The <cite>Content-Type</cite> header must be set to <cite>application/sparql-query</cite>.
+The update string must be passed in the POST request body.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>INSERT Request Example:</strong></p>
+<p>To execute this example we recommend launching the <a class="reference external" href="../docker/README.html">Corese Docker</a> container.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-8">
+HTTP</label><div class="sd-tab-content docutils">
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>&lt;!--URL-encoded POST--&gt;
+POST /sparql
+Host: https://localhost:8080
+Content-Type: `application/x-www-form-urlencoded`
+update=&#39;PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt; INSERT DATA { &lt;http://example/book1&gt; dc:title &quot;A new book&quot; .}&#39;
+
+&lt;!--direct POST--&gt;
+POST /sparql
+Host: https://localhost:8080
+Content-Type: application/sparql-update
+
+PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;
+INSERT DATA { &lt;http://example/book1&gt; dc:title &quot;A new book&quot; .}
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-9">
+curl</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">QUERY</span><span class="o">=</span><span class="s1">&#39;PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt;</span>
+<span class="s1">       INSERT DATA { &lt;http://example/book1&gt; dc:title &quot;A newer book&quot; . }&#39;</span>
+
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+--url<span class="w"> </span>http://localhost:8080/sparql<span class="w"> </span><span class="se">\</span>
+--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/x-www-form-urlencoded&quot;</span><span class="w"> </span><span class="se">\</span>
+--data<span class="w"> </span><span class="s2">&quot;update=</span><span class="nv">$QUERY</span><span class="s2">&quot;</span>
+
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+--url<span class="w"> </span>http://localhost:8080/sparql<span class="w"> </span><span class="se">\</span>
+--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/sparql-update&quot;</span><span class="w"> </span><span class="se">\</span>
+--data<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$QUERY</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; ?&gt;</span>
+<span class="nt">&lt;sparql</span>
+<span class="w">    </span><span class="na">xmlns=</span><span class="s">&#39;http://www.w3.org/2005/sparql-results#&#39;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;head&gt;&lt;/head&gt;</span>
+<span class="w">    </span><span class="nt">&lt;results&gt;</span>
+<span class="w">        </span><span class="nt">&lt;result&gt;&lt;/result&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/results&gt;</span>
+<span class="nt">&lt;/sparql&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="api_root.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">REST API Reference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="sparql_load.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">/sparql/load</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#select-or-ask">SELECT or ASK</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#construct-or-describe">CONSTRUCT or DESCRIBE</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#update-delete-insert">Update (DELETE/INSERT)</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/rest_api/sparql.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

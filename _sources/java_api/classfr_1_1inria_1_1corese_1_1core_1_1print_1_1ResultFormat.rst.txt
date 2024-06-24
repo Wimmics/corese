@@ -1,0 +1,26 @@
+.. _exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat:
+
+Class ResultFormat
+==================
+
+- Defined in :ref:`file_corese-core_src_main_java_fr_inria_corese_core_print_ResultFormat.java`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public ResultFormatDef``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: fr::inria::corese::core::print::ResultFormat
+   :project: corese
+   :members:
+   :protected-members:
+   :undoc-members:

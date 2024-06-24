@@ -1,0 +1,776 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Configuring and Connecting to Different Storage Systems in Corese &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'storage/Configuring and Connecting to Different Storage Systems in Corese';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Configuring...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="configuring-and-connecting-to-different-storage-systems-in-corese">
+<h1>Configuring and Connecting to Different Storage Systems in Corese<a class="headerlink" href="#configuring-and-connecting-to-different-storage-systems-in-corese" title="Permalink to this heading">#</a></h1>
+<p>Corese offers the possibility to connect to a range of storage systems for storing and managing your RDF data. In this document, you’ll find information on how to use these storage systems with Corese, including instructions on configuring and utilizing them in the GUI, Server, and Library.</p>
+<section id="introduction">
+<h2>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<p>In Corese versions prior to 4.4, graphs were loaded and manipulated in RAM. With the introduction of Data Manager in version 4.4, the Corese engine and storage systems are now fully decoupled. This offers several advantages such as :</p>
+<ul class="simple">
+<li><p>The ability to easily add new storage systems</p></li>
+<li><p>The use of persistent storage systems</p></li>
+<li><p>The simultaneous use of multiple storage systems</p></li>
+<li><p>The flexibility to choose a storage system that meets specific needs</p></li>
+</ul>
+</section>
+<section id="what-is-a-data-manager">
+<h2>2. What is a Data Manager?<a class="headerlink" href="#what-is-a-data-manager" title="Permalink to this heading">#</a></h2>
+<p>A data manager in Corese is a bridge between the Corese engine and a storage system, enabling the engine to store and manage graph data in a variety of storage systems while abstracting away the underlying details of those systems.</p>
+<p>A data manager is implemented as an interface called <code class="docutils literal notranslate"><span class="pre">Datamanager</span></code>, and concrete implementations such as <code class="docutils literal notranslate"><span class="pre">JenaTdb1DataManager</span></code> and <code class="docutils literal notranslate"><span class="pre">Rdf4jModelDataManager</span></code> are provided for specific storage systems. By implementing the <code class="docutils literal notranslate"><span class="pre">Datamanager</span></code> interface, it is possible to use the Corese engine with any storage structure.</p>
+<p>Currently, there are three implementations of <code class="docutils literal notranslate"><span class="pre">Datamanager</span></code> available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">JenaTdb1DataManager</span></code> for Jena TDB1 storage</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Rdf4jModelDataManager</span></code> for RDF4J model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CoreseGraphDataManager</span></code> for Corese graph</p></li>
+</ul>
+</section>
+<section id="available-data-manager-implementations">
+<h2>3. Available Data Manager Implementations<a class="headerlink" href="#available-data-manager-implementations" title="Permalink to this heading">#</a></h2>
+<section id="jena-tdb1">
+<h3>3.1. Jena TDB1<a class="headerlink" href="#jena-tdb1" title="Permalink to this heading">#</a></h3>
+<p><a class="reference external" href="https://jena.apache.org/">Jena</a> is an open-source Semantic Web framework written in Java and developed by the <a class="reference external" href="https://jena.apache.org/">Apache Jena project</a>. It provides a set of libraries and tools for building applications that process and manipulate RDF data.</p>
+<p><a class="reference external" href="https://jena.apache.org/documentation/tdb/">TDB</a> is a native triple store for Jena, designed to efficiently store and query large amounts of RDF data. It supports the full range of RDF languages and standards.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">JenaTdb1DataManager</span></code> allows the Corese engine to connect to a TDB1 database. Corese can connect to an existing Jena TDB1 database or create a new one.</p>
+<p>TDB1 is a persistent storage system that supports transactions and native concurrent access. In our larger tests, it has been able to efficiently load and manage graphs with up to 600 million triples. However, it is likely capable of handling even larger graph sizes.</p>
+<p>Here is a summary of TDB1’s characteristics:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Characteristic</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Persistence of data</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Native concurrent access</p></td>
+<td><p>Yes</p></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<div><p>You can use all the native tools and <a class="reference external" href="https://jena.apache.org/documentation/tdb/commands.html">Apache Jena - TDB Command-line Utilities</a> . For example, you can use <code class="docutils literal notranslate"><span class="pre">tdbloader</span></code>, a software, to efficiently create a TDB1 database from serialized RDF data.</p>
+</div></blockquote>
+</section>
+<section id="corese-graph">
+<h3>3.2. Corese Graph<a class="headerlink" href="#corese-graph" title="Permalink to this heading">#</a></h3>
+<p>Corese Graph is the historical API of Corese for storing and manipulating RDF data in memory. It is stable and optimized, and capable of handling large graphs within the limits of available RAM.</p>
+<p>However, Corese Graph does not offer persistence of data and supports native concurrent access.</p>
+<p>Here is a summary of Corese Graph’s characteristics:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Characteristic</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Persistence of data</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Native concurrent access</p></td>
+<td><p>Yes</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="rdf4j-model">
+<h3>3.3. RDF4J Model<a class="headerlink" href="#rdf4j-model" title="Permalink to this heading">#</a></h3>
+<p><a class="reference external" href="https://rdf4j.org/">RDF4J</a> is an open-source Java library for working with RDF data. It provides a set of APIs for parsing and serializing RDF, querying with SPARQL, and modeling RDF data with RDFS and OWL.</p>
+<p><a class="reference external" href="https://rdf4j.org/documentation/programming/model/">The RDF Model API</a> is a Java interface for storing and manipulating RDF data in memory (It does not store data on disk). This API provides a high-level, abstract representation of an RDF graph. The <code class="docutils literal notranslate"><span class="pre">Rdf4JModelDataManager</span></code> allows the Corese engine to connect to an existing RDF4J <code class="docutils literal notranslate"><span class="pre">Model</span></code> object or create a new one.</p>
+<p>This implementation is not optimized for storing large amounts of data and does not support persistence of data, concurrency, or transactions. It was our first implementation as a proof-of-concept and is not recommended for use in production environments. However, it may still be useful for small-scale testing and development purposes.</p>
+<p>Here is a summary of the RDF4J Model’s characteristics:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Characteristic</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Persistence of data</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Native concurrent access</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="configuring-storage-systems-in-corese-gui-and-corese-server">
+<h2>4. Configuring Storage Systems in Corese-GUI and Corese-Server<a class="headerlink" href="#configuring-storage-systems-in-corese-gui-and-corese-server" title="Permalink to this heading">#</a></h2>
+<p>To configure storage systems in the Corese GUI or Server, it is necessary to create a properties file. This file should include the <code class="docutils literal notranslate"><span class="pre">STORAGE</span></code> configuration property, which specifies the storage systems to use.</p>
+<p>To run Corese-GUI or Corese-Server with a property file, the <code class="docutils literal notranslate"><span class="pre">-init</span></code> option must be used. For instance, the following bash command runs Corese-GUI using the <code class="docutils literal notranslate"><span class="pre">gui.properties</span></code> file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>java<span class="w"> </span>-jar<span class="w"> </span>corese.jar<span class="w"> </span>-init<span class="w"> </span><span class="s2">&quot;config.properties&quot;</span>
+</pre></div>
+</div>
+<p>This will load the storage systems specified in the <code class="docutils literal notranslate"><span class="pre">STORAGE</span></code> property in the <code class="docutils literal notranslate"><span class="pre">config.properties</span></code> file.</p>
+<blockquote>
+<div><p>If no configuration file is specified, Corese will use the default configuration, which is to use a single Corese graph storage system in memory. This behavior is the same as in versions prior to 4.4.</p>
+</div></blockquote>
+<section id="configuring-one-storage-system">
+<h3>4.1. Configuring One Storage System<a class="headerlink" href="#configuring-one-storage-system" title="Permalink to this heading">#</a></h3>
+<p>To configure a single storage system, you need to specify the type and ID of the system in the <code class="docutils literal notranslate"><span class="pre">STORAGE</span></code> property. You can also include optional parameters for the system.</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">STORAGE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">TYPE_BD1,ID_DB1,PARAM_BD1</span>
+</pre></div>
+</div>
+<p>The fields are as follows:</p>
+<p><code class="docutils literal notranslate"><span class="pre">TYPE_BD1</span></code>: The type of storage system to use. Possible values are <code class="docutils literal notranslate"><span class="pre">jena_tdb1</span></code>, <code class="docutils literal notranslate"><span class="pre">rdf4j_model</span></code>, and <code class="docutils literal notranslate"><span class="pre">corese_graph</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ID_DB1</span></code>: The ID of the storage system. This ID will be used to reference the storage system in SPARQL queries.</p>
+<p><code class="docutils literal notranslate"><span class="pre">PARAM_BD1</span></code>: (Optional) Constructor parameter for the storage system.</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>DB type</p></th>
+<th class="head"><p>Parameter</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>jena_tdb1</p></td>
+<td><p>Empty (use JenaTDB in memory) or path of TDB1 database (use JenaTDB in a DB)</p></td>
+</tr>
+<tr class="row-odd"><td><p>rdf4j_model</p></td>
+<td><p>Empty</p></td>
+</tr>
+<tr class="row-even"><td><p>corese_graph</p></td>
+<td><p>Empty</p></td>
+</tr>
+</tbody>
+</table>
+<p>For example, to configure a Jena TDB1 storage system with ID <code class="docutils literal notranslate"><span class="pre">musicDB</span></code> and the <code class="docutils literal notranslate"><span class="pre">/…/music</span></code> directory as the storage location, the following <code class="docutils literal notranslate"><span class="pre">STORAGE</span></code> property should be specified:</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">STORAGE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">jena_tdb1,musicDB,/…/music</span>
+</pre></div>
+</div>
+</section>
+<section id="configuring-multiple-storage-systems">
+<h3>4.2. Configuring Multiple Storage Systems<a class="headerlink" href="#configuring-multiple-storage-systems" title="Permalink to this heading">#</a></h3>
+<p>To configure multiple storage systems in Corese, simply separate the configurations for each storage system with a semicolon (<code class="docutils literal notranslate"><span class="pre">;</span></code>). This is similar to configuring a single storage system, as described in the previous section.</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">STORAGE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">TYPE_BD1,ID_DB1,PARAM_BD1;TYPE_BD2,ID_DB2,PARAM_BD2;…</span>
+</pre></div>
+</div>
+<p>In the case where multiple storage systems are configured, the first storage system listed is the default storage system. It is accessible directly in SPARQL queries, while the other storage systems must be accessed using the <code class="docutils literal notranslate"><span class="pre">SERVICE</span></code> keyword.</p>
+<p>For example, given the following configuration:</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">STORAGE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">corese_graph,friend;jena_tdb1,mélomane;jena_tdb1,music</span>
+</pre></div>
+</div>
+<p>The following SPARQL query retrieves information about a person’s friends and the music they like:</p>
+<div class="highlight-sparql notranslate"><div class="highlight"><pre><span></span><span class="k">PREFIX</span> <span class="nn">music</span><span class="p">:</span> <span class="nl">&lt;http://example.com/music/&gt;</span>
+<span class="k">PREFIX</span> <span class="nn">person</span><span class="p">:</span> <span class="nl">&lt;http://example.com/person/&gt;</span>
+<span class="k">PREFIX</span> <span class="nn">foaf</span><span class="p">:</span> <span class="nl">&lt;http://xmlns.com/foaf/0.1/&gt;</span>
+
+<span class="k">SELECT</span> <span class="nv">?friendName</span> <span class="nv">?artistName</span> <span class="nv">?description</span>
+<span class="k">WHERE</span> <span class="p">{</span>
+    <span class="c"># Select Casandra&#39;s friends from the &quot;friend&quot; database (default dataset)</span>
+    <span class="nn">person</span><span class="p">:</span><span class="nt">Casandra</span> <span class="nn">foaf</span><span class="p">:</span><span class="nt">knows</span> <span class="nv">?friend</span> <span class="p">.</span>
+
+    <span class="c"># Retrieve the Casandra&#39;s friend&#39;s name and the artist they like from the &quot;mélomane&quot; database</span>
+    <span class="k">SERVICE</span> <span class="nl">&lt;store:mélomane&gt;</span> <span class="p">{</span>
+        <span class="nv">?friend</span> <span class="nn">person</span><span class="p">:</span><span class="nt">likeMusic</span> <span class="nv">?artist</span> <span class="p">.</span>
+        <span class="nv">?friend</span> <span class="nn">foaf</span><span class="p">:</span><span class="nt">firstName</span> <span class="nv">?friendName</span> <span class="p">.</span>
+    <span class="p">}</span>
+
+    <span class="c"># Retrieve the artist&#39;s name and a description of their music from the &quot;music&quot; database</span>
+    <span class="k">SERVICE</span> <span class="nl">&lt;store:music&gt;</span> <span class="p">{</span>
+        <span class="nv">?artist</span> <span class="nn">music</span><span class="p">:</span><span class="nt">name</span> <span class="nv">?artistName</span> <span class="p">.</span>
+        <span class="nv">?artist</span> <span class="nn">music</span><span class="p">:</span><span class="nt">description</span> <span class="nv">?description</span> <span class="p">.</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To execute a query in the GUI, open the Corese GUI and enter the query in the SPARQL Query tab.</p>
+<p>To execute in the Server, send a request to the endpoint <code class="docutils literal notranslate"><span class="pre">http://localhost:8080/sparql</span></code> if you are running it locally.</p>
+</section>
+<section id="optional-assign-storage-to-a-specific-sparql-endpoint-with-corese-server">
+<h3>4.3. [Optional] Assign storage to a specific SPARQL endpoint with Corese Server<a class="headerlink" href="#optional-assign-storage-to-a-specific-sparql-endpoint-with-corese-server" title="Permalink to this heading">#</a></h3>
+<p>Corese Server allows you to assign storage to a specific SPARQL endpoint by define a properties file (eg: <code class="docutils literal notranslate"><span class="pre">server.properties</span></code>) and a profile file (eg: <code class="docutils literal notranslate"><span class="pre">profile.ttl</span></code>). The properties file defines the storage systems available and their locations, while the profile file assigns a storage system to a specific endpoint.</p>
+<p>To create two storage systems, <code class="docutils literal notranslate"><span class="pre">db1</span></code> and <code class="docutils literal notranslate"><span class="pre">db2</span></code>, using the Jena TDB1 storage system and located at <code class="docutils literal notranslate"><span class="pre">/…/album</span></code> and <code class="docutils literal notranslate"><span class="pre">/…/music</span></code>, respectively, you can use the following in the properties file:</p>
+<div class="highlight-properties notranslate"><div class="highlight"><pre><span></span><span class="na">STORAGE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">jena_tdb1,db1,/…/album;jena_tdb1,db2,/…/music</span>
+</pre></div>
+</div>
+<p>To assign the <code class="docutils literal notranslate"><span class="pre">db1</span></code> and <code class="docutils literal notranslate"><span class="pre">db2</span></code> storage systems to the <code class="docutils literal notranslate"><span class="pre">album</span></code> (<code class="docutils literal notranslate"><span class="pre">&lt;http://localhost:8080/album/sparql&gt;</span></code>) and <code class="docutils literal notranslate"><span class="pre">music</span></code> (<code class="docutils literal notranslate"><span class="pre">&lt;http://localhost:8080/music/sparql&gt;</span></code>) endpoints, respectively, you can use the following in the profile file:</p>
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span>prefix st: &lt;http://ns.inria.fr/sparql-template/&gt;
+
+# Album endpoint, available at http://localhost:8080/album/sparql
+&lt;#_1&gt; a st:Server;
+    st:service &quot;album&quot;; # Assigns the name &quot;album&quot; to this endpoint
+    st:storage &quot;db1&quot;. # Assigns the &quot;db1&quot; storage system to this endpoint
+
+# Music endpoint, available at http://localhost:8080/music/sparql
+&lt;#_2&gt; a st:Server;
+    st:service &quot;music&quot;; # Assigns the name &quot;music&quot; to this endpoint
+    st:storage &quot;db2&quot;. # Assigns the &quot;db2&quot; storage system to this endpoint
+</pre></div>
+</div>
+<p>With this configuration, the endpoint <code class="docutils literal notranslate"><span class="pre">&lt;http://localhost:8080/album/sparql&gt;</span></code> will use <code class="docutils literal notranslate"><span class="pre">db1</span></code> data, and <code class="docutils literal notranslate"><span class="pre">&lt;http://localhost:8080/music/sparql&gt;</span></code> will use <code class="docutils literal notranslate"><span class="pre">db2</span></code> data.</p>
+<p>To start the server with these configurations, run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>java<span class="w"> </span>-jar<span class="w"> </span>corese-server.jar<span class="w"> </span>-init<span class="w"> </span><span class="s2">&quot;server.properties&quot;</span><span class="w"> </span>-pp<span class="w"> </span><span class="s2">&quot;profile.ttl&quot;</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>You can learn more about profile files here: <a class="reference external" href="https://github.com/Wimmics/corese/blob/master/docs/getting%20started/Getting%20Started%20With%20Corese-server.md#4-to-go-deeper">Getting Started With Corese-server</a></p>
+</div></blockquote>
+</section>
+</section>
+<section id="use-storage-systems-in-corese-library">
+<h2>5. Use Storage Systems in Corese-Library<a class="headerlink" href="#use-storage-systems-in-corese-library" title="Permalink to this heading">#</a></h2>
+<p>To build a <code class="docutils literal notranslate"><span class="pre">dataManager</span></code> using the Corese-Library, you can use a <code class="docutils literal notranslate"><span class="pre">dataManager</span></code> builder class to configure and create the <code class="docutils literal notranslate"><span class="pre">dataManager</span></code>. There are different types of <code class="docutils literal notranslate"><span class="pre">dataManager</span></code> builders available, depending on the type of <code class="docutils literal notranslate"><span class="pre">dataManager</span></code> you want to create.</p>
+<p>For example, the <code class="docutils literal notranslate"><span class="pre">JenaTdb1DataManagerBuilder</span></code> can be used to build a <code class="docutils literal notranslate"><span class="pre">JenaTdb1DataManager</span></code>. To build a <code class="docutils literal notranslate"><span class="pre">JenaTdb1DataManager</span></code> with a specific storage path, you can use the following code:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">JenaTdb1DataManagerBuilder</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JenaTdb1DataManagerBuilder</span><span class="p">();</span>
+<span class="n">builder</span><span class="p">.</span><span class="na">setStoragePath</span><span class="p">(</span><span class="s">&quot;storage/path&quot;</span><span class="p">);</span>
+<span class="n">JenaTdb1DataManager</span><span class="w"> </span><span class="n">dataManager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>Similarly, you can use the <code class="docutils literal notranslate"><span class="pre">CoreseGraphDataManagerBuilder</span></code> to build a <code class="docutils literal notranslate"><span class="pre">CoreseGraphDataManager</span></code> or the <code class="docutils literal notranslate"><span class="pre">Rdf4jModelDataManagerBuilder</span></code> to build an <code class="docutils literal notranslate"><span class="pre">Rdf4jModelDataManager</span></code>.</p>
+<p>To execute a query on the <code class="docutils literal notranslate"><span class="pre">dataManager</span></code>, you can use the <code class="docutils literal notranslate"><span class="pre">QueryProcess</span></code> class as follows:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a QueryProcess using the dataManager</span>
+<span class="n">QueryProcess</span><span class="w"> </span><span class="n">exec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryProcess</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">dataManager</span><span class="p">);</span>
+
+<span class="c1">// Execute a SPARQL query and retrieve the result as a Mappings object</span>
+<span class="n">Mappings</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exec</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">&quot;select * where { ?s ?p ?o }&quot;</span><span class="p">);</span>
+
+<span class="c1">// Print the results of the query</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Mapping</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">map</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This will execute the specified SPARQL query on the <code class="docutils literal notranslate"><span class="pre">dataManager</span></code> and print the results.</p>
+<blockquote>
+<div><p>You can learn more about Corese-Library here: [Getting Started With Corese-library](<a class="reference external" href="https://github.com/Wimmics/corese/blob/master/docs/getting%20started/Getting%20Started%20With%20Corese-library.md">corese/Getting Started With Corese-library.md at master · Wimmics/corese · GitHub</a>)</p>
+</div></blockquote>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">1. Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-data-manager">2. What is a Data Manager?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#available-data-manager-implementations">3. Available Data Manager Implementations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jena-tdb1">3.1. Jena TDB1</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corese-graph">3.2. Corese Graph</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rdf4j-model">3.3. RDF4J Model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-storage-systems-in-corese-gui-and-corese-server">4. Configuring Storage Systems in Corese-GUI and Corese-Server</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-one-storage-system">4.1. Configuring One Storage System</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-multiple-storage-systems">4.2. Configuring Multiple Storage Systems</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-assign-storage-to-a-specific-sparql-endpoint-with-corese-server">4.3. [Optional] Assign storage to a specific SPARQL endpoint with Corese Server</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-storage-systems-in-corese-library">5. Use Storage Systems in Corese-Library</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/storage/Configuring and Connecting to Different Storage Systems in Corese.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

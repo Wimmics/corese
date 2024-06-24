@@ -1,0 +1,32 @@
+.. _exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1CompareNode:
+
+Class Graph::CompareNode
+========================
+
+- Defined in :ref:`file_corese-core_src_main_java_fr_inria_corese_core_Graph.java`
+
+
+Nested Relationships
+--------------------
+
+This class is a nested type of :ref:`exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1Graph`.
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public java::util::Comparator< IDatatype >``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: fr::inria::corese::core::Graph::CompareNode
+   :project: corese
+   :members:
+   :protected-members:
+   :undoc-members:

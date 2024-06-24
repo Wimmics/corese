@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<rdf:RDF
+xmlns:ns1='http://example.com/'
+xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+<rdf:Description rdf:about='http://example.com/Love_Me_Do'>
+ <ns1:length rdf:datatype='http://www.w3.org/2001/XMLSchema#integer'>125</ns1:length>
+ <ns1:name rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>Love Me Do</ns1:name>
+ <ns1:writer rdf:resource='http://example.com/John_Lennon'/>
+ <ns1:writer rdf:resource='http://example.com/Paul_McCartney'/>
+ <rdf:type rdf:resource='http://example.com/Song'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.com/The_Beatles'>
+ <ns1:member rdf:resource='http://example.com/John_Lennon'/>
+ <ns1:member rdf:resource='http://example.com/Paul_McCartney'/>
+ <ns1:member rdf:resource='http://example.com/Ringo_Starr'/>
+ <ns1:member rdf:resource='http://example.com/George_Harrison'/>
+ <ns1:name rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>The Beatles</ns1:name>
+ <rdf:type rdf:resource='http://example.com/Band'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.com/Please_Please_Me'>
+ <ns1:artist rdf:resource='http://example.com/The_Beatles'/>
+ <ns1:date rdf:datatype='http://www.w3.org/2001/XMLSchema#date'>1963-03-22</ns1:date>
+ <ns1:name rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>Please Please Me</ns1:name>
+ <ns1:track rdf:resource='http://example.com/Love_Me_Do'/>
+ <rdf:type rdf:resource='http://example.com/Album'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.com/George_Harrison'>
+ <rdf:type rdf:resource='http://example.com/SoloArtist'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.com/Ringo_Starr'>
+ <rdf:type rdf:resource='http://example.com/SoloArtist'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.com/John_Lennon'>
+ <rdf:type rdf:resource='http://example.com/SoloArtist'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.com/Paul_McCartney'>
+ <rdf:type rdf:resource='http://example.com/SoloArtist'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.com/McCartney'>
+ <ns1:artist rdf:resource='http://example.com/Paul_McCartney'/>
+ <ns1:date rdf:datatype='http://www.w3.org/2001/XMLSchema#date'>1970-04-17</ns1:date>
+ <ns1:name rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>McCartney</ns1:name>
+ <rdf:type rdf:resource='http://example.com/Album'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://example.com/Imagine'>
+ <ns1:artist rdf:resource='http://example.com/John_Lennon'/>
+ <ns1:date rdf:datatype='http://www.w3.org/2001/XMLSchema#date'>1971-10-11</ns1:date>
+ <ns1:name rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>Imagine</ns1:name>
+ <rdf:type rdf:resource='http://example.com/Album'/>
+</rdf:Description>
+
+</rdf:RDF>

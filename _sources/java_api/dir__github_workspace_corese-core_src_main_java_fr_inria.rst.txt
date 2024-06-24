@@ -1,0 +1,21 @@
+.. _dir__github_workspace_corese-core_src_main_java_fr_inria:
+
+
+Directory inria
+===============
+
+
+|exhale_lsh| :ref:`Parent directory <dir__github_workspace_corese-core_src_main_java_fr>` (``/github/workspace/corese-core/src/main/java/fr``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``/github/workspace/corese-core/src/main/java/fr/inria``
+
+Subdirectories
+--------------
+
+- :ref:`dir__github_workspace_corese-core_src_main_java_fr_inria_corese`
+
+
+

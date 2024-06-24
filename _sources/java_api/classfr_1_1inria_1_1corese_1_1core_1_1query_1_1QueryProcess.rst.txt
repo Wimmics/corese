@@ -1,0 +1,26 @@
+.. _exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess:
+
+Class QueryProcess
+==================
+
+- Defined in :ref:`file_corese-core_src_main_java_fr_inria_corese_core_query_QueryProcess.java`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public QuerySolver``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: fr::inria::corese::core::query::QueryProcess
+   :project: corese
+   :members:
+   :protected-members:
+   :undoc-members:

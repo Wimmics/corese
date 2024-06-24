@@ -1,0 +1,1113 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Class Load &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'java_api/classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Class ResultFormat" href="classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat.html" />
+    <link rel="prev" title="Class Graph::TreeNode" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1TreeNode.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli_ref/cli_root.html">CLI</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_sparql.html">sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_convert.html">convert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_shacl.html">shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_remote_sparql.html">remote-sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_canonicalize.html">canonicalize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../rest_api/api_root.html">REST API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql.html">/sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_load.html">/sparql/load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_reset.html">/sparql/reset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_d3.html">/sparql/d3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/spin_tospin.html">/spin/tospin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/rdf_graph_store.html">/rdf-graph-store</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="library_root.html">Java API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html">Class Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1CompareNode.html">Class Graph::CompareNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1GTable.html">Class Graph::GTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1TreeNode.html">Class Graph::TreeNode</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Class Load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat.html">Class ResultFormat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess.html">Class QueryProcess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl.html">Class Shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1transform_1_1Transformer.html">Class Transformer</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../apis.html" class="nav-link">CORESE APIs</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="library_root.html" class="nav-link">Java API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Class Load</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="class-load">
+<span id="exhale-class-classfr-1-1inria-1-1corese-1-1core-1-1load-1-1load"></span><h1>Class Load<a class="headerlink" href="#class-load" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_corese-core_src_main_java_fr_inria_corese_core_load_Load.java.html#file-corese-core-src-main-java-fr-inria-corese-core-load-load-java"><span class="std std-ref">File Load.java</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this heading">#</a></h2>
+<section id="base-types">
+<h3>Base Types<a class="headerlink" href="#base-types" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">RDFListener</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">Loader</span></code> (<span class="xref std std-ref">exhale_interface_interfacefr_1_1inria_1_1corese_1_1core_1_1api_1_1Loader</span>)</p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this heading">#</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4LoadE">
+<span id="_CPPv3N2fr5inria6corese4core4load4LoadE"></span><span id="_CPPv2N2fr5inria6corese4core4load4LoadE"></span><span id="fr::inria::corese::core::load::Load"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Load</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">RDFListener</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">Loader</span></span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4LoadE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Translate an RDF/XML document into a <a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#classfr_1_1inria_1_1corese_1_1core_1_1Graph"><span class="std std-ref">Graph</span></a> use ARP. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Olivier Corby, Edelweiss INRIA 2010 </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4LoadEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4LoadEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4LoadEv"></span><span id="fr::inria::corese::core::load::Load::Load"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ae6ed4b28251fa690207d846c3bd02a5c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Load</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4LoadEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4initE6Object">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4initE6Object"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4initE6Object"></span><span id="fr::inria::corese::core::load::Load::init__Object"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ad48778dc5008e0848aad111c6bd18020"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Object</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">o</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4initE6Object" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8setLimitEi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8setLimitEi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8setLimitEi"></span><span id="fr::inria::corese::core::load::Load::setLimit__i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1abab178bb1d446a56b293958f8df72fd2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setLimit</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8setLimitEi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5resetEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5resetEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5resetEv"></span><span id="fr::inria::corese::core::load::Load::reset"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ad20897c5c8bd47f5d4005989bead0e55"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5resetEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load7excludeE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load7excludeE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load7excludeE6String"></span><span id="fr::inria::corese::core::load::Load::exclude__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a1e56a6081c03792d104429935a0357aa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">exclude</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ns</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load7excludeE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load9setEngineE10RuleEngine">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load9setEngineE10RuleEngine"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load9setEngineE10RuleEngine"></span><span id="fr::inria::corese::core::load::Load::setEngine__RuleEngine"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aa6dc4a36710bca5511998ec0bb43abde"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setEngine</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">RuleEngine</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eng</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load9setEngineE10RuleEngine" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load13getRuleEngineEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load13getRuleEngineEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load13getRuleEngineEv"></span><span id="fr::inria::corese::core::load::Load::getRuleEngine"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a39add2262e01d9936fa5b6ba046c6ac7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">RuleEngine</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getRuleEngine</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load13getRuleEngineEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load9setEngineE11QueryEngine">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load9setEngineE11QueryEngine"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load9setEngineE11QueryEngine"></span><span id="fr::inria::corese::core::load::Load::setEngine__QueryEngine"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a06df31e26ed92252f1d5aa36be3051bd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setEngine</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">QueryEngine</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eng</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load9setEngineE11QueryEngine" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6setMaxEi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6setMaxEi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6setMaxEi"></span><span id="fr::inria::corese::core::load::Load::setMax__i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a77a7775927a1366a774c90847e54f0f4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setMax</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6setMaxEi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load14getQueryEngineEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load14getQueryEngineEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load14getQueryEngineEv"></span><span id="fr::inria::corese::core::load::Load::getQueryEngine"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a943bebc3d4305941ad24cf62fa41919a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">QueryEngine</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getQueryEngine</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load14getQueryEngineEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8setDebugE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8setDebugE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8setDebugE7boolean"></span><span id="fr::inria::corese::core::load::Load::setDebug__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aa1ed3db5ffd42df3fdf5c2efb42ac004"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setDebug</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8setDebugE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load9getFormatE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load9getFormatE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load9getFormatE6String"></span><span id="fr::inria::corese::core::load::Load::getFormat__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aec82be1893e4a5d99ccd63ce055fa007"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getFormat</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load9getFormatE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load22getDefaultOrPathFormatE6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load22getDefaultOrPathFormatE6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load22getDefaultOrPathFormatE6Stringi"></span><span id="fr::inria::corese::core::load::Load::getDefaultOrPathFormat__String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a51c80101e6f46a53432a6db7c63920fc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDefaultOrPathFormat</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">proposedFormat</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load22getDefaultOrPathFormatE6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6isRuleE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6isRuleE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6isRuleE6String"></span><span id="fr::inria::corese::core::load::Load::isRule__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ae9b240dd89326dbe41b0963da547082e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isRule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6isRuleE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8parseDirE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8parseDirE6String"></span><span id="fr::inria::corese::core::load::Load::parseDir__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a225140496898532c40417d4da21978aa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseDir</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>parse directory content </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8parseDirE6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8parseDirE6Stringi"></span><span id="fr::inria::corese::core::load::Load::parseDir__String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a325ba70b6d15cb592b0a735e62797ff1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseDir</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6String6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8parseDirE6String6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8parseDirE6String6String"></span><span id="fr::inria::corese::core::load::Load::parseDir__String.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a8b69645b201dd29ecbf6ea193690d193"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseDir</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6String6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Parse directory (not subdirectory) name is named graph (if not null) else path is named graph base is now the path (it used to be the name) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load11parseDirRecE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load11parseDirRecE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load11parseDirRecE6String"></span><span id="fr::inria::corese::core::load::Load::parseDirRec__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ac00e323f6253255d3425fafdfe3fe5ac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseDirRec</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load11parseDirRecE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load11parseDirRecE6String6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load11parseDirRecE6String6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load11parseDirRecE6String6String"></span><span id="fr::inria::corese::core::load::Load::parseDirRec__String.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a01603980420bb400e01228a85ca78a6d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseDirRec</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load11parseDirRecE6String6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6String6String7boolean">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8parseDirE6String6String7boolean"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8parseDirE6String6String7boolean"></span><span id="fr::inria::corese::core::load::Load::parseDir__String.String.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ac6e944972a6d4c434802dcc02933c613"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseDir</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6String6String7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6String6String7booleani">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8parseDirE6String6String7booleani"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8parseDirE6String6String7booleani"></span><span id="fr::inria::corese::core::load::Load::parseDir__String.String.boolean.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a73ed1473e3ece87b5a309c0aa293ab99"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseDir</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rec</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8parseDirE6String6String7booleani" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE4File10FileFilter6String7boolean">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE4File10FileFilter6String7boolean"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE4File10FileFilter6String7boolean"></span><span id="fr::inria::corese::core::load::Load::parse__File.FileFilter.String.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1af57de53eed15e4c714df7e81fe318cbe"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">File</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">file</span></span>, <span class="n"><span class="pre">FileFilter</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ff</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE4File10FileFilter6String7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load"><span class="std std-ref">Load</span></a> files according to filter extensions (use ExtensionFilter) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE6String"></span><span id="fr::inria::corese::core::load::Load::parse__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a7cf49f6cb2da5dbbc21b446cddff843d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>format is a suggested format when path has no extension default format is RDF/XML </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE6Stringi"></span><span id="fr::inria::corese::core::load::Load::parse__String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a51abd0ca99813efdb9f50bd00fe792ba"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE6String6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE6String6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE6String6String"></span><span id="fr::inria::corese::core::load::Load::parse__String.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a2d7777f96b0ba21f53e760293cc80487"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE6String6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::parse__String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a2fc43061e9d4ec1384ce5f89c8d859d2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load15parseWithFormatE6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load15parseWithFormatE6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load15parseWithFormatE6Stringi"></span><span id="fr::inria::corese::core::load::Load::parseWithFormat__String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a712effd583d167b0b43882ab3d8bf4b4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseWithFormat</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load15parseWithFormatE6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE6String6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE6String6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE6String6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::parse__String.String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ac1a280e142d7ffdf7d07bd8a0e92743f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE6String6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>name: the named graph (if null, name = path) base: base for relative URI (if null, base = path) getFormat: if format = UNDEF use path extension if any if format != UNDEF use format (even if it contradicts the extension) use case: rdf/xml file has .xml extension but we want to load it as RDFXML_FORMAT if format is UNDEF and path is URI with content type: use content type format </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load12defaultGraphEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load12defaultGraphEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load12defaultGraphEv"></span><span id="fr::inria::corese::core::load::Load::defaultGraph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a4a1de6387681cf54d31b971b822229b0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">defaultGraph</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load12defaultGraphEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE11InputStream">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE11InputStream"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE11InputStream"></span><span id="fr::inria::corese::core::load::Load::parse__InputStream"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a2848d7b291a4ab92264e1f7faa1387ea"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE11InputStream" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE11InputStreami">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE11InputStreami"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE11InputStreami"></span><span id="fr::inria::corese::core::load::Load::parse__InputStream.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a06d0321579e68993da2919da71e9ae28"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE11InputStreami" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE11InputStream6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE11InputStream6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE11InputStream6Stringi"></span><span id="fr::inria::corese::core::load::Load::parse__InputStream.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a1a117e9094380e935b50ac764ec65674"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE11InputStream6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE11InputStream6String6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE11InputStream6String6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE11InputStream6String6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::parse__InputStream.String.String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1af00f3be7f43e429a5fb98bb80d9ffb5f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE11InputStream6String6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load9getStreamE6StringDp6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load9getStreamE6StringDp6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load9getStreamE6StringDp6String"></span><span id="fr::inria::corese::core::load::Load::getStream__String.StringDp"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a1bfa4c91b535106bc766218675913ba6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getStream</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">formats</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load9getStreamE6StringDp6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load10loadStringE6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load10loadStringE6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load10loadStringE6Stringi"></span><span id="fr::inria::corese::core::load::Load::loadString__String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a239319657dca8beea6fae3a612268204"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load10loadStringE6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load10loadStringE6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load10loadStringE6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load10loadStringE6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::loadString__String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aa7c3fea7ab6287eea6cbd57a0b8ba6be"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load10loadStringE6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load10loadStringE6String6String6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load10loadStringE6String6String6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load10loadStringE6String6String6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::loadString__String.String.String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aeffc42f40c7f1db6fcb7b90d975c671a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load10loadStringE6String6String6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load12loadResourceE6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load12loadResourceE6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load12loadResourceE6Stringi"></span><span id="fr::inria::corese::core::load::Load::loadResource__String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a16d0fab6ccd82a4f647952817f134694"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadResource</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load12loadResourceE6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load12loadResourceE6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load12loadResourceE6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load12loadResourceE6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::loadResource__String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a0d8d1e3bf5e3d2103fabc4c860eba7bd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadResource</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load12loadResourceE6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load5parseE6Reader6String6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load5parseE6Reader6String6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load5parseE6Reader6String6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::parse__Reader.String.String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1af08cc17742966afd29cf83923a0fbf17"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reader</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load5parseE6Reader6String6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load9setSourceE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load9setSourceE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load9setSourceE6String"></span><span id="fr::inria::corese::core::load::Load::setSource__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ae86745f30933eadb07f7868f2c7116d3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setSource</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load9setSourceE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>interface RDFListener, extension of ARP RDF/XML parser Process cos:graph named graph statement extension TODO: generate different blanks in different graphs </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load9getSourceEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load9getSourceEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load9getSourceEv"></span><span id="fr::inria::corese::core::load::Load::getSource"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aaeb4161c8bd3d27854e39bfdcc84144f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getSource</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load9getSourceEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8loadRuleE6Reader6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8loadRuleE6Reader6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8loadRuleE6Reader6String"></span><span id="fr::inria::corese::core::load::Load::loadRule__Reader.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a3bd7f13f2b940c65eb03481d01bb9f41"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadRule</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reader</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8loadRuleE6Reader6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load13loadRuleBasicE6Reader6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load13loadRuleBasicE6Reader6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load13loadRuleBasicE6Reader6String"></span><span id="fr::inria::corese::core::load::Load::loadRuleBasic__Reader.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aa73f5b045b5335015c53e762b27e293f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadRuleBasic</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Reader</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load13loadRuleBasicE6Reader6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load17isRenameBlankNodeEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load17isRenameBlankNodeEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load17isRenameBlankNodeEv"></span><span id="fr::inria::corese::core::load::Load::isRenameBlankNode"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a5126eccfd7eb8c9ad40cc26779b9e73f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isRenameBlankNode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load17isRenameBlankNodeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load18setRenameBlankNodeE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load18setRenameBlankNodeE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load18setRenameBlankNodeE7boolean"></span><span id="fr::inria::corese::core::load::Load::setRenameBlankNode__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a40f99d20c3832d5fa8d0c47d20985395"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setRenameBlankNode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">renameBlankNode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load18setRenameBlankNodeE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE11InputStream6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE11InputStream6String"></span><span id="fr::inria::corese::core::load::Load::load__InputStream.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ad4c6a347b9b5294d8e8c0ce47930b238"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream6String6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE11InputStream6String6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE11InputStream6String6String"></span><span id="fr::inria::corese::core::load::Load::load__InputStream.String.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a1dce2d516945ca7913f16042860cf973"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream6String6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>source is the graph name path is a pseudo path that may have an extension and hence specify the input format </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="page_deprecated.html#deprecated_1_deprecated000002"><span class="std std-ref"><span class="pre">Deprecated:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE6String"></span><span id="fr::inria::corese::core::load::Load::load__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ae292dc87353526d9786f974aa7b4e98a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6loadWEE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6loadWEE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6loadWEE6String"></span><span id="fr::inria::corese::core::load::Load::loadWE__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a52b5f7d513cc8a049697eec20ed4736f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadWE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6loadWEE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6loadWEE6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6loadWEE6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6loadWEE6Stringi"></span><span id="fr::inria::corese::core::load::Load::loadWE__String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a5ea62ed6a3739e8dc8dd6c160011f370"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadWE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6loadWEE6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE6String6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE6String6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE6String6String"></span><span id="fr::inria::corese::core::load::Load::load__String.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1af1c9420f90f3eb596640922e525d4ab8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">src</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE6String6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6loadWEE6String6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6loadWEE6String6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6loadWEE6String6String"></span><span id="fr::inria::corese::core::load::Load::loadWE__String.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a360d292992aa9b93dfa2d1750e1c17a1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadWE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">src</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6loadWEE6String6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6loadWEE6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6loadWEE6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6loadWEE6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::loadWE__String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aa23856e0bc0bc480f770dcacbf88e68c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadWE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6loadWEE6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE6Stringi"></span><span id="fr::inria::corese::core::load::Load::load__String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a8421b3bdec3f8ed4b4fbd3d687268718"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE6String6String6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE6String6String6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE6String6String6String"></span><span id="fr::inria::corese::core::load::Load::load__String.String.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ae91931598b6a78ce916a9a78b799cd14"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE6String6String6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE6String6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE6String6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE6String6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::load__String.String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1abf4f17fa788069e9b562540ff8efd7f1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE6String6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE11InputStream"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE11InputStream"></span><span id="fr::inria::corese::core::load::Load::load__InputStream"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a1a18dae51571bd188aaca2c654a95d54"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStreami">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE11InputStreami"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE11InputStreami"></span><span id="fr::inria::corese::core::load::Load::load__InputStream.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ad4251ab3ca408a577f1838ba78a30fa2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStreami" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE11InputStream6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE11InputStream6Stringi"></span><span id="fr::inria::corese::core::load::Load::load__InputStream.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a60406d940d29298d7b2b241059d10271"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream6String6String6Stringi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load4loadE11InputStream6String6String6Stringi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load4loadE11InputStream6String6String6Stringi"></span><span id="fr::inria::corese::core::load::Load::load__InputStream.String.String.String.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a022e8a3c6942a1983d4d52949c8bb2c9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">load</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">InputStream</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stream</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">base</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">format</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load4loadE11InputStream6String6String6Stringi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load11getWorkflowEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load11getWorkflowEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load11getWorkflowEv"></span><span id="fr::inria::corese::core::load::Load::getWorkflow"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ac5d0a3d60a0c443029d23ba56a1836c0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">SemanticWorkflow</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getWorkflow</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load11getWorkflowEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load11setWorkflowE16SemanticWorkflow">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load11setWorkflowE16SemanticWorkflow"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load11setWorkflowE16SemanticWorkflow"></span><span id="fr::inria::corese::core::load::Load::setWorkflow__SemanticWorkflow"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a0ff5530bc5754cea4f293d9d855a3b34"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setWorkflow</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">SemanticWorkflow</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">workflow</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load11setWorkflowE16SemanticWorkflow" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load14isDefaultGraphEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load14isDefaultGraphEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load14isDefaultGraphEv"></span><span id="fr::inria::corese::core::load::Load::isDefaultGraph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a833153faf8a6309a9325eddbf76be624"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isDefaultGraph</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load14isDefaultGraphEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load15setDefaultGraphE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load15setDefaultGraphE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load15setDefaultGraphE7boolean"></span><span id="fr::inria::corese::core::load::Load::setDefaultGraph__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aaf4eb907b3c01ea201f30b1aed83ecf4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setDefaultGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">defaultGraph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load15setDefaultGraphE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load15getQueryProcessEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load15getQueryProcessEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load15getQueryProcessEv"></span><span id="fr::inria::corese::core::load::Load::getQueryProcess"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a49ad7c8814c7ee3f1210594f43020b91"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">QueryProcess</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getQueryProcess</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load15getQueryProcessEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load15setQueryProcessE12QueryProcess">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load15setQueryProcessE12QueryProcess"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load15setQueryProcessE12QueryProcess"></span><span id="fr::inria::corese::core::load::Load::setQueryProcess__QueryProcess"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a3dc67e5dad608f3d576a98858d006510"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setQueryProcess</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">QueryProcess</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">queryProcess</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load15setQueryProcessE12QueryProcess" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load7isEventEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load7isEventEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load7isEventEv"></span><span id="fr::inria::corese::core::load::Load::isEvent"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ab8a53acb267876925142198a7680c0a7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isEvent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load7isEventEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8setEventE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8setEventE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8setEventE7boolean"></span><span id="fr::inria::corese::core::load::Load::setEvent__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ab988d5de824ce165a50aa6a7fbe73847"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setEvent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">event</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8setEventE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load14getAccessRightEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load14getAccessRightEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load14getAccessRightEv"></span><span id="fr::inria::corese::core::load::Load::getAccessRight"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aa07dcfd19a8dd67cf81207c608186cad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">AccessRight</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAccessRight</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load14getAccessRightEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load14setAccessRightE11AccessRight">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load14setAccessRightE11AccessRight"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load14setAccessRightE11AccessRight"></span><span id="fr::inria::corese::core::load::Load::setAccessRight__AccessRight"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1ad9233f9a59f12c875ac9dcf7e0ce767f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setAccessRight</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">AccessRight</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">accessRight</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load14setAccessRightE11AccessRight" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a8710c5cf8a7a85d5f2e60ecc0150cee4"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">Access.Level</span> <span class="pre">getLevel</span> <span class="pre">()</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1adfc18d3badfe35041234749706687c80"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">void</span> <span class="pre">setLevel</span> <span class="pre">(Access.Level</span> <span class="pre">level)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load13isTransformerEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load13isTransformerEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load13isTransformerEv"></span><span id="fr::inria::corese::core::load::Load::isTransformer"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a27c24a8930682c473499cde00d213cef"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isTransformer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load13isTransformerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load14setTransformerE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load14setTransformerE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load14setTransformerE7boolean"></span><span id="fr::inria::corese::core::load::Load::setTransformer__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a5283260e04a237be65da4ffa9bf5ff43"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTransformer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">transformer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load14setTransformerE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load14getDataManagerEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load14getDataManagerEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load14getDataManagerEv"></span><span id="fr::inria::corese::core::load::Load::getDataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aa5c394d6931c7735b29dc2a933603b75"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">DataManager</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDataManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load14getDataManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load14setDataManagerE11DataManager">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load14setDataManagerE11DataManager"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load14setDataManagerE11DataManager"></span><span id="fr::inria::corese::core::load::Load::setDataManager__DataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aaaafa0078410b2e7628fc9e20607a0d5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setDataManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">DataManager</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataManager</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load14setDataManagerE11DataManager" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8getGraphEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8getGraphEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8getGraphEv"></span><span id="fr::inria::corese::core::load::Load::getGraph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a68094105c2273acfa51e51a1fd41cac7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getGraph</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8getGraphEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8setGraphE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8setGraphE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8setGraphE5Graph"></span><span id="fr::inria::corese::core::load::Load::setGraph__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a79a1779ccc5e6e8a0d57ad3b4127744a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setGraph</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8setGraphE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load8getLimitEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load8getLimitEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load8getLimitEv"></span><span id="fr::inria::corese::core::load::Load::getLimit"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a51967602ed915487c2ffbf4dc2aa48ca"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLimit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load8getLimitEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load16getNamedGraphURIEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load16getNamedGraphURIEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load16getNamedGraphURIEv"></span><span id="fr::inria::corese::core::load::Load::getNamedGraphURI"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a2fe7ed34f1cc488ca3b117abe56bf172"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getNamedGraphURI</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load16getNamedGraphURIEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load16setNamedGraphURIE6String">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load16setNamedGraphURIE6String"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load16setNamedGraphURIE6String"></span><span id="fr::inria::corese::core::load::Load::setNamedGraphURI__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1adc3f3adbb512327f2990477bcd803432"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setNamedGraphURI</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">namedGraphURI</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load16setNamedGraphURIE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load14isSparqlUpdateEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load14isSparqlUpdateEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load14isSparqlUpdateEv"></span><span id="fr::inria::corese::core::load::Load::isSparqlUpdate"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1af9b4eb8cc37fa34b7865611aff7da6b9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isSparqlUpdate</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load14isSparqlUpdateEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load15setSparqlUpdateE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load15setSparqlUpdateE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load15setSparqlUpdateE7boolean"></span><span id="fr::inria::corese::core::load::Load::setSparqlUpdate__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a81c3fcdf462651b22e86f89f156a5f6b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setSparqlUpdate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sparqlUpdate</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load15setSparqlUpdateE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load20setDefaultGraphValueE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load20setDefaultGraphValueE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load20setDefaultGraphValueE7boolean"></span><span id="fr::inria::corese::core::load::Load::setDefaultGraphValue__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a5f8481fa98255c357de80563657f8751"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setDefaultGraphValue</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load20setDefaultGraphValueE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>true means load in default graph when no named graph is given </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load19isDefaultGraphValueEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load19isDefaultGraphValueEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load19isDefaultGraphValueEv"></span><span id="fr::inria::corese::core::load::Load::isDefaultGraphValue"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a5b29a0d276abaa223abf6240932df46e"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isDefaultGraphValue</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load19isDefaultGraphValueEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6createE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6createE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6createE5Graph"></span><span id="fr::inria::corese::core::load::Load::create__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a7147c9a2c58a144ace44338c8e27a8e9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core4load4LoadE" title="fr::inria::corese::core::load::Load"><span class="n"><span class="pre">Load</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6createE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6createE5Graph11DataManager">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6createE5Graph11DataManager"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6createE5Graph11DataManager"></span><span id="fr::inria::corese::core::load::Load::create__Graph.DataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a319d64a6ed207e30c4181de3ce1b4b15"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core4load4LoadE" title="fr::inria::corese::core::load::Load"><span class="n"><span class="pre">Load</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <span class="n"><span class="pre">DataManager</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">man</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6createE5Graph11DataManager" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6createEv">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6createEv"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6createEv"></span><span id="fr::inria::corese::core::load::Load::create"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aed52c0b7ae9510562e29f5c298570073"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core4load4LoadE" title="fr::inria::corese::core::load::Load"><span class="n"><span class="pre">Load</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6createEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load16setDefaultFormatEi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load16setDefaultFormatEi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load16setDefaultFormatEi"></span><span id="fr::inria::corese::core::load::Load::setDefaultFormat__i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aeb58118cf9f7f40d578738e03a42fb9f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setDefaultFormat</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load16setDefaultFormatEi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load15setLimitDefaultEi">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load15setLimitDefaultEi"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load15setLimitDefaultEi"></span><span id="fr::inria::corese::core::load::Load::setLimitDefault__i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1aff1e599ec5ad45b828ff537d70cbff54"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setLimitDefault</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load15setLimitDefaultEi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load6loggerE">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load6loggerE"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load6loggerE"></span><span id="fr::inria::corese::core::load::Load::logger__Logger"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a5b27630dbcf231bfda3a7d79e1eefce5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">logger</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><code class="docutils literal notranslate"><span class="pre">LoggerFactory.getLogger(Load.class)</span></code><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load6loggerE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core4load4Load11LOAD_FORMATE">
+<span id="_CPPv3N2fr5inria6corese4core4load4Load11LOAD_FORMATE"></span><span id="_CPPv2N2fr5inria6corese4core4load4Load11LOAD_FORMATE"></span><span id="fr::inria::corese::core::load::Load::LOAD_FORMAT__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load_1a8209c2701fe20b70b36d40a49e91f483"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LOAD_FORMAT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">ALL_FORMAT_STR</span></span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core4load4Load11LOAD_FORMATE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1TreeNode.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Class Graph::TreeNode</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Class ResultFormat</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inheritance-relationships">Inheritance Relationships</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#base-types">Base Types</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-documentation">Class Documentation</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/java_api/classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

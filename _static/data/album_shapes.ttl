@@ -1,0 +1,28 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.com/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Shape for the Album class
+ex:AlbumShape
+    a sh:NodeShape ;
+    sh:targetClass ex:Album ;
+    sh:property [
+        sh:path ex:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ex:track ;
+        sh:class ex:Song ;
+        sh:minCount 1 ;
+    ] .
+
+# Shape for the Song class
+ex:SongShape
+    a sh:NodeShape ;
+    sh:targetClass ex:Song ;
+    sh:property [
+        sh:path ex:length ;
+        sh:datatype xsd:integer ;
+        sh:minCount 1 ;
+    ] .

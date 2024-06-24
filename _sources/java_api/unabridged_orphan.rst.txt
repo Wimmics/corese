@@ -1,0 +1,181 @@
+:orphan:
+
+
+Full API
+========
+
+Namespaces
+**********
+
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__core.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__core__api.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__core__load.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__core__print.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__core__query.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__core__shacl.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__core__transform.rst
+
+Directories
+***********
+
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr_inria.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr_inria_corese.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr_inria_corese_core.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr_inria_corese_core_api.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr_inria_corese_core_load.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr_inria_corese_core_print.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr_inria_corese_core_query.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr_inria_corese_core_shacl.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-core_src_main_java_fr_inria_corese_core_transform.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_corese-core.rst
+
+Files
+*****
+
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-core_src_main_java_fr_inria_corese_core_Graph.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-core_src_main_java_fr_inria_corese_core_load_Load.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-core_src_main_java_fr_inria_corese_core_api_Loader.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-core_src_main_java_fr_inria_corese_core_query_QueryProcess.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-core_src_main_java_fr_inria_corese_core_print_ResultFormat.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-core_src_main_java_fr_inria_corese_core_shacl_Shacl.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-core_src_main_java_fr_inria_corese_core_transform_Transformer.java.rst
+
+Pages
+*****
+
+
+.. toctree::
+   :maxdepth: 5
+
+   page_deprecated.rst

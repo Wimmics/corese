@@ -1,0 +1,868 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Getting Started With Corese-python (beta) &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'corese-python/Corese-library with Python';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Getting...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="getting-started-with-corese-python-beta">
+<h1>Getting Started With Corese-python (beta)<a class="headerlink" href="#getting-started-with-corese-python-beta" title="Permalink to this heading">#</a></h1>
+<section id="setup-and-run">
+<h2>1. Setup and run<a class="headerlink" href="#setup-and-run" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Install java and python</p></li>
+<li><p>Install python dependencies <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">py4j</span></code></p></li>
+<li><p>Download <a class="reference external" href="https://github.com/Wimmics/corese/releases/download/release-4.5.1/corese-library-python-4.5.1.jar">corese-library-python-4.5.1.jar</a></p></li>
+<li><p>Place in the same directory <code class="docutils literal notranslate"><span class="pre">corese-library-python-4.5.1.jar</span></code> and your code <code class="docutils literal notranslate"><span class="pre">myCode.py</span></code></p></li>
+<li><p>Run with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">myCode.py</span></code></p></li>
+</ol>
+</section>
+<section id="template">
+<h2>2. Template<a class="headerlink" href="#template" title="Permalink to this heading">#</a></h2>
+<p>Python script template:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">atexit</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+
+<span class="kn">from</span> <span class="nn">py4j.java_gateway</span> <span class="kn">import</span> <span class="n">JavaGateway</span>
+
+
+<span class="c1"># Start java gateway</span>
+<span class="n">java_process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+    <span class="p">[</span><span class="s1">&#39;java&#39;</span><span class="p">,</span> <span class="s1">&#39;-jar&#39;</span><span class="p">,</span> <span class="s1">&#39;-Dfile.encoding=UTF-8&#39;</span><span class="p">,</span> <span class="s1">&#39;corese-library-python-4.5.1.jar&#39;</span><span class="p">])</span>
+<span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">gateway</span> <span class="o">=</span> <span class="n">JavaGateway</span><span class="p">()</span>
+
+
+<span class="c1"># Stop java gateway at the enf od script</span>
+<span class="k">def</span> <span class="nf">exit_handler</span><span class="p">():</span>
+    <span class="n">gateway</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Gateway Server Stop!&#39;</span><span class="p">)</span>
+
+<span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">exit_handler</span><span class="p">)</span>
+
+
+<span class="c1">#######################</span>
+<span class="c1"># Type your code here #</span>
+<span class="c1">#######################</span>
+</pre></div>
+</div>
+</section>
+<section id="a-functional-example">
+<h2>3. A functional example<a class="headerlink" href="#a-functional-example" title="Permalink to this heading">#</a></h2>
+<p>Here is an example of a python script that shows how to :</p>
+<ul class="simple">
+<li><p>Build a graph by program (Corese API);</p></li>
+<li><p>Execute a SPARQL query;</p></li>
+<li><p>Load a graph from a file;</p></li>
+<li><p>Export a graph to a file.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">atexit</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+
+<span class="kn">from</span> <span class="nn">py4j.java_gateway</span> <span class="kn">import</span> <span class="n">JavaGateway</span>
+
+<span class="c1"># Start java gateway</span>
+<span class="n">java_process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+    <span class="p">[</span><span class="s1">&#39;java&#39;</span><span class="p">,</span> <span class="s1">&#39;-jar&#39;</span><span class="p">,</span> <span class="s1">&#39;-Dfile.encoding=UTF-8&#39;</span><span class="p">,</span> <span class="s1">&#39;corese-library-python-4.5.1.jar&#39;</span><span class="p">])</span>
+<span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">gateway</span> <span class="o">=</span> <span class="n">JavaGateway</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">exit_handler</span><span class="p">():</span>
+    <span class="c1"># Stop java gateway at the enf od script</span>
+    <span class="n">gateway</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Gateway Server Stop!&#39;</span><span class="p">)</span>
+
+
+<span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">exit_handler</span><span class="p">)</span>
+
+<span class="c1"># Import of class</span>
+<span class="n">Graph</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Graph</span>
+<span class="n">Load</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">Load</span>
+<span class="n">QueryProcess</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">QueryProcess</span>
+<span class="n">RDF</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">RDF</span>
+<span class="n">TripleFormat</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">print</span><span class="o">.</span><span class="n">TripleFormat</span>
+<span class="n">RDFFormat</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">print</span><span class="o">.</span><span class="n">RDFFormat</span>
+<span class="n">JSONLDFormat</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">print</span><span class="o">.</span><span class="n">JSONLDFormat</span>
+<span class="n">NTripleFormat</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">print</span><span class="o">.</span><span class="n">NTripleFormat</span>
+<span class="n">NQuadsFormat</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">print</span><span class="o">.</span><span class="n">NQuadsFormat</span>
+<span class="n">Shacl</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">jvm</span><span class="o">.</span><span class="n">fr</span><span class="o">.</span><span class="n">inria</span><span class="o">.</span><span class="n">corese</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">shacl</span><span class="o">.</span><span class="n">Shacl</span>
+
+<span class="c1">###############</span>
+<span class="c1"># Build Graph #</span>
+<span class="c1">###############</span>
+
+
+<span class="k">def</span> <span class="nf">BuildGraphCoreseApi</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a graph with a single statement (Edith Piaf is a singer) with the Corese API</span>
+<span class="sd">    :returns: graph with a single statement (Edith Piaf is a singer)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">corese_graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+
+    <span class="c1"># NameSpace</span>
+    <span class="n">ex</span> <span class="o">=</span> <span class="s2">&quot;http://example.org/&quot;</span>
+
+    <span class="c1"># Create and add statement: Edith Piaf is an Singer</span>
+    <span class="n">edith_Piaf_IRI</span> <span class="o">=</span> <span class="n">corese_graph</span><span class="o">.</span><span class="n">addResource</span><span class="p">(</span><span class="n">ex</span> <span class="o">+</span> <span class="s2">&quot;EdithPiaf&quot;</span><span class="p">)</span>
+    <span class="n">rdf_Type_Property</span> <span class="o">=</span> <span class="n">corese_graph</span><span class="o">.</span><span class="n">addProperty</span><span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">TYPE</span><span class="p">)</span>
+    <span class="n">singer_IRI</span> <span class="o">=</span> <span class="n">corese_graph</span><span class="o">.</span><span class="n">addResource</span><span class="p">(</span><span class="n">ex</span> <span class="o">+</span> <span class="s2">&quot;Singer&quot;</span><span class="p">)</span>
+
+    <span class="n">corese_graph</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">edith_Piaf_IRI</span><span class="p">,</span> <span class="n">rdf_Type_Property</span><span class="p">,</span> <span class="n">singer_IRI</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">corese_graph</span>
+
+<span class="c1">##########</span>
+<span class="c1"># Sparql #</span>
+<span class="c1">##########</span>
+
+
+<span class="k">def</span> <span class="nf">sparqlQuery</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run a query on a graph</span>
+
+<span class="sd">    :param graph: the graph on which the query is executed</span>
+<span class="sd">    :param query: query to run</span>
+<span class="sd">    :returns: query result</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">exec</span> <span class="o">=</span> <span class="n">QueryProcess</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">exec</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+<span class="c1">#########</span>
+<span class="c1"># SHACL #</span>
+<span class="c1">#########</span>
+
+<span class="k">def</span> <span class="nf">shaclValidation</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">shacl</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run a SHACL validation on a graph</span>
+
+<span class="sd">    :param graph: the graph on which the SHACL validation is executed</span>
+<span class="sd">    :param shacl: the SHACL graph</span>
+<span class="sd">    :returns: SHACL validation report</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shacl</span> <span class="o">=</span> <span class="n">Shacl</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">shacl</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">shacl</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="c1">#################</span>
+<span class="c1"># Load / Export #</span>
+<span class="c1">#################</span>
+
+
+<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="nb">format</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Export a graph to a file</span>
+
+<span class="sd">    :param graph: graph to export</span>
+<span class="sd">    :param format: format of export</span>
+<span class="sd">    :returns: the graph export</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;turtle&#39;</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">TripleFormat</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;rdfxml&#39;</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">RDFFormat</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;jsonld&#39;</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">JSONLDFormat</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;n3&#39;</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">NTripleFormat</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;n4&#39;</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">NQuadsFormat</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Format not supported : &#39;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">content</span>
+
+<span class="k">def</span> <span class="nf">writeToFile</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write content to a file</span>
+
+<span class="sd">    :param content: content to write</span>
+<span class="sd">    :param path: path of the file</span>
+<span class="sd">    :returns: the file write</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">file</span>
+
+<span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a graph from a local file or a URL</span>
+
+<span class="sd">    :param path: local path or a URL</span>
+<span class="sd">    :returns: the graph load</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+
+    <span class="n">ld</span> <span class="o">=</span> <span class="n">Load</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">ld</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">graph</span>
+
+<span class="c1">########</span>
+<span class="c1"># Main #</span>
+<span class="c1">########</span>
+
+
+<span class="k">def</span> <span class="nf">printTitle</span><span class="p">(</span><span class="n">title</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;== &quot;</span> <span class="o">+</span> <span class="n">title</span> <span class="o">+</span> <span class="s2">&quot; ==&quot;</span>
+    <span class="n">border</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">border</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">border</span><span class="p">)</span>
+
+
+<span class="c1">###</span>
+<span class="c1"># Build a graph with the Corese API</span>
+<span class="c1">###</span>
+<span class="n">printTitle</span><span class="p">(</span><span class="s2">&quot;Build a graph with the Corese API&quot;</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">BuildGraphCoreseApi</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Graph build ! (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; triplets)&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Print Graph:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">serialize</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s1">&#39;n4&#39;</span><span class="p">))</span>
+
+
+<span class="c1">###</span>
+<span class="c1"># SPARQL Query</span>
+<span class="c1">###</span>
+<span class="n">printTitle</span><span class="p">(</span><span class="s2">&quot;SPARQL Query&quot;</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span>
+    <span class="s2">&quot;https://raw.githubusercontent.com/stardog-union/stardog-tutorials/master/music/beatles.ttl&quot;</span><span class="p">)</span> <span class="c1"># Uri or path to the graph</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Graph load ! (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; triplets)&quot;</span><span class="p">)</span>
+
+<span class="c1"># List of U2 albums</span>
+<span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        prefix : &lt;http://stardog.com/tutorial/&gt;</span>
+
+<span class="s2">        SELECT ?member </span>
+<span class="s2">        WHERE {</span>
+<span class="s2">            ?The_Beatles :member ?member</span>
+<span class="s2">        }</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+
+<span class="nb">map</span> <span class="o">=</span> <span class="n">sparqlQuery</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Query result ! (List of members of bands </span><span class="se">\&quot;</span><span class="s2">The Beatles</span><span class="se">\&quot;</span><span class="s2">): &quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">map</span><span class="p">)</span>
+
+<span class="c1">###</span>
+<span class="c1"># SHACL Validation</span>
+<span class="c1">###</span>
+<span class="n">printTitle</span><span class="p">(</span><span class="s2">&quot;SHACL Validation&quot;</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span>
+    <span class="s2">&quot;https://files.inria.fr/corese/data/unit-test/beatles.ttl&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Graph load ! (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; triplets)&quot;</span><span class="p">)</span>
+
+<span class="n">shacl</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span>
+    <span class="s2">&quot;https://files.inria.fr/corese/data/unit-test/beatles-validator.ttl&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SHACL load ! (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">shacl</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; triplets)&quot;</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">shaclValidation</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">shacl</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SHACL validation report: &quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">serialize</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">&#39;turtle&#39;</span><span class="p">))</span>
+
+
+<span class="c1">###</span>
+<span class="c1"># Load / Export</span>
+<span class="c1">###</span>
+<span class="n">printTitle</span><span class="p">(</span><span class="s2">&quot;Load / Export&quot;</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span>
+    <span class="s2">&quot;https://raw.githubusercontent.com/stardog-union/stardog-tutorials/master/music/beatles.ttl&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Graph load ! (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; triplets)&quot;</span><span class="p">)</span>
+
+<span class="n">path_export_file</span> <span class="o">=</span> <span class="s2">&quot;export.rdf&quot;</span>
+<span class="n">writeToFile</span><span class="p">(</span><span class="n">serialize</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s1">&#39;turtle&#39;</span><span class="p">),</span> <span class="n">path_export_file</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Graph Export in file (&quot;</span> <span class="o">+</span> <span class="n">path_export_file</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Results :</p>
+<div class="highlight-plaintext notranslate"><div class="highlight"><pre><span></span>Loaded default config
+CoresePy4j gateway server started on port 25333
+
+
+
+=======================================
+== Build a graph with the Corese API ==
+=======================================
+Graph build ! (1 triplets)
+
+Print Graph:
+&lt;http://example.org/EdithPiaf&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.org/Singer&gt;  .
+
+
+
+
+==================
+== SPARQL Query ==
+==================
+Graph load ! (28 triplets)
+
+Query result ! (List of members of bands &quot;The Beatles&quot;): 
+01 ?member = &lt;http://stardog.com/tutorial/John_Lennon&gt;; 
+02 ?member = &lt;http://stardog.com/tutorial/Paul_McCartney&gt;; 
+03 ?member = &lt;http://stardog.com/tutorial/Ringo_Starr&gt;; 
+04 ?member = &lt;http://stardog.com/tutorial/George_Harrison&gt;; 
+
+
+
+
+======================
+== SHACL Validation ==
+======================
+Graph load ! (28 triplets)
+SHACL load ! (46 triplets)
+SHACL validation report: 
+@prefix xsh: &lt;http://www.w3.org/ns/shacl#&gt; .
+@prefix sh: &lt;http://www.w3.org/ns/shacl#&gt; .
+@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
+
+_:b8 a sh:ValidationReport ;
+  sh:conforms true .
+
+
+
+
+
+===================
+== Load / Export ==
+===================
+Graph load ! (28 triplets)
+Graph Export in file (export.rdf)
+
+
+
+Gateway Server Stop!
+</pre></div>
+</div>
+</section>
+<section id="options">
+<h2>4. Options<a class="headerlink" href="#options" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-p</span></code>, <code class="docutils literal notranslate"><span class="pre">--port</span></code> : port of the java gateway server (default: 25333).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-c</span></code>, <code class="docutils literal notranslate"><span class="pre">--config</span></code>, <code class="docutils literal notranslate"><span class="pre">--init</span></code> : path of the Corese config file, (See a example on <a class="reference external" href="https://github.com/Wimmics/corese/blob/master/corese-core/src/main/resources/data/corese/property.properties">GitHub</a>).</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-and-run">1. Setup and run</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#template">2. Template</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-functional-example">3. A functional example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options">4. Options</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/corese-python/Corese-library with Python.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

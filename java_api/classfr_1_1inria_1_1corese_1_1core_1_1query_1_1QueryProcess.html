@@ -1,0 +1,1321 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Class QueryProcess &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'java_api/classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Class Shacl" href="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl.html" />
+    <link rel="prev" title="Class ResultFormat" href="classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli_ref/cli_root.html">CLI</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_sparql.html">sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_convert.html">convert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_shacl.html">shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_remote_sparql.html">remote-sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_canonicalize.html">canonicalize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../rest_api/api_root.html">REST API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql.html">/sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_load.html">/sparql/load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_reset.html">/sparql/reset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_d3.html">/sparql/d3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/spin_tospin.html">/spin/tospin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/rdf_graph_store.html">/rdf-graph-store</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="library_root.html">Java API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html">Class Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1CompareNode.html">Class Graph::CompareNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1GTable.html">Class Graph::GTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1TreeNode.html">Class Graph::TreeNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load.html">Class Load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat.html">Class ResultFormat</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Class QueryProcess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl.html">Class Shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1transform_1_1Transformer.html">Class Transformer</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../apis.html" class="nav-link">CORESE APIs</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="library_root.html" class="nav-link">Java API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Class QueryProcess</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="class-queryprocess">
+<span id="exhale-class-classfr-1-1inria-1-1corese-1-1core-1-1query-1-1queryprocess"></span><h1>Class QueryProcess<a class="headerlink" href="#class-queryprocess" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_corese-core_src_main_java_fr_inria_corese_core_query_QueryProcess.java.html#file-corese-core-src-main-java-fr-inria-corese-core-query-queryprocess-java"><span class="std std-ref">File QueryProcess.java</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this heading">#</a></h2>
+<section id="base-type">
+<h3>Base Type<a class="headerlink" href="#base-type" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">QuerySolver</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this heading">#</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcessE">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcessE"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcessE"></span><span id="fr::inria::corese::core::query::QueryProcess"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QueryProcess</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">QuerySolver</span></span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Evaluator of SPARQL query by KGRAM. </p>
+<p>Query and Update are synchronized by a read/write lock on the graph There may be several query in parallel OR only one update In addition, graph.init() is synchronized because it may modify the graph</p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Olivier Corby, Edelweiss, INRIA 2010 </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess12QueryProcessEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess12QueryProcessEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess12QueryProcessEv"></span><span id="fr::inria::corese::core::query::QueryProcess::QueryProcess"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a6f6b9a19ff6d9870a58137511128af47"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QueryProcess</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess12QueryProcessEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess17defineDataManagerE11DataManager">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess17defineDataManagerE11DataManager"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess17defineDataManagerE11DataManager"></span><span id="fr::inria::corese::core::query::QueryProcess::defineDataManager__DataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a53c11f4dc0a57e86f839e6b40754582c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">defineDataManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">DataManager</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dm</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess17defineDataManagerE11DataManager" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess4copyEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess4copyEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess4copyEv"></span><span id="fr::inria::corese::core::query::QueryProcess::copy"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a1bcb567556c72bb80f23ba968bd123c1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copy</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess4copyEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess9setLoaderE6Loader">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess9setLoaderE6Loader"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess9setLoaderE6Loader"></span><span id="fr::inria::corese::core::query::QueryProcess::setLoader__Loader"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a89e383e357e07b12f332e1925abbd4ac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setLoader</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Loader</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ld</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess9setLoaderE6Loader" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess9getLoaderEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess9getLoaderEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess9getLoaderEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getLoader"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ab62ca3947a29db127f62feea02e6d822"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Loader</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLoader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess9getLoaderEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7isMatchEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7isMatchEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7isMatchEv"></span><span id="fr::inria::corese::core::query::QueryProcess::isMatch"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a40705866dcfa46b218640252491d0ee4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isMatch</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7isMatchEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess3addE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess3addE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess3addE5Graph"></span><span id="fr::inria::corese::core::query::QueryProcess::add__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1abb01b643107fd24e5819e95b05ec82e1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Producer</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">add</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess3addE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6updateE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6updateE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6updateE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::update__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a3a7813e0dfeff8ad4b296e1f823c7837"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6updateE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p></p>
+<p>API for query </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::query__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a5b7ea291a87e61d5e9f94da78e1b82f3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess11queryTurtleE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess11queryTurtleE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess11queryTurtleE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::queryTurtle__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a7bb1da7dcfaea008bd90acc5d31db3d9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">queryTurtle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rdf</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess11queryTurtleE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess11queryTurtleE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess11queryTurtleE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess11queryTurtleE5Graph"></span><span id="fr::inria::corese::core::query::QueryProcess::queryTurtle__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aecbbdfdb8d7696668dfaa68cdb198bcd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">queryTurtle</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess11queryTurtleE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess9queryTrigE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess9queryTrigE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess9queryTrigE5Graph"></span><span id="fr::inria::corese::core::query::QueryProcess::queryTrig__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aea37b48c15cd477845c8f4549c650e67"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">queryTrig</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess9queryTrigE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE5Graph"></span><span id="fr::inria::corese::core::query::QueryProcess::query__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a56cbae8113a7bfef4c31f068e2262a7a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Mapping7Dataset">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE6String7Mapping7Dataset"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE6String7Mapping7Dataset"></span><span id="fr::inria::corese::core::query::QueryProcess::query__String.Mapping.Dataset"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a5b2c3ed3718066bac2549a08fa5003d3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span>, <span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Mapping7Dataset" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>defaut and named specify a Dataset if the query has no from/using (resp. </p>
+<p>named), kgram use defaut (resp. named) if it exist for update, defaut is also used in the delete clause (when there is no with in the query) W3C sparql test cases use this function </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Dataset">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE6String7Dataset"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE6String7Dataset"></span><span id="fr::inria::corese::core::query::QueryProcess::query__String.Dataset"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a0d548cfd6f4ad79f759b9a45bde140f5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Dataset" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Context">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE6String7Context"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE6String7Context"></span><span id="fr::inria::corese::core::query::QueryProcess::query__String.Context"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1affaee0f7a1779e8d75ba75c4e26ce34c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Context</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">c</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Context" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String11AccessRight">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE6String11AccessRight"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE6String11AccessRight"></span><span id="fr::inria::corese::core::query::QueryProcess::query__String.AccessRight"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a91f3fb627739a67c7465a442dcf4a5b6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">AccessRight</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">access</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String11AccessRight" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Mapping">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE6String7Mapping"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE6String7Mapping"></span><span id="fr::inria::corese::core::query::QueryProcess::query__String.Mapping"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a11e461e549d707749446477b39ecf869"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Mapping" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Binding">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE6String7Binding"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE6String7Binding"></span><span id="fr::inria::corese::core::query::QueryProcess::query__String.Binding"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a66902ea7a95ae5151317de2bef680388"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Binding" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Context7Binding">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE6String7Context7Binding"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE6String7Context7Binding"></span><span id="fr::inria::corese::core::query::QueryProcess::query__String.Context.Binding"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aa8c8d8d93b2e16ce09397bda64cac208"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Context</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">c</span></span>, <span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String7Context7Binding" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String14ProcessVisitor">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE6String14ProcessVisitor"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE6String14ProcessVisitor"></span><span id="fr::inria::corese::core::query::QueryProcess::query__String.ProcessVisitor"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a08829d4d70de424971c756dc01c89f7a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">ProcessVisitor</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vis</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE6String14ProcessVisitor" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7compileE6String7Dataset">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7compileE6String7Dataset"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7compileE6String7Dataset"></span><span id="fr::inria::corese::core::query::QueryProcess::compile__String.Dataset"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1afa1f1e371e0f86b654634b3749b82ac3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7compileE6String7Dataset" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess8modifierE6String8Mappings">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess8modifierE6String8Mappings"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess8modifierE6String8Mappings"></span><span id="fr::inria::corese::core::query::QueryProcess::modifier__String.Mappings"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a94ff4e3ae8ddc328d4363fbf34a27d7e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">modifier</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span>, <span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess8modifierE6String8Mappings" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7compileE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7compileE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7compileE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::compile__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ab59e91b64a6717e409e71b43776013de"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7compileE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7compileE6String7Context">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7compileE6String7Context"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7compileE6String7Context"></span><span id="fr::inria::corese::core::query::QueryProcess::compile__String.Context"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a9c9c10f59586c65ea09a329a9d9dbef7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compile</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Context</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">c</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7compileE6String7Context" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess3astE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess3astE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess3astE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::ast__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a3fbeb45e5e26ba8ab52f9792c1c5fa28"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">ASTQuery</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ast</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess3astE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE5Query">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE5Query"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE5Query"></span><span id="fr::inria::corese::core::query::QueryProcess::query__Query"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a92c55a0d3fc0f64b11bb007f771276f2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE5Query" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>defaut and named specify a Dataset if the query has no from/using (resp. </p>
+<p>using named), kgram use this defaut (resp. named) if it exist for update, this using is <em>not</em> used in the delete clause W3C sparql protocol use this function </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess4evalE5Query7Mapping8Producer">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess4evalE5Query7Mapping8Producer"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess4evalE5Query7Mapping8Producer"></span><span id="fr::inria::corese::core::query::QueryProcess::eval__Query.Mapping.Producer"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a2e6bc0f76752b6c32cb98bc4334f0400"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">eval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">query</span></span>, <span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">Producer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess4evalE5Query7Mapping8Producer" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Use case: LDScript function execute query(construct where) or query(insert where) called by Interpreter exist() </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess4evalE4Node5Query7Mapping8Producer">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess4evalE4Node5Query7Mapping8Producer"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess4evalE4Node5Query7Mapping8Producer"></span><span id="fr::inria::corese::core::query::QueryProcess::eval__Node.Query.Mapping.Producer"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aaadd6492930e24a69fb0809e56ce9460"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">eval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gNode</span></span>, <span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">query</span></span>, <span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">Producer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess4evalE4Node5Query7Mapping8Producer" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess8queryOldE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess8queryOldE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess8queryOldE5Graph"></span><span id="fr::inria::corese::core::query::QueryProcess::queryOld__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a64ed0832d830d4b8a66553fbae4c467c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">queryOld</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess8queryOldE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>RDF <a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#classfr_1_1inria_1_1corese_1_1core_1_1Graph"><span class="std std-ref">Graph</span></a> g considered as a Query <a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#classfr_1_1inria_1_1corese_1_1core_1_1Graph"><span class="std std-ref">Graph</span></a> Build a SPARQL BGP with g Generate and eval q KGRAM Query. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE10QueryGraph">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE10QueryGraph"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE10QueryGraph"></span><span id="fr::inria::corese::core::query::QueryProcess::query__QueryGraph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1af428903422478cc6072820956aac52b0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">QueryGraph</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">qg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE10QueryGraph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10queryGraphE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10queryGraphE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10queryGraphE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::queryGraph__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aa75d8c09534dac11759685b35ed2827d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">queryGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10queryGraphE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>q is construct {} where {} eval the construct consider the result as a query graph execute the query graph </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6sparqlE6String7Dataset">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6sparqlE6String7Dataset"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6sparqlE6String7Dataset"></span><span id="fr::inria::corese::core::query::QueryProcess::sparql__String.Dataset"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a5fa546e1fef478c129fd62fda99347fd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sparql</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6sparqlE6String7Dataset" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>KGRAM + full SPARQL compliance : - type of arguments of functions (e.g. </p>
+<p>sparql regex require string) - variable in select with group by - specify the dataset </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6sparqlE6String7Dataseti">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6sparqlE6String7Dataseti"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6sparqlE6String7Dataseti"></span><span id="fr::inria::corese::core::query::QueryProcess::sparql__String.Dataset.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ad5a402fa747f1d95c6d67a6f3413e692"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sparql</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ds</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">entail</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6sparqlE6String7Dataseti" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery"></span><span id="fr::inria::corese::core::query::QueryProcess::query__ASTQuery"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a5d2b4d0c99396d335fd866106fdff908"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ASTQuery</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ast</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery7Binding">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery7Binding"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery7Binding"></span><span id="fr::inria::corese::core::query::QueryProcess::query__ASTQuery.Binding"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a0d1a66902ac76bd7838fb5432904e91a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ASTQuery</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ast</span></span>, <span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery7Binding" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery7Dataset">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery7Dataset"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery7Dataset"></span><span id="fr::inria::corese::core::query::QueryProcess::query__ASTQuery.Dataset"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1abc2d3cefebefd6403fc5895f7904190d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ASTQuery</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ast</span></span>, <span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5queryE8ASTQuery7Dataset" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6updateE8ASTQuery">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6updateE8ASTQuery"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6updateE8ASTQuery"></span><span id="fr::inria::corese::core::query::QueryProcess::update__ASTQuery"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ada82d50049476363e7a8345463bdc053"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ASTQuery</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ast</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6updateE8ASTQuery" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>equivalent of std query(ast) but for update </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::sparqlQuery__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a0940f7f94d692da6599813b335025996"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sparqlQuery</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p></p>
+<p>Secure Query OR Update </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE6String7Mapping7Dataset">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE6String7Mapping7Dataset"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE6String7Mapping7Dataset"></span><span id="fr::inria::corese::core::query::QueryProcess::sparqlQuery__String.Mapping.Dataset"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a5544676b39204d69220df47b54760fd2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sparqlQuery</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span>, <span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span>, <span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE6String7Mapping7Dataset" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE5Query7Mapping7Dataset">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE5Query7Mapping7Dataset"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE5Query7Mapping7Dataset"></span><span id="fr::inria::corese::core::query::QueryProcess::sparqlQuery__Query.Mapping.Dataset"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ac4a30b3e4eca2609a50c0f73f1eba6e0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sparqlQuery</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span>, <span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess11sparqlQueryE5Query7Mapping7Dataset" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess12sparqlUpdateE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess12sparqlUpdateE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess12sparqlUpdateE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::sparqlUpdate__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a066b90a0aa4c2f170aaa83440e94181a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sparqlUpdate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess12sparqlUpdateE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess17sparqlQueryUpdateE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess17sparqlQueryUpdateE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess17sparqlQueryUpdateE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::sparqlQueryUpdate__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a128eeee39a158ad529abe705c9303ca9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sparqlQueryUpdate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">squery</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess17sparqlQueryUpdateE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess12log2MappingsE10ContextLog">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess12log2MappingsE10ContextLog"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess12log2MappingsE10ContextLog"></span><span id="fr::inria::corese::core::query::QueryProcess::log2Mappings__ContextLog"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1abb839e67d5481ffc5f3bf6510ee1c0dc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">log2Mappings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ContextLog</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">log</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess12log2MappingsE10ContextLog" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess12log2MappingsE10ContextLog7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess12log2MappingsE10ContextLog7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess12log2MappingsE10ContextLog7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::log2Mappings__ContextLog.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a3649ffad7c76b318684303e7b5457258"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">log2Mappings</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ContextLog</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">log</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">blog</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess12log2MappingsE10ContextLog7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10basicQueryE4Node5Query7Mapping">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10basicQueryE4Node5Query7Mapping"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10basicQueryE4Node5Query7Mapping"></span><span id="fr::inria::corese::core::query::QueryProcess::basicQuery__Node.Query.Mapping"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ab5f10f2c2ec815522845a844f90129a3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">basicQuery</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gNode</span></span>, <span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10basicQueryE4Node5Query7Mapping" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess15getEventManagerEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess15getEventManagerEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess15getEventManagerEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getEventManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a2ce4bbef257ede93b84859bb04781b85"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">EventManager</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getEventManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess15getEventManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess21getUpdateGraphManagerEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess21getUpdateGraphManagerEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess21getUpdateGraphManagerEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getUpdateGraphManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a2df38d19b2b2ecea8987d26672da639c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">GraphManager</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getUpdateGraphManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess21getUpdateGraphManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Proxy to graph for sparql update </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess8getGraphE8Mappings">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess8getGraphE8Mappings"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess8getGraphE8Mappings"></span><span id="fr::inria::corese::core::query::QueryProcess::getGraph__Mappings"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ae18d8956c3b69ad24154f45d7e4dad06"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess8getGraphE8Mappings" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess8getGraphEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess8getGraphEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess8getGraphEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getGraph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a68094105c2273acfa51e51a1fd41cac7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getGraph</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess8getGraphEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10beforeLoadE9IDatatype7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10beforeLoadE9IDatatype7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10beforeLoadE9IDatatype7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::beforeLoad__IDatatype.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a09eb9b08e39d1dede9412bc897eec322"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">beforeLoad</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dt</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10beforeLoadE9IDatatype7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess9afterLoadE9IDatatype7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess9afterLoadE9IDatatype7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess9afterLoadE9IDatatype7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::afterLoad__IDatatype.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a940ca9a4837de4f1563bbecebc1c803c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">afterLoad</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dt</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess9afterLoadE9IDatatype7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6skolemE8Mappings">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6skolemE8Mappings"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6skolemE8Mappings"></span><span id="fr::inria::corese::core::query::QueryProcess::skolem__Mappings"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ae8563d9c32093d049c9c84bb106142f2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">skolem</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6skolemE8Mappings" title="Permalink to this definition">#</a><br /></dt>
+<dd><p></p>
+<p>skolemize the blank nodes of the result Mappings </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess8logStartE5Query">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess8logStartE5Query"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess8logStartE5Query"></span><span id="fr::inria::corese::core::query::QueryProcess::logStart__Query"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1abfa048188ec069902c066c93a482b112"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">logStart</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">query</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess8logStartE5Query" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess9logFinishE5Query8Mappings">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess9logFinishE5Query8Mappings"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess9logFinishE5Query8Mappings"></span><span id="fr::inria::corese::core::query::QueryProcess::logFinish__Query.Mappings"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a10b84cf77c74909fc509563fa0b656e2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">logFinish</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">query</span></span>, <span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess9logFinishE5Query8Mappings" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5closeEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5closeEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5closeEv"></span><span id="fr::inria::corese::core::query::QueryProcess::close"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a5ae591df94fc66ccb85cbb6565368bca"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">close</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5closeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5eventE5Event5Event6Object">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5eventE5Event5Event6Object"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5eventE5Event5Event6Object"></span><span id="fr::inria::corese::core::query::QueryProcess::event__Event.Event.Object"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a21d3679e6f3a8d6645d17cf273e0057d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">event</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Event</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">Event</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">e</span></span>, <span class="n"><span class="pre">Object</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">o</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5eventE5Event5Event6Object" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Logger xt:method(us:start, us:Event, event, obj) Use case: event logger. </p>
+<p><dl>
+<dt class="sig sig-object cpp">
+<a class="reference internal" href="page_deprecated.html#deprecated_1_deprecated000004"><span class="std std-ref"><span class="pre">Deprecated:</span></span></a></dt>
+<dd></dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a920c6893b6f15f540055fdc21c0796ad"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">IDatatype</span> <span class="pre">method</span> <span class="pre">(String</span> <span class="pre">name,</span> <span class="pre">String</span> <span class="pre">type,</span> <span class="pre">IDatatype[]</span> <span class="pre">param)</span></span></dt>
+<dd><p>method call: name of method, name of type </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7funcallE6StringDp9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7funcallE6StringDp9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7funcallE6StringDp9IDatatype"></span><span id="fr::inria::corese::core::query::QueryProcess::funcall__String.IDatatypeDp"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ab7c9fa4832a1168c8f88c8462042d8f7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">funcall</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">IDatatype</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">param</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7funcallE6StringDp9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Execute LDScript function defined as. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7funcallE6String7BindingDp9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7funcallE6String7BindingDp9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7funcallE6String7BindingDp9IDatatype"></span><span id="fr::inria::corese::core::query::QueryProcess::funcall__String.Binding.IDatatypeDp"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ab1787092dae8d7c04ec47f27bf255e0e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">funcall</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">IDatatype</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">param</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7funcallE6String7BindingDp9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7funcallE6String7ContextDp9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7funcallE6String7ContextDp9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7funcallE6String7ContextDp9IDatatype"></span><span id="fr::inria::corese::core::query::QueryProcess::funcall__String.Context.IDatatypeDp"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a92f96a81426fca52abfa291080dbd4a3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">funcall</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">Context</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">c</span></span>, <span class="n"><span class="pre">IDatatype</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">param</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7funcallE6String7ContextDp9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7funcallE6String7Context7BindingDp9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7funcallE6String7Context7BindingDp9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7funcallE6String7Context7BindingDp9IDatatype"></span><span id="fr::inria::corese::core::query::QueryProcess::funcall__String.Context.Binding.IDatatypeDp"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a3c6275c102e2878c4b275e68c996cf21"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">funcall</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">Context</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">c</span></span>, <span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="n"><span class="pre">IDatatype</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">param</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7funcallE6String7Context7BindingDp9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess13getCreateEvalEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess13getCreateEvalEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess13getCreateEvalEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getCreateEval"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a03ed4c0f9dee0849fd9db7a116ecbaf2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Eval</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getCreateEval</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess13getCreateEvalEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess4initE5Query7Mapping">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess4initE5Query7Mapping"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess4initE5Query7Mapping"></span><span id="fr::inria::corese::core::query::QueryProcess::init__Query.Mapping"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a4eb49247f2a4a9abb9155897e4e2b6bd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span>, <span class="n"><span class="pre">Mapping</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess4initE5Query7Mapping" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>event : take care of query  functions create current Eval with a ProcessVisitor </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7prepareEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7prepareEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7prepareEv"></span><span id="fr::inria::corese::core::query::QueryProcess::prepare"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a1825b40ca3bc3a1ba67fdb58fac5015c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">prepare</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7prepareEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>call function us:<a class="reference internal" href="#classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a1825b40ca3bc3a1ba67fdb58fac5015c"><span class="std std-ref">prepare()</span></a> {} before lock graph to complete initialization before query processing to be called explicitely by user use case: GUI QueryExec call <a class="reference internal" href="#classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a1825b40ca3bc3a1ba67fdb58fac5015c"><span class="std std-ref">prepare()</span></a> use case: xt:entailment() </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess17getDefaultVisitorEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess17getDefaultVisitorEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess17getDefaultVisitorEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getDefaultVisitor"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ab9f5bd9d8753b7d45f21c369e07a1a72"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">ProcessVisitor</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDefaultVisitor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess17getDefaultVisitorEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10getVisitorEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10getVisitorEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10getVisitorEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getVisitor"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a76a408d93369ddb825fdbd40b90d0560"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">ProcessVisitor</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getVisitor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10getVisitorEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess18getTemplateVisitorEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess18getTemplateVisitorEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess18getTemplateVisitorEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getTemplateVisitor"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ab1acb9d3af39904e6a809a06bf869c60"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">TemplateVisitor</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getTemplateVisitor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess18getTemplateVisitorEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess20createProcessVisitorE4Eval">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess20createProcessVisitorE4Eval"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess20createProcessVisitorE4Eval"></span><span id="fr::inria::corese::core::query::QueryProcess::createProcessVisitor__Eval"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a3feb8e3614f6e3e41c5b192542de70b9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">ProcessVisitor</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createProcessVisitor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Eval</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eval</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess20createProcessVisitorE4Eval" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess20createProcessVisitorE4Eval6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess20createProcessVisitorE4Eval6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess20createProcessVisitorE4Eval6String"></span><span id="fr::inria::corese::core::query::QueryProcess::createProcessVisitor__Eval.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a2ec2fc53bcd54e3c5f980a4ce69e4bdd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">ProcessVisitor</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createProcessVisitor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Eval</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eval</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess20createProcessVisitorE4Eval6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a55726196b47acecff5f6bfead77bb791"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">Function</span> <span class="pre">getFunction</span> <span class="pre">(String</span> <span class="pre">name,</span> <span class="pre">String</span> <span class="pre">type,</span> <span class="pre">IDatatype[]</span> <span class="pre">param)</span></span></dt>
+<dd><p>Search a method. </p>
+<p>us:Event us:start(?e, ?o) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess5parseE6String5Level">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess5parseE6String5Level"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess5parseE6String5Level"></span><span id="fr::inria::corese::core::query::QueryProcess::parse__String.Level"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a4e342ffc62a066fdd1706b66a6e3e68d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">ASTQuery</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">Level</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess5parseE6String5Level" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>&lt;uri&gt; use case: FunctionCompiler  &lt;uri&gt; </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10parseQueryE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10parseQueryE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10parseQueryE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::parseQuery__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a94caac88ab1db7337a011cb3368f770e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseQuery</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10parseQueryE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>1- Linked Function 2- owl:imports </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10parseQueryE6String5Level">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10parseQueryE6String5Level"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10parseQueryE6String5Level"></span><span id="fr::inria::corese::core::query::QueryProcess::parseQuery__String.Level"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aade1cb95100ad6da9893b9d228481be1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parseQuery</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">Level</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10parseQueryE6String5Level" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7importsE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7importsE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7importsE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::imports__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a061d7db16d1a43f30d1a0354afae20af"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">imports</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7importsE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7importsE6String7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7importsE6String7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7importsE6String7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::imports__String.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a7f8446cc5e301189d31cbbcd3b1dd5de"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">imports</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pub</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7importsE6String7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess17getLinkedFunctionE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess17getLinkedFunctionE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess17getLinkedFunctionE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::getLinkedFunction__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a6695f766e2de0f09d5415f0a58f871b6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLinkedFunction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">label</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess17getLinkedFunctionE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess16defineFederationE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess16defineFederationE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess16defineFederationE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::defineFederation__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a8901676396a59df0b1e858f62e4f6574"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">defineFederation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess16defineFederationE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess16defineFederationE6String4ListI6StringE">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess16defineFederationE6String4ListI6StringE"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess16defineFederationE6String4ListI6StringE"></span><span id="fr::inria::corese::core::query::QueryProcess::defineFederation__String.List:String:"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aa887759808b5d7e0a77556a429369532"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">defineFederation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">List</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess16defineFederationE6String4ListI6StringE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess16defineFederationE6StringDp6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess16defineFederationE6StringDp6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess16defineFederationE6StringDp6String"></span><span id="fr::inria::corese::core::query::QueryProcess::defineFederation__String.StringDp"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1acca06ac6186d19b7a7b5379ae355a707"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">defineFederation</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">list</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess16defineFederationE6StringDp6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess17getExceptionGraphE8Mappings">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess17getExceptionGraphE8Mappings"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess17getExceptionGraphE8Mappings"></span><span id="fr::inria::corese::core::query::QueryProcess::getExceptionGraph__Mappings"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a7f947ecb3480b9cf15cc71b66d91c2b4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getExceptionGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess17getExceptionGraphE8Mappings" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess13getLogManagerE8Mappings">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess13getLogManagerE8Mappings"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess13getLogManagerE8Mappings"></span><span id="fr::inria::corese::core::query::QueryProcess::getLogManager__Mappings"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ac74540fbb14e2cf02c7a491264b78de1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">LogManager</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLogManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess13getLogManagerE8Mappings" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Manager for local and remote endpoint log getLinkList() is a list of link href url of log document recorded in AST Context use case: service <a class="reference external" href="http://corese.inria.fr/d2kab/sparql">http://corese.inria.fr/d2kab/sparql</a> generates a log document on corese server with URL <a class="reference external" href="http://corese.inria.fr/log/url.ttl">http://corese.inria.fr/log/url.ttl</a> Query Results XML format contains &lt;link href=”http://corese.inria.fr/log/url.ttl”&gt; client receive result and parse link url. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10getMessageE8Mappings">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10getMessageE8Mappings"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10getMessageE8Mappings"></span><span id="fr::inria::corese::core::query::QueryProcess::getMessage__Mappings"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1abd8127eb1ca7bb8d9ae293fef004067f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">JSONObject</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getMessage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10getMessageE8Mappings" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess16getStringMessageE8Mappings">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess16getStringMessageE8Mappings"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess16getStringMessageE8Mappings"></span><span id="fr::inria::corese::core::query::QueryProcess::getStringMessage__Mappings"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a88d34ec82682e791038d0c53ba266daa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getStringMessage</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Mappings</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess16getStringMessageE8Mappings" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess21getQueryProcessUpdateEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess21getQueryProcessUpdateEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess21getQueryProcessUpdateEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getQueryProcessUpdate"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a4431906ec67fb78efead788850ba34e0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">QueryProcessUpdate</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getQueryProcessUpdate</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess21getQueryProcessUpdateEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess21setQueryProcessUpdateE18QueryProcessUpdate">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess21setQueryProcessUpdateE18QueryProcessUpdate"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess21setQueryProcessUpdateE18QueryProcessUpdate"></span><span id="fr::inria::corese::core::query::QueryProcess::setQueryProcessUpdate__QueryProcessUpdate"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a7ab031c6ba22f87ade59775c667b3e9e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setQueryProcessUpdate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">QueryProcessUpdate</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">queryProcessUpdate</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess21setQueryProcessUpdateE18QueryProcessUpdate" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess16getLocalProducerEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess16getLocalProducerEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess16getLocalProducerEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getLocalProducer"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aed4b86e3d3bda3118f5e2be0fca227a0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">ProducerImpl</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getLocalProducer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess16getLocalProducerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess16setLocalProducerE12ProducerImpl">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess16setLocalProducerE12ProducerImpl"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess16setLocalProducerE12ProducerImpl"></span><span id="fr::inria::corese::core::query::QueryProcess::setLocalProducer__ProducerImpl"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a2edb4a0cc7936b5698257c1110432f96"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setLocalProducer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ProducerImpl</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">localProducer</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess16setLocalProducerE12ProducerImpl" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess14getDataManagerEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess14getDataManagerEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess14getDataManagerEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getDataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aa5c394d6931c7735b29dc2a933603b75"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">DataManager</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDataManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess14getDataManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess14hasDataManagerEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess14hasDataManagerEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess14hasDataManagerEv"></span><span id="fr::inria::corese::core::query::QueryProcess::hasDataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1adc82e8d6a62495b72386a1b054fadccc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hasDataManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess14hasDataManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess13getDataBrokerEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess13getDataBrokerEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess13getDataBrokerEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getDataBroker"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a40bf01264e0f45b27a67a66b24632954"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">DataBroker</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDataBroker</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess13getDataBrokerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess19getDataBrokerUpdateEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess19getDataBrokerUpdateEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess19getDataBrokerUpdateEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getDataBrokerUpdate"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ac6bd27914293c7f33eaaa0a034394faa"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">DataBrokerConstruct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDataBrokerUpdate</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess19getDataBrokerUpdateEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess19setDataBrokerUpdateE19DataBrokerConstruct">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess19setDataBrokerUpdateE19DataBrokerConstruct"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess19setDataBrokerUpdateE19DataBrokerConstruct"></span><span id="fr::inria::corese::core::query::QueryProcess::setDataBrokerUpdate__DataBrokerConstruct"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a18fed68764af8f78562a7fcfb857b884"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setDataBrokerUpdate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">DataBrokerConstruct</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataBrokerUpdate</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess19setDataBrokerUpdateE19DataBrokerConstruct" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess20isProcessTransactionEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess20isProcessTransactionEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess20isProcessTransactionEv"></span><span id="fr::inria::corese::core::query::QueryProcess::isProcessTransaction"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a312f408ce5dda1485b0bf7b6b6ac632c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isProcessTransaction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess20isProcessTransactionEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess21setProcessTransactionE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess21setProcessTransactionE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess21setProcessTransactionE7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::setProcessTransaction__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a646e56a8d55e2b6572c1e3324f96c07f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setProcessTransaction</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">processTransaction</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess21setProcessTransactionE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10startQueryEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10startQueryEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10startQueryEv"></span><span id="fr::inria::corese::core::query::QueryProcess::startQuery"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1affc5bedf7a694336af8e0ea6a79de0e0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">startQuery</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10startQueryEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess8endQueryEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess8endQueryEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess8endQueryEv"></span><span id="fr::inria::corese::core::query::QueryProcess::endQuery"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a8f8f404142170c9a355a8a26950bdca9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">endQuery</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess8endQueryEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess11startUpdateEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess11startUpdateEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess11startUpdateEv"></span><span id="fr::inria::corese::core::query::QueryProcess::startUpdate"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ab0581a220aa180ef0ecdeaa44f43a473"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">startUpdate</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess11startUpdateEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess9endUpdateEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess9endUpdateEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess9endUpdateEv"></span><span id="fr::inria::corese::core::query::QueryProcess::endUpdate"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ae75638d96ce77bea32eb76333b76cbc5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">endUpdate</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess9endUpdateEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6createEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6createEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6createEv"></span><span id="fr::inria::corese::core::query::QueryProcess::create"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a54c60be7acd3d6702ceb439079c3248a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6createEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6createE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6createE5Graph"></span><span id="fr::inria::corese::core::query::QueryProcess::create__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aee2f0a09b2d58b022571d0b2c8a38844"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE11DataManager">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6createE11DataManager"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6createE11DataManager"></span><span id="fr::inria::corese::core::query::QueryProcess::create__DataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ac9d832fde036815ab30d17f4c7d04cb5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">DataManager</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dm</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE11DataManager" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Query processor for external graph Provide DataManager for query and update of external graph DataManager is stored in ProducerImpl DataManager is used when create GraphManager for update There is still a local corese graph for compatibility Use of DataManager is done in core.producer.DataBrokerExtern and core.producer.DataBrokerUpdateExtern SPARQL construct where return a corese graph. </p>
+<p>Query processor for external graph Provide DataManager for query and update of external graph DataManager is stored in ProducerImpl DataManager is used when create GraphManager for update There is still a local corese graph for compatibility Use of DataManager is done in core.producer.DataBrokerExtern and core.producer.DataBrokerUpdateExtern SPARQL construct where return a corese graph </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE5Graph11DataManager">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6createE5Graph11DataManager"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6createE5Graph11DataManager"></span><span id="fr::inria::corese::core::query::QueryProcess::create__Graph.DataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a8a8cf481a0c2aaaa21163884c5097dc6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <span class="n"><span class="pre">DataManager</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dm</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE5Graph11DataManager" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a7f7dfbcc95acea51d2e084e3422f08ce"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">inline</span> <span class="pre">QueryProcess</span> <span class="pre">create</span> <span class="pre">(Graph</span> <span class="pre">g,</span> <span class="pre">DataManager[]</span> <span class="pre">dmList)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE5Graph7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6createE5Graph7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6createE5Graph7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::create__Graph.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a6e50c53358d5db2186b0e659bbfd3fe2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isMatch</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE5Graph7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>isMatch = true: ?x a h:Person return one occurrence for each instance of Person isMatch = false: ?x a h:Person return all occurrences for each instance of Person where the instance has several types which match Person, such as x a h:Man, h:Person default isMatch = false In addition, each Producer perform local Matcher.match() on its own graph for subsumption Hence each graph can have its own ontology and return one occurrence of each resource for ?x rdf:type aClass isMatch = false: (default) Global producer perform Matcher.match() </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess9stdCreateE5Graph7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess9stdCreateE5Graph7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess9stdCreateE5Graph7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::stdCreate__Graph.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a3fcae7a5e4035a794fa349e84e4892b1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stdCreate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isMatch</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess9stdCreateE5Graph7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess4copyE8Producer7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess4copyE8Producer7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess4copyE8Producer7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::copy__Producer.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a1e5be3341d2c17862ec004c1f17ff7a4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">copy</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Producer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isMatch</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess4copyE8Producer7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE12ProducerImpl">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6createE12ProducerImpl"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6createE12ProducerImpl"></span><span id="fr::inria::corese::core::query::QueryProcess::create__ProducerImpl"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a89f86869dbed4f87d65486b0a1fdf0ee"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ProducerImpl</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE12ProducerImpl" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE8Producer">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6createE8Producer"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6createE8Producer"></span><span id="fr::inria::corese::core::query::QueryProcess::create__Producer"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a8b24b277e7311127c442aa28026db02d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Producer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE8Producer" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess12createExternE8Producer">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess12createExternE8Producer"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess12createExternE8Producer"></span><span id="fr::inria::corese::core::query::QueryProcess::createExtern__Producer"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1acdad2ad352c59c7b970adce4cde0a724"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createExtern</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Producer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess12createExternE8Producer" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE8Producer11Interpreter7Matcher">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6createE8Producer11Interpreter7Matcher"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6createE8Producer11Interpreter7Matcher"></span><span id="fr::inria::corese::core::query::QueryProcess::create__Producer.Interpreter.Matcher"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1ae250a4e3a2e1619ef2698f4d904e84f2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Producer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">prod</span></span>, <span class="n"><span class="pre">Interpreter</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eval</span></span>, <span class="n"><span class="pre">Matcher</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">match</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE8Producer11Interpreter7Matcher" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>To Be Used by implementation other than <a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#classfr_1_1inria_1_1corese_1_1core_1_1Graph"><span class="std std-ref">Graph</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess8dbCreateE5Graph7boolean6String6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess8dbCreateE5Graph7boolean6String6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess8dbCreateE5Graph7boolean6String6String"></span><span id="fr::inria::corese::core::query::QueryProcess::dbCreate__Graph.boolean.String.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1af390a47ba68e7e5e72dc31a82f88c4e0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dbCreate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isMatch</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">factory</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">db</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess8dbCreateE5Graph7boolean6String6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>When there is a graph database to manage the graph. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aebccc31b31a170ba015f23dbce6b6fe1"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">inline</span> <span class="pre">synchronized</span> <span class="pre">Producer</span> <span class="pre">getCreateProducer</span> <span class="pre">(Graph</span> <span class="pre">g,</span> <span class="pre">String</span> <span class="pre">factory,</span> <span class="pre">String</span> <span class="pre">db)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE5Graph5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess6createE5Graph5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess6createE5Graph5Graph"></span><span id="fr::inria::corese::core::query::QueryProcess::create__Graph.Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a1c0bafebbf83e8823c68a542e94d976f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcessE" title="fr::inria::corese::core::query::QueryProcess"><span class="n"><span class="pre">QueryProcess</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess6createE5Graph5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10createEvalE5Graph6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10createEvalE5Graph6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10createEvalE5Graph6String"></span><span id="fr::inria::corese::core::query::QueryProcess::createEval__Graph.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a74d889aa4046aec8e4bcf21278bcdcdf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Eval</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createEval</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10createEvalE5Graph6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Create an Eval initialized with a query q that contains function definitions This Eval can be used to call these functions: eval.eval(name, param) Use case: define callback functions. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess10createEvalE5Graph5Query">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess10createEvalE5Graph5Query"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess10createEvalE5Graph5Query"></span><span id="fr::inria::corese::core::query::QueryProcess::createEval__Graph.Query"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a11f3c468fb7fd380f45dc3475587d95c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Eval</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createEval</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <span class="n"><span class="pre">Query</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess10createEvalE5Graph5Query" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess7setSortE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess7setSortE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess7setSortE7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::setSort__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1acc0e582a64d5e77bb3ad6d2b418ecac1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setSort</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess7setSortE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess17createInterpreterE8Producer7Matcher">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess17createInterpreterE8Producer7Matcher"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess17createInterpreterE8Producer7Matcher"></span><span id="fr::inria::corese::core::query::QueryProcess::createInterpreter__Producer.Matcher"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a84a1dee306961cda4c122b2f426142a3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Interpreter</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">createInterpreter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Producer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <span class="n"><span class="pre">Matcher</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess17createInterpreterE8Producer7Matcher" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Filter and LDScript Interpreter. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess12setOverwriteE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess12setOverwriteE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess12setOverwriteE7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::setOverwrite__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a4d205fa90b30e04c8624c63371b7b368"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setOverwrite</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess12setOverwriteE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess12setReentrantE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess12setReentrantE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess12setReentrantE7boolean"></span><span id="fr::inria::corese::core::query::QueryProcess::setReentrant__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a33bc2768bf25ec67666d80c6878d03c6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setReentrant</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess12setReentrantE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess11isReentrantEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess11isReentrantEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess11isReentrantEv"></span><span id="fr::inria::corese::core::query::QueryProcess::isReentrant"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a2933d542b4acb63932ea0b0779476104"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isReentrant</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess11isReentrantEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess14getVisitorNameEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess14getVisitorNameEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess14getVisitorNameEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getVisitorName"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a5ed9e3e8c923559f7b032e7f0de4a7f9"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getVisitorName</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess14getVisitorNameEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess14setVisitorNameE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess14setVisitorNameE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess14setVisitorNameE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::setVisitorName__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aca1f25179cc4223b61357ee5011fb8ad"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setVisitorName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">aSolverVisitorName</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess14setVisitorNameE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess20getServerVisitorNameEv">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess20getServerVisitorNameEv"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess20getServerVisitorNameEv"></span><span id="fr::inria::corese::core::query::QueryProcess::getServerVisitorName"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a339d14fd296ebc75e40d3199941652a7"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getServerVisitorName</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess20getServerVisitorNameEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess20setServerVisitorNameE6String">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess20setServerVisitorNameE6String"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess20setServerVisitorNameE6String"></span><span id="fr::inria::corese::core::query::QueryProcess::setServerVisitorName__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aff27a1903ce52031e66466725f5312c1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setServerVisitorName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess20setServerVisitorNameE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess13DISPLAY_QUERYE">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess13DISPLAY_QUERYE"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess13DISPLAY_QUERYE"></span><span id="fr::inria::corese::core::query::QueryProcess::DISPLAY_QUERY__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1afc03cf65e2711824b147ee7e874b2217"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DISPLAY_QUERY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess13DISPLAY_QUERYE" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1a50589cbf5934ec7c7c166131d1c8ab9e"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">final</span> <span class="pre">String</span> <span class="pre">SHACL</span>&#160;&#160; <span class="pre">=</span> <span class="pre">&quot;http://ns.inria.fr/sparql-template/function/datashape/main.rq&quot;</span></span></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5query12QueryProcess12QueryProcessE8Producer11Interpreter7Matcher">
+<span id="_CPPv3N2fr5inria6corese4core5query12QueryProcess12QueryProcessE8Producer11Interpreter7Matcher"></span><span id="_CPPv2N2fr5inria6corese4core5query12QueryProcess12QueryProcessE8Producer11Interpreter7Matcher"></span><span id="fr::inria::corese::core::query::QueryProcess::QueryProcess__Producer.Interpreter.Matcher"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess_1aeb7423eb493d3352522b46288b255133"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QueryProcess</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Producer</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <span class="n"><span class="pre">Interpreter</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">e</span></span>, <span class="n"><span class="pre">Matcher</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5query12QueryProcess12QueryProcessE8Producer11Interpreter7Matcher" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Class ResultFormat</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Class Shacl</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inheritance-relationships">Inheritance Relationships</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#base-type">Base Type</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-documentation">Class Documentation</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/java_api/classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

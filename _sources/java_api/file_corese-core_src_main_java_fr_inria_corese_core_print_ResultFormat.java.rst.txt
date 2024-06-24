@@ -1,0 +1,36 @@
+
+.. _file_corese-core_src_main_java_fr_inria_corese_core_print_ResultFormat.java:
+
+File ResultFormat.java
+======================
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``corese-core/src/main/java/fr/inria/corese/core/print/ResultFormat.java``)
+---------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_fr__inria__corese__core__print`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat`
+

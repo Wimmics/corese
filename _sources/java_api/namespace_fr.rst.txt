@@ -1,0 +1,20 @@
+
+.. _namespace_fr:
+
+Namespace fr
+============
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_fr__inria`

@@ -1,0 +1,883 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Class Shacl &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'java_api/classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Class Transformer" href="classfr_1_1inria_1_1corese_1_1core_1_1transform_1_1Transformer.html" />
+    <link rel="prev" title="Class QueryProcess" href="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli_ref/cli_root.html">CLI</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_sparql.html">sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_convert.html">convert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_shacl.html">shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_remote_sparql.html">remote-sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_canonicalize.html">canonicalize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../rest_api/api_root.html">REST API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql.html">/sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_load.html">/sparql/load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_reset.html">/sparql/reset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_d3.html">/sparql/d3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/spin_tospin.html">/spin/tospin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/rdf_graph_store.html">/rdf-graph-store</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="library_root.html">Java API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html">Class Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1CompareNode.html">Class Graph::CompareNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1GTable.html">Class Graph::GTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1TreeNode.html">Class Graph::TreeNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load.html">Class Load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat.html">Class ResultFormat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess.html">Class QueryProcess</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Class Shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1transform_1_1Transformer.html">Class Transformer</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../apis.html" class="nav-link">CORESE APIs</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="library_root.html" class="nav-link">Java API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Class Shacl</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="class-shacl">
+<span id="exhale-class-classfr-1-1inria-1-1corese-1-1core-1-1shacl-1-1shacl"></span><h1>Class Shacl<a class="headerlink" href="#class-shacl" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_corese-core_src_main_java_fr_inria_corese_core_shacl_Shacl.java.html#file-corese-core-src-main-java-fr-inria-corese-core-shacl-shacl-java"><span class="std std-ref">File Shacl.java</span></a></p></li>
+</ul>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this heading">#</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5ShaclE">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5ShaclE"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5ShaclE"></span><span id="fr::inria::corese::core::shacl::Shacl"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Shacl</span></span></span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5ShaclE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>API for LDScript SHACL Interpreter Interpreter is defined in corese-core resources/function/datashape. </p>
+<p>define LDScript global variable: shacl.input().setVariable(“?var”, val).</p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Olivier Corby, Wimmics, INRIA, 2019 </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5ShaclE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5ShaclE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5ShaclE5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::Shacl__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ac3e8f7179426fd538f3fa5313455fb7e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Shacl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5ShaclE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5ShaclE5Graph5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5ShaclE5Graph5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5ShaclE5Graph5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::Shacl__Graph.Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ac76f81c8235a7a8634e7978af1162d7c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Shacl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span>, <a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">shacl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5ShaclE5Graph5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5inputEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5inputEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5inputEv"></span><span id="fr::inria::corese::core::shacl::Shacl::input"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ac31f3ce569496a56a27b73611d83e729"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">input</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5inputEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl6outputEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl6outputEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl6outputEv"></span><span id="fr::inria::corese::core::shacl::Shacl::output"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ae1e5cd31a2d0f5af04c9154833053c8b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">output</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl6outputEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl8setTraceE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl8setTraceE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl8setTraceE7boolean"></span><span id="fr::inria::corese::core::shacl::Shacl::setTrace__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1acf542c2e9a2622b57e0429bfa567e8ba"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5shacl5ShaclE" title="fr::inria::corese::core::shacl::Shacl"><span class="n"><span class="pre">Shacl</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setTrace</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl8setTraceE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Define trace=true as LDScript global variable. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5setupEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5setupEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5setupEv"></span><span id="fr::inria::corese::core::shacl::Shacl::setup"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a6d6ce8cafcabf692d45423e03d63c50e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setup</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5setupEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5setupE6String7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5setupE6String7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5setupE6String7boolean"></span><span id="fr::inria::corese::core::shacl::Shacl::setup__String.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1abea88549b48009184d4b9231ede226a8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5shacl5ShaclE" title="fr::inria::corese::core::shacl::Shacl"><span class="n"><span class="pre">Shacl</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setup</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5setupE6String7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl13booleanDetailE7boolean">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl13booleanDetailE7boolean"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl13booleanDetailE7boolean"></span><span id="fr::inria::corese::core::shacl::Shacl::booleanDetail__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ab60fbb5dd1d4539cc185a6e3ff43d605"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N2fr5inria6corese4core5shacl5ShaclE" title="fr::inria::corese::core::shacl::Shacl"><span class="n"><span class="pre">Shacl</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">booleanDetail</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl13booleanDetailE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5shaclEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5shaclEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5shaclEv"></span><span id="fr::inria::corese::core::shacl::Shacl::shacl"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a3f15ba984383c5263ca17f7b79901633"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shacl</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5shaclEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>API aligned with LDScript. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl4shexEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl4shexEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl4shexEv"></span><span id="fr::inria::corese::core::shacl::Shacl::shex"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a59f7d4e9c2ef45818a3f5f41e649a19d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shex</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl4shexEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl10shaclshapeE9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl10shaclshapeE9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl10shaclshapeE9IDatatype"></span><span id="fr::inria::corese::core::shacl::Shacl::shaclshape__IDatatype"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ab437e49289006f57e120fbe7b0fe53f7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shaclshape</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">shape</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl10shaclshapeE9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl10shaclshapeE9IDatatype9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl10shaclshapeE9IDatatype9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl10shaclshapeE9IDatatype9IDatatype"></span><span id="fr::inria::corese::core::shacl::Shacl::shaclshape__IDatatype.IDatatype"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1aa2b5bbb72e04cec370153715394bb22a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shaclshape</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">shape</span></span>, <span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl10shaclshapeE9IDatatype9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl9shaclnodeE9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl9shaclnodeE9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl9shaclnodeE9IDatatype"></span><span id="fr::inria::corese::core::shacl::Shacl::shaclnode__IDatatype"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a996daffc65e7835a2e07dfb6d3b31a94"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shaclnode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl9shaclnodeE9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl8funparseEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl8funparseEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl8funparseEv"></span><span id="fr::inria::corese::core::shacl::Shacl::funparse"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ad7bc59fc3e7b92f6d1bde326857595ac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">funparse</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl8funparseEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Native Java API. </p>
+<p>Parse shacl RDF graph and return a list expression </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl7funevalE9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl7funevalE9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl7funevalE9IDatatype"></span><span id="fr::inria::corese::core::shacl::Shacl::funeval__IDatatype"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a3c3cbce1cc61a99d7641741d07a32486"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">funeval</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">shapeList</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl7funevalE9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Execute shacl as list expression shapeList : list of (list expression) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl7funevalEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl7funevalEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl7funevalEv"></span><span id="fr::inria::corese::core::shacl::Shacl::funeval"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1af20222f6492a85af95d5c8669418b68d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">funeval</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl7funevalEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Parse shacl graph as list expression and execute expression. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl4evalEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl4evalEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl4evalEv"></span><span id="fr::inria::corese::core::shacl::Shacl::eval"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a2dafbc6888ed62aec9a6ebc53ab6efa1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">eval</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl4evalEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Evaluate shacl shape whole graph. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl4evalE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl4evalE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl4evalE5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::eval__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a42f7137233e42924f44c56a7b1fd1bad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">eval</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">shacl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl4evalE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5shapeE9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5shapeE9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5shapeE9IDatatype"></span><span id="fr::inria::corese::core::shacl::Shacl::shape__IDatatype"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ad8377ac764ed15746bfb78c0b276cad6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shape</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sh</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5shapeE9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Evaluate shape/node. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5shapeE9IDatatype9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5shapeE9IDatatype9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5shapeE9IDatatype9IDatatype"></span><span id="fr::inria::corese::core::shacl::Shacl::shape__IDatatype.IDatatype"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1adf8330b3b82011c348fe484452b67db4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">shape</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">sh</span></span>, <span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5shapeE9IDatatype9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl4nodeE9IDatatype">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl4nodeE9IDatatype"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl4nodeE9IDatatype"></span><span id="fr::inria::corese::core::shacl::Shacl::node__IDatatype"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ae5206ce6cbfb6807102d3b41bfec961a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">node</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl4nodeE9IDatatype" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5focusEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5focusEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5focusEv"></span><span id="fr::inria::corese::core::shacl::Shacl::focus"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1af62cbb41a4315715795a20f134793a02"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">focus</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5focusEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5focusE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5focusE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5focusE5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::focus__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a6d0ca55ed9c0d8966cc7c60f94f0d305"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">focus</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">shacl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5focusE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl7conformE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl7conformE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl7conformE5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::conform__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1afb03549e73a35103dc161121c2e8d1f6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">conform</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl7conformE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Validation report is conform ? </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl8nbResultE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl8nbResultE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl8nbResultE5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::nbResult__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ac861f4b83735821c0c1dc7f00cdd08d9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nbResult</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl8nbResultE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl16nbAbstractResultE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl16nbAbstractResultE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl16nbAbstractResultE5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::nbAbstractResult__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a7c562f571fa0da2ed807e8ef4115e1d1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nbAbstractResult</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">g</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl16nbAbstractResultE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl5traceEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl5traceEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl5traceEv"></span><span id="fr::inria::corese::core::shacl::Shacl::trace"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a5eefd296822e958338e14a7b7d8ada29"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">trace</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl5traceEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Display list of constraints that have been evaluated. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl11tracerecordEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl11tracerecordEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl11tracerecordEv"></span><span id="fr::inria::corese::core::shacl::Shacl::tracerecord"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a48ce330ea08b19202d344ff395ffef5f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tracerecord</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl11tracerecordEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Display additional information about evaluation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl11getVariableE6String">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl11getVariableE6String"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl11getVariableE6String"></span><span id="fr::inria::corese::core::shacl::Shacl::getVariable__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1af5f9a78a4e79ddc5670e354385d950b9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">IDatatype</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getVariable</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl11getVariableE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl9getResultEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl9getResultEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl9getResultEv"></span><span id="fr::inria::corese::core::shacl::Shacl::getResult"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a53d322116c24319fc92504c13967a1a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getResult</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl9getResultEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl8getGraphEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl8getGraphEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl8getGraphEv"></span><span id="fr::inria::corese::core::shacl::Shacl::getGraph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a68094105c2273acfa51e51a1fd41cac7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getGraph</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl8getGraphEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl8setGraphE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl8setGraphE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl8setGraphE5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::setGraph__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a79a1779ccc5e6e8a0d57ad3b4127744a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setGraph</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">graph</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl8setGraphE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl9setResultE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl9setResultE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl9setResultE5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::setResult__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a0c56a120edc6c99fc6bad28723731e94"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setResult</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">result</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl9setResultE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl8getShaclEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl8getShaclEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl8getShaclEv"></span><span id="fr::inria::corese::core::shacl::Shacl::getShacl"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1add859f419155595478154fb70e231b98"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getShacl</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl8getShaclEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl8setShaclE5Graph">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl8setShaclE5Graph"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl8setShaclE5Graph"></span><span id="fr::inria::corese::core::shacl::Shacl::setShacl__Graph"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ad7e806c33e494d23adaed9752bd53790"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setShacl</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html#_CPPv4N2fr5inria6corese4core5GraphE" title="fr::inria::corese::core::Graph"><span class="n"><span class="pre">Graph</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">shacl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl8setShaclE5Graph" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl7getBindEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl7getBindEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl7getBindEv"></span><span id="fr::inria::corese::core::shacl::Shacl::getBind"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a4ea77df74087e8f2df8b3186406e9752"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getBind</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl7getBindEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl7setBindE7Binding">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl7setBindE7Binding"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl7setBindE7Binding"></span><span id="fr::inria::corese::core::shacl::Shacl::setBind__Binding"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ad8022f17e79443c36bdd75693dc90d62"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setBind</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bind</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl7setBindE7Binding" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl8getInputEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl8getInputEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl8getInputEv"></span><span id="fr::inria::corese::core::shacl::Shacl::getInput"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a4a0a10e085dbfc296b504243854b56c4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getInput</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl8getInputEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl8setInputE7Binding">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl8setInputE7Binding"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl8setInputE7Binding"></span><span id="fr::inria::corese::core::shacl::Shacl::setInput__Binding"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a6379a35bb66981f36fc00b613ab53cb3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setInput</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Binding</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">input</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl8setInputE7Binding" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl14getDataManagerEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl14getDataManagerEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl14getDataManagerEv"></span><span id="fr::inria::corese::core::shacl::Shacl::getDataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1aa5c394d6931c7735b29dc2a933603b75"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">DataManager</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDataManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl14getDataManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl14setDataManagerE11DataManager">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl14setDataManagerE11DataManager"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl14setDataManagerE11DataManager"></span><span id="fr::inria::corese::core::shacl::Shacl::setDataManager__DataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1aaaafa0078410b2e7628fc9e20607a0d5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setDataManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">DataManager</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataManager</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl14setDataManagerE11DataManager" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl20setSHACL_InterpreterE6String">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl20setSHACL_InterpreterE6String"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl20setSHACL_InterpreterE6String"></span><span id="fr::inria::corese::core::shacl::Shacl::setSHACL_Interpreter__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a912ec3fcf991a018f7d0c7eba6937b4c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setSHACL_Interpreter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">SHACL_Interpreter</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl20setSHACL_InterpreterE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set a different SHACL interpreter, ex. </p>
+<p>SHACL-S </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4core5shacl5Shacl20getSHACL_InterpreterEv">
+<span id="_CPPv3N2fr5inria6corese4core5shacl5Shacl20getSHACL_InterpreterEv"></span><span id="_CPPv2N2fr5inria6corese4core5shacl5Shacl20getSHACL_InterpreterEv"></span><span id="fr::inria::corese::core::shacl::Shacl::getSHACL_Interpreter"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a0ee836d2bbf186f47ccf9546f2312214"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getSHACL_Interpreter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4core5shacl5Shacl20getSHACL_InterpreterEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a719287a5788fb43fc3379c675b0e6ba0"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">final</span> <span class="pre">String</span> <span class="pre">TRACEMAPSUC_VAR</span>&#160;&#160; <span class="pre">=</span> <span class="pre">&quot;?recordmapsuc&quot;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a2352d6c2e5bb598b347c605e45175867"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">final</span> <span class="pre">String</span> <span class="pre">TRACEMAPFAIL_VAR</span>&#160;&#160; <span class="pre">=</span> <span class="pre">&quot;?recordmapfail&quot;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a7c203462175cffc9ba3ea17ef330914c"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">final</span> <span class="pre">String</span> <span class="pre">MAPMAP_VAR</span>&#160;&#160; <span class="pre">=</span> <span class="pre">&quot;?mapmap&quot;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1acc1c27643fa3eb59e2bea754a26b91e7"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">final</span> <span class="pre">String</span> <span class="pre">SETUP_VAR</span>&#160;&#160; <span class="pre">=</span> <span class="pre">&quot;?setup&quot;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1ab95371e0a397e80cc1ed2a7661232f13"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">final</span> <span class="pre">String</span> <span class="pre">SETUP_DETAIL</span>&#160;&#160; <span class="pre">=</span> <span class="pre">SH</span> <span class="pre">+</span> <span class="pre">&quot;nodeDetail&quot;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1a49ea70179cab06e65e98cdd2420a41cf"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">final</span> <span class="pre">String</span> <span class="pre">SETUP_DETAIL_BOOLEAN</span>&#160;&#160; <span class="pre">=</span> <span class="pre">SH</span> <span class="pre">+</span> <span class="pre">&quot;booleanDetail&quot;</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl_1af8111519fbb66c2a926667326c77842a"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">final</span> <span class="pre">String</span> <span class="pre">SETUP_TYPE</span>&#160;&#160; <span class="pre">=</span> <span class="pre">SH</span> <span class="pre">+</span> <span class="pre">&quot;type&quot;</span></span></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Class QueryProcess</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="classfr_1_1inria_1_1corese_1_1core_1_1transform_1_1Transformer.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Class Transformer</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-documentation">Class Documentation</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/java_api/classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

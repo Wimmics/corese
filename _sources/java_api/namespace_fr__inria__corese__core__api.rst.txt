@@ -1,0 +1,13 @@
+
+.. _namespace_fr__inria__corese__core__api:
+
+Namespace fr::inria::corese::core::api
+======================================
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+
+

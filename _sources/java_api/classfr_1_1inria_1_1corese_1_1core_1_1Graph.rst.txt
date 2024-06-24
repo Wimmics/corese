@@ -1,0 +1,42 @@
+.. _exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1Graph:
+
+Class Graph
+===========
+
+- Defined in :ref:`file_corese-core_src_main_java_fr_inria_corese_core_Graph.java`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1CompareNode`
+- :ref:`exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1GTable`
+- :ref:`exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1TreeNode`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Types
+**********
+
+- ``public GraphObject``
+- ``public Iterable< Edge >``
+- ``public Graph``
+- ``public Graphable``
+- ``public TripleStore``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: fr::inria::corese::core::Graph
+   :project: corese
+   :members:
+   :protected-members:
+   :undoc-members:

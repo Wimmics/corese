@@ -1,0 +1,16 @@
+.. _dir_corese-core:
+
+
+Directory corese-core
+=====================
+
+
+*Directory path:* ``corese-core``
+
+Subdirectories
+--------------
+
+- :ref:`dir__github_workspace_corese-core_src`
+
+
+

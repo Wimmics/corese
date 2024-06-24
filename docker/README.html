@@ -1,0 +1,692 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Corese &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0064dc2b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'docker/README';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Corese</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <!-- markdownlint-configure-file { "MD004": { "style": "consistent" } } -->
+<!-- markdownlint-disable MD033 -->
+<section id="corese">
+<h1>Corese<a class="headerlink" href="#corese" title="Permalink to this heading">#</a></h1>
+<p align="center">
+    <a href="https://project.inria.fr/corese/">
+        <img src="https://user-images.githubusercontent.com/5692787/151987397-316a61f0-8098-4d37-a4e8-69180e33261a.svg" width="300" height="149" alt="Corese-logo">
+    </a>
+    <br>
+    <strong>Software platform for the Semantic Web of Linked Data</strong>
+</p>
+<!-- markdownlint-enable MD033 -->
+<p>This is a Docker image for hosting the <a class="reference external" href="https://project.inria.fr/corese/">Corese Semantic Web Server</a> that implements RDF, RDFS, SPARQL 1.1 Query &amp; Update, OWL-RL, SHACL.
+Corese also implements the LDScript and STTL SPARQL extensions.</p>
+<p>The Docker image tag includes the Corese version installed in the image. The following versions are currently available:</p>
+<ul class="simple">
+<li><p>corese:4.5.1</p></li>
+<li><p>corese:4.5.0</p></li>
+<li><p>corese:4.4.1</p></li>
+<li><p>corese:4.4.0</p></li>
+<li><p>corese:4.3.0</p></li>
+<li><p>corese:4.2.4</p></li>
+</ul>
+<section id="running-the-corese-docker-image">
+<h2>Running the Corese Docker image<a class="headerlink" href="#running-the-corese-docker-image" title="Permalink to this heading">#</a></h2>
+<section id="running-with-the-docker-run-command">
+<h3>Running with the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command<a class="headerlink" href="#running-with-the-docker-run-command" title="Permalink to this heading">#</a></h3>
+<p>The simplest way to run Corese is to execute the following command. It starts a fresh empty Corese server ready to execute queries submitted to <a class="reference external" href="http://localhost:8080/sparql">http://localhost:8080/sparql</a>.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>my-corese<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-d<span class="w"> </span>wimmics/corese
+</pre></div>
+</div>
+<p>To load data when Corese starts up, place your RDF files in the <code class="docutils literal notranslate"><span class="pre">data</span></code> directory and mount it as follows:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>my-corese<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span>/my/local/path/data:/usr/local/corese/data<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-d<span class="w"> </span>wimmics/corese
+</pre></div>
+</div>
+<p>Additionally, you can control configuration parameters and check log files by mounting the <code class="docutils literal notranslate"><span class="pre">config</span></code> and <code class="docutils literal notranslate"><span class="pre">log</span></code> directories respectively:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>my-corese<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span>/my/local/path/log:/usr/local/corese/log<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span>/my/local/path/data:/usr/local/corese/data<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span>/my/local/path/config:/usr/local/corese/config<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-d<span class="w"> </span>wimmics/corese
+</pre></div>
+</div>
+</section>
+<section id="running-with-docker-compose">
+<h3>Running with Docker Compose<a class="headerlink" href="#running-with-docker-compose" title="Permalink to this heading">#</a></h3>
+<p>Alternatively, you can run the image using Docker Compose.
+Create the <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file as follows:</p>
+<div class="highlight-yml notranslate"><div class="highlight"><pre><span></span>version: &quot;3&quot;
+services:
+  corese:
+    image: wimmics/corese
+    build: ./corese
+    ports:
+      - &quot;8080:8080&quot;
+    volumes:
+      - &quot;/my/local/path/log:/usr/local/corese/log&quot;
+      - &quot;/my/local/path/data:/usr/local/corese/data&quot;
+      - &quot;/my/local/path/config:/usr/local/corese/config&quot;
+</pre></div>
+</div>
+<p>Then run: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">up</span> <span class="pre">-d</span></code></p>
+</section>
+</section>
+<section id="loading-data-at-start-up">
+<h2>Loading data at start-up<a class="headerlink" href="#loading-data-at-start-up" title="Permalink to this heading">#</a></h2>
+<p>To load data into Corese at start-up, place your data files in the mounted <code class="docutils literal notranslate"><span class="pre">data</span></code> folder.</p>
+<p>Supported extensions are: <code class="docutils literal notranslate"><span class="pre">.ttl</span></code>, <code class="docutils literal notranslate"><span class="pre">.jsonld</span></code>, <code class="docutils literal notranslate"><span class="pre">.rdf</span></code> (for RDF/XML), <code class="docutils literal notranslate"><span class="pre">.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">.html</span></code> (for rdfa).</p>
+<p>Then <strong>delete the <code class="docutils literal notranslate"><span class="pre">config/corese-profile.ttl</span></code> file and restart the Docker container</strong>.
+A new <code class="docutils literal notranslate"><span class="pre">corese-profile.ttl</span></code> file will be created, listing the files to be loaded from <code class="docutils literal notranslate"><span class="pre">data</span></code>.
+Alternatively, you may edit a previously created <code class="docutils literal notranslate"><span class="pre">corese-profile.ttl</span></code> file and change the list of data files to be loaded.</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
+<section id="corese-configuration-files">
+<h3>Corese configuration files<a class="headerlink" href="#corese-configuration-files" title="Permalink to this heading">#</a></h3>
+<p>When it starts, the container will look for three files and create them if they do not exist:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config/corese-properties.properties</span></code>: This file allows you to tune various parameters in Corese, such as configuring the <a class="reference external" href="https://github.com/Wimmics/corese/blob/master/docs/storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md">storage system</a>. <a class="reference external" href="https://github.com/Wimmics/corese/blob/master/corese-server/build-docker/corese/corese-default-properties.properties">Learn more</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config/corese-profile.ttl</span></code>: This file defines a standard server and instructs Corese to load files found in <code class="docutils literal notranslate"><span class="pre">data</span></code>. It can be used to create multiple endpoints, restrict access to external endpoints, and more. <a class="reference external" href="https://github.com/Wimmics/corese/blob/master/docs/getting%20started/Getting%20Started%20With%20Corese-server.md">Learn more</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config/log4j2.xml</span></code>: This is the configuration file for the logging system used by Corese, which is based on <a class="reference external" href="https://logging.apache.org/log4j/2.x/manual/configuration.html">log4j</a>. You can modify this file to change the way logs are generated by the application. You can control aspects like the level of detail in logs (e.g., INFO, WARN, DEBUG, ERROR), the formatting of log messages, and the destination of log messages (console, file, etc.).</p></li>
+</ul>
+<p>Note: To apply changes, you must edit the files and restart the container.</p>
+</section>
+<section id="changing-the-jvm-heap-size">
+<h3>Changing the JVM heap size<a class="headerlink" href="#changing-the-jvm-heap-size" title="Permalink to this heading">#</a></h3>
+<p>To change the memory allocated to the JVM that runs Corese, provide the environment variable <code class="docutils literal notranslate"><span class="pre">$JVM_XMX</span></code> with the value of the <code class="docutils literal notranslate"><span class="pre">-Xmx</span></code> JVM parameter.</p>
+<p>Example:</p>
+<ul class="simple">
+<li><p>Add the option <code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">JVM_XMX=1024m</span></code> to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command.</p></li>
+<li><p>Alternatively, add the following to the <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file:</p></li>
+</ul>
+<div class="highlight-yml notranslate"><div class="highlight"><pre><span></span>environment:
+  JVM_XMX: &quot;1024m&quot;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="passing-custom-options-to-corese">
+<h2>Passing Custom Options to Corese<a class="headerlink" href="#passing-custom-options-to-corese" title="Permalink to this heading">#</a></h2>
+<p>You can pass custom options to the Corese-Server by using the <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> environment variable when running the <code class="docutils literal notranslate"><span class="pre">wimmics/corese</span></code> Docker image.</p>
+<p>To specify custom options when running the container:</p>
+<ul class="simple">
+<li><p>Add the <code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">OPTIONS=&quot;&lt;your_options&gt;&quot;</span></code> option to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command.</p></li>
+<li><p>For example, to use the <code class="docutils literal notranslate"><span class="pre">-su</span></code> option, you can run:</p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-su&quot;</span><span class="w"> </span>wimmics/corese
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-protect&quot;</span><span class="w"> </span>wimmics/corese
+</pre></div>
+</div>
+<p>If you prefer using a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file to define your container, you can also specify the <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> environment variable within it. Here’s an example:</p>
+<div class="highlight-yml notranslate"><div class="highlight"><pre><span></span>environment:
+  OPTIONS: &quot;&lt;your_options&gt;&quot;
+</pre></div>
+</div>
+<p>You can include this <code class="docutils literal notranslate"><span class="pre">environment</span></code> section within your <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file, replacing <code class="docutils literal notranslate"><span class="pre">&lt;your_options&gt;</span></code> with the desired options.</p>
+</section>
+<section id="testing-the-container">
+<h2>Testing the container<a class="headerlink" href="#testing-the-container" title="Permalink to this heading">#</a></h2>
+<p>To test if the container runs properly, simply execute the script below, which submits the query <code class="docutils literal notranslate"><span class="pre">select</span> <span class="pre">*</span> <span class="pre">where</span> <span class="pre">{?s</span> <span class="pre">?p</span> <span class="pre">?o}</span> <span class="pre">limit</span> <span class="pre">100</span></code>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nv">QUERY</span><span class="o">=</span><span class="k">select</span>%20*%20where%20%7B%3Fs%20%3Fp%20%3Fo%7D%20limit%20100
+curl<span class="w"> </span>--header<span class="w"> </span><span class="s2">&quot;Accept: application/sparql-results+json&quot;</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/sparql?query=</span><span class="nv">$QUERY</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>To test a SPARQL update request, run the script below:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nv">QUERY</span><span class="o">=</span><span class="s1">&#39;PREFIX dc: &lt;http://purl.org/dc/elements/1.1/&gt; INSERT DATA { &lt;http://example/book1&gt; dc:title &quot;A new book&quot; . }&#39;</span>
+curl<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--header<span class="w"> </span><span class="s2">&quot;Content-Type: application/sparql-update&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$QUERY</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s2">&quot;http://localhost:8080/sparql&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="general-information">
+<h2>General Information<a class="headerlink" href="#general-information" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://project.inria.fr/corese">Corese website</a></p></li>
+<li><p><a class="reference external" href="https://github.com/Wimmics/corese">Source code</a></p></li>
+<li><p><a class="reference external" href="http://corese.inria.fr/">Corese server demo</a></p></li>
+<li><p><a class="reference external" href="https://github.com/Wimmics/corese/blob/master/CHANGELOG.md">Changelog</a></p></li>
+<li><p><strong>Mailing list:</strong> corese-users at inria.fr</p></li>
+<li><p><strong>Subscribe to mailing list:</strong> corese-users-request at inria.fr <strong>subject:</strong> subscribe</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-corese-docker-image">Running the Corese Docker image</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-with-the-docker-run-command">Running with the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-with-docker-compose">Running with Docker Compose</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-data-at-start-up">Loading data at start-up</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corese-configuration-files">Corese configuration files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changing-the-jvm-heap-size">Changing the JVM heap size</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#passing-custom-options-to-corese">Passing Custom Options to Corese</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-container">Testing the container</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-information">General Information</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/docker/README.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

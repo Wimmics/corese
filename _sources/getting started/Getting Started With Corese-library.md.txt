@@ -10,28 +10,6 @@ The fourth part shows how to transforme a graph with the extension language [SPA
 The fifth part details how to apply a set of rules on a graph using the [SPARQL Rule](https://files.inria.fr/corese/doc/rule.html) extension language.
 Finally, the sixth part describes how to define and use functions with the [LDScript](https://files.inria.fr/corese/doc/ldscript.html) extension language.
 
-1. [Getting Started With Corese-library](#getting-started-with-corese-library)
-   1. [1. Installation](#1-installation)
-   2. [2. Graph](#2-graph)
-      1. [2.1. Build a Graph by program](#21-build-a-graph-by-program)
-      2. [2.2. Load Graph from file](#22-load-graph-from-file)
-      3. [2.3. Export Graph to file](#23-export-graph-to-file)
-   3. [3. SPARQL Protocol and RDF Query Language](#3-sparql-protocol-and-rdf-query-language)
-      1. [3.1. SPARQL Select query](#31-sparql-select-query)
-      2. [3.2. SPARQL Ask query](#32-sparql-ask-query)
-      3. [3.3. SPARQL Construct query](#33-sparql-construct-query)
-      4. [3.4. SPARQL Update query](#34-sparql-update-query)
-   4. [4. Shapes Constraint Language (SHACL)](#4-shapes-constraint-language-shacl)
-   5. [5. SPARQL Template Transformation Language (STTL)](#5-sparql-template-transformation-language-sttl)
-      1. [5.1. Transform a graph in a visual HTML format](#51-transform-a-graph-in-a-visual-html-format)
-   6. [6. SPARQL Rule](#6-sparql-rule)
-      1. [6.1. Load rules from a file](#61-load-rules-from-a-file)
-      2. [6.2. OWL Rules](#62-owl-rules)
-   7. [7. LDScript](#7-ldscript)
-      1. [7.1. Fibonacci function call from Java](#71-fibonacci-function-call-from-java)
-      2. [7.2. LDScript in SPARQL](#72-ldscript-in-sparql)
-      3. [7.3. Advanced example](#73-advanced-example)
-
 ## 1. Installation
 
 Installations instructions are available on the [Corese-Command GitHub repository](https://github.com/Wimmics/corese).

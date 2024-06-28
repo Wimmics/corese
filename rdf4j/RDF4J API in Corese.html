@@ -56,9 +56,11 @@
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
-    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="icon" href="../_static/Corese-square-logo-transparent.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Getting Started With Corese-Command" href="../getting%20started/Getting%20Started%20With%20Corese-command.html" />
+    <link rel="prev" title="Getting Started With Corese-library" href="../getting%20started/Getting%20Started%20With%20Corese-library.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -165,7 +167,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../user_guide.html">
                         User Guide
                       </a>
@@ -279,7 +281,7 @@ document.write(`
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -305,7 +307,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../user_guide.html">
                         User Guide
                       </a>
@@ -378,6 +380,27 @@ document.write(`
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting%20started/Getting%20Started%20With%20Corese-library.html">Corese-library</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Corese-library and RDF4J</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting%20started/Getting%20Started%20With%20Corese-command.html">Corese-command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting%20started/Getting%20Started%20With%20Corese-server.html">Corese-server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corese-python/Corese-library%20with%20Python.html">Corese-Python (library)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corese-python/Corese-server%20with%20Python.html">Corese-Python (server)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.html">Storage Systems in Corese</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../federation/Federated%20and%20Distributed%20Queries.html">Federated and Distributed Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/SPARQL%20Service%20Extension.html">SPARQL Service Extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docker/README.html">Corese Docker</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -410,6 +433,9 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="../user_guide.html" class="nav-link">User Guide</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">Corese-libra...</li>
   </ul>
 </nav>
@@ -431,28 +457,6 @@ document.write(`
 <h1>Corese-library and RDF4J<a class="headerlink" href="#corese-library-and-rdf4j" title="Permalink to this heading">#</a></h1>
 <p><a class="reference external" href="https://rdf4j.org/about/">RDF4J</a> is a project of the Eclipse Foundation. It’s an open source modular Java framework for working with RDF data. RDF4J offers an easy-to-use API that can be connected to all leading RDF database solutions.</p>
 <p>This document details the RDF4J APIs implemented in Corese and how to use and connect the Corese framework with RDF4J.</p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#corese-library-and-rdf4j">Corese-library and RDF4J</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#implementation-of-the-rdf4j-model-api-in-corese">1. Implementation of the RDF4J model API in Corese</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#build-a-corese-model-by-program">1.1. Build a Corese Model by program</a></p></li>
-<li><p><a class="reference internal" href="#manipulate-a-corese-model">1.2. Manipulate a Corese Model</a></p></li>
-<li><p><a class="reference internal" href="#get-a-corese-model-from-a-corese-graph">1.3. Get a Corese Model from a Corese Graph</a></p></li>
-<li><p><a class="reference internal" href="#get-a-corese-graph-from-a-corese-model">1.4. Get a Corese Graph from a Corese Model</a></p></li>
-<li><p><a class="reference internal" href="#get-a-corese-model-from-any-object-that-implements-the-rdf4j-model-api">1.5. Get a Corese model from any object that implements the RDF4J model API</a></p></li>
-<li><p><a class="reference internal" href="#use-external-tools-compatible-with-the-rdf4j-model-api">1.6. Use external tools compatible with the RDF4J model API</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#rio">1.6.1. RIO</a></p></li>
-<li><p><a class="reference internal" href="#rdf4j-sparql-engine-with-a-corese-model">1.6.2. RDF4J SPARQL Engine with a Corese model</a></p></li>
-</ol>
-</li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#implementation-of-an-rdf4j-data-manager-in-corese">2. Implementation of an RDF4J data manager in Corese</a></p></li>
-</ol>
-</li>
-</ol>
 <section id="implementation-of-the-rdf4j-model-api-in-corese">
 <h2>1. Implementation of the RDF4J model API in Corese<a class="headerlink" href="#implementation-of-the-rdf4j-model-api-in-corese" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://rdf4j.org/documentation/programming/model/">RDF4J model API</a> provides the basic building blocks for manipulating RDF data.
@@ -679,6 +683,24 @@ You can find the RIO documentation <a class="reference external" href="https://r
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../getting%20started/Getting%20Started%20With%20Corese-library.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Getting Started With Corese-library</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../getting%20started/Getting%20Started%20With%20Corese-command.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Getting Started With Corese-Command</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

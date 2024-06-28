@@ -54,7 +54,7 @@
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
-    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="icon" href="../_static/Corese-square-logo-transparent.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="shacl" href="cli_shacl.html" />
@@ -397,8 +397,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_load.html">/sparql/load</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_reset.html">/sparql/reset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_d3.html">/sparql/d3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../rest_api/spin_tospin.html">/spin/tospin</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../rest_api/rdf_graph_store.html">/rdf-graph-store</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../java_api/library_root.html">Java API</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -495,26 +493,26 @@ document.write(`
 </ul>
 <p><strong>Example:</strong></p>
 <p>To run this example you can download the sample data file <a class="reference download internal" download="" href="../_downloads/5e1c0c0a85123ebddff1ed94b81a07de/beatles.rdf"><code class="xref download docutils literal notranslate"><span class="pre">beatles.rdf</span></code></a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>convert<span class="w"> </span>-i<span class="w"> </span>beatles.rdf<span class="w"> </span>-r<span class="w"> </span>tutle
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>convert<span class="w"> </span>-i<span class="w"> </span>beatles.rdf<span class="w"> </span>-r<span class="w"> </span>turtle
 </pre></div>
 </div>
-<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span>prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
-@prefix ns1: &lt;http://example.com/&gt; .
-@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
+<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">xsd:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">ns1:</span><span class="w"> </span><span class="nv">&lt;http://example.com/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">rdf:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;</span><span class="w"> </span><span class="p">.</span>
 
-ns1:Love_Me_Do ns1:length 125 ;
-ns1:name &quot;Love Me Do&quot; ;
-ns1:writer ns1:John_Lennon ;
-ns1:writer ns1:Paul_McCartney ;
-a ns1:Song .
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">Love_Me_Do</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">length</span> <span class="mi">125</span> <span class="p">;</span>
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">name</span> <span class="s">&quot;Love Me Do&quot;</span> <span class="p">;</span>
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">writer</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">John_Lennon</span> <span class="p">;</span>
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">writer</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Paul_McCartney</span> <span class="p">;</span>
+<span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Song</span> <span class="p">.</span>
 
-ns1:Please_Please_Me ns1:artist ns1:The_Beatles ;
-ns1:date &quot;1963-03-22&quot;^^xsd:date ;
-ns1:name &quot;Please Please Me&quot; ;
-ns1:track ns1:Love_Me_Do ;
-a ns1:Album .
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">Please_Please_Me</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">artist</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">The_Beatles</span> <span class="p">;</span>
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">date</span> <span class="s">&quot;1963-03-22&quot;</span><span class="p">^^</span><span class="nn">xsd</span><span class="p">:</span><span class="nt">date</span> <span class="p">;</span>
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">name</span> <span class="s">&quot;Please Please Me&quot;</span> <span class="p">;</span>
+<span class="nn">ns1</span><span class="p">:</span><span class="nt">track</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Love_Me_Do</span> <span class="p">;</span>
+<span class="kt">a</span> <span class="nn">ns1</span><span class="p">:</span><span class="nt">Album</span> <span class="p">.</span>
 
-...
+<span class="p">...</span>
 </pre></div>
 </div>
 <p>For more examples, see the <a class="reference external" href="../getting%20started/Getting%20Started%20With%20Corese-command.html#the-convert-command">Getting Started Guide</a>.</p>
@@ -539,6 +537,7 @@ a ns1:Album .
 <li><p>JSON-LD: <cite>jsonld</cite> or <cite>application/ld+json</cite></p></li>
 <li><p>NTRIPLES: <cite>ntriples</cite>, <cite>nt</cite> or <cite>application/n-triples</cite></p></li>
 <li><p>NQUADS: <cite>nquads</cite>, <cite>nq</cite>, or <cite>application/n-quads</cite></p></li>
+<li><p>RDFC: <cite>rdfc-1.0</cite>, <cite>rdfc-1.0-sha256</cite>, <cite>rdfc-1.0-sha384</cite></p></li>
 </ul>
 </section>
 </section>

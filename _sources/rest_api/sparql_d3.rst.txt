@@ -34,24 +34,21 @@ This endpoint retrieves the JSON representation of triples for D3 graph visualiz
 
 .. tab-set::
 
-    .. tab-item:: HTTP 
-
-        .. code-block:: 
-
-            POST /sparql/d3?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20%20%20%20%20%20SELECT%20%2A%20WHERE%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D'  HTTP/1.1
-            Host: https://corese.inria.fr
-            Accept: application/sparql-results+json
-
-    .. tab-item:: curl 
+    .. tab-item:: GET 
 
         .. code-block:: bash
 
-            # QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#> 
-            #        SELECT * WHERE { ?child humans:hasMother ?mother. }'
+            # GET /sparql/d3?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20%20%20%20%20%20SELECT%20%2A%20WHERE%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D'  HTTP/1.1
+            # Host: https://corese.inria.fr
+            # Accept: application/sparql-results+json
 
-            curl -X GET \
-            --url 'https://corese.inria.fr/sparql/d3?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20%20%20%20%20%20SELECT%20%2A%20WHERE%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D' \
-            --header 'Accept: application/sparql-results+json' 
+            QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#> 
+                   SELECT * WHERE { ?child humans:hasMother ?mother. }'
+
+            curl -G \
+            --url 'https://corese.inria.fr/sparql/d3' \
+            --header 'Accept: application/sparql-results+json' \
+            --data-urlencode "query=$QUERY" 
 
 
 **Response Example:**

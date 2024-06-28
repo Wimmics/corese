@@ -33,36 +33,12 @@ Endpoints
      - Allows to define and reset the endpoint.
    * - :ref:`/sparql/d3 <endpoint-sparql-d3>`
      - Allows returning JSON query results to visualize with d3.
-   * - :ref:`/spin/tospin <endpoint-spin-tospin>`
-     - Allows to convert SPARQL query to SPIN RDF.
-   * - :ref:`/rdf-graph-store <endpoint-rdf-graph-store>`
-     - Allows updating the RDF graph store.       
 
-
-.. note::
-    
-    There are also other endpoints available for the CORESE server.  Are they used? (ask Remi)
-        - /sparql/d3 (output for visualization) - document
-        - /sparql/draw - the same as /sparql/d3 but with only *query* parameter
-        - /sparql/debug - I think it just a server test for
-        - /spin/tosparql - document (not working properly, ask Fabien if we need it)
-        - /spin/tospin - document
-        - /ldp (Linked Data Platform) (ask Fabien)
-        - ldp/upload (ask Fabien)
-    
-
-    [Source 1](https://github.com/Wimmics/corese/wiki/CORESE-server#what-is-the-corese-server)
-    [Source 2](https://files.inria.fr/corese/doc/server.html)
-
-    There are also other endpoints for the CORESE server in the code. Looks like they have limited usability.
-
-        - /rdf-graph-store - document because it is in the standard
-        - /agent
-        - /sdk (misnomer, it is actually a sudoku game)
-        - /compute/{name}
-        - /service/{serv}
-        - /template
-        - /tutorial/{serv}
+.. On hold
+..   * - :ref:`/spin/tospin <endpoint-spin-tospin>`
+..     - Allows to convert SPARQL query to SPIN RDF.
+..   * - :ref:`/rdf-graph-store <endpoint-rdf-graph-store>`
+..     - Allows updating the RDF graph store.       
 
 
 .. toctree::
@@ -72,5 +48,29 @@ Endpoints
   sparql_load
   sparql_reset
   sparql_d3
-  spin_tospin
-  rdf_graph_store
+
+.. On hold  
+..  spin_tospin
+..  rdf_graph_store
+
+.. .. note::
+    
+..     There are also other endpoints available for the CORESE server.  Are they useful? Should we document them?
+..         - /sparql/draw - the same as /sparql/d3 but with only *query* parameter
+..         - /sparql/debug - I think it just a server test for
+..         - /spin/tosparql - document (not working properly, ask Fabien if we need it)
+..         - /ldp (Linked Data Platform) (ask Fabien)
+..         - /ldp/upload (ask Fabien)
+    
+
+..     [Source 1](https://github.com/Wimmics/corese/wiki/CORESE-server#what-is-the-corese-server)
+..     [Source 2](https://files.inria.fr/corese/doc/server.html)
+
+..     There are also other endpoints for the CORESE server in the code. Looks like they have limited usability.
+
+..         - /agent
+..         - /sdk (misnomer, it is actually a sudoku game)
+..         - /compute/{name}
+..         - /service/{serv}
+..         - /template
+..         - /tutorial/{serv}

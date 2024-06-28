@@ -54,7 +54,7 @@
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
-    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="icon" href="../_static/Corese-square-logo-transparent.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="/sparql" href="sparql.html" />
@@ -397,8 +397,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="sparql_load.html">/sparql/load</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sparql_reset.html">/sparql/reset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sparql_d3.html">/sparql/d3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="spin_tospin.html">/spin/tospin</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rdf_graph_store.html">/rdf-graph-store</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../java_api/library_root.html">Java API</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -504,43 +502,8 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="sparql_d3.html#endpoint-sparql-d3"><span class="std std-ref">/sparql/d3</span></a></p></td>
 <td><p>Allows returning JSON query results to visualize with d3.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="spin_tospin.html#endpoint-spin-tospin"><span class="std std-ref">/spin/tospin</span></a></p></td>
-<td><p>Allows to convert SPARQL query to SPIN RDF.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="rdf_graph_store.html#endpoint-rdf-graph-store"><span class="std std-ref">/rdf-graph-store</span></a></p></td>
-<td><p>Allows updating the RDF graph store.</p></td>
-</tr>
 </tbody>
 </table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<dl class="simple">
-<dt>There are also other endpoints available for the CORESE server.  Are they used? (ask Remi)</dt><dd><ul class="simple">
-<li><p>/sparql/d3 (output for visualization) - document</p></li>
-<li><p>/sparql/draw - the same as /sparql/d3 but with only <em>query</em> parameter</p></li>
-<li><p>/sparql/debug - I think it just a server test for</p></li>
-<li><p>/spin/tosparql - document (not working properly, ask Fabien if we need it)</p></li>
-<li><p>/spin/tospin - document</p></li>
-<li><p>/ldp (Linked Data Platform) (ask Fabien)</p></li>
-<li><p>ldp/upload (ask Fabien)</p></li>
-</ul>
-</dd>
-</dl>
-<p>[Source 1](<a class="github reference external" href="https://github.com/Wimmics/corese/wiki/CORESE-server#what-is-the-corese-server">Wimmics/corese</a>)
-[Source 2](<a class="reference external" href="https://files.inria.fr/corese/doc/server.html">https://files.inria.fr/corese/doc/server.html</a>)</p>
-<p>There are also other endpoints for the CORESE server in the code. Looks like they have limited usability.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>/rdf-graph-store - document because it is in the standard</p></li>
-<li><p>/agent</p></li>
-<li><p>/sdk (misnomer, it is actually a sudoku game)</p></li>
-<li><p>/compute/{name}</p></li>
-<li><p>/service/{serv}</p></li>
-<li><p>/template</p></li>
-<li><p>/tutorial/{serv}</p></li>
-</ul>
-</div></blockquote>
-</div>
 <div class="toctree-wrapper compound">
 </div>
 </section>

@@ -21,19 +21,19 @@ Corese is a software platform implementing and extending the standards of the Se
 .. _OWL RL: https://www.w3.org/2005/rules/wiki/OWLRL
 .. _SHACL: https://www.w3.org/TR/shacl/
 
-.. TODO: Ask Remi if the documents below should be copied
+.. Define named hyperlinks for the references of extensions
+.. _STTL SPARQL: ./_static/extensions/sttl.html
+.. _SPARQL Rule: ./_static/extensions/rule.html
+.. _LDScript: ./_static/extensions/ldscript.html
 
-.. _STTL SPARQL: https://files.inria.fr/corese/doc/sttl.html
-.. _SPARQL Rule: https://files.inria.fr/corese/doc/rule.html
-.. _LDScript: https://files.inria.fr/corese/doc/ldscript.html
+.. Original location of the extensions documentation
+.. .. _STTL SPARQL: https://files.inria.fr/corese/doc/sttl.html
+.. .. _SPARQL Rule: https://files.inria.fr/corese/doc/rule.html
+.. .. _LDScript: https://files.inria.fr/corese/doc/ldscript.html
 
-
-
-.. DELETEME:Corese implements W3C standarts `RDF`_, `RDFS`_, `SPARQL1.1 Query & Update`_, `OWL RL`_, `SHACL`_ … It also implements extensions like `STTL SPARQL`_, `SPARQL Rule`_ and `LDScript`_.
 
 .. #############################################################################
 .. The statements below are to produce the grid of cards in the home page
-   TODO: Add the link to the pages of the documentation
 .. grid:: 2
 
     .. grid-item-card::  
@@ -59,11 +59,11 @@ Corese is a software platform implementing and extending the standards of the Se
    
       Corese offers several interfaces
       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      * **Corese-library__**: Java library to process RDF data and use Corese features via an API.
-      * **Corese-server**: Tool to easily create, configure and manage SPARQL endpoints.
-      * **Corese-gui**: Graphical interface that allows an easy and visual use of Corese features.
-      * **Corese-Python (beta)**: Python wrapper for accessing and manipulating RDF data with Corese features using py4j.
-      * **Corese-Command (beta)**: Command Line Interface for Corese that allows users to interact with Corese features from the terminal.
+      * `Corese-library <user_guide.html#corese-library>`_: Java library to process RDF data and use Corese features via an API.
+      * `Corese-server  <user_guide.html#corese-server>`_: Tool to easily create, configure and manage SPARQL endpoints.
+      * `Corese-GUI <install.html#corese-gui>`_: Graphical interface that allows an easy and visual use of Corese features.
+      * `Corese-Python (beta) <user_guide.html#corese-python>`_: Python wrapper for accessing and manipulating RDF data with Corese features using py4j.
+      * `Corese-Command (beta)  <user_guide.html#corese-command>`_: Command Line Interface for Corese that allows users to interact with Corese features from the terminal.
 
 .. raw:: html
 
@@ -75,10 +75,9 @@ Corese is a software platform implementing and extending the standards of the Se
 
 For support questions, comments, and any ideas for improvements you’d like to discuss, please use our `discussion forum`_. We welcome everyone to contribute to `issue reports`_, suggest new features, and create `pull requests`_.
 
-.. TODO: Talk to Remi about General Information section
 
 .. #############################################################################
-.. The statesments below are to produce the title of the page in the tab
+.. The statements below are to produce the title of the page in the tab
    and a menu with the links to the pages of the documentation
 
 .. raw html below is used to hide the title of the page but retain it in the 
@@ -98,11 +97,7 @@ CORESE documentation
    :hidden:
 
    Installation <install.md>
-   User Guide <user_guide.md>
+   User Guide <user_guide>
    API Reference <apis>
    Demo <https://corese.inria.fr/>
-
-
-
-
 

@@ -48,16 +48,16 @@ ASK query form is used to determine whether a particular triple pattern exists i
 
     The `default-graph-uri` and `named-graph-uri` Have to be passed as query string parameters if using `Content-Type: application/sparql-query` header.
 
-.. note::
+.. .. note::
 
-    The parameters below are optional and non-standard. They are not part of the SPARQL 1.1 Protocol specification.    
+..     The parameters below are optional and non-standard. They are not part of the SPARQL 1.1 Protocol specification.    
 
-    - `format`: Optional output format json|xml|text|csv|tsv|html|turtle|nt (case sensitive) to specify return format. Default: xml. Alternatively, the output format can  be specified in the  `Accept` HTTP header. 
-    - `transform`: Optional list of result transformations such as *st:map*. Default: none.
-    - `mode`: Optional list like mode=debug;link;log. Default: none. (Perhaps only used in development. Does not seem like working)
-    - `uri`: Optional list of URIs. Default: none. Use case: URL of federated query. 
-    - `access`: Optional access key that may give access to the protected features on the remote servers. Default: none. 
-    - `param`: Optional parameter in format: param=key~val.
+..     - `format`: Optional output format json|xml|text|csv|tsv|html|turtle|nt (case sensitive) to specify return format. Default: xml. Alternatively, the output format can  be specified in the  `Accept` HTTP header. 
+..     - `transform`: Optional list of result transformations such as *st:map*. Default: none.
+..     - `mode`: Optional list like mode=debug;link;log. Default: none. (Perhaps only used in development. Does not seem like working)
+..     - `uri`: Optional list of URIs. Default: none. Use case: URL of federated query. 
+..     - `access`: Optional access key that may give access to the protected features on the remote servers. Default: none. 
+..     - `param`: Optional parameter in format: param=key~val.
 
 .. _endpoint-sparql-select:
 There are three ways to send a SPARQL query to a Corese endpoint:
@@ -73,8 +73,8 @@ There are three ways to send a SPARQL query to a Corese endpoint:
 
 All other parameters can be passed in the URL as query string parameters.   
  
-.. note::
-    The direct POST query only works with `Accept:application/sparql-results+xml` and  `Accept:application/sparql-results+json` headers .
+.. .. note::
+..     The direct POST query only works with `Accept:application/sparql-results+xml` and  `Accept:application/sparql-results+json` headers .
 
 **SELECT Request Example:**
 
@@ -84,54 +84,59 @@ The query is to find all the children who have a mother in the `Humans` dataset 
 
 .. tab-set::
 
-    .. tab-item:: HTTP
-
-        .. code-block:: html
-
-            GET /sparql?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20SELECT%20%2A%20WHERE%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D HTTP/1.1
-            Host: https://corese.inria.fr
-            Accept: application/sparql-results+json
-            
-            <!--URL-encoded POST-->
-            POST /sparql HTTP/1.1
-            Host: https://corese.inria.fr
-            Content-Type: application/x-www-form-urlencoded
-            Accept: application/sparql-results+json
-            query= "PREFIX  humans: <http://www.inria.fr/2015/humans#>  SELECT * WHERE { ?child humans:hasMother ?mother. }"
-
-            <!--POST directly-->
-            POST /sparql HTTP/1.1
-            Host: https://corese.inria.fr
-            Content-Type: application/sparql-query
-            Accept: application/sparql-results+json
-            
-            PREFIX  humans: <http://www.inria.fr/2015/humans#>
-            SELECT * WHERE { ?child humans:hasMother ?mother. }
-
-    .. tab-item:: curl 
+    .. tab-item:: GET
 
         .. code-block:: bash
+            
+            # GET /sparql?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20SELECT%20%2A%20WHERE%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D HTTP/1.1
+            # Host: https://corese.inria.fr
+            # Accept: application/sparql-results+json
 
-            QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#> 
+            QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#>
                    SELECT * WHERE { ?child humans:hasMother ?mother. }'
 
             curl -G \
-                 --url https://corese.inria.fr/sparql \
-                 --header "Accept: application/sparql-results+json" \
-                 --data-urlencode "query=$QUERY" 
+                --url https://corese.inria.fr/sparql \
+                --header "Accept: application/sparql-results+json" \
+                --data-urlencode "query=$QUERY"
+
+    .. tab-item:: POST url-encoded
+
+        .. code-block:: bash 
+            # POST /sparql HTTP/1.1
+            # Host: https://corese.inria.fr
+            # Content-Type: application/x-www-form-urlencoded
+            # Accept: application/sparql-results+json
+            # query= "PREFIX  humans: <http://www.inria.fr/2015/humans#>  SELECT * WHERE { ?child humans:hasMother ?mother. }"
+    
+            QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#>
+            SELECT * WHERE { ?child humans:hasMother ?mother. }'
 
             curl -X POST \
-                 --url https://corese.inria.fr/sparql \
-                 --header "Content-Type: application/x-www-form-urlencoded" \
-                 --header "Accept: application/sparql-results+json" \
-                 --data "query=$QUERY" 
+            --url https://corese.inria.fr/sparql \
+            --header "Content-Type: application/x-www-form-urlencoded" \
+            --header "Accept: application/sparql-results+json" \
+            --data "query=$QUERY"
+
+    .. tab-item:: POST direct
+
+        .. code-block:: bash
+
+            # POST /sparql HTTP/1.1
+            # Host: https://corese.inria.fr
+            # Content-Type: application/sparql-query
+            # Accept: application/sparql-results+xml
+            # PREFIX  humans: <http://www.inria.fr/2015/humans#>
+            # SELECT * WHERE { ?child humans:hasMother ?mother. }
+
+            QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#>
+                   SELECT * WHERE { ?child humans:hasMother ?mother. }'
 
             curl -X POST \
                 --url https://corese.inria.fr/sparql \
                 --header "Content-Type: application/sparql-query" \
                 --header "Accept: application/sparql-results+json" \
-                --data "$QUERY"                          
-
+                --data "$QUERY" 
 
 .. code-block:: json
 
@@ -157,17 +162,13 @@ The query is to find all the children who have a mother in the `Humans` dataset 
 
 .. tab-set::
 
-    .. tab-item:: HTTP GET
+    .. tab-item:: GET
 
-        .. code-block:: html
+        .. code-block:: bash 
 
-            GET /sparql?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20ASK%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D' HTTP/1.1
-            Host: https://corese.inria.fr
-            Accept: application/sparql-results+json
-
-    .. tab-item:: curl 
-
-        .. code-block:: bash
+            # GET /sparql?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20ASK%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D' HTTP/1.1
+            # Host: https://corese.inria.fr
+            # Accept: application/sparql-results+json
 
             ASK='PREFIX  humans: <http://www.inria.fr/2015/humans#>  
                  ASK { ?child humans:hasMother ?mother. }'
@@ -214,31 +215,15 @@ There are also three ways to send these types of queries as described in the :re
 
 .. tab-set::
 
-    .. tab-item:: HTTP POST
+    .. tab-item:: POST url-encoded
 
-        .. code-block:: html
+        .. code-block:: bash 
             
-            <!--URL-encoded POST-->
-            POST /sparql HTTP/1.1
-            Content-Type: application/x-www-form-urlencoded
-            Accept: application/turtle
-            Host: https://corese.inria.fr
-
-            query="PREFIX  humans: <http://www.inria.fr/2015/humans#>  CONSTRUCT { ?mother humans:hasChild ?child. } WHERE { ?child humans:hasMother ?mother. }"
-
-            <!--direct POST-->
-            POST /sparql HTTP/1.1
-            Content-Type: application/sparql-query
-            Accept: application/turtle
-            Host: https://corese.inria.fr
-
-            PREFIX  humans: <http://www.inria.fr/2015/humans#>
-            CONSTRUCT { ?mother humans:hasChild ?child. } 
-            WHERE { ?child humans:hasMother ?mother. }
-
-    .. tab-item:: curl 
-
-        .. code-block:: bash
+            # POST /sparql HTTP/1.1
+            # Content-Type: application/x-www-form-urlencoded
+            # Accept: application/turtle
+            # Host: https://corese.inria.fr
+            # query="PREFIX  humans: <http://www.inria.fr/2015/humans#>  CONSTRUCT { ?mother humans:hasChild ?child. } WHERE { ?child humans:hasMother ?mother. }"
 
             QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#>  
                    CONSTRUCT { ?mother humans:hasChild ?child. } 
@@ -249,6 +234,24 @@ There are also three ways to send these types of queries as described in the :re
             --header "Accept: application/turtle" \
             --header "Content-Type: application/x-www-form-urlencoded" \
             --data "query=$QUERY"
+
+
+    .. tab-item:: POST direct 
+
+        .. code-block:: bash
+
+            #POST /sparql HTTP/1.1
+            #Content-Type: application/sparql-query
+            #Accept: application/turtle
+            #Host: https://corese.inria.fr
+
+            #PREFIX  humans: <http://www.inria.fr/2015/humans#>
+            #CONSTRUCT { ?mother humans:hasChild ?child. } 
+            #WHERE { ?child humans:hasMother ?mother. }
+
+            QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#>  
+                   CONSTRUCT { ?mother humans:hasChild ?child. } 
+                   WHERE { ?child humans:hasMother ?mother. }'
 
             curl -X POST \
             --url https://corese.inria.fr/sparql \
@@ -270,17 +273,13 @@ There are also three ways to send these types of queries as described in the :re
 
 .. tab-set::
 
-    .. tab-item:: HTTP GET
-
-        .. code-block:: text
-
-            GET /sparql?query="PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20DESCRIBE%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans-instances%23Catherine%3E" HTTP/1.1
-            Accept: text/nt
-            Host: https://corese.inria.fr
-
-    .. tab-item:: curl 
+    .. tab-item:: GET
 
         .. code-block:: bash
+
+            # GET /sparql?query="PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20DESCRIBE%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans-instances%23Catherine%3E" HTTP/1.1
+            # Accept: text/nt
+            # Host: https://corese.inria.fr
 
             QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#>
                    DESCRIBE <http://www.inria.fr/2015/humans-instances#Catherine>'
@@ -331,35 +330,26 @@ This operation allows to update the RDF dataset. The supported update operations
 - `access`: Optional access key that may give access to the protected features on the remote servers. Default: none.  
 
 .. note::
-    The update query can be passed as a `query` parameter. In this case, the `update` parameter is not required.
-
-    Using the `using-graph-uri` and `using-named-graph-uri` parameters together with the USING, USING NAMED, or WITH clauses in the query is not permitted.
+    Use of the `using-graph-uri` and `using-named-graph-uri` parameters together with the USING, USING NAMED, or WITH clauses in the query is not permitted.
+    
 
 .. note::
     SPARQL Update operations may not be authorized by a remote server. To execute an update operation on a remote server, the `access` parameter must be set to the access key that gives access to the protected features on the remote server.  
 
-.. note::
-
-    The parameter below is optional and non-standard. It is not part of the SPARQL 1.1 Protocol specification.    
-
-    - `access`: Optional key that may give access to the protected features. (what are the protected features and how to set the access key?)
-
-.. note:: 
-
-    The update query returns an empty result set formatted according to the `Accept` header if the `Content-Type:application/x-www-form-urlencoded` and if the update operation is successful.
-
-    The update query returns no body and `Length=0` if the `Content-Type:application/sparql-update` and if the update operation is successful.
-
-    If the update operation fails, the response status code is 500 and the response body contains an error message.
 
 There are two ways to send the update query to a Corese endpoint:
 
 - Send an update query as a URL-encoded POST request. 
     The `Content-Type` header must be set to `application/x-www-form-urlencoded`.
-    The update string must be passed in the POST request body as `update=...`
+    The update string must be passed in the POST request body as `update=...`.  as well as and the `*-graph-uri` parameters.
+
 - Send an update query directly in the POST request body.
     The `Content-Type` header must be set to `application/sparql-query`.
-    The update string must be passed in the POST request body.    
+    The update string must be passed in the POST request body.
+
+.. note::
+    The 'using-graph-uri' and 'using-named-graph-uri' parameters have to be passed as query string parameters in the POST direct.
+
 
 **INSERT Request Example:**
 
@@ -368,50 +358,74 @@ To execute this example we recommend launching the `Corese Docker <../docker/REA
 
 .. tab-set::
 
-    .. tab-item:: HTTP 
-
-        .. code-block:: html
-            
-            <!--URL-encoded POST-->
-            POST /sparql
-            Host: https://localhost:8080
-            Content-Type: `application/x-www-form-urlencoded`
-            update='PREFIX dc: <http://purl.org/dc/elements/1.1/> INSERT DATA { <http://example/book1> dc:title "A new book" .}'
-
-            <!--direct POST-->
-            POST /sparql
-            Host: https://localhost:8080
-            Content-Type: application/sparql-update
-            
-            PREFIX dc: <http://purl.org/dc/elements/1.1/> 
-            INSERT DATA { <http://example/book1> dc:title "A new book" .}
-
-
-    .. tab-item:: curl 
+    .. tab-item:: POST url-encoded
 
         .. code-block:: bash
+            
+            # POST /sparql
+            # Host: https://localhost:8080
+            # Content-Type: `application/x-www-form-urlencoded`
+            # update='PREFIX dc: <http://purl.org/dc/elements/1.1/> INSERT DATA { <http://example/book1> dc:title "A new book" .}'
 
             QUERY='PREFIX dc: <http://purl.org/dc/elements/1.1/> 
                    INSERT DATA { <http://example/book1> dc:title "A newer book" . }'
+            GRAPH='http://example.org/graph'  
 
             curl -X POST \
             --url http://localhost:8080/sparql \
             --header "Content-Type: application/x-www-form-urlencoded" \
-            --data "update=$QUERY" 
+            --data "update=$QUERY" \
+            --data "using-graph-uri=$GRAPH"
+
+    .. tab-item:: POST direct 
+
+        .. code-block:: bash
+
+            # POST /sparql
+            # Host: https://localhost:8080
+            # Content-Type: application/sparql-update
+            #
+            # PREFIX dc: <http://purl.org/dc/elements/1.1/> 
+            # INSERT DATA { <http://example/book1> dc:title "A new book" .}
+
+            QUERY='PREFIX dc: <http://purl.org/dc/elements/1.1/> 
+                   INSERT DATA { <http://example/book1> dc:title "A newer book" . }'
+            GRAPH='http://example.org/graph'  
 
             curl -X POST \
-            --url http://localhost:8080/sparql \
+            --url http://localhost:8080/sparql?using-graph-uri="$GRAPH" \
             --header "Content-Type: application/sparql-update" \
-            --data "$QUERY" 
+            --data "$QUERY" -v
 
-.. code-block:: xml
+.. tab-set::
 
-    <?xml version="1.0" ?>
-    <sparql
-        xmlns='http://www.w3.org/2005/sparql-results#'>
-        <head></head>
-        <results>
-            <result></result>
-        </results>
-    </sparql>
+    .. tab-item:: POST url-encoded
 
+        .. code-block:: xml
+
+            <?xml version="1.0" ?>
+            <sparql
+                xmlns='http://www.w3.org/2005/sparql-results#'>
+                <head></head>
+                <results>
+                    <result></result>
+                </results>
+            </sparql>
+
+    .. tab-item:: POST direct
+
+        .. code-block:: html
+
+            HTTP/1.1 200 OK
+            Date: Tue, 25 Jun 2024 14:54:47 GMT
+            Access-Control-Allow-Origin: *
+            Content-Type: text/plain
+            Content-Length: 0
+            Server: Jetty(11.0.14)
+
+.. note:: 
+    The update query returns an empty result set formatted according to the `Accept` header if the `Content-Type:application/x-www-form-urlencoded` and if the update operation is successful.
+
+    The update query returns no body and `Length=0` if the `Content-Type:application/sparql-update` and if the update operation is successful.
+
+    If the update operation fails, the response status code is 500 and the response body contains an error message.

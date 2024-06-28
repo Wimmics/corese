@@ -54,7 +54,7 @@
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
-    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="icon" href="../_static/Corese-square-logo-transparent.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="/sparql/d3" href="sparql_d3.html" />
@@ -397,8 +397,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="sparql_load.html">/sparql/load</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">/sparql/reset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sparql_d3.html">/sparql/d3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="spin_tospin.html">/spin/tospin</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rdf_graph_store.html">/rdf-graph-store</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../java_api/library_root.html">Java API</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -478,6 +476,16 @@ document.write(`
 <p>This endpoint allows you to define and reset the endpoint.</p>
 <p><strong>URL:</strong> <cite>{base URL}/sparql/reset</cite></p>
 <p><strong>Method:</strong> POST</p>
+<p><strong>Headers:</strong></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><cite>Content-Type:</cite></dt><dd><ul>
+<li><p><cite>application/x-www-form-urlencoded</cite></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 <p><strong>Parameters:</strong></p>
 <ul class="simple">
 <li><p><cite>entailments</cite>: Optional boolean flag (case sensitive) to enable standard entailments. Default: false.</p></li>
@@ -496,18 +504,15 @@ document.write(`
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-0">
-HTTP</label><div class="sd-tab-content docutils">
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span><span class="w"> </span><span class="o">/</span><span class="n">sparql</span><span class="o">/</span><span class="n">reset</span><span class="w"> </span><span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span>
-<span class="nl">Host</span><span class="p">:</span><span class="w"> </span><span class="n">https</span><span class="o">:</span><span class="c1">//localhost:8080</span>
-<span class="n">load</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
-</pre></div>
-</div>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-1">
-curl</label><div class="sd-tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+POST url-encoded</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># POST /sparql/reset HTTP/1.1</span>
+<span class="c1"># Host: https://localhost:8080</span>
+<span class="c1"># Content-Type: application/x-www-form-urlencoded</span>
+<span class="c1"># load=&quot;true&quot;</span>
+
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--url<span class="w"> </span>http://localhost:8080/sparql/reset<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--header<span class="w"> </span><span class="s1">&#39;Content-Type: application/x-www-form-urlencoded&#39;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--data<span class="w"> </span><span class="s2">&quot;load=true&quot;</span>
 </pre></div>
 </div>

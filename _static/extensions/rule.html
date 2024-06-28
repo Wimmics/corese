@@ -1,0 +1,171 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <link rel="stylesheet" href="kgram.css" type="text/css" media="screen, projection, print" />
+  <title>SPARQL Rule</title>
+ 
+</head>
+
+<body>
+
+<h1>SPARQL Rule</h1>
+
+<h3>Author</h3>
+
+Olivier Corby &lt;<a href="mailto:olivier.corby@inria.fr">olivier.corby@inria.fr</a>&gt;
+
+<!-- <div>Created: 2015, October 9th</div>-->
+<div>2018, April 9</div>
+
+<hr/>
+
+
+<h2>Abstract</h2>
+<p>
+Corese defines an Inference Rule Language based on SPARQL <span class='code'>construct-where</span> query form. The <span class='code'>where</span> clause defines a condition and the <span class='code'>construct</span> clause defines the conclusion. 
+Rules are applied in forward chaining until saturation. 
+</p>
+
+<h2>Table of contents</h2>
+
+
+
+
+<p>&nbsp;</p>
+
+
+<h2>Introduction</h2>
+<p>
+Corese defines an Inference Rule Language based on SPARQL <span class='code'>construct-where</span> query form. The <span class='code'>where</span> clause defines a condition and the <span class='code'>construct</span> clause defines the conclusion. 
+Rules are applied in forward chaining until saturation. Corese implements OWL RL using such a rule base.
+The example below shows the inference rule that implements OWL transitivity.
+</p>
+
+<pre>
+construct {
+  ?x ?p ?z
+}
+where {
+  ?p a owl:TransitiveProperty .
+  ?x ?p ?y .
+  ?y ?p ?z 
+}
+</pre>
+
+The document uses the namespaces shown below.
+
+<pre>
+prefix kg:  &lt;http://ns.inria.fr/corese/kgram/>
+prefix rul: &lt;http://ns.inria.fr/corese/rule/>
+</pre>
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+<h2>Inference Rule Engine</h2>
+
+<p>
+A rule base consists of a list of rules.
+The rule engine evaluates a rule base as follows.
+It considers all the rules, in order in the rule base.
+For each rule, it executes the <span class='code'>where</span> clause and if there are solutions, it instantiates the triple patterns of the <span class='code'>construct</span> clause with every solution to form a set of triples.
+Then, it inserts these triples  into the current dataset.
+In order to enhance tracability,  triples infered by the rule engine are inserted in the <span class='code'>kg:rule</span> named graph in the dataset.
+The rule engine iterates the cycle above on the entire rule base, possibly several times, until no new triple is generated.
+Termination is ensured provided that two conditions are verified: no new graph nodes are inserted and no new properties are created. In this case, termination is ensured because the rule engine engine stops after saturation.
+</p>
+
+<p>
+Negation is authorized in the <span class='code'>where</span> clause, e.g. <span class='code'>minus</span> and <span class='code'>filter not exists</span>. However, the rule engine does not perform any  consistency checking. Hence, a rule can deduce something based on the absence of a pattern while another rule can infer the pattern that was considered absent, in which case there may be a contradiction. 
+In addition, rules do not retract triples from the dataset.
+</p>
+
+
+<p>
+The query below enables users to retrieve triples infered by the rule engine.
+</p>
+
+<pre>
+select * 
+from kg:rule
+where {  
+    ?s ?p ?o
+}
+</pre>
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+<h2>Syntax</h2>
+<p>
+Inference rules are <span class='code'>construct where</span> SPARQL queries.
+They can use every SPARQL statements, including property path, bind, values and service.
+Rules are defined in an RDF document with <span class='code'>.rul</span> extension, using RDF/XML syntax as shown below.
+Rules should be placed within CDATA sections in order to parse correctly &lt; and &amp; characters. Each rule must declare its prefix and namespaces.
+</p>
+
+<pre>
+&lt;?xml version="1.0"?>
+&lt;rdf:RDF 
+    xmlns:rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns     = "http://ns.inria.fr/corese/rule/">
+
+&lt;rule>
+&lt;body>  
+&lt;![CDATA[
+prefix owl: &lt;http://www.w3.org/2002/07/owl#>
+construct {
+  ?x ?p ?z
+}
+where {
+  ?p a owl:TransitiveProperty .
+  ?x ?p ?y .
+  ?y ?p ?z 
+}
+]]>
+&lt;/body>
+&lt;/rule>
+
+&lt;rule>
+&lt;body>  
+&lt;![CDATA[
+prefix owl: &lt;http://www.w3.org/2002/07/owl#>
+construct {
+  ?y ?p ?x
+}
+where {
+  ?p a owl:SymmetricProperty .
+  ?x ?p ?y .
+}
+]]>
+&lt;/body>
+&lt;/rule>
+
+&lt;/rdf:RDF>
+</pre>
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

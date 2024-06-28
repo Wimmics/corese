@@ -54,9 +54,11 @@
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
-    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="icon" href="../_static/Corese-square-logo-transparent.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Getting Started With Corese-server" href="Getting%20Started%20With%20Corese-server.html" />
+    <link rel="prev" title="Corese-library and RDF4J" href="../rdf4j/RDF4J%20API%20in%20Corese.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,7 +165,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../user_guide.html">
                         User Guide
                       </a>
@@ -277,7 +279,7 @@ document.write(`
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -303,7 +305,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../user_guide.html">
                         User Guide
                       </a>
@@ -376,6 +378,27 @@ document.write(`
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started%20With%20Corese-library.html">Corese-library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rdf4j/RDF4J%20API%20in%20Corese.html">Corese-library and RDF4J</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Corese-command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started%20With%20Corese-server.html">Corese-server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corese-python/Corese-library%20with%20Python.html">Corese-Python (library)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corese-python/Corese-server%20with%20Python.html">Corese-Python (server)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.html">Storage Systems in Corese</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../federation/Federated%20and%20Distributed%20Queries.html">Federated and Distributed Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/SPARQL%20Service%20Extension.html">SPARQL Service Extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docker/README.html">Corese Docker</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -408,6 +431,9 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="../user_guide.html" class="nav-link">User Guide</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">Getting...</li>
   </ul>
 </nav>
@@ -429,93 +455,15 @@ document.write(`
 <h1>Getting Started With Corese-Command<a class="headerlink" href="#getting-started-with-corese-command" title="Permalink to this heading">#</a></h1>
 <p>Corese-Command is a command-line interface (CLI) for the Corese Semantic Web Factory. It facilitates running SPARQL queries on RDF datasets and remote SPARQL endpoints, converting RDF files between different serialization formats, and validating RDF data against SHACL shapes directly from the command line. This makes it an indispensable tool for automated processing, quick console-based testing, and integration into larger scripts or applications.</p>
 <p>Designed to simplify and streamline tasks related to querying, converting, and validating RDF data, Corese-Command is suitable for developers, data scientists, and anyone working with Semantic Web technologies.</p>
-<section id="table-of-contents">
-<h2>1. Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this heading">#</a></h2>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#getting-started-with-corese-command">Getting Started With Corese-Command</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#table-of-contents">1. Table of Contents</a></p></li>
-<li><p><a class="reference internal" href="#installation">2. Installation</a></p></li>
-<li><p><a class="reference internal" href="#the-sparql-command">3. The <code class="docutils literal notranslate"><span class="pre">sparql</span></code> Command</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#basic-usage">3.1. Basic Usage</a></p></li>
-<li><p><a class="reference internal" href="#choose-the-result-format">3.2. Choose the Result Format</a></p></li>
-<li><p><a class="reference internal" href="#different-types-of-input">3.3. Different Types of Input</a></p></li>
-<li><p><a class="reference internal" href="#different-types-of-queries">3.4. Different Types of Queries</a></p></li>
-<li><p><a class="reference internal" href="#multiple-input-files">3.5. Multiple Input Files</a></p></li>
-<li><p><a class="reference internal" href="#different-types-of-output">3.6. Different Types of Output</a></p></li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#the-convert-command">4. The <code class="docutils literal notranslate"><span class="pre">convert</span></code> Command</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#id1">4.1. Basic Usage</a></p></li>
-<li><p><a class="reference internal" href="#id2">4.2. Different Types of Input</a></p></li>
-<li><p><a class="reference internal" href="#id3">4.3. Different Types of Output</a></p></li>
-<li><p><a class="reference internal" href="#summary-of-available-formats">4.4. Summary of Available Formats</a></p></li>
-<li><p><a class="reference internal" href="#id4">4.5. Multiple Input Files</a></p></li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#the-shacl-command">5. The <code class="docutils literal notranslate"><span class="pre">shacl</span></code> Command</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#id5">5.1. Basic Usage</a></p></li>
-<li><p><a class="reference internal" href="#id6">5.2. Different Types of Input</a></p></li>
-<li><p><a class="reference internal" href="#id7">5.3. Different Types of Output</a></p></li>
-<li><p><a class="reference internal" href="#id8">5.4. Multiple Input Files</a></p></li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#remote-sparql-command">6. <code class="docutils literal notranslate"><span class="pre">remote-sparql</span></code> Command</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#id9">6.1. Basic Usage</a></p></li>
-<li><p><a class="reference internal" href="#id10">6.2. Choose the Result Format</a></p></li>
-<li><p><a class="reference internal" href="#id11">6.3. Different Types of Queries</a></p></li>
-<li><p><a class="reference internal" href="#id12">6.4. Different Types of Output</a></p></li>
-<li><p><a class="reference internal" href="#different-types-of-methods">6.5. Different Types of Methods</a></p></li>
-<li><p><a class="reference internal" href="#specifying-graphs">6.6. Specifying Graphs</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#default-graph">6.6.1. Default Graph</a></p></li>
-<li><p><a class="reference internal" href="#named-graph">6.6.2. Named Graph</a></p></li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#additional-request-configurations">6.7. Additional Request Configurations</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#custom-http-headers">6.7.1. Custom HTTP Headers</a></p></li>
-<li><p><a class="reference internal" href="#redirection-limit">6.7.2. Redirection Limit</a></p></li>
-<li><p><a class="reference internal" href="#query-validation">6.7.3. Query Validation</a></p></li>
-</ol>
-</li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#canonicalize-command">7. <code class="docutils literal notranslate"><span class="pre">canonicalize</span></code> Command</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#id13">7.1. Basic Usage</a></p></li>
-<li><p><a class="reference internal" href="#id14">7.2. Different Types of Input</a></p></li>
-<li><p><a class="reference internal" href="#id15">7.3. Different Types of Output</a></p></li>
-<li><p><a class="reference internal" href="#canonicalization-algorithms">7.4. Canonicalization Algorithms</a></p></li>
-<li><p><a class="reference internal" href="#id16">7.5. Multiple Input Files</a></p></li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#general-options">8. General Options</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#configuration-file">8.1. Configuration file</a></p></li>
-<li><p><a class="reference internal" href="#verbose">8.2. Verbose</a></p></li>
-<li><p><a class="reference internal" href="#version">8.3. Version</a></p></li>
-<li><p><a class="reference internal" href="#get-help">8.4. Get Help</a></p></li>
-<li><p><a class="reference internal" href="#disabling-owl-auto-import">8.5. Disabling OWL Auto Import</a></p></li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-</section>
 <section id="installation">
-<h2>2. Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<h2>1. Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
 <p>Installations instructions are available on the <a class="reference external" href="https://github.com/Wimmics/corese">Corese-Command GitHub repository</a>.</p>
 </section>
 <section id="the-sparql-command">
-<h2>3. The <code class="docutils literal notranslate"><span class="pre">sparql</span></code> Command<a class="headerlink" href="#the-sparql-command" title="Permalink to this heading">#</a></h2>
+<h2>2. The <code class="docutils literal notranslate"><span class="pre">sparql</span></code> Command<a class="headerlink" href="#the-sparql-command" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">sparql</span></code> command allows you to run SPARQL queries on RDF datasets.</p>
 <section id="basic-usage">
-<h3>3.1. Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading">#</a></h3>
+<h3>2.1. Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this heading">#</a></h3>
 <p>Let’s start with a simple example, executing a query on a local file:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-i<span class="w"> </span>myData.ttl
 </pre></div>
@@ -529,7 +477,7 @@ document.write(`
 <p>In this example, the query is provided directly on the command line with the <code class="docutils literal notranslate"><span class="pre">-q</span></code> flag, and the input file is specified with the <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag. The result is printed to the standard output with the default format, which is <code class="docutils literal notranslate"><span class="pre">markdown</span></code>.</p>
 </section>
 <section id="choose-the-result-format">
-<h3>3.2. Choose the Result Format<a class="headerlink" href="#choose-the-result-format" title="Permalink to this heading">#</a></h3>
+<h3>2.2. Choose the Result Format<a class="headerlink" href="#choose-the-result-format" title="Permalink to this heading">#</a></h3>
 <p>Let’s try the same query as before, but this time with the <code class="docutils literal notranslate"><span class="pre">json</span></code> format as output:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-i<span class="w"> </span>myData.ttl<span class="w"> </span>-r<span class="w"> </span>json
 </pre></div>
@@ -720,7 +668,7 @@ document.write(`
 </table>
 </section>
 <section id="different-types-of-input">
-<h3>3.3. Different Types of Input<a class="headerlink" href="#different-types-of-input" title="Permalink to this heading">#</a></h3>
+<h3>2.3. Different Types of Input<a class="headerlink" href="#different-types-of-input" title="Permalink to this heading">#</a></h3>
 <p>The input can be provided in different ways:</p>
 <ul class="simple">
 <li><p><strong>File Input:</strong> The input file can be specified with the <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag:</p></li>
@@ -756,7 +704,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 <section id="different-types-of-queries">
-<h3>3.4. Different Types of Queries<a class="headerlink" href="#different-types-of-queries" title="Permalink to this heading">#</a></h3>
+<h3>2.4. Different Types of Queries<a class="headerlink" href="#different-types-of-queries" title="Permalink to this heading">#</a></h3>
 <p>The query can be provided in different ways:</p>
 <ul class="simple">
 <li><p><strong>Query String:</strong> The query can be provided directly on the command line with the <code class="docutils literal notranslate"><span class="pre">-q</span></code> flag:</p></li>
@@ -778,7 +726,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div>
 </section>
 <section id="multiple-input-files">
-<h3>3.5. Multiple Input Files<a class="headerlink" href="#multiple-input-files" title="Permalink to this heading">#</a></h3>
+<h3>2.5. Multiple Input Files<a class="headerlink" href="#multiple-input-files" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Multiple Input:</strong> It’s possible to provide multiple input files by repeating the <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag:</p></li>
 </ul>
@@ -808,7 +756,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div>
 </section>
 <section id="different-types-of-output">
-<h3>3.6. Different Types of Output<a class="headerlink" href="#different-types-of-output" title="Permalink to this heading">#</a></h3>
+<h3>2.6. Different Types of Output<a class="headerlink" href="#different-types-of-output" title="Permalink to this heading">#</a></h3>
 <p>If you want to save the result to a file, you can do so with the <code class="docutils literal notranslate"><span class="pre">-o</span></code> flag:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-i<span class="w"> </span>myData.ttl<span class="w"> </span>-r<span class="w"> </span>json<span class="w"> </span>-o<span class="w"> </span>myResult.json
 </pre></div>
@@ -820,17 +768,17 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </section>
 </section>
 <section id="the-convert-command">
-<h2>4. The <code class="docutils literal notranslate"><span class="pre">convert</span></code> Command<a class="headerlink" href="#the-convert-command" title="Permalink to this heading">#</a></h2>
+<h2>3. The <code class="docutils literal notranslate"><span class="pre">convert</span></code> Command<a class="headerlink" href="#the-convert-command" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">convert</span></code> command allows you to convert an RDF file from one serialization format to another.</p>
 <section id="id1">
-<h3>4.1. Basic Usage<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<h3>3.1. Basic Usage<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>convert<span class="w"> </span>-i<span class="w"> </span>myFile.ttl<span class="w"> </span>-r<span class="w"> </span>jsonld
 </pre></div>
 </div>
 <p>This example converts <code class="docutils literal notranslate"><span class="pre">myFile.ttl</span></code> from <code class="docutils literal notranslate"><span class="pre">turtle</span></code> to <code class="docutils literal notranslate"><span class="pre">jsonld</span></code>. The <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag specifies the input file, and the <code class="docutils literal notranslate"><span class="pre">-r</span></code> flag specifies the output format.</p>
 </section>
 <section id="id2">
-<h3>4.2. Different Types of Input<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<h3>3.2. Different Types of Input<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
 <p>The input can be provided in different ways:</p>
 <ul class="simple">
 <li><p><strong>File Input:</strong> The input file can be specified with the <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag:</p></li>
@@ -866,7 +814,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 <section id="id3">
-<h3>4.3. Different Types of Output<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<h3>3.3. Different Types of Output<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
 <p>The output can be provided in different ways:</p>
 <ul class="simple">
 <li><p><strong>File Output:</strong> The output file can be specified with the <code class="docutils literal notranslate"><span class="pre">-o</span></code> flag:</p></li>
@@ -893,7 +841,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 <section id="summary-of-available-formats">
-<h3>4.4. Summary of Available Formats<a class="headerlink" href="#summary-of-available-formats" title="Permalink to this heading">#</a></h3>
+<h3>3.4. Summary of Available Formats<a class="headerlink" href="#summary-of-available-formats" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">convert</span></code> command supports the following formats for input and output:</p>
 <table class="table">
 <thead>
@@ -935,7 +883,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </table>
 </section>
 <section id="id4">
-<h3>4.5. Multiple Input Files<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<h3>3.5. Multiple Input Files<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Multiple Input:</strong> It’s possible to provide multiple input files by repeating the <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag:</p></li>
 </ul>
@@ -969,17 +917,17 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </section>
 </section>
 <section id="the-shacl-command">
-<h2>5. The <code class="docutils literal notranslate"><span class="pre">shacl</span></code> Command<a class="headerlink" href="#the-shacl-command" title="Permalink to this heading">#</a></h2>
+<h2>4. The <code class="docutils literal notranslate"><span class="pre">shacl</span></code> Command<a class="headerlink" href="#the-shacl-command" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">shacl</span></code> command allows you to validate RDF data against SHACL shapes.</p>
 <section id="id5">
-<h3>5.1. Basic Usage<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<h3>4.1. Basic Usage<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>shacl<span class="w"> </span>-i<span class="w"> </span>myData.ttl<span class="w"> </span>-s<span class="w"> </span>myShapes.ttl
 </pre></div>
 </div>
 <p>This example validates <code class="docutils literal notranslate"><span class="pre">myData.ttl</span></code> against <code class="docutils literal notranslate"><span class="pre">myShapes.ttl</span></code>. The <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag specifies the input file, and the <code class="docutils literal notranslate"><span class="pre">-s</span></code> flag specifies the shapes file.</p>
 </section>
 <section id="id6">
-<h3>5.2. Different Types of Input<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
+<h3>4.2. Different Types of Input<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h3>
 <p>The input can be provided in different ways:</p>
 <ul class="simple">
 <li><p><strong>File Input:</strong> The input file can be specified with the <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag:</p></li>
@@ -1015,7 +963,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 <section id="id7">
-<h3>5.3. Different Types of Output<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<h3>4.3. Different Types of Output<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
 <p>The output report can be provided in different ways (the default format is <code class="docutils literal notranslate"><span class="pre">turtle</span></code>):</p>
 <ul class="simple">
 <li><p><strong>File Output:</strong> The output file can be specified with the <code class="docutils literal notranslate"><span class="pre">-o</span></code> flag:</p></li>
@@ -1042,7 +990,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 <section id="id8">
-<h3>5.4. Multiple Input Files<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
+<h3>4.4. Multiple Input Files<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Multiple Input:</strong> It’s possible to provide multiple input files by repeating the <code class="docutils literal notranslate"><span class="pre">-i</span></code> and <code class="docutils literal notranslate"><span class="pre">-s</span></code> flags:</p></li>
 </ul>
@@ -1075,18 +1023,18 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 </section>
-<section id="remote-sparql-command">
-<h2>6. <code class="docutils literal notranslate"><span class="pre">remote-sparql</span></code> Command<a class="headerlink" href="#remote-sparql-command" title="Permalink to this heading">#</a></h2>
+<section id="the-remote-sparql-command">
+<h2>5. The <code class="docutils literal notranslate"><span class="pre">remote-sparql</span></code> Command<a class="headerlink" href="#the-remote-sparql-command" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">remote-sparql</span></code> command allows you to run SPARQL queries on a remote SPARQL endpoint.</p>
 <section id="id9">
-<h3>6.1. Basic Usage<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
+<h3>5.1. Basic Usage<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>remote-sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;http://example.org/sparql&quot;</span>
 </pre></div>
 </div>
 <p>This example executes a query on the remote SPARQL endpoint <code class="docutils literal notranslate"><span class="pre">http://example.org/sparql</span></code>. The <code class="docutils literal notranslate"><span class="pre">-q</span></code> flag specifies the query, and the <code class="docutils literal notranslate"><span class="pre">-e</span></code> flag specifies the endpoint.</p>
 </section>
 <section id="id10">
-<h3>6.2. Choose the Result Format<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
+<h3>5.2. Choose the Result Format<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h3>
 <p>Let’s try the same query as before, but this time with the <code class="docutils literal notranslate"><span class="pre">json</span></code> format as output:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>remote-sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;http://example.org/sparql&quot;</span><span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;application/sparql-results+json&quot;</span>
 </pre></div>
@@ -1103,7 +1051,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 <section id="id11">
-<h3>6.3. Different Types of Queries<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
+<h3>5.3. Different Types of Queries<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h3>
 <p>The query can be provided in different ways:</p>
 <ul class="simple">
 <li><p><strong>Query String:</strong> The query can be provided directly on the command line with the <code class="docutils literal notranslate"><span class="pre">-q</span></code> flag:</p></li>
@@ -1131,7 +1079,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div>
 </section>
 <section id="id12">
-<h3>6.4. Different Types of Output<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
+<h3>5.4. Different Types of Output<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h3>
 <p>The output can be provided in different ways:</p>
 <ul class="simple">
 <li><p><strong>File Output:</strong> The output file can be specified with the <code class="docutils literal notranslate"><span class="pre">-o</span></code> flag:</p></li>
@@ -1147,7 +1095,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div>
 </section>
 <section id="different-types-of-methods">
-<h3>6.5. Different Types of Methods<a class="headerlink" href="#different-types-of-methods" title="Permalink to this heading">#</a></h3>
+<h3>5.5. Different Types of Methods<a class="headerlink" href="#different-types-of-methods" title="Permalink to this heading">#</a></h3>
 <p>In SPARQL 1.1, three different methods are defined for sending a SPARQL query to a SPARQL endpoint:</p>
 <ul class="simple">
 <li><p><strong>GET:</strong> The query is sent as a URL parameter. This method is suitable for short queries. It’s simple and easy to use, but has limitations on the length of the URL, which can be problematic for longer queries. <a class="reference external" href="https://www.w3.org/TR/sparql11-protocol/#query-via-get">W3C SPARQL 1.1 Protocol</a></p></li>
@@ -1157,17 +1105,17 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 <p>In the command line interface, the <code class="docutils literal notranslate"><span class="pre">-m</span></code> or <code class="docutils literal notranslate"><span class="pre">--request-method</span></code> flags are used to specify the HTTP request method to use. The default value is <code class="docutils literal notranslate"><span class="pre">GET</span></code>. The available options are <code class="docutils literal notranslate"><span class="pre">GET</span></code>, <code class="docutils literal notranslate"><span class="pre">POST-Encoded</span></code>, and <code class="docutils literal notranslate"><span class="pre">POST-Direct</span></code>, corresponding to the GET, POST-URLENCODED, and POST-Direct methods respectively.</p>
 </section>
 <section id="specifying-graphs">
-<h3>6.6. Specifying Graphs<a class="headerlink" href="#specifying-graphs" title="Permalink to this heading">#</a></h3>
+<h3>5.6. Specifying Graphs<a class="headerlink" href="#specifying-graphs" title="Permalink to this heading">#</a></h3>
 <p>In SPARQL, the dataset to be queried can be specified using the <code class="docutils literal notranslate"><span class="pre">FROM</span></code> and <code class="docutils literal notranslate"><span class="pre">FROM</span> <span class="pre">NAMED</span></code> clauses in the query itself. However, you can also specify the default and named graphs using command line arguments when invoking the SPARQL processor. This can be particularly useful when you want to query multiple graphs without having to specify them within the query text.</p>
 <section id="default-graph">
-<h4>6.6.1. Default Graph<a class="headerlink" href="#default-graph" title="Permalink to this heading">#</a></h4>
+<h4>5.6.1. Default Graph<a class="headerlink" href="#default-graph" title="Permalink to this heading">#</a></h4>
 <p>The default graph can be specified using the <code class="docutils literal notranslate"><span class="pre">-d</span></code> or <code class="docutils literal notranslate"><span class="pre">--default-graph</span></code> option. Each occurrence of this option represents a URI of a default graph. Multiple URIs can be specified by repeating this option.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>remote-sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;http://example.org/sparql&quot;</span><span class="w"> </span>-d<span class="w"> </span>http://example.org/graph1<span class="w"> </span>-d<span class="w"> </span>http://example.org/graph2
 </pre></div>
 </div>
 </section>
 <section id="named-graph">
-<h4>6.6.2. Named Graph<a class="headerlink" href="#named-graph" title="Permalink to this heading">#</a></h4>
+<h4>5.6.2. Named Graph<a class="headerlink" href="#named-graph" title="Permalink to this heading">#</a></h4>
 <p>The named graph can be specified using the <code class="docutils literal notranslate"><span class="pre">-n</span></code> or <code class="docutils literal notranslate"><span class="pre">--named-graph</span></code> option. Each occurrence of this option represents a URI of a named graph. Multiple URIs can be specified by repeating this option.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>remote-sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;http://example.org/sparql&quot;</span><span class="w"> </span>-n<span class="w"> </span>http://example.org/graph1<span class="w"> </span>-n<span class="w"> </span>http://example.org/graph2
 </pre></div>
@@ -1175,10 +1123,10 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </section>
 </section>
 <section id="additional-request-configurations">
-<h3>6.7. Additional Request Configurations<a class="headerlink" href="#additional-request-configurations" title="Permalink to this heading">#</a></h3>
+<h3>5.7. Additional Request Configurations<a class="headerlink" href="#additional-request-configurations" title="Permalink to this heading">#</a></h3>
 <p>The following options provide additional configurations for the HTTP request sent to the SPARQL endpoint. These configurations include setting custom headers, controlling redirections, and toggling query validation.</p>
 <section id="custom-http-headers">
-<h4>6.7.1. Custom HTTP Headers<a class="headerlink" href="#custom-http-headers" title="Permalink to this heading">#</a></h4>
+<h4>5.7.1. Custom HTTP Headers<a class="headerlink" href="#custom-http-headers" title="Permalink to this heading">#</a></h4>
 <p>Custom HTTP headers can be added to the request using the <code class="docutils literal notranslate"><span class="pre">-H</span></code> or <code class="docutils literal notranslate"><span class="pre">--header</span></code> option. Each occurrence of this option represents a single header, with the header name and value separated by a colon <code class="docutils literal notranslate"><span class="pre">:</span></code>.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>remote-sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;http://example.org/sparql&quot;</span><span class="w"> </span>--header<span class="w"> </span><span class="s2">&quot;Accept: application/sparql-results+json&quot;</span><span class="w"> </span>--header<span class="w"> </span><span class="s2">&quot;User-Agent: MyClient&quot;</span>
 </pre></div>
@@ -1188,14 +1136,14 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 <section id="redirection-limit">
-<h4>6.7.2. Redirection Limit<a class="headerlink" href="#redirection-limit" title="Permalink to this heading">#</a></h4>
+<h4>5.7.2. Redirection Limit<a class="headerlink" href="#redirection-limit" title="Permalink to this heading">#</a></h4>
 <p>The maximum number of HTTP redirections to follow can be specified using the <code class="docutils literal notranslate"><span class="pre">-r</span></code> or <code class="docutils literal notranslate"><span class="pre">--max-redirection</span></code> option. The default value is 5.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>remote-sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;http://example.org/sparql&quot;</span><span class="w"> </span>--max-redirection<span class="w"> </span><span class="m">10</span>
 </pre></div>
 </div>
 </section>
 <section id="query-validation">
-<h4>6.7.3. Query Validation<a class="headerlink" href="#query-validation" title="Permalink to this heading">#</a></h4>
+<h4>5.7.3. Query Validation<a class="headerlink" href="#query-validation" title="Permalink to this heading">#</a></h4>
 <p>By default, the query is validated before being sent to the SPARQL endpoint. This can be disabled using the <code class="docutils literal notranslate"><span class="pre">-i</span></code> or <code class="docutils literal notranslate"><span class="pre">--ignore-query-validation</span></code> option.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>remote-sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;http://example.org/sparql&quot;</span><span class="w"> </span>--ignore-query-validation
 </pre></div>
@@ -1204,11 +1152,11 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </section>
 </section>
 </section>
-<section id="canonicalize-command">
-<h2>7. <code class="docutils literal notranslate"><span class="pre">canonicalize</span></code> Command<a class="headerlink" href="#canonicalize-command" title="Permalink to this heading">#</a></h2>
+<section id="the-canonicalize-command">
+<h2>6. The <code class="docutils literal notranslate"><span class="pre">canonicalize</span></code> Command<a class="headerlink" href="#the-canonicalize-command" title="Permalink to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">canonicalize</span></code> command allows you to apply a specific canonicalization algorithm to RDF files.</p>
 <section id="id13">
-<h3>7.1. Basic Usage<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
+<h3>6.1. Basic Usage<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h3>
 <p>Use the following syntax to canonicalize an RDF file using the SHA-256 algorithm under the RDFC 1.0 specification:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>canonicalize<span class="w"> </span>-i<span class="w"> </span>myData.ttl<span class="w"> </span>-r<span class="w"> </span>rdfc-1.0-sha256
 </pre></div>
@@ -1216,7 +1164,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 <p>This example canonicalizes <code class="docutils literal notranslate"><span class="pre">myData.ttl</span></code> to the <code class="docutils literal notranslate"><span class="pre">rdfc-1.0-sha256</span></code> (See <a class="reference external" href="https://www.w3.org/TR/rdf-canon/">RDFC1.0</a>) canonical algorithm. The <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag specifies the input file, and the <code class="docutils literal notranslate"><span class="pre">-r</span></code> flag specifies the canonical algorithm.</p>
 </section>
 <section id="id14">
-<h3>7.2. Different Types of Input<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
+<h3>6.2. Different Types of Input<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h3>
 <p>The input can be provided in different ways:</p>
 <ul class="simple">
 <li><p><strong>File Input:</strong> The input file can be specified with the <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag:</p></li>
@@ -1252,7 +1200,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 <section id="id15">
-<h3>7.3. Different Types of Output<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
+<h3>6.3. Different Types of Output<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h3>
 <p>The output can be provided in different ways:</p>
 <ul class="simple">
 <li><p><strong>File Output:</strong> The output file can be specified with the <code class="docutils literal notranslate"><span class="pre">-o</span></code> flag:</p></li>
@@ -1268,7 +1216,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div>
 </section>
 <section id="canonicalization-algorithms">
-<h3>7.4. Canonicalization Algorithms<a class="headerlink" href="#canonicalization-algorithms" title="Permalink to this heading">#</a></h3>
+<h3>6.4. Canonicalization Algorithms<a class="headerlink" href="#canonicalization-algorithms" title="Permalink to this heading">#</a></h3>
 <p>The following canonicalization algorithms are available:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.w3.org/TR/rdf-canon/">RDFC 1.0</a> with SHA-256.</p></li>
@@ -1283,7 +1231,7 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div></blockquote>
 </section>
 <section id="id16">
-<h3>7.5. Multiple Input Files<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
+<h3>6.5. Multiple Input Files<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Multiple Input:</strong> It’s possible to provide multiple input files by repeating the <code class="docutils literal notranslate"><span class="pre">-i</span></code> flag:</p></li>
 </ul>
@@ -1317,10 +1265,10 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </section>
 </section>
 <section id="general-options">
-<h2>8. General Options<a class="headerlink" href="#general-options" title="Permalink to this heading">#</a></h2>
+<h2>7. General Options<a class="headerlink" href="#general-options" title="Permalink to this heading">#</a></h2>
 <p>General options are available for all commands.</p>
 <section id="configuration-file">
-<h3>8.1. Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this heading">#</a></h3>
+<h3>7.1. Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this heading">#</a></h3>
 <p>All interface of Corese (Gui, Server, Command) can be configured with a configuration file. The configuration file is a property file (See a example on <a class="reference external" href="https://github.com/Wimmics/corese/blob/master/corese-core/src/main/resources/data/corese/property.properties">GitHub</a>).</p>
 <p>In Corese-Command, the configuration file can be specified with the <code class="docutils literal notranslate"><span class="pre">-c</span></code>, <code class="docutils literal notranslate"><span class="pre">--config</span></code> or <code class="docutils literal notranslate"><span class="pre">--init</span></code> flag:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-i<span class="w"> </span>myData.ttl<span class="w"> </span>-c<span class="w"> </span>myConfig.properties
@@ -1332,18 +1280,18 @@ format, you can use the <code class="docutils literal notranslate"><span class="
 </div>
 </section>
 <section id="verbose">
-<h3>8.2. Verbose<a class="headerlink" href="#verbose" title="Permalink to this heading">#</a></h3>
+<h3>7.2. Verbose<a class="headerlink" href="#verbose" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">-v</span></code> flag allows you to get more information about the execution of the command.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-i<span class="w"> </span>myData.ttl<span class="w"> </span>-v
 </pre></div>
 </div>
 </section>
 <section id="version">
-<h3>8.3. Version<a class="headerlink" href="#version" title="Permalink to this heading">#</a></h3>
+<h3>7.3. Version<a class="headerlink" href="#version" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">-V</span></code> flag allows you to get the version of the command.</p>
 </section>
 <section id="get-help">
-<h3>8.4. Get Help<a class="headerlink" href="#get-help" title="Permalink to this heading">#</a></h3>
+<h3>7.4. Get Help<a class="headerlink" href="#get-help" title="Permalink to this heading">#</a></h3>
 <p>For any command, you can use the <code class="docutils literal notranslate"><span class="pre">-h</span></code> or <code class="docutils literal notranslate"><span class="pre">--help</span></code> flag to get a description and the syntax. This is also available for the general <code class="docutils literal notranslate"><span class="pre">corese-command</span></code> and each specific sub-command.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>-h
 corese-command<span class="w"> </span>sparql<span class="w"> </span>-h
@@ -1353,7 +1301,7 @@ corese-command<span class="w"> </span>shacl<span class="w"> </span>-h
 </div>
 </section>
 <section id="disabling-owl-auto-import">
-<h3>8.5. Disabling OWL Auto Import<a class="headerlink" href="#disabling-owl-auto-import" title="Permalink to this heading">#</a></h3>
+<h3>7.5. Disabling OWL Auto Import<a class="headerlink" href="#disabling-owl-auto-import" title="Permalink to this heading">#</a></h3>
 <p>Corese-Command is configured to automatically import the vocabulary referenced in <code class="docutils literal notranslate"><span class="pre">owl:imports</span></code> statements by default. However, this behavior can be turned off by using the <code class="docutils literal notranslate"><span class="pre">-w</span></code> or <code class="docutils literal notranslate"><span class="pre">--no-owl-import</span></code> flag.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>sparql<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;SELECT * WHERE {?s ?p ?o}&#39;</span><span class="w"> </span>-i<span class="w"> </span>myData.ttl<span class="w"> </span>-w
 </pre></div>
@@ -1378,6 +1326,24 @@ corese-command<span class="w"> </span>shacl<span class="w"> </span>-h
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../rdf4j/RDF4J%20API%20in%20Corese.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Corese-library and RDF4J</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="Getting%20Started%20With%20Corese-server.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Getting Started With Corese-server</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -1394,65 +1360,64 @@ corese-command<span class="w"> </span>shacl<span class="w"> </span>-h
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">1. Table of Contents</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">2. Installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-sparql-command">3. The <code class="docutils literal notranslate"><span class="pre">sparql</span></code> Command</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-usage">3.1. Basic Usage</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-the-result-format">3.2. Choose the Result Format</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-types-of-input">3.3. Different Types of Input</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-types-of-queries">3.4. Different Types of Queries</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-input-files">3.5. Multiple Input Files</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-types-of-output">3.6. Different Types of Output</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">1. Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-sparql-command">2. The <code class="docutils literal notranslate"><span class="pre">sparql</span></code> Command</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-usage">2.1. Basic Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-the-result-format">2.2. Choose the Result Format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-types-of-input">2.3. Different Types of Input</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-types-of-queries">2.4. Different Types of Queries</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-input-files">2.5. Multiple Input Files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-types-of-output">2.6. Different Types of Output</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-convert-command">4. The <code class="docutils literal notranslate"><span class="pre">convert</span></code> Command</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">4.1. Basic Usage</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">4.2. Different Types of Input</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">4.3. Different Types of Output</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-available-formats">4.4. Summary of Available Formats</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">4.5. Multiple Input Files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-convert-command">3. The <code class="docutils literal notranslate"><span class="pre">convert</span></code> Command</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.1. Basic Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.2. Different Types of Input</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.3. Different Types of Output</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-available-formats">3.4. Summary of Available Formats</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.5. Multiple Input Files</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-shacl-command">5. The <code class="docutils literal notranslate"><span class="pre">shacl</span></code> Command</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">5.1. Basic Usage</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">5.2. Different Types of Input</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">5.3. Different Types of Output</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">5.4. Multiple Input Files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-shacl-command">4. The <code class="docutils literal notranslate"><span class="pre">shacl</span></code> Command</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">4.1. Basic Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">4.2. Different Types of Input</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">4.3. Different Types of Output</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">4.4. Multiple Input Files</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#remote-sparql-command">6. <code class="docutils literal notranslate"><span class="pre">remote-sparql</span></code> Command</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">6.1. Basic Usage</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">6.2. Choose the Result Format</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">6.3. Different Types of Queries</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">6.4. Different Types of Output</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-types-of-methods">6.5. Different Types of Methods</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-graphs">6.6. Specifying Graphs</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#default-graph">6.6.1. Default Graph</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-graph">6.6.2. Named Graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-remote-sparql-command">5. The <code class="docutils literal notranslate"><span class="pre">remote-sparql</span></code> Command</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">5.1. Basic Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">5.2. Choose the Result Format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">5.3. Different Types of Queries</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">5.4. Different Types of Output</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#different-types-of-methods">5.5. Different Types of Methods</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specifying-graphs">5.6. Specifying Graphs</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#default-graph">5.6.1. Default Graph</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-graph">5.6.2. Named Graph</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-request-configurations">6.7. Additional Request Configurations</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-http-headers">6.7.1. Custom HTTP Headers</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#redirection-limit">6.7.2. Redirection Limit</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#query-validation">6.7.3. Query Validation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-request-configurations">5.7. Additional Request Configurations</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-http-headers">5.7.1. Custom HTTP Headers</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#redirection-limit">5.7.2. Redirection Limit</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#query-validation">5.7.3. Query Validation</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#canonicalize-command">7. <code class="docutils literal notranslate"><span class="pre">canonicalize</span></code> Command</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">7.1. Basic Usage</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">7.2. Different Types of Input</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">7.3. Different Types of Output</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#canonicalization-algorithms">7.4. Canonicalization Algorithms</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">7.5. Multiple Input Files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-canonicalize-command">6. The <code class="docutils literal notranslate"><span class="pre">canonicalize</span></code> Command</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">6.1. Basic Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">6.2. Different Types of Input</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">6.3. Different Types of Output</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#canonicalization-algorithms">6.4. Canonicalization Algorithms</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">6.5. Multiple Input Files</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-options">8. General Options</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-file">8.1. Configuration file</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#verbose">8.2. Verbose</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version">8.3. Version</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#get-help">8.4. Get Help</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#disabling-owl-auto-import">8.5. Disabling OWL Auto Import</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#general-options">7. General Options</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-file">7.1. Configuration file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#verbose">7.2. Verbose</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#version">7.3. Version</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#get-help">7.4. Get Help</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#disabling-owl-auto-import">7.5. Disabling OWL Auto Import</a></li>
 </ul>
 </li>
 </ul>

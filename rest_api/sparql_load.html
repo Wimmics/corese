@@ -54,7 +54,7 @@
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
-    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="icon" href="../_static/Corese-square-logo-transparent.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="/sparql/reset" href="sparql_reset.html" />
@@ -397,8 +397,6 @@ document.write(`
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">/sparql/load</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sparql_reset.html">/sparql/reset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sparql_d3.html">/sparql/d3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="spin_tospin.html">/spin/tospin</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rdf_graph_store.html">/rdf-graph-store</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../java_api/library_root.html">Java API</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -506,19 +504,14 @@ document.write(`
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-0">
-HTTP</label><div class="sd-tab-content docutils">
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span><span class="w"> </span><span class="o">/</span><span class="n">sparql</span><span class="o">/</span><span class="n">load</span><span class="w"> </span><span class="n">HTTP</span><span class="o">/</span><span class="mf">1.1</span>
-<span class="nl">Host</span><span class="p">:</span><span class="w"> </span><span class="n">https</span><span class="o">:</span><span class="c1">//localhost:8080</span>
-<span class="n">Content</span><span class="o">-</span><span class="n">Type</span><span class="o">:</span><span class="w"> </span><span class="n">x</span><span class="o">-</span><span class="n">www</span><span class="o">-</span><span class="n">form</span><span class="o">-</span><span class="n">urlencoded</span>
-<span class="n">remote_path</span><span class="o">=</span><span class="s">&quot;http://ns.inria.fr/humans/data&quot;</span>
-<span class="n">source</span><span class="o">=</span><span class="s">&quot;http://ns.inria.fr/humans&quot;</span>
-</pre></div>
-</div>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-1">
-curl</label><div class="sd-tab-content docutils">
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+POST url-encoded</label><div class="sd-tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># POST /sparql/load HTTP/1.1</span>
+<span class="c1"># Host: https://localhost:8080</span>
+<span class="c1"># Content-Type: x-www-form-urlencoded</span>
+<span class="c1"># remote_path=&quot;http://ns.inria.fr/humans/data&quot;</span>
+<span class="c1"># source=&quot;http://ns.inria.fr/humans&quot;</span>
+
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--url<span class="w"> </span>http://localhost:8080/sparql/load<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--header<span class="w"> </span><span class="s1">&#39;Content-Type: application/x-www-form-urlencoded&#39;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--data<span class="w"> </span><span class="s2">&quot;remote_path=http://ns.inria.fr/humans/data&quot;</span><span class="w"> </span><span class="se">\</span>

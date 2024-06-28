@@ -18,7 +18,6 @@ This endpoint allows you to convert SPARQL queries to SPIN RDF triples.
 
 - `Content-Type:`
     - `application/x-www-form-urlencoded`
-    - `multipart/form-data`
 
 - `Accept:` 
     - `text/html`
@@ -41,21 +40,33 @@ Response status code 500 and the response body containing an error message if a 
 
 .. tab-set::
 
-    .. tab-item:: HTTP PUT
-
-        .. code-block:: 
-
-            POST /spin/tospin HTTP/1.1
-            Host: https://corese.inria.fr
-            Accept: text/html
-            Content-Type: application/x-www-form-urlencoded
-
-    .. tab-item:: curl 
+    .. tab-item:: GET
 
         .. code-block:: bash
 
+            # GET /spin/tospin?query=PREFIX%20%20humans%3A%20%3Chttp%3A%2F%2Fwww.inria.fr%2F2015%2Fhumans%23%3E%20%20SELECT%20%2A%20WHERE%20%7B%20%3Fchild%20humans%3AhasMother%20%3Fmother.%20%7D HTTP/1.1
+            # Host: https://corese.inria.fr
+            # Accept: text/html
+
             QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#>
-                   SELECT * WHERE { ?child humans:hasMother ?mother. }'
+                    SELECT * WHERE { ?child humans:hasMother ?mother. }'
+
+            curl -G \
+            --url 'https://corese.inria.fr/spin/tospin' \
+            --header 'Accept: text/html' \
+            --data-urlencode "query=$QUERY"
+
+    .. tab-item:: POST url-encoded
+
+        .. code-block:: bash
+
+            # POST /spin/tospin HTTP/1.1
+            # Host: https://corese.inria.fr
+            # Accept: text/html
+            # Content-Type: application/x-www-form-urlencoded
+
+            QUERY='PREFIX  humans: <http://www.inria.fr/2015/humans#>
+                    SELECT * WHERE { ?child humans:hasMother ?mother. }'
 
             curl -X POST \
             --url 'https://corese.inria.fr/spin/tospin' \

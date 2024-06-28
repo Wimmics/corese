@@ -54,7 +54,7 @@
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
-    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="icon" href="../_static/Corese-square-logo-transparent.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="REST API Reference" href="../rest_api/api_root.html" />
@@ -397,8 +397,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_load.html">/sparql/load</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_reset.html">/sparql/reset</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_d3.html">/sparql/d3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../rest_api/spin_tospin.html">/spin/tospin</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../rest_api/rdf_graph_store.html">/rdf-graph-store</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../java_api/library_root.html">Java API</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -475,7 +473,7 @@ document.write(`
                   
   <section id="canonicalize">
 <span id="corese-command-canonicalize"></span><h1>canonicalize<a class="headerlink" href="#canonicalize" title="Permalink to this heading">#</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">canonicalize</span></code> command allows applying a specific canonicalization algorithm to RDF files.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">canonicalize</span></code> command allows applying a specific canonicalization algorithm to RDF files. At times, it becomes necessary to compare the differences between sets of graphs, digitally sign them, or generate short identifiers for graphs via hashing algorithms. The canonicalization process ensures that the same RDF graph is represented in the same way, regardless of the order of triples or the use of blank nodes. The canonicalization process is based on the <a class="reference external" href="https://www.w3.org/TR/rdf-canon/">RDFC 1.0</a> specification.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>canonicalize<span class="w"> </span><span class="o">[</span>-hRvw<span class="o">]</span><span class="w"> </span><span class="o">[</span>-i<span class="o">=</span>&lt;inputs&gt;...<span class="o">]</span><span class="w"> </span><span class="o">[</span>-f<span class="o">=</span>&lt;inputFormat&gt;<span class="o">]</span>
 <span class="w">                      </span><span class="o">[</span>-r<span class="o">=</span>&lt;canonicalAlgo&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>-o<span class="o">=</span>&lt;output&gt;<span class="o">]</span>
@@ -495,16 +493,41 @@ document.write(`
 <li><p><cite>-h</cite>, <cite>--help</cite>: Display  <cite>sparql</cite> command options.</p></li>
 </ul>
 <p><strong>Example:</strong></p>
-<p>To run this example you can download the sample data file <a class="reference download internal" download="" href="../_downloads/5e1c0c0a85123ebddff1ed94b81a07de/beatles.rdf"><code class="xref download docutils literal notranslate"><span class="pre">beatles.rdf</span></code></a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>canonicalize<span class="w"> </span>-i<span class="w"> </span>beatles.rdf<span class="w"> </span>-r<span class="w"> </span>rdfc-1.0-sha256
+<p>To run this example you can download the sample data files <a class="reference download internal" download="" href="../_downloads/a12fd164d578252f1d12df64ad0c90c9/beatles_blank.ttl"><code class="xref download docutils literal notranslate"><span class="pre">beatles_blank.ttl</span></code></a> or <a class="reference download internal" download="" href="../_downloads/368824691154de1300a362081ae7febb/figure3.ttl"><code class="xref download docutils literal notranslate"><span class="pre">figure3.ttl</span></code></a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>corese-command<span class="w"> </span>canonicalize<span class="w"> </span>-i<span class="w"> </span>beatles_blank.rdf<span class="w"> </span>-r<span class="w"> </span>rdfc-1.0
 </pre></div>
 </div>
-<div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span>TBD
-
-...
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>&lt;http://example.com/George_Harrison&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.com/SoloArtist&gt; .
+&lt;http://example.com/Imagine&gt; &lt;http://example.com/artist&gt; &lt;http://example.com/John_Lennon&gt; .
+&lt;http://example.com/Imagine&gt; &lt;http://example.com/date&gt; &quot;1971-10-11&quot;^^&lt;http://www.w3.org/2001/XMLSchema#date&gt; .
+&lt;http://example.com/Imagine&gt; &lt;http://example.com/name&gt; &quot;Imagine&quot; .
+&lt;http://example.com/Imagine&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.com/Album&gt; .
+&lt;http://example.com/John_Lennon&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.com/SoloArtist&gt; .
+&lt;http://example.com/McCartney&gt; &lt;http://example.com/artist&gt; &lt;http://example.com/Paul_McCartney&gt; .
+&lt;http://example.com/McCartney&gt; &lt;http://example.com/date&gt; &quot;1970-04-17&quot;^^&lt;http://www.w3.org/2001/XMLSchema#date&gt; .
+&lt;http://example.com/McCartney&gt; &lt;http://example.com/name&gt; &quot;McCartney&quot; .
+&lt;http://example.com/McCartney&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.com/Album&gt; .
+&lt;http://example.com/Paul_McCartney&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.com/SoloArtist&gt; .
+&lt;http://example.com/Please_Please_Me&gt; &lt;http://example.com/artist&gt; &lt;http://example.com/The_Beatles&gt; .
+&lt;http://example.com/Please_Please_Me&gt; &lt;http://example.com/date&gt; &quot;1963-03-22&quot;^^&lt;http://www.w3.org/2001/XMLSchema#date&gt; .
+&lt;http://example.com/Please_Please_Me&gt; &lt;http://example.com/name&gt; &quot;Please Please Me&quot; .
+&lt;http://example.com/Please_Please_Me&gt; &lt;http://example.com/track&gt; _:c14n0 .
+&lt;http://example.com/Please_Please_Me&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.com/Album&gt; .
+&lt;http://example.com/Ringo_Starr&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.com/SoloArtist&gt; .
+&lt;http://example.com/The_Beatles&gt; &lt;http://example.com/member&gt; &lt;http://example.com/George_Harrison&gt; .
+&lt;http://example.com/The_Beatles&gt; &lt;http://example.com/member&gt; &lt;http://example.com/John_Lennon&gt; .
+&lt;http://example.com/The_Beatles&gt; &lt;http://example.com/member&gt; &lt;http://example.com/Paul_McCartney&gt; .
+&lt;http://example.com/The_Beatles&gt; &lt;http://example.com/member&gt; &lt;http://example.com/Ringo_Starr&gt; .
+&lt;http://example.com/The_Beatles&gt; &lt;http://example.com/name&gt; &quot;The Beatles&quot; .
+&lt;http://example.com/The_Beatles&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.com/Band&gt; .
+_:c14n0 &lt;http://example.com/length&gt; &quot;125&quot;^^&lt;http://www.w3.org/2001/XMLSchema#integer&gt; .
+_:c14n0 &lt;http://example.com/name&gt; &quot;Love Me Do&quot; .
+_:c14n0 &lt;http://example.com/writer&gt; &lt;http://example.com/John_Lennon&gt; .
+_:c14n0 &lt;http://example.com/writer&gt; &lt;http://example.com/Paul_McCartney&gt; .
+_:c14n0 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://example.com/Song&gt; .
 </pre></div>
 </div>
-<p>For more examples, see the <a class="reference external" href="../getting%20started/Getting%20Started%20With%20Corese-command.html#7-canonicalize-command">Getting Started Guide</a>.</p>
+<p>For more examples, see the <a class="reference external" href="../getting%20started/Getting%20Started%20With%20Corese-command.html#the-canonicalize-command">Getting Started Guide</a>.</p>
 <section id="input-formats">
 <span id="corese-command-canonicalize-input-formats"></span><h2>Input formats<a class="headerlink" href="#input-formats" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
@@ -519,10 +542,8 @@ document.write(`
 </section>
 <section id="output-canonicalization-algorithms-formats">
 <span id="corese-command-canonicalize-output-formats"></span><h2>Output (Canonicalization Algorithms) formats<a class="headerlink" href="#output-canonicalization-algorithms-formats" title="Permalink to this heading">#</a></h2>
-<p>The following canonicalization algorithms are available under the <a class="reference external" href="https://www.w3.org/TR/rdf-canon/">RDFC 1.0</a> specification:</p>
 <ul class="simple">
-<li><p>RDFC 1.0 with SHA-256: <cite>rdfc-1.0</cite>, <cite>rdfc-1.0-sha256</cite></p></li>
-<li><p>RDFC 1.0 with SHA-384: <cite>rdfc-1.0-sha384</cite></p></li>
+<li><p>RDFC: <cite>rdfc-1.0</cite>, <cite>rdfc-1.0-sha256</cite>, <cite>rdfc-1.0-sha384</cite></p></li>
 </ul>
 </section>
 </section>

@@ -56,9 +56,11 @@
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
-    <link rel="icon" href="../_static/corese.svg"/>
+    <link rel="icon" href="../_static/Corese-square-logo-transparent.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Corese-library and RDF4J" href="../rdf4j/RDF4J%20API%20in%20Corese.html" />
+    <link rel="prev" title="User Guide" href="../user_guide.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -165,7 +167,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../user_guide.html">
                         User Guide
                       </a>
@@ -279,7 +281,7 @@ document.write(`
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -305,7 +307,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../user_guide.html">
                         User Guide
                       </a>
@@ -378,6 +380,27 @@ document.write(`
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Corese-library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rdf4j/RDF4J%20API%20in%20Corese.html">Corese-library and RDF4J</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started%20With%20Corese-command.html">Corese-command</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Getting%20Started%20With%20Corese-server.html">Corese-server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corese-python/Corese-library%20with%20Python.html">Corese-Python (library)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../corese-python/Corese-server%20with%20Python.html">Corese-Python (server)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.html">Storage Systems in Corese</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../federation/Federated%20and%20Distributed%20Queries.html">Federated and Distributed Queries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/SPARQL%20Service%20Extension.html">SPARQL Service Extension</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docker/README.html">Corese Docker</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -410,6 +433,9 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="../user_guide.html" class="nav-link">User Guide</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">Getting...</li>
   </ul>
 </nav>
@@ -437,47 +463,6 @@ The third part details how to validate a graph with the <a class="reference exte
 The fourth part shows how to transforme a graph with the extension language <a class="reference external" href="https://files.inria.fr/corese/doc/sttl.html">SPARQL Template Transformation Language (STTL)</a>.
 The fifth part details how to apply a set of rules on a graph using the <a class="reference external" href="https://files.inria.fr/corese/doc/rule.html">SPARQL Rule</a> extension language.
 Finally, the sixth part describes how to define and use functions with the <a class="reference external" href="https://files.inria.fr/corese/doc/ldscript.html">LDScript</a> extension language.</p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#getting-started-with-corese-library">Getting Started With Corese-library</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#installation">1. Installation</a></p></li>
-<li><p><a class="reference internal" href="#graph">2. Graph</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#build-a-graph-by-program">2.1. Build a Graph by program</a></p></li>
-<li><p><a class="reference internal" href="#load-graph-from-file">2.2. Load Graph from file</a></p></li>
-<li><p><a class="reference internal" href="#export-graph-to-file">2.3. Export Graph to file</a></p></li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#sparql-protocol-and-rdf-query-language">3. SPARQL Protocol and RDF Query Language</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#sparql-select-query">3.1. SPARQL Select query</a></p></li>
-<li><p><a class="reference internal" href="#sparql-ask-query">3.2. SPARQL Ask query</a></p></li>
-<li><p><a class="reference internal" href="#sparql-construct-query">3.3. SPARQL Construct query</a></p></li>
-<li><p><a class="reference internal" href="#sparql-update-query">3.4. SPARQL Update query</a></p></li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#shapes-constraint-language-shacl">4. Shapes Constraint Language (SHACL)</a></p></li>
-<li><p><a class="reference internal" href="#sparql-template-transformation-language-sttl">5. SPARQL Template Transformation Language (STTL)</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#transform-a-graph-in-a-visual-html-format">5.1. Transform a graph in a visual HTML format</a></p></li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#sparql-rule">6. SPARQL Rule</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#load-rules-from-a-file">6.1. Load rules from a file</a></p></li>
-<li><p><a class="reference internal" href="#owl-rules">6.2. OWL Rules</a></p></li>
-</ol>
-</li>
-<li><p><a class="reference internal" href="#ldscript">7. LDScript</a></p>
-<ol class="arabic simple">
-<li><p><a class="reference internal" href="#fibonacci-function-call-from-java">7.1. Fibonacci function call from Java</a></p></li>
-<li><p><a class="reference internal" href="#ldscript-in-sparql">7.2. LDScript in SPARQL</a></p></li>
-<li><p><a class="reference internal" href="#advanced-example">7.3. Advanced example</a></p></li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
 <section id="installation">
 <h2>1. Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
 <p>Installations instructions are available on the <a class="reference external" href="https://github.com/Wimmics/corese">Corese-Command GitHub repository</a>.</p>
@@ -1178,6 +1163,24 @@ function fun:main() {
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../user_guide.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">User Guide</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../rdf4j/RDF4J%20API%20in%20Corese.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Corese-library and RDF4J</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

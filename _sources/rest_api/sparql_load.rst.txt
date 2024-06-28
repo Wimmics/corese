@@ -37,19 +37,15 @@ This example will load test dataset stored in the http://ns.inria.fr/humans/data
 
 .. tab-set::
 
-    .. tab-item:: HTTP 
-
-        .. code-block:: 
-
-            POST /sparql/load HTTP/1.1
-            Host: https://localhost:8080
-            Content-Type: x-www-form-urlencoded
-            remote_path="http://ns.inria.fr/humans/data"
-            source="http://ns.inria.fr/humans"
-
-    .. tab-item:: curl 
+    .. tab-item:: POST url-encoded
 
         .. code-block:: bash
+
+            # POST /sparql/load HTTP/1.1
+            # Host: https://localhost:8080
+            # Content-Type: x-www-form-urlencoded
+            # remote_path="http://ns.inria.fr/humans/data"
+            # source="http://ns.inria.fr/humans"
 
             curl -X POST \
                 --url http://localhost:8080/sparql/load \

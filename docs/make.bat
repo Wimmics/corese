@@ -37,10 +37,6 @@ REM Link the README.md file to user_guide.md
 :link
 pushd %SOURCEDIR%
 
-if not exist "user_guide.md" (
-	mklink "user_guide.md" "..\README.md"
-)
-
 REM Link the docs/source/sub-directories to source directories to the docs/sub-directories
 REM This is necessary to accomodate the sphinx build system
 

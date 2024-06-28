@@ -25,12 +25,6 @@ help:
 # directory in the documentation rendered as HTML by Sphinx.
 symbolic_links:
 	cd $(SOURCEDIR); \
-	echo "Creating a symbolic link to README.md"; \
-	if [ ! -e "user_guide.md" ]; then \
-		ln -sfv "../README.md" "user_guide.md"; \
-	else echo "--- user_guide.md already exists"; \
-	fi; \
-	\
 	echo "Creating a symbolic link to sub-dirs"; \
 	for dir in "getting started" "rdf4j" "corese-python" "federation" "storage" "advanced"; do \
 	if [ ! -d "$$dir" ]; then \

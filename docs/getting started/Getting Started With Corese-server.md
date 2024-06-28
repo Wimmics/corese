@@ -2,24 +2,6 @@
 
 This tutorial shows how to use the basic features of the Corese-server framework.
 
-1. [Getting Started With Corese-server](#getting-started-with-corese-server)
-   1. [1. Installation](#1-installation)
-   2. [2. Load data](#2-load-data)
-      1. [2.1. Command line](#21-command-line)
-   3. [3. Profile file](#3-profile-file)
-      1. [3.1 Create multiple endpoints](#31-create-multiple-endpoints)
-         1. [3.1.1 Multiple endpoints with different data](#311-multiple-endpoints-with-different-data)
-      2. [3.2 Restrict access to external endpoints](#32-restrict-access-to-external-endpoints)
-   4. [4. Property configuration file](#4-property-configuration-file)
-      1. [4.1. Blank node format](#41-blank-node-format)
-      2. [4.2. Loading in the default graph](#42-loading-in-the-default-graph)
-         1. [4.3. RDF\* (RDF Star)](#43-rdf-rdf-star)
-      3. [4.4. OWL utilities](#44-owl-utilities)
-      4. [4.5. SPARQL engine behavior](#45-sparql-engine-behavior)
-      5. [4.6. SPARQL federation behavior](#46-sparql-federation-behavior)
-      6. [4.7. SPARQL LOAD parameters](#47-sparql-load-parameters)
-   5. [5. To go deeper](#5-to-go-deeper)
-
 ## 1. Installation
 
 Installation instructions are available on the [Corese-Command GitHub repository](https://github.com/Wimmics/corese).

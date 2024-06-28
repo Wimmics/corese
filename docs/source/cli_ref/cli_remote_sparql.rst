@@ -59,7 +59,7 @@ In this example we access the demo endpoint of the Corese server and execute a s
     http://www.inria.fr/2015/humans-instances#Lucas,http://www.inria.fr/2015/humans-instances#Catherine
     http://www.inria.fr/2015/humans-instances#Catherine,http://www.inria.fr/2015/humans-instances#Laura
 
-For more examples, see the `Getting Started Guide <../getting%20started/Getting%20Started%20With%20Corese-command.html#remote-sparql-command>`_.
+For more examples, see the `Getting Started Guide <../getting%20started/Getting%20Started%20With%20Corese-command.html#the-remote-sparql-command>`_.
 
 
 .. _corese-command-remote-sparql-output-formats:

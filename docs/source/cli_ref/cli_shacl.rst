@@ -106,4 +106,5 @@ Output (report) formats
 - JSON-LD: `jsonld` or `application/ld+json`
 - NTRIPLES: `ntriples`, `nt` or `application/n-triples`
 - NQUADS: `nquads`, `nq`, or `application/n-quads`
+- RDFC: `rdfc-1.0`, `rdfc-1.0-sha256`, `rdfc-1.0-sha384`
 

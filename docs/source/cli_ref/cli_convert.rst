@@ -37,12 +37,12 @@ To run this example you can download the sample data file :download:`beatles.rdf
 
 .. code-block:: bash
 
-    corese-command convert -i beatles.rdf -r tutle 
+    corese-command convert -i beatles.rdf -r turtle 
 
 
 .. code-block:: turtle
 
-    prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
     @prefix ns1: <http://example.com/> .
     @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
@@ -83,4 +83,5 @@ Output formats
 - JSON-LD: `jsonld` or `application/ld+json`
 - NTRIPLES: `ntriples`, `nt` or `application/n-triples`
 - NQUADS: `nquads`, `nq`, or `application/n-quads`
+- RDFC: `rdfc-1.0`, `rdfc-1.0-sha256`, `rdfc-1.0-sha384`
 

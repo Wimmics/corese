@@ -30,7 +30,6 @@ The difference is that the client needs to provide only the RDF triples to be ad
 
 - `Content-Type:`
     - `application/x-www-form-urlencoded`
-    - `multipart/form-data`
 
 - `Accept:` 
     - `application/rdf+xml`
@@ -60,19 +59,15 @@ To execute this example we recommend launching the `Corese Docker <../docker/REA
 
 .. tab-set::
 
-    .. tab-item:: HTTP POST
-
-        .. code-block:: 
-
-            POST rdf-graph-store HTTP/1.1
-            Host: localhost:8080
-            Content-Type: application/x-www-form-urlencoded
-            graph=http://ns.inria.fr/books
-            RDF=<http://example/book1> <http://purl.org/dc/elements/1.1/title> "A new book" .
-
-    .. tab-item:: curl 
+    .. tab-item:: POST url-encoded
 
         .. code-block:: bash
+
+            # POST rdf-graph-store HTTP/1.1
+            # Host: localhost:8080
+            # Content-Type: application/x-www-form-urlencoded
+            # graph=http://ns.inria.fr/books
+            # RDF=<http://example/book1> <http://purl.org/dc/elements/1.1/title> "A new book" .
 
             RDF='<http://example/book1> <http://purl.org/dc/elements/1.1/title> "A new book" .'
             graph='http://ns.inria.fr/books'
@@ -85,7 +80,6 @@ To execute this example we recommend launching the `Corese Docker <../docker/REA
 
   
 **Response Example:**
-
 
 .. code-block:: xml
 

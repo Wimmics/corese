@@ -9,6 +9,11 @@ This endpoint allows you to define and reset the endpoint.
 
 **Method:** POST
 
+**Headers:** 
+
+- `Content-Type:` 
+    - `application/x-www-form-urlencoded`
+
 **Parameters:**
 
 - `entailments`: Optional boolean flag (case sensitive) to enable standard entailments. Default: false.
@@ -30,20 +35,18 @@ To execute this example we recommend launching the `Corese Docker <../docker/REA
 
 .. tab-set::
 
-    .. tab-item:: HTTP 
-
-        .. code-block:: 
-
-            POST /sparql/reset HTTP/1.1
-            Host: https://localhost:8080
-            load="true"
-
-    .. tab-item:: curl 
+    .. tab-item:: POST url-encoded 
 
         .. code-block:: bash
 
+            # POST /sparql/reset HTTP/1.1
+            # Host: https://localhost:8080
+            # Content-Type: application/x-www-form-urlencoded
+            # load="true"
+
             curl -X POST \
                 --url http://localhost:8080/sparql/reset \
+                --header 'Content-Type: application/x-www-form-urlencoded' \
                 --data "load=true" 
 
 **Response Example:**

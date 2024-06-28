@@ -67,7 +67,7 @@ html_js_files = []
 html_logo = "_static/corese.svg"
 
 # Icon to put in the browser tab.
-html_favicon = "_static/corese.svg"
+html_favicon = "_static/Corese-square-logo-transparent.svg"
 
 # Modify the title to get good social-media links
 html_title = "CORESE"
@@ -94,18 +94,39 @@ html_theme_options = {
     ],
     #"navigation_depth": 0,
     #"show_toc_level": 3,
-    # TODO:  The versioning switch has to be reviewd after the final version of the documentation is ready
+    # TODO:  The versioning switch has to be review after the final version of the documentation is ready
     #https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/version-dropdown.html
+    
     "switcher": {"json_url": "http://127.0.0.1:3000/docs/source/_static/switcher.json",
                  "version_match": r"v\d+\.\d+\.\d+",
                  },
  }
 
-# since the markdown files dont have TOC we can hide the Section Navigation bar (left)
-html_sidebars = {
-  "user_guide": [],
-  "install": [],
+# since the markdown files don't have TOC 
+# we can either  hide the Section Navigation bar (left) by adding the dictionary entry
+#  "install": [],
+#
+# or we can create a custom navigation bar in the _templates folder
+# <!-- user_guide_sidebar.html -->
+# <div class="custom-nav-links">
+#    <div class="sidebar-primary-items__start sidebar-primary__section">
+#        <div class="sidebar-primary-item">
+# <nav class="bd-docs-nav bd-links"  aria-label="Section Navigation">
+#   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+#   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+#     <li class="toctree-l1"><a class="reference internal" href="../getting%20started/Getting%20Started%20With%20Corese-library.html">   Corese-library</a></li>
+#     <li class="toctree-l1"><a class="reference internal" href="../docker/README.html">   Corese Docker</a></li>
+# </ul>
+# </div>
+# </nav></div>
+# </div></div>
+#  
+# and add the following lines
+# "user_guide": ["user_guide_sidebar.html"],
+# "getting started/**": ["user_guide_sidebar_subdir.html"],
 
+html_sidebars = {
+  "install": [],
 }
 
 # -- MySt-parcer extension Options -------------------------------------------

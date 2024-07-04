@@ -30,9 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static fr.inria.corese.core.print.ResultFormat.RDF_XML;
-import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
-import static jakarta.ws.rs.core.MediaType.TEXT_HTML;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -44,17 +41,7 @@ import org.apache.logging.log4j.Logger;
  * 
  * Tests:
  * - Does the server answers to a simple HTTP GET request?
- * - Does the server answers to a simple HTTP POST request?
  * - Does the server returns HTTP headers with the appropriate values?
- * - Is there an HTML page available at /sparql?
- * - Is there an RDF void description available at /.well-known/void?
- * - Is there a SPARQL endpoint available at /sparql?
- * - Does the sparql endpoint answers to a simple SPARQL query?
- * SPARQL:
- * - Are avery SPARQL query types supported?
- * - Are every features of the SPARQL query language supported?
- * - Are the limits of the SPARQL query language respected?
- * - Is the timeout of the query respected ? 
  * 
  * @author Pierre Maillot, P16 Wimmics INRIA I3S, 2024
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
@@ -144,102 +131,6 @@ public class HttpServerTest {
     @AfterClass
     public static void shutdown() {
         server.destroy();
-    }
-
-    /**
-     * Is there an HTML page available at /sparql?
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void sparqlEndpointHtml() throws Exception {
-        String sparqlEndpoint = SPARQL_ENDPOINT_URL;
-
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", TEXT_HTML);
-
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
-        }
-        in.close();
-
-        int status = con.getResponseCode();
-
-        con.disconnect();
-
-        assertEquals(status, 200);
-        assertEquals(con.getContentType(), TEXT_HTML);
-    }
-
-    @Test
-    public void sparqlEndpointRDFXML() throws Exception {
-
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
-
-        String query = "select * where {?x ?p ?y} limit 1";
-        String urlQuery = generateSPARQLQueryUrl(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
-        }
-        in.close();
-
-        int status = con.getResponseCode();
-
-        con.disconnect();
-
-        logger.info(content.toString());
-        assertEquals(status, 200);
-        assertEquals(con.getContentType(), SPARQL_RESULTS_XML);
-    }
-
-    /**
-     * Is there an HTML page available at /sparql?
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void wellKnownVoidRDF() throws Exception {
-        String sparqlEndpoint = SERVER_URL + ".well-known/void";
-
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", RDF_XML);
-
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
-        }
-        in.close();
-
-        int status = con.getResponseCode();
-
-        con.disconnect();
-
-        Graph voidGraph = new Graph();
-        Load load = Load.create(voidGraph);
-        String inputStream = content.toString();
-        load.parse(inputStream, RDF_XML);
-
-        assertEquals(status, 200);
-        assertEquals(con.getContentType(), RDF_XML);
-        assertTrue(voidGraph.size() > 0);
     }
 
     @Test

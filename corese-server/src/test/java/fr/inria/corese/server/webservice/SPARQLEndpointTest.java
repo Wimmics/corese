@@ -678,7 +678,7 @@ public class SPARQLEndpointTest {
         parameters.get(0).add("default-graph-uri");
         parameters.get(0).add("http://example.com/nothing");
         parameters.add(new ArrayList<String>());
-        parameters.get(1).add("default-graph-uri");
+        parameters.get(1).add("named-graph-uri");
         parameters.get(1).add("http://example.com/A");
         String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query, parameters);
         HttpURLConnection con = getConnection(urlQuery, headers);

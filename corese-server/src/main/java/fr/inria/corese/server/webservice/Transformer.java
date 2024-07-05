@@ -72,6 +72,10 @@ public class Transformer {
         return SPARQLRestAPI.getTripleStore(name);
     }
 
+    static String getTemplateService() {
+        return TEMPLATE_SERVICE;
+    }
+
     Profile getProfile() {
         return Profile.getProfile();
     }

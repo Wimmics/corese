@@ -44,7 +44,7 @@ public class canonicalize implements Callable<Integer> {
     private Path output;
 
     @Option(names = { "-r", "-a", "-ca", "-of",
-            "--canonical-algo" }, required = true, description = "Canonicalization algorithm to which the input file should be converted. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--canonical-algo" }, required = true, description = "Canonicalization algorithm to which the input file should be converted. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.", defaultValue = "RDFC10SHA256")
     private EnumCanonicAlgo canonicalAlgo;
 
     @Option(names = { "-v",
@@ -65,7 +65,6 @@ public class canonicalize implements Callable<Integer> {
 
     private Graph graph = Graph.create();
 
-    private boolean canonicalAlgoIsDefined = false;
     private boolean isDefaultOutputName = false;
 
     public canonicalize() {
@@ -86,9 +85,6 @@ public class canonicalize implements Callable<Integer> {
 
             // Set owl import
             Property.set(Value.DISABLE_OWL_AUTO_IMPORT, this.noOwlImport);
-
-            // Check if canonical algorithm is defined
-            this.canonicalAlgoIsDefined = this.output != null;
 
             // Check if output file name is default
             this.isDefaultOutputName = this.output != null
@@ -169,7 +165,7 @@ public class canonicalize implements Callable<Integer> {
         Path outputFileName;
 
         // Set output file name
-        if (this.canonicalAlgoIsDefined && !this.isDefaultOutputName) {
+        if (!this.isDefaultOutputName) {
             outputFileName = this.output;
         } else {
             outputFileName = Path.of(this.DEFAULT_OUTPUT_FILE_NAME + "." + this.canonicalAlgo.getExtention());

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,7 +16,10 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -50,15 +54,17 @@ import static jakarta.ws.rs.core.MediaType.TEXT_HTML;
  * - Are every SPARQL query types supported?
  * - Are every features of the SPARQL query language supported?
  * - Are the limits of the SPARQL query language respected?
- * - Is the timeout of the query respected ? 
+ * - Is the timeout of the query respected ?
  * 
- * @see <a href="https://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/">SPARQL 1.1 Protocol</a>
+ * @see <a href=
+ *      "https://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/">SPARQL 1.1
+ *      Protocol</a>
  * 
  * @author Pierre Maillot, P16 Wimmics INRIA I3S, 2024
  */
 public class SPARQLEndpointTest {
 
-    private static final Logger logger = LogManager.getLogger(HttpServerTest.class);
+    private static final Logger logger = LogManager.getLogger(SPARQLEndpointTest.class);
 
     private static Process server;
 
@@ -105,13 +111,19 @@ public class SPARQLEndpointTest {
         return con;
     }
 
-    private String generateSPARQLQueryParameters(String query, Map<String, String> optionalParameters) {
+    private String generateSPARQLQueryParameters(String query, List<List<String>> optionalParameters) {
         try {
-        String result = "?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
-        if (!optionalParameters.isEmpty()) {
-            result += "&" + optionalParameters.entrySet().stream()
-                    .map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining("&"));
-        }
+            String result = "?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
+            if (optionalParameters.size() > 0) {
+                for (Iterator<List<String>> itParam = optionalParameters.iterator(); itParam.hasNext();) {
+                    List<String> p = itParam.next();
+                    if (p.size() == 2) {
+                        result += "&" + p.get(0) + "=" + URLEncoder.encode(p.get(1), StandardCharsets.UTF_8.toString());
+                    } else if (p.size() == 1) {
+                        result += "&" + p.get(0);
+                    }
+                }
+            }
             return result;
         } catch (UnsupportedEncodingException e) {
             logger.error(e);
@@ -120,21 +132,28 @@ public class SPARQLEndpointTest {
     }
 
     private String generateSPARQLQueryParameters(String query) {
-        return generateSPARQLQueryParameters(query, new HashMap<>());
+        return generateSPARQLQueryParameters(query, new ArrayList<>());
     }
-    
+
     /**
      * Start the server before running the tests.
      * Loads a part of the DBpedia dataset in the server.
      */
     @BeforeClass
     public static void init() throws InterruptedException, IOException {
+        File turtleFile = new File("src/test/resources/data.ttl");
+        String turtleFileAbsolutePath = turtleFile.getAbsolutePath();
+
+        File trigFile = new File("src/test/resources/data.trig");
+        String trigFileAbsolutePath = trigFile.getAbsolutePath();
+
         System.out.println("starting in " + System.getProperty("user.dir"));
         server = new ProcessBuilder().inheritIO().command(
                 "java",
                 "-jar", "./target/corese-server-4.5.1.jar",
                 "-lh",
-                "-l", "./target/classes/webapp/data/dbpedia/dbpedia.ttl").start();
+                "-l", turtleFileAbsolutePath,
+                "-l", trigFileAbsolutePath).start();
         Thread.sleep(5000);
     }
 
@@ -145,6 +164,7 @@ public class SPARQLEndpointTest {
 
     /**
      * Does the endpoint answer to a query via GET?
+     * 
      * @throws Exception
      */
     @Test
@@ -175,6 +195,7 @@ public class SPARQLEndpointTest {
 
     /**
      * Does the endpoint answer to a query via URL-encoded POST?
+     * 
      * @throws Exception
      */
     @Test
@@ -184,7 +205,8 @@ public class SPARQLEndpointTest {
         headers.put("Content-Type", "application/x-www-form-urlencoded");
 
         String query = "select * where {?x ?p ?y} limit 1";
-        HttpURLConnection con = postConnection(SPARQL_ENDPOINT_URL, headers, "query=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString()));
+        HttpURLConnection con = postConnection(SPARQL_ENDPOINT_URL, headers,
+                "query=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString()));
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -204,6 +226,7 @@ public class SPARQLEndpointTest {
 
     /**
      * Does the endpoint answer to a query via URL-encoded POST?
+     * 
      * @throws Exception
      */
     @Test
@@ -378,6 +401,7 @@ public class SPARQLEndpointTest {
         assertEquals(con.getContentType(), SPARQL_RESULTS_JSON);
     }
 
+    @Test
     public void sparqlEndpointConstructRDFXML() throws Exception {
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Accept", RDF_XML);
@@ -409,6 +433,7 @@ public class SPARQLEndpointTest {
         assertTrue(constructGraph.size() > 0);
     }
 
+    @Test
     public void sparqlEndpointDescribeRDFXML() throws Exception {
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Accept", RDF_XML);
@@ -441,7 +466,7 @@ public class SPARQLEndpointTest {
     }
 
     @Test
-    public void sparqlEndpointConstructTurtle() throws Exception  {
+    public void sparqlEndpointConstructTurtle() throws Exception {
         HashMap<String, String> headers = new HashMap<String, String>();
         headers.put("Accept", TURTLE_TEXT);
 
@@ -505,18 +530,23 @@ public class SPARQLEndpointTest {
     }
 
     /**
-     * Is there an RDF document with a description of the SPARQL endpoint available at /.well-known/void?
+     * Default graph in the HTTP protocol taken into account?
      * 
      * @throws Exception
      */
     @Test
-    public void sparqlWellKnownVoidXMLRDF() throws Exception {
-        String sparqlEndpoint = SPARQL_ENDPOINT_URL + "/.well-known/void";
-
+    public void sparqlEndpointOneDefaultGraph() throws Exception {
         HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", RDF_XML);
+        headers.put("Accept", SPARQL_RESULTS_XML);
 
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
+        // Should only return 1 result <http://example.com/nothing>
+        String query = "select DISTINCT ?x where { ?x ?p ?y } limit 10";
+        List<List<String>> parameters = new ArrayList<>();
+        parameters.add(new ArrayList<String>());
+        parameters.get(0).add("default-graph-uri");
+        parameters.get(0).add("http://example.com/nothing");
+        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query, parameters);
+        HttpURLConnection con = getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -528,32 +558,40 @@ public class SPARQLEndpointTest {
         in.close();
 
         int status = con.getResponseCode();
-
         con.disconnect();
 
-        Graph voidGraph = new Graph();
-        Load load = Load.create(voidGraph);
-        InputStream inputStream = new ByteArrayInputStream(content.toString().getBytes());
-        load.parse(inputStream, RDFXML_FORMAT);
+        Mappings queryResults = SPARQLResult.create().parseString(content.toString());
 
-        assertEquals(status, 200);
-        assertEquals(con.getContentType(), RDF_XML);
-        assertTrue(voidGraph.size() > 0);
+        assertEquals(200, status);
+        assertEquals(SPARQL_RESULTS_XML, con.getContentType());
+        assertEquals(1, queryResults.size());
+        assertEquals("http://example.com/nothing", queryResults.get(0).getNode("?x").getLabel());
     }
 
     /**
-     * Is there an RDF document with a description of the SPARQL endpoint available at /.well-known/void?
+     * Default graph in the HTTP protocol taken into account?
      * 
      * @throws Exception
      */
     @Test
-    public void sparqlWellKnownVoidTurtleRDF() throws Exception {
-        String sparqlEndpoint = SPARQL_ENDPOINT_URL + "/.well-known/void";
-
+    public void sparqlEndpointMultipleDefaultGraphs() throws Exception {
         HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", TURTLE_TEXT);
+        headers.put("Accept", SPARQL_RESULTS_XML);
 
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
+        // Should only return 1 result <http://example.com/nothing>
+        String query = "select DISTINCT ?x where { ?x ?p ?y } ORDER BY ?x limit 10";
+        List<List<String>> parameters = new ArrayList<>();
+        parameters.add(new ArrayList<String>());
+        parameters.get(0).add("default-graph-uri");
+        parameters.get(0).add("http://example.com/nothing");
+        parameters.add(new ArrayList<String>());
+        parameters.get(1).add("default-graph-uri");
+        parameters.get(1).add("http://example.com/A");
+        parameters.add(new ArrayList<String>());
+        parameters.get(2).add("default-graph-uri");
+        parameters.get(2).add("http://example.com/B");
+        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query, parameters);
+        HttpURLConnection con = getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -565,32 +603,40 @@ public class SPARQLEndpointTest {
         in.close();
 
         int status = con.getResponseCode();
-
         con.disconnect();
 
-        Graph voidGraph = new Graph();
-        Load load = Load.create(voidGraph);
-        InputStream inputStream = new ByteArrayInputStream(content.toString().getBytes());
-        load.parse(inputStream, TURTLE_FORMAT);
+        Mappings queryResults = SPARQLResult.create().parseString(content.toString());
 
-        assertEquals(status, 200);
-        assertEquals(con.getContentType(), RDF_XML);
-        assertTrue(voidGraph.size() > 0);
+        assertEquals(200, status);
+        assertEquals(SPARQL_RESULTS_XML, con.getContentType());
+        assertEquals(3, queryResults.size());
+        assertEquals("http://example.com/A", queryResults.get(0).getNode("?x").getLabel());
+        assertEquals("http://example.com/B", queryResults.get(1).getNode("?x").getLabel());
+        assertEquals("http://example.com/nothing", queryResults.get(2).getNode("?x").getLabel());
     }
 
     /**
-     * Is there an RDF document with a description of the SPARQL endpoint available at /.well-known/void?
+     * Named graphs in the HTTP protocol taken into account?
      * 
      * @throws Exception
      */
     @Test
-    public void wellKnownVoidXMLRDF() throws Exception {
-        String sparqlEndpoint = SERVER_URL + ".well-known/void";
-
+    public void sparqlEndpointOneNamedGraph() throws Exception {
         HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", RDF_XML);
+        headers.put("Accept", SPARQL_RESULTS_XML);
 
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
+        // Should only return 2 results <http://example.com/nothing> and
+        // <http://example.com/cities>
+        String query = "select DISTINCT ?x where { GRAPH ?g { ?x a ?type } } limit 20";
+        List<List<String>> parameters = new ArrayList<>();
+        parameters.add(new ArrayList<String>());
+        parameters.get(0).add("default-graph-uri");
+        parameters.get(0).add("http://example.com/nothing");
+        parameters.add(new ArrayList<String>());
+        parameters.get(1).add("named-graph-uri");
+        parameters.get(1).add("http://example.com/A");
+        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query, parameters);
+        HttpURLConnection con = getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -602,32 +648,40 @@ public class SPARQLEndpointTest {
         in.close();
 
         int status = con.getResponseCode();
-
         con.disconnect();
 
-        Graph voidGraph = new Graph();
-        Load load = Load.create(voidGraph);
-        InputStream inputStream = new ByteArrayInputStream(content.toString().getBytes());
-        load.parse(inputStream, RDFXML_FORMAT);
+        Mappings queryResults = SPARQLResult.create().parseString(content.toString());
 
-        assertEquals(status, 200);
-        assertEquals(con.getContentType(), RDF_XML);
-        assertTrue(voidGraph.size() > 0);
+        assertEquals(200, status);
+        assertEquals(SPARQL_RESULTS_XML, con.getContentType());
+        assertEquals(1, queryResults.size());
+        assertEquals("http://example.com/A", queryResults.get(0).getNode("?x").getLabel());
     }
 
     /**
-     * Is there an RDF document with a description of the SPARQL endpoint available at /.well-known/void?
+     * In a conflict between protocol named graphs and query named graphs, the
+     * protocol named graphs should be taken into account.
+     * 
+     * @see <a href="https://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/#dataset">SPARQL Protocol</a>
      * 
      * @throws Exception
      */
     @Test
-    public void wellKnownVoidTurtleRDF() throws Exception {
-        String sparqlEndpoint = SERVER_URL + ".well-known/void";
-
+    public void sparqlEndpointNamedGraphsAmbiguous() throws Exception {
         HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", TURTLE_TEXT);
+        headers.put("Accept", SPARQL_RESULTS_XML);
 
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
+        // Should only return ex:A that is the only named graph in the protocol. Should not returns ex:B specified in the query.
+        String query = "select DISTINCT ?x FROM NAMED <http://example.com/B> where { GRAPH ?g { ?x a ?type } } limit 20";
+        List<List<String>> parameters = new ArrayList<>();
+        parameters.add(new ArrayList<String>());
+        parameters.get(0).add("default-graph-uri");
+        parameters.get(0).add("http://example.com/nothing");
+        parameters.add(new ArrayList<String>());
+        parameters.get(1).add("default-graph-uri");
+        parameters.get(1).add("http://example.com/A");
+        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query, parameters);
+        HttpURLConnection con = getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -639,16 +693,13 @@ public class SPARQLEndpointTest {
         in.close();
 
         int status = con.getResponseCode();
-
         con.disconnect();
 
-        Graph voidGraph = new Graph();
-        Load load = Load.create(voidGraph);
-        InputStream inputStream = new ByteArrayInputStream(content.toString().getBytes());
-        load.parse(inputStream, TURTLE_FORMAT);
+        Mappings queryResults = SPARQLResult.create().parseString(content.toString());
 
-        assertEquals(status, 200);
-        assertEquals(con.getContentType(), RDF_XML);
-        assertTrue(voidGraph.size() > 0);
+        assertEquals(200, status);
+        assertEquals(SPARQL_RESULTS_XML, con.getContentType());
+        assertEquals(1, queryResults.size());
+        assertEquals("http://example.com/A", queryResults.get(0).getNode("?x").getLabel());
     }
 }

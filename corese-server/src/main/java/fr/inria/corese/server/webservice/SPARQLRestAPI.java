@@ -132,6 +132,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         return store;
     }
 
+    // Named sparql endpoint
     static TripleStore getTripleStore(String name) {
         if (name == null) {
             return getTripleStore();
@@ -433,8 +434,22 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
                 (mode == null || mode.isEmpty())) {
             query = "select * where {?s ?p ?o} limit 5";
             return new Transformer()
-                    .queryGETHTML(request, fr.inria.corese.core.transform.Transformer.SPARQL,
-                            null, null, null, null, format, access, query, null, null, null, defaut, named);
+                    .queryGETHTML(
+                            request,
+                            oper,
+                            fr.inria.corese.core.transform.Transformer.SPARQL,
+                            null,
+                            null,
+                            null,
+                            null,
+                            format,
+                            access,
+                            query,
+                            name,
+                            null,
+                            null,
+                            defaut,
+                            named);
         }
         return getResultFormat(request, name, oper, uri, param, mode, query, access, defaut, named, null, HTML_FORMAT,
                 transform);
@@ -686,6 +701,43 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         query = getQuery(query, message);
 
         return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, TEXT_FORMAT);
+    }
+
+    @POST
+    @Produces(HTML)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response getHTMLForPost(@jakarta.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name") String name,
+            @PathParam("oper") String oper,
+            @DefaultValue("") @FormParam("query") String query,
+            @FormParam("access") String access,
+            @FormParam("default-graph-uri") List<String> defaut,
+            @FormParam("named-graph-uri") List<String> named,
+            @FormParam("param") List<String> param,
+            @FormParam("mode") List<String> mode,
+            @FormParam("uri") List<String> uri,
+            String message) {
+
+        logger.info("getHTMLForPost");
+
+        query = getQuery(query, message);
+
+        return new Transformer().queryPOSTHTML(
+                request,
+                oper,
+                fr.inria.corese.core.transform.Transformer.SPARQL,
+                null,
+                null,
+                null,
+                null,
+                HTML,
+                access,
+                query,
+                name,
+                null,
+                null,
+                defaut,
+                named);
     }
 
     /**

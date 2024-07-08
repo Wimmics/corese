@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -185,8 +186,13 @@ public class JUnitTestFileGenerator {
         StringBuilder watcher = new StringBuilder();
 
         // Create a file testReport.csv in the directory of the test file
-        watcher.append("    private static final String TEST_REPORT_FILE = \""
-                + this.exportPath.resolve("testReport.csv") + "\";\n");
+        Path relativePathToResultCsv = Paths.get(System.getProperty("user.dir")).relativize(exportPath)
+                .resolve("testReport.csv");
+        // Remove the first directory from the path
+        relativePathToResultCsv = relativePathToResultCsv.subpath(1, relativePathToResultCsv.getNameCount());
+        watcher.append("    private static final String TEST_REPORT_FILE = "
+                + "Paths.get(System.getProperty(\"user.dir\")).resolve(\"" + relativePathToResultCsv.toString()
+                + "\").toString();\n");
         watcher.append("    private static final String MANIFEST_URI = \""
                 + manifestUri.toString().substring(0, manifestUri.toString().lastIndexOf(".")) + "\";\n");
         watcher.append("    private static final String EARL = \"http://www.w3.org/ns/earl#\";\n");

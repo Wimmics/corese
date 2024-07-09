@@ -415,7 +415,6 @@ public class SPARQLEndpointQueryTest {
 
         SPARQLJSONResult.create().parseString(content.toString());
 
-        logger.debug(content.toString());
         assertEquals(status, 200);
         assertEquals(con.getContentType(), SPARQL_RESULTS_JSON);
     }
@@ -446,7 +445,6 @@ public class SPARQLEndpointQueryTest {
         con.disconnect();
 
 
-        logger.debug(resultString.toString());
         assertEquals(status, 200);
         assertEquals(con.getContentType(), SPARQL_RESULTS_CSV);
         assertEquals("true", resultString.toString());

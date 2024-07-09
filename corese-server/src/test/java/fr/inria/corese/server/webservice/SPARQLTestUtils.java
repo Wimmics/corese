@@ -1,6 +1,15 @@
 package fr.inria.corese.server.webservice;
 
+import static fr.inria.corese.core.api.Loader.RDFXML_FORMAT;
+import static fr.inria.corese.core.print.ResultFormat.RDF_XML;
+import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_CSV;
+import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -10,14 +19,23 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.result.SPARQLResult;
+import fr.inria.corese.kgram.core.Mappings;
+
 public class SPARQLTestUtils {
-    
 
     private static final Logger logger = LogManager.getLogger(SPARQLTestUtils.class);
+
+    private static final String SERVER_URL = "http://localhost:8080/";
+    private static final String SPARQL_ENDPOINT_URL = SERVER_URL + "sparql";
 
     /**
      * Get a connection to a server.
@@ -30,7 +48,7 @@ public class SPARQLTestUtils {
      * @throws ProtocolException
      */
     public static HttpURLConnection getConnection(String url, List<List<String>> headers)
-            throws MalformedURLException, IOException, ProtocolException {
+            throws MalformedURLException, ProtocolException, IOException {
         URL u = new URL(url);
         HttpURLConnection con = (HttpURLConnection) u.openConnection();
         con.setRequestMethod("GET");
@@ -63,6 +81,10 @@ public class SPARQLTestUtils {
         return generateSPARQLParameters("query", query, optionalParameters);
     }
 
+    public static String generateSPARQLQueryParameters(String query) {
+        return generateSPARQLQueryParameters(query, new ArrayList<>());
+    }
+
     public static String generateSPARQLUpdateParameters(String query, List<List<String>> optionalParameters) {
         return generateSPARQLParameters("update", query, optionalParameters);
     }
@@ -71,11 +93,16 @@ public class SPARQLTestUtils {
         return generateSPARQLUpdateParameters(query, new ArrayList<>());
     }
 
-    public static String generateSPARQLQueryParameters(String query) {
-        return generateSPARQLQueryParameters(query, new ArrayList<>());
+    public static String generateGraphStoreParameters(String query) {
+        return generateGraphStoreParameters(query, new ArrayList<>());
     }
 
-    private static String generateSPARQLParameters(String firstKeyword, String query, List<List<String>> optionalParameters) {
+    public static String generateGraphStoreParameters(String query, List<List<String>> optionalParameters) {
+        return generateSPARQLParameters("graph", query, optionalParameters);
+    }
+
+    private static String generateSPARQLParameters(String firstKeyword, String query,
+            List<List<String>> optionalParameters) {
         try {
             String result = firstKeyword + "=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
             if (optionalParameters.size() > 0) {
@@ -94,4 +121,82 @@ public class SPARQLTestUtils {
             return null;
         }
     }
+
+    public static Mappings sendSPARQLSelect(String query) throws Exception {
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        headers.add(acceptHeader);
+
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+
+        con.disconnect();
+
+        Mappings queryResults = SPARQLResult.create().parseString(content.toString());
+        return queryResults;
+    }
+
+    public static boolean sendSPARQLAsk(String query) throws Exception {
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_CSV);
+        headers.add(acceptHeader);
+
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer resultString = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            resultString.append(inputLine);
+        }
+        in.close();
+
+        con.disconnect();
+
+        return Boolean.parseBoolean(resultString.toString());
+    }
+
+    public static Graph sendSPARQLConstructDescribe(String query) throws Exception {
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(RDF_XML);
+        headers.add(acceptHeader);
+
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        con.disconnect();
+
+        Graph constructGraph = new Graph();
+        Load load = Load.create(constructGraph);
+        InputStream inputStream = new ByteArrayInputStream(content.toString().getBytes());
+        load.parse(inputStream, RDFXML_FORMAT);
+
+        return constructGraph;
+    }
+    
 }

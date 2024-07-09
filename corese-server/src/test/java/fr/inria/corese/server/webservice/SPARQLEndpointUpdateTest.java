@@ -1,15 +1,12 @@
 package fr.inria.corese.server.webservice;
 
-import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -17,9 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import fr.inria.corese.core.load.result.SPARQLResult;
-
-import fr.inria.corese.kgram.core.Mappings;
 
 /**
  * Test of the behavior of the corese server against SPARQL Updates.
@@ -83,7 +77,7 @@ public class SPARQLEndpointUpdateTest {
         int responseCode = con.getResponseCode();
         con.disconnect();
 
-        assertTrue(responseCode >= 200 && responseCode < 400);
+        assertEquals(200, responseCode);
     }
 
     /**
@@ -102,7 +96,12 @@ public class SPARQLEndpointUpdateTest {
         int responseCode = con.getResponseCode();
         con.disconnect();
 
+        // Send a query to check if the instance was inserted
+        String askQuery = "ASK { <http://example.org/s> <http://example.org/p> <http://example.org/o> }";
+        boolean askResult = SPARQLTestUtils.sendSPARQLAsk(askQuery);
+
         assertTrue(responseCode >= 200 && responseCode < 400);
+        assertTrue(askResult);
     }
 
     /**
@@ -112,51 +111,35 @@ public class SPARQLEndpointUpdateTest {
     @Test
     public void usingNamedGraphUpdateTest() throws Exception {
         // Insert a new instance in ex:A
-        String updateQuery = "PREFIX owl: <http://www.w3.org/2002/07/owl#> INSERT DATA { GRAPH ?g { <http://example.com/Another> a owl:Thing } }";
+        String updateQuery = "PREFIX owl: <http://www.w3.org/2002/07/owl#> INSERT { <http://example.com/Another> a owl:Thing } WHERE { <http://example.com/A> a owl:Thing }";
         List<List<String>> updateParameters = new LinkedList<>();
         List<String> graphParameter = new LinkedList<>();
-        graphParameter.add("using-named-graph-uri");
+        graphParameter.add("using-graph-uri");
         graphParameter.add("http://example.com/A");
         updateParameters.add(graphParameter);
-        String body = SPARQLTestUtils.generateSPARQLUpdateParameters(updateQuery, updateParameters);
         List<List<String>> updateHeaders = new LinkedList<>();
         List<String> contentTypeFormUrlEncodedHeader = new LinkedList<>();
         contentTypeFormUrlEncodedHeader.add("Content-Type");
-        contentTypeFormUrlEncodedHeader.add("application/x-www-form-urlencoded");
+        contentTypeFormUrlEncodedHeader.add("application/sparql-update");
         updateHeaders.add(contentTypeFormUrlEncodedHeader);
-        HttpURLConnection updateCon = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, updateHeaders, body);
+        HttpURLConnection updateCon = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, updateHeaders, updateQuery);
         int updateResponseCode = updateCon.getResponseCode();
         updateCon.disconnect();
 
-        // Send a query to check if the instance was inserted
-        List<List<String>> headers = new LinkedList<>();
-        List<String> acceptHeader = new LinkedList<>();
-        acceptHeader.add("Accept");
-        acceptHeader.add(SPARQL_RESULTS_XML);
-        headers.add(acceptHeader);
+        // Should be present in the dataset as it is loaded
+        String askQueryABaseline = "PREFIX owl: <http://www.w3.org/2002/07/owl#> ASK { GRAPH <http://example.com/A> { <http://example.com/A> a owl:Thing } }";
+        boolean askResultABaseline = SPARQLTestUtils.sendSPARQLAsk(askQueryABaseline);
+        // Should have been created by the update
+        String askQueryA = "PREFIX owl: <http://www.w3.org/2002/07/owl#> ASK { GRAPH <http://example.com/A> { <http://example.com/Another> a owl:Thing } }";
+        boolean askResultA = SPARQLTestUtils.sendSPARQLAsk(askQueryA);
+        // Should not be present in the dataset
+        String askQueryB = "PREFIX owl: <http://www.w3.org/2002/07/owl#> ASK { GRAPH <http://example.com/B> { <http://example.com/Another> a owl:Thing } }";
+        boolean askResultB = SPARQLTestUtils.sendSPARQLAsk(askQueryB);
 
-        String askQuery = "ASK {GRAPH ?g { <http://example.com/Another> a owl:Thing } }";
-        String askUrlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(askQuery);
-        HttpURLConnection askCon = SPARQLTestUtils.getConnection(askUrlQuery, headers);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(askCon.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
-        }
-        in.close();
-
-        int askStatus = askCon.getResponseCode();
-
-        askCon.disconnect();
-
-        Mappings queryResults = SPARQLResult.create().parseString(content.toString());
-
+        assertEquals(200, updateResponseCode);
         assertTrue(updateResponseCode >= 200 && updateResponseCode < 400);
-        assertEquals(askStatus, 200);
-        assertEquals(askCon.getContentType(), SPARQL_RESULTS_XML);
-        assertTrue(queryResults.size() > 0);
+        assertTrue(askResultABaseline);
+        assertTrue(askResultA);
+        assertFalse(askResultB);
     }
 }

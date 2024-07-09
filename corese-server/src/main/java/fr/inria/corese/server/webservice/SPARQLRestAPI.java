@@ -55,6 +55,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     static final String SPARQL_RESULTS_JSON = ResultFormat.SPARQL_RESULTS_JSON;
     static final String SPARQL_RESULTS_CSV = ResultFormat.SPARQL_RESULTS_CSV;
     static final String SPARQL_RESULTS_TSV = ResultFormat.SPARQL_RESULTS_TSV;
+    static final String SPARQL_RESULTS_MD = ResultFormat.SPARQL_RESULTS_MD;
     static final String SPARQL_QUERY = ResultFormat.SPARQL_QUERY;
 
     static final String XML = ResultFormat.XML;
@@ -523,6 +524,23 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
 
         logger.info("getTriplesTSVForGet");
         return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, TSV_FORMAT);
+    }
+
+    @GET
+    @Produces(SPARQL_RESULTS_MD)
+    public Response getTriplesMDForGet(@jakarta.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name") String name,
+            @PathParam("oper") String oper,
+            @QueryParam("query") String query,
+            @QueryParam("access") String access,
+            @QueryParam("default-graph-uri") List<String> defaut,
+            @QueryParam("named-graph-uri") List<String> named,
+            @QueryParam("param") List<String> param,
+            @QueryParam("mode") List<String> mode,
+            @QueryParam("uri") List<String> uri) {
+
+        logger.info("getTriplesMDForGet");
+        return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, MARKDOWN_FORMAT);
     }
 
     // ----------------------------------------------------

@@ -18,7 +18,7 @@ The ``canonicalize`` command allows applying a specific canonicalization algorit
 **Options and arguments:**
 
 - `-i`, `\-\-input-data` `<input file|dir|pattern|URL>` : Optional path to a file, directory, filename pattern, or URL containing the RDF data. Default: standard input.
-- `-f`, `-if`, `\-\-input-format` `<format>` : Input format is automatically detected for files. Use this option with the standard input or if you want to force the input file format. Supported input formats are listed :ref:`below <corese-command-canonicalize-input-formats>`.
+- `-f`, `-if`, `\-\-input-format` `<format>` : Input format is automatically detected for files. Use this option with the standard input or if you want to force the input file format. Supported input formats are listed :ref:`below <corese-command-canonicalize-input-formats>`. Default: `rdfc-1.0-sha256`.
 - `-R`, `\-\-recursive`: Recursively input all the files in the input directory and sub-directories.
 
 - `-r`, `-a`, `ca`, `-of`, `\-\-canonical-algo` `<algo>` : Canonicalization algorithm to apply. Supported algorithms/formats are listed :ref:`below <corese-command-canonicalize-output-formats>`. Default: `markdown` table.

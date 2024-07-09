@@ -9,20 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
@@ -36,7 +26,9 @@ import fr.inria.corese.core.load.result.SPARQLResult;
 import fr.inria.corese.kgram.core.Mappings;
 
 import static fr.inria.corese.core.print.ResultFormat.RDF_XML;
+import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_CSV;
 import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_JSON;
+import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_TSV;
 import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import static fr.inria.corese.core.print.ResultFormat.TURTLE_TEXT;
 import static fr.inria.corese.core.api.Loader.RDFXML_FORMAT;
@@ -44,7 +36,7 @@ import static fr.inria.corese.core.api.Loader.TURTLE_FORMAT;
 import static jakarta.ws.rs.core.MediaType.TEXT_HTML;
 
 /**
- * Test of the behavior of the corese server against HTTP requests.
+ * Test of the behavior of the corese server against SPARQL queries.
  * 
  * Tests:
  * - Is there an RDF void description available at /.well-known/void?
@@ -62,78 +54,14 @@ import static jakarta.ws.rs.core.MediaType.TEXT_HTML;
  * 
  * @author Pierre Maillot, P16 Wimmics INRIA I3S, 2024
  */
-public class SPARQLEndpointTest {
+public class SPARQLEndpointQueryTest {
 
-    private static final Logger logger = LogManager.getLogger(SPARQLEndpointTest.class);
+    private static final Logger logger = LogManager.getLogger(SPARQLEndpointQueryTest.class);
 
     private static Process server;
 
     private static final String SERVER_URL = "http://localhost:8080/";
     private static final String SPARQL_ENDPOINT_URL = SERVER_URL + "sparql";
-
-    /**
-     * Get a connection to a server.
-     * 
-     * @param url     server URL
-     * @param headers HTTP headers
-     * @return
-     * @throws MalformedURLException
-     * @throws IOException
-     * @throws ProtocolException
-     */
-    private HttpURLConnection getConnection(String url, Map<String, String> headers)
-            throws MalformedURLException, IOException, ProtocolException {
-        URL u = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) u.openConnection();
-        con.setRequestMethod("GET");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        con.setInstanceFollowRedirects(true);
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            con.setRequestProperty(entry.getKey(), entry.getValue());
-        }
-        return con;
-    }
-
-    private HttpURLConnection postConnection(String url, Map<String, String> headers, String body)
-            throws MalformedURLException, IOException, ProtocolException {
-        URL u = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) u.openConnection();
-        con.setRequestMethod("POST");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        con.setInstanceFollowRedirects(true);
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            con.setRequestProperty(entry.getKey(), entry.getValue());
-        }
-        con.setDoOutput(true);
-        con.getOutputStream().write(body.getBytes());
-        return con;
-    }
-
-    private String generateSPARQLQueryParameters(String query, List<List<String>> optionalParameters) {
-        try {
-            String result = "?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
-            if (optionalParameters.size() > 0) {
-                for (Iterator<List<String>> itParam = optionalParameters.iterator(); itParam.hasNext();) {
-                    List<String> p = itParam.next();
-                    if (p.size() == 2) {
-                        result += "&" + p.get(0) + "=" + URLEncoder.encode(p.get(1), StandardCharsets.UTF_8.toString());
-                    } else if (p.size() == 1) {
-                        result += "&" + p.get(0);
-                    }
-                }
-            }
-            return result;
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e);
-            return null;
-        }
-    }
-
-    private String generateSPARQLQueryParameters(String query) {
-        return generateSPARQLQueryParameters(query, new ArrayList<>());
-    }
 
     /**
      * Start the server before running the tests.
@@ -170,12 +98,15 @@ public class SPARQLEndpointTest {
     @Test
     public void sparqlEndpointGet() throws Exception {
 
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        headers.add(acceptHeader);
 
         String query = "select * where {?x ?p ?y} limit 1";
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -200,13 +131,19 @@ public class SPARQLEndpointTest {
      */
     @Test
     public void sparqlEndpointUrlEncodedPost() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
-        headers.put("Content-Type", "application/x-www-form-urlencoded");
+
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add("application/x-www-form-urlencoded");
+        headers.add(acceptHeader);
+        headers.add(contentTypeHeader);
 
         String query = "select * where {?x ?p ?y} limit 1";
-        HttpURLConnection con = postConnection(SPARQL_ENDPOINT_URL, headers,
-                "query=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString()));
+        HttpURLConnection con = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, headers, SPARQLTestUtils.generateSPARQLQueryParameters(query));
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -231,12 +168,19 @@ public class SPARQLEndpointTest {
      */
     @Test
     public void sparqlEndpointUnencodedPost() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
-        headers.put("Content-Type", "application/sparql-query");
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add("application/sparql-query");
+        headers.add(acceptHeader);
+        headers.add(contentTypeHeader);
+
 
         String query = "select * where {?x ?p ?y} limit 1";
-        HttpURLConnection con = postConnection(SPARQL_ENDPOINT_URL, headers, query);
+        HttpURLConnection con = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, headers, query);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -261,10 +205,13 @@ public class SPARQLEndpointTest {
      */
     @Test
     public void sparqlEndpointHtml() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", TEXT_HTML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add(TEXT_HTML);
+        headers.add(contentTypeHeader);
 
-        HttpURLConnection con = getConnection(SPARQL_ENDPOINT_URL, headers);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(SPARQL_ENDPOINT_URL, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -285,43 +232,15 @@ public class SPARQLEndpointTest {
 
     @Test
     public void sparqlEndpointSelectRDFXML() throws Exception {
-
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        headers.add(acceptHeader);
 
         String query = "select * where {?x ?p ?y} limit 1";
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
-        }
-        in.close();
-
-        int status = con.getResponseCode();
-
-        con.disconnect();
-
-        Mappings queryResults = SPARQLResult.create().parseString(content.toString());
-
-        assertEquals(status, 200);
-        assertEquals(con.getContentType(), SPARQL_RESULTS_XML);
-        assertTrue(queryResults.size() > 0);
-    }
-
-    @Test
-    public void sparqlEndpointAskRDFXML() throws Exception {
-
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
-
-        String query = "ASK {?x ?p ?y}";
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -345,12 +264,15 @@ public class SPARQLEndpointTest {
 
     @Test
     public void sparqlEndpointSelectJSON() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_JSON);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_JSON);
+        headers.add(acceptHeader);
 
         String query = "select * where {?x ?p ?y} limit 1";
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -373,13 +295,110 @@ public class SPARQLEndpointTest {
     }
 
     @Test
-    public void sparqlEndpointAskJSON() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_JSON);
+    public void sparqlEndpointSelectCSV() throws Exception {
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_CSV);
+        headers.add(acceptHeader);
+
+        String query = "select * where {?x ?p ?y} limit 1";
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer resultString = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            resultString.append(inputLine);
+        }
+        in.close();
+
+        int status = con.getResponseCode();
+
+        con.disconnect();
+
+
+        assertEquals(status, 200);
+        assertEquals(con.getContentType(), SPARQL_RESULTS_CSV);
+        assertTrue(resultString.toString().contains("x,p,y"));
+    }
+
+    @Test
+    public void sparqlEndpointSelectTSV() throws Exception {
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_TSV);
+        headers.add(acceptHeader);
+
+        String query = "select * where {?x ?p ?y} limit 1";
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer resultString = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            resultString.append(inputLine);
+        }
+        in.close();
+
+        int status = con.getResponseCode();
+
+        con.disconnect();
+
+
+        assertEquals(200, status);
+        assertEquals(SPARQL_RESULTS_TSV, con.getContentType());
+        assertTrue(resultString.toString().contains("?x\t?p\t?y"));
+    }
+
+    @Test
+    public void sparqlEndpointAskRDFXML() throws Exception {
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        headers.add(acceptHeader);
 
         String query = "ASK {?x ?p ?y}";
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+
+        int status = con.getResponseCode();
+
+        con.disconnect();
+
+        Mappings queryResults = SPARQLResult.create().parseString(content.toString());
+
+        assertEquals(status, 200);
+        assertEquals(con.getContentType(), SPARQL_RESULTS_XML);
+        assertTrue(queryResults.size() > 0);
+    }
+
+    @Test
+    public void sparqlEndpointAskJSON() throws Exception {
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_JSON);
+        headers.add(acceptHeader);
+
+        String query = "ASK {?x ?p ?y}";
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -402,13 +421,80 @@ public class SPARQLEndpointTest {
     }
 
     @Test
+    public void sparqlEndpointAskCSV() throws Exception {
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_CSV);
+        headers.add(acceptHeader);
+
+        String query = "ASK {?x ?p ?y}";
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer resultString = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            resultString.append(inputLine);
+        }
+        in.close();
+
+        int status = con.getResponseCode();
+
+        con.disconnect();
+
+
+        logger.debug(resultString.toString());
+        assertEquals(status, 200);
+        assertEquals(con.getContentType(), SPARQL_RESULTS_CSV);
+        assertEquals("true", resultString.toString());
+    }
+
+    @Test
+    public void sparqlEndpointAskTSV() throws Exception {
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_TSV);
+        headers.add(acceptHeader);
+
+        String query = "ASK {?x ?p ?y}";
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer resultString = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            resultString.append(inputLine);
+        }
+        in.close();
+
+        int status = con.getResponseCode();
+
+        con.disconnect();
+
+
+        logger.debug(resultString.toString());
+        assertEquals(status, 200);
+        assertEquals(con.getContentType(), SPARQL_RESULTS_TSV);
+        assertEquals("true", resultString.toString());
+    }
+
+    @Test
     public void sparqlEndpointConstructRDFXML() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", RDF_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(RDF_XML);
+        headers.add(acceptHeader);
 
         String query = "construct {?x ?p ?y} where {?x ?p ?y} limit 1";
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -435,12 +521,15 @@ public class SPARQLEndpointTest {
 
     @Test
     public void sparqlEndpointDescribeRDFXML() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", RDF_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(RDF_XML);
+        headers.add(acceptHeader);
 
         String query = "describe ?x where {?x ?p ?y} limit 1";
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -467,12 +556,15 @@ public class SPARQLEndpointTest {
 
     @Test
     public void sparqlEndpointConstructTurtle() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", TURTLE_TEXT);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(TURTLE_TEXT);
+        headers.add(acceptHeader);
 
         String query = "construct {?x ?p ?y} where {?x ?p ?y} limit 1";
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -499,12 +591,15 @@ public class SPARQLEndpointTest {
 
     @Test
     public void sparqlEndpointDescribeTurtle() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", TURTLE_TEXT);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(TURTLE_TEXT);
+        headers.add(acceptHeader);
 
         String query = "describe ?x where {?x ?p ?y} limit 1";
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -536,8 +631,11 @@ public class SPARQLEndpointTest {
      */
     @Test
     public void sparqlEndpointOneDefaultGraph() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        headers.add(acceptHeader);
 
         // Should only return 1 result <http://example.com/nothing>
         String query = "select DISTINCT ?x where { ?x ?p ?y } limit 10";
@@ -545,8 +643,8 @@ public class SPARQLEndpointTest {
         parameters.add(new ArrayList<String>());
         parameters.get(0).add("default-graph-uri");
         parameters.get(0).add("http://example.com/nothing");
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query, parameters);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query, parameters);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -575,8 +673,11 @@ public class SPARQLEndpointTest {
      */
     @Test
     public void sparqlEndpointMultipleDefaultGraphs() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        headers.add(acceptHeader);
 
         // Should only return 1 result <http://example.com/nothing>
         String query = "select DISTINCT ?x where { ?x ?p ?y } ORDER BY ?x limit 10";
@@ -590,8 +691,8 @@ public class SPARQLEndpointTest {
         parameters.add(new ArrayList<String>());
         parameters.get(2).add("default-graph-uri");
         parameters.get(2).add("http://example.com/B");
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query, parameters);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query, parameters);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -622,8 +723,11 @@ public class SPARQLEndpointTest {
      */
     @Test
     public void sparqlEndpointOneNamedGraph() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        headers.add(acceptHeader);
 
         // Should only return 2 results <http://example.com/nothing> and
         // <http://example.com/cities>
@@ -635,8 +739,8 @@ public class SPARQLEndpointTest {
         parameters.add(new ArrayList<String>());
         parameters.get(1).add("named-graph-uri");
         parameters.get(1).add("http://example.com/A");
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query, parameters);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query, parameters);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -668,8 +772,11 @@ public class SPARQLEndpointTest {
      */
     @Test
     public void sparqlEndpointNamedGraphsAmbiguous() throws Exception {
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Accept", SPARQL_RESULTS_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add(SPARQL_RESULTS_XML);
+        headers.add(acceptHeader);
 
         // Should only return ex:A that is the only named graph in the protocol. Should not returns ex:B specified in the query.
         String query = "select DISTINCT ?x FROM NAMED <http://example.com/B> where { GRAPH ?g { ?x a ?type } } limit 20";
@@ -680,8 +787,8 @@ public class SPARQLEndpointTest {
         parameters.add(new ArrayList<String>());
         parameters.get(1).add("named-graph-uri");
         parameters.get(1).add("http://example.com/A");
-        String urlQuery = SPARQL_ENDPOINT_URL + generateSPARQLQueryParameters(query, parameters);
-        HttpURLConnection con = getConnection(urlQuery, headers);
+        String urlQuery = SPARQL_ENDPOINT_URL + "?" + SPARQLTestUtils.generateSPARQLQueryParameters(query, parameters);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));

@@ -9,19 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,17 +22,10 @@ import org.junit.Test;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
-import fr.inria.corese.core.load.result.SPARQLJSONResult;
-import fr.inria.corese.core.load.result.SPARQLResult;
-import fr.inria.corese.kgram.core.Mappings;
-
 import static fr.inria.corese.core.print.ResultFormat.RDF_XML;
-import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_JSON;
-import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import static fr.inria.corese.core.print.ResultFormat.TURTLE_TEXT;
 import static fr.inria.corese.core.api.Loader.RDFXML_FORMAT;
 import static fr.inria.corese.core.api.Loader.TURTLE_FORMAT;
-import static jakarta.ws.rs.core.MediaType.TEXT_HTML;
 
 /**
  * Test of the behavior of the corese server against HTTP requests.
@@ -70,70 +54,6 @@ public class SPARQLEndpointDescriptionTest {
 
     private static final String SERVER_URL = "http://localhost:8080/";
     private static final String SPARQL_ENDPOINT_URL = SERVER_URL + "sparql";
-
-    /**
-     * Get a connection to a server.
-     * 
-     * @param url     server URL
-     * @param headers HTTP headers
-     * @return
-     * @throws MalformedURLException
-     * @throws IOException
-     * @throws ProtocolException
-     */
-    private HttpURLConnection getConnection(String url, Map<String, String> headers)
-            throws MalformedURLException, IOException, ProtocolException {
-        URL u = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) u.openConnection();
-        con.setRequestMethod("GET");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        con.setInstanceFollowRedirects(true);
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            con.setRequestProperty(entry.getKey(), entry.getValue());
-        }
-        return con;
-    }
-
-    private HttpURLConnection postConnection(String url, Map<String, String> headers, String body)
-            throws MalformedURLException, IOException, ProtocolException {
-        URL u = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) u.openConnection();
-        con.setRequestMethod("POST");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        con.setInstanceFollowRedirects(true);
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            con.setRequestProperty(entry.getKey(), entry.getValue());
-        }
-        con.setDoOutput(true);
-        con.getOutputStream().write(body.getBytes());
-        return con;
-    }
-
-    private String generateSPARQLQueryParameters(String query, List<List<String>> optionalParameters) {
-        try {
-            String result = "?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
-            if (optionalParameters.size() > 0) {
-                for (Iterator<List<String>> itParam = optionalParameters.iterator(); itParam.hasNext();) {
-                    List<String> p = itParam.next();
-                    if (p.size() == 2) {
-                        result += "&" + p.get(0) + "=" + URLEncoder.encode(p.get(1), StandardCharsets.UTF_8.toString());
-                    } else if (p.size() == 1) {
-                        result += "&" + p.get(0);
-                    }
-                }
-            }
-            return result;
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e);
-            return null;
-        }
-    }
-
-    private String generateSPARQLQueryParameters(String query) {
-        return generateSPARQLQueryParameters(query, new ArrayList<>());
-    }
 
     /**
      * Start the server before running the tests.
@@ -172,10 +92,13 @@ public class SPARQLEndpointDescriptionTest {
     public void sparqlWellKnownVoidXMLRDF() throws Exception {
         String sparqlEndpoint = SPARQL_ENDPOINT_URL + "/.well-known/void";
 
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", RDF_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add(RDF_XML);
+        headers.add(contentTypeHeader);
 
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -210,10 +133,13 @@ public class SPARQLEndpointDescriptionTest {
     public void sparqlWellKnownVoidTurtleRDF() throws Exception {
         String sparqlEndpoint = SPARQL_ENDPOINT_URL + "/.well-known/void";
 
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", TURTLE_TEXT);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add(TURTLE_TEXT);
+        headers.add(contentTypeHeader);
 
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -248,10 +174,13 @@ public class SPARQLEndpointDescriptionTest {
     public void wellKnownVoidXMLRDF() throws Exception {
         String sparqlEndpoint = SERVER_URL + ".well-known/void";
 
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", RDF_XML);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add(RDF_XML);
+        headers.add(contentTypeHeader);
 
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -286,10 +215,13 @@ public class SPARQLEndpointDescriptionTest {
     public void wellKnownVoidTurtleRDF() throws Exception {
         String sparqlEndpoint = SERVER_URL + ".well-known/void";
 
-        HashMap<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", TURTLE_TEXT);
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add(TURTLE_TEXT);
+        headers.add(contentTypeHeader);
 
-        HttpURLConnection con = getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));

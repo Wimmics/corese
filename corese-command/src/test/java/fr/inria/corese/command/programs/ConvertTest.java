@@ -1,18 +1,14 @@
 package fr.inria.corese.command.programs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +16,8 @@ import org.junit.Test;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.rdf.RdfDataLoader;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.print.CanonicalRdf10Format;
 import picocli.CommandLine;
 
 public class ConvertTest {
@@ -40,35 +38,17 @@ public class ConvertTest {
             .getResource("/fr/inria/corese/command/programs/convert/results/")
             .getPath();
 
-    private boolean compareFiles(String filePath1, String filePath2) {
-        // Create two sets to store the lines of each file
-        Set<String> file1Lines = new HashSet<>();
-        Set<String> file2Lines = new HashSet<>();
+    private String canonicalize(String path) {
+        Graph graph = Graph.create();
+        Load ld = Load.create(graph);
 
         try {
-            // Read the first file and store each line in the set
-            try (BufferedReader reader = new BufferedReader(new FileReader(filePath1))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    file1Lines.add(line);
-                }
-            }
-
-            // Read the second file and store each line in the set
-            try (BufferedReader reader = new BufferedReader(new FileReader(filePath2))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    file2Lines.add(line);
-                }
-            }
-
-            // Check if both sets are equal
-            return file1Lines.equals(file2Lines);
-
-        } catch (IOException e) {
+            ld.parse(path, "");
+        } catch (Exception e) {
             e.printStackTrace();
-            return false; // Return false if an error occurs
         }
+
+        return CanonicalRdf10Format.create(graph).toString();
     }
 
     @Before
@@ -90,7 +70,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
+        assertEquals(canonicalize(pathRefBeatlesXML), canonicalize(pathOutBeatlesXML));
+        assertNotEquals("", pathOutBeatlesXML);
+
     }
 
     @Test
@@ -104,7 +86,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
+        assertEquals(canonicalize(pathRefBeatlesJSON), canonicalize(pathOutBeatlesJSON));
+        assertNotEquals("", pathOutBeatlesJSON);
+
     }
 
     @Test
@@ -118,7 +102,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
+        assertEquals(canonicalize(pathRefBeatlesTRIG), canonicalize(pathOutBeatlesTRIG));
+        assertNotEquals("", pathOutBeatlesTRIG);
+
     }
 
     @Test
@@ -132,7 +118,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+        assertEquals(canonicalize(pathRefBeatlesTTL), canonicalize(pathOutBeatlesTTL));
+        assertNotEquals("", pathOutBeatlesTTL);
+
     }
 
     @Test
@@ -146,7 +134,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+        assertEquals(canonicalize(pathRefBeatlesNT), canonicalize(pathOutBeatlesNT));
+        assertNotEquals("", pathOutBeatlesNT);
+
     }
 
     @Test
@@ -160,7 +150,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
+        assertEquals(canonicalize(pathRefBeatlesNQ), canonicalize(pathOutBeatlesNQ));
+        assertNotEquals("", pathOutBeatlesNQ);
+
     }
 
     @Test
@@ -174,7 +166,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
+        assertEquals(canonicalize(pathRefBeatlesXML), canonicalize(pathOutBeatlesXML));
+        assertNotEquals("", pathOutBeatlesXML);
+
     }
 
     @Test
@@ -188,7 +182,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
+        assertEquals(canonicalize(pathRefBeatlesJSON), canonicalize(pathOutBeatlesJSON));
+        assertNotEquals("", pathOutBeatlesJSON);
+
     }
 
     @Test
@@ -202,7 +198,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
+        assertEquals(canonicalize(pathRefBeatlesTRIG), canonicalize(pathOutBeatlesTRIG));
+        assertNotEquals("", pathOutBeatlesTRIG);
+
     }
 
     @Test
@@ -216,7 +214,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+        assertEquals(canonicalize(pathRefBeatlesTTL), canonicalize(pathOutBeatlesTTL));
+        assertNotEquals("", pathOutBeatlesTTL);
+
     }
 
     @Test
@@ -230,7 +230,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+        assertEquals(canonicalize(pathRefBeatlesNT), canonicalize(pathOutBeatlesNT));
+        assertNotEquals("", pathOutBeatlesNT);
+
     }
 
     @Test
@@ -244,7 +246,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
+        assertEquals(canonicalize(pathRefBeatlesNQ), canonicalize(pathOutBeatlesNQ));
+        assertNotEquals("", pathOutBeatlesNQ);
+
     }
 
     @Test
@@ -258,7 +262,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
+        assertEquals(canonicalize(pathRefBeatlesXML), canonicalize(pathOutBeatlesXML));
+        assertNotEquals("", pathOutBeatlesXML);
+
     }
 
     @Test
@@ -272,7 +278,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
+        assertEquals(canonicalize(pathRefBeatlesJSON), canonicalize(pathOutBeatlesJSON));
+        assertNotEquals("", pathOutBeatlesJSON);
+
     }
 
     @Test
@@ -286,7 +294,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathExpectBeatlesTRIG, pathOutBeatlesTRIG));
+        assertEquals(canonicalize(pathExpectBeatlesTRIG), canonicalize(pathOutBeatlesTRIG));
+        assertNotEquals("", pathOutBeatlesTRIG);
+
     }
 
     @Test
@@ -300,7 +310,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+        assertEquals(canonicalize(pathRefBeatlesTTL), canonicalize(pathOutBeatlesTTL));
+        assertNotEquals("", pathOutBeatlesTTL);
+
     }
 
     @Test
@@ -314,7 +326,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+        assertEquals(canonicalize(pathRefBeatlesNT), canonicalize(pathOutBeatlesNT));
+        assertNotEquals("", pathOutBeatlesNT);
+
     }
 
     @Test
@@ -328,7 +342,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
+        assertEquals(canonicalize(pathRefBeatlesNQ), canonicalize(pathOutBeatlesNQ));
+        assertNotEquals("", pathOutBeatlesNQ);
+
     }
 
     @Test
@@ -342,7 +358,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
+        assertEquals(canonicalize(pathRefBeatlesXML), canonicalize(pathOutBeatlesXML));
+        assertNotEquals("", pathOutBeatlesXML);
+
     }
 
     @Test
@@ -356,7 +374,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
+        assertEquals(canonicalize(pathRefBeatlesJSON), canonicalize(pathOutBeatlesJSON));
+        assertNotEquals("", pathOutBeatlesJSON);
+
     }
 
     @Test
@@ -370,7 +390,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
+        assertEquals(canonicalize(pathRefBeatlesTRIG), canonicalize(pathOutBeatlesTRIG));
+        assertNotEquals("", pathOutBeatlesTRIG);
+
     }
 
     @Test
@@ -384,7 +406,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+        assertEquals(canonicalize(pathRefBeatlesTTL), canonicalize(pathOutBeatlesTTL));
+        assertNotEquals("", pathOutBeatlesTTL);
+
     }
 
     @Test
@@ -398,7 +422,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+        assertEquals(canonicalize(pathRefBeatlesNT), canonicalize(pathOutBeatlesNT));
+        assertNotEquals("", pathOutBeatlesNT);
+
     }
 
     @Test
@@ -412,7 +438,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
+        assertEquals(canonicalize(pathRefBeatlesNQ), canonicalize(pathOutBeatlesNQ));
+        assertNotEquals("", pathOutBeatlesNQ);
+
     }
 
     @Test
@@ -426,7 +454,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
+        assertEquals(canonicalize(pathRefBeatlesXML), canonicalize(pathOutBeatlesXML));
+        assertNotEquals("", pathOutBeatlesXML);
+
     }
 
     @Test
@@ -440,7 +470,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
+        assertEquals(canonicalize(pathRefBeatlesJSON), canonicalize(pathOutBeatlesJSON));
+        assertNotEquals("", pathOutBeatlesJSON);
+
     }
 
     @Test
@@ -454,7 +486,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
+        assertEquals(canonicalize(pathRefBeatlesTRIG), canonicalize(pathOutBeatlesTRIG));
+        assertNotEquals("", pathOutBeatlesTRIG);
+
     }
 
     @Test
@@ -468,7 +502,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+        assertEquals(canonicalize(pathRefBeatlesTTL), canonicalize(pathOutBeatlesTTL));
+        assertNotEquals("", pathOutBeatlesTTL);
+
     }
 
     @Test
@@ -482,7 +518,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+        assertEquals(canonicalize(pathRefBeatlesNT), canonicalize(pathOutBeatlesNT));
+        assertNotEquals("", pathOutBeatlesNT);
+
     }
 
     @Test
@@ -496,7 +534,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
+        assertEquals(canonicalize(pathRefBeatlesNQ), canonicalize(pathOutBeatlesNQ));
+        assertNotEquals("", pathOutBeatlesNQ);
+
     }
 
     @Test
@@ -510,7 +550,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
+        assertEquals(canonicalize(pathRefBeatlesXML), canonicalize(pathOutBeatlesXML));
+        assertNotEquals("", pathOutBeatlesXML);
+
     }
 
     @Test
@@ -524,7 +566,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
+        assertEquals(canonicalize(pathRefBeatlesJSON), canonicalize(pathOutBeatlesJSON));
+        assertNotEquals("", pathOutBeatlesJSON);
+
     }
 
     @Test
@@ -538,7 +582,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
+        assertEquals(canonicalize(pathRefBeatlesTRIG), canonicalize(pathOutBeatlesTRIG));
+        assertNotEquals("", pathOutBeatlesTRIG);
+
     }
 
     @Test
@@ -552,7 +598,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+        assertEquals(canonicalize(pathRefBeatlesTTL), canonicalize(pathOutBeatlesTTL));
+        assertNotEquals("", pathOutBeatlesTTL);
+
     }
 
     @Test
@@ -566,7 +614,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+        assertEquals(canonicalize(pathRefBeatlesNT), canonicalize(pathOutBeatlesNT));
+        assertNotEquals("", pathOutBeatlesNT);
+
     }
 
     @Test
@@ -580,7 +630,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
+        assertEquals(canonicalize(pathRefBeatlesNQ), canonicalize(pathOutBeatlesNQ));
+        assertNotEquals("", pathOutBeatlesNQ);
+
     }
 
     @Test
@@ -594,7 +646,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesXML, pathOutBeatlesXML));
+        assertEquals(canonicalize(pathRefBeatlesXML), canonicalize(pathOutBeatlesXML));
+        assertNotEquals("", pathOutBeatlesXML);
+
     }
 
     @Test
@@ -608,7 +662,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesJSON, pathOutBeatlesJSON));
+        assertEquals(canonicalize(pathRefBeatlesJSON), canonicalize(pathOutBeatlesJSON));
+        assertNotEquals("", pathOutBeatlesJSON);
+
     }
 
     @Test
@@ -622,7 +678,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTRIG, pathOutBeatlesTRIG));
+        assertEquals(canonicalize(pathRefBeatlesTRIG), canonicalize(pathOutBeatlesTRIG));
+        assertNotEquals("", pathOutBeatlesTRIG);
+
     }
 
     @Test
@@ -636,7 +694,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesTTL, pathOutBeatlesTTL));
+        assertEquals(canonicalize(pathRefBeatlesTTL), canonicalize(pathOutBeatlesTTL));
+        assertNotEquals("", pathOutBeatlesTTL);
+
     }
 
     @Test
@@ -650,7 +710,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNT, pathOutBeatlesNT));
+        assertEquals(canonicalize(pathRefBeatlesNT), canonicalize(pathOutBeatlesNT));
+        assertNotEquals("", pathOutBeatlesNT);
+
     }
 
     @Test
@@ -664,7 +726,9 @@ public class ConvertTest {
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
-        assertTrue(compareFiles(pathRefBeatlesNQ, pathOutBeatlesNQ));
+        assertEquals(canonicalize(pathRefBeatlesNQ), canonicalize(pathOutBeatlesNQ));
+        assertNotEquals("", pathOutBeatlesNQ);
+
     }
 
     @Test
@@ -673,7 +737,7 @@ public class ConvertTest {
         int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", inputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
-        assertTrue(err.toString().trim().contains("Input path cannot be the same as output path."));
+        assertTrue(err.toString().trim().contains("Input path is same as output path"));
     }
 
     @Test

@@ -1,20 +1,23 @@
 package fr.inria.corese.command.programs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.print.CanonicalRdf10Format;
 import picocli.CommandLine;
 
 public class ShaclTest {
@@ -38,7 +41,7 @@ public class ShaclTest {
             .getPath();
 
     private static final String UUID_REGEX = "<urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}>";
-    private static final String BLANK_NODE_REGEX = "_:(b|bb)\\d+";
+    private static final String NEUTRAL_UUID = "<urn:uuid:00000000-0000-0000-0000-000000000000>";
 
     @Before
     public void setUp() throws Exception {
@@ -48,30 +51,48 @@ public class ShaclTest {
         cmd.setErr(err);
     }
 
-    public boolean compareFiles(String filePath1, String filePath2) throws IOException {
-        String content1 = new String(Files.readAllBytes(Paths.get(filePath1)));
-        String content2 = new String(Files.readAllBytes(Paths.get(filePath2)));
+    public boolean compareFiles(String filePath1, String filePath2, int format) throws IOException {
+        // Get content of files
+        String content1 = getStringContent(filePath1);
+        String content2 = getStringContent(filePath2);
 
-        String normalizedContent1 = sort(trimLines(removeUUIDsAndBlankNodes(content1)));
-        String normalizedContent2 = sort(trimLines(removeUUIDsAndBlankNodes(content2)));
+        // Remove UUIDs and Blank Nodes
+        String clearContent1 = maskUUIDs(content1);
+        String clearContent2 = maskUUIDs(content2);
 
-        return normalizedContent1.equals(normalizedContent2);
+        // Canonicalize RDF content
+        String canonicallFile1 = canonicalize(clearContent1, format);
+        String canonicallFile2 = canonicalize(clearContent2, format);
+
+        return canonicallFile1.equals(canonicallFile2);
     }
 
-    private String sort(String content) {
-        String[] lines = content.split("\n");
-        Arrays.sort(lines);
-        return Arrays.stream(lines).collect(Collectors.joining("\n"));
-    }
-
-    private String removeUUIDsAndBlankNodes(String content) {
-        content = Pattern.compile(UUID_REGEX).matcher(content).replaceAll("");
-        content = Pattern.compile(BLANK_NODE_REGEX).matcher(content).replaceAll("");
+    private String maskUUIDs(String content) {
+        content = Pattern.compile(UUID_REGEX).matcher(content).replaceAll(NEUTRAL_UUID);
         return content;
     }
 
-    private String trimLines(String content) {
-        return Arrays.stream(content.split("\n")).map(String::trim).collect(Collectors.joining("\n"));
+    private String getStringContent(String path) throws IOException {
+        return new String(java.nio.file.Files.readAllBytes(Paths.get(path)));
+    }
+
+    private String canonicalize(String content, int format) {
+
+        // Content String to Input Stream
+        InputStream is = new ByteArrayInputStream(content.getBytes());
+
+        // Load RDF content into a Graph
+        Graph graph = Graph.create();
+        Load ld = Load.create(graph);
+
+        try {
+            ld.parse(is, format);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Return Canonical RDF content
+        return CanonicalRdf10Format.create(graph).toString();
     }
 
     @Test
@@ -91,7 +112,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.TURTLE_FORMAT));
+        assertNotEquals("", result);
     }
 
     @Test
@@ -111,7 +133,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.TURTLE_FORMAT));
+        assertNotEquals("", result);
     }
 
     @Test
@@ -136,7 +159,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.TURTLE_FORMAT));
+        assertNotEquals("", result);
     }
 
     @Test
@@ -161,7 +185,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.TURTLE_FORMAT));
+        assertNotEquals("", result);
     }
 
     @Test
@@ -181,7 +206,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.TURTLE_FORMAT));
+        assertNotEquals("", result);
     }
 
     @Test
@@ -201,7 +227,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.TURTLE_FORMAT));
+        assertNotEquals("", result);
     }
 
     @Test
@@ -221,7 +248,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.TURTLE_FORMAT));
+        assertNotEquals("", result);
     }
 
     @Test
@@ -244,7 +272,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.RDFXML_FORMAT));
+        assertNotEquals("", result);
     }
 
     @Test
@@ -267,7 +296,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.JSONLD_FORMAT));
+        assertNotEquals("", result);
     }
 
     @Test
@@ -288,7 +318,8 @@ public class ShaclTest {
         assertEquals(0, exitCode);
         assertEquals("", this.out.toString());
         assertEquals("", this.err.toString());
-        assertTrue(this.compareFiles(expected, result));
+        assertTrue(this.compareFiles(expected, result, Load.TURTLE_FORMAT));
+        assertNotEquals("", result);
     }
 
 }

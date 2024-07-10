@@ -1,6 +1,7 @@
 package fr.inria.corese.command.programs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -84,6 +85,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -102,6 +104,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -120,6 +123,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -138,6 +142,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -253,6 +258,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
 
         }
 
@@ -272,6 +278,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -290,6 +297,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -308,6 +316,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -325,6 +334,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -343,6 +353,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -361,6 +372,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -379,6 +391,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -650,6 +663,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -669,6 +683,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -688,6 +703,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -707,6 +723,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -725,6 +742,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -820,6 +838,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -839,6 +858,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -856,6 +876,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -873,6 +894,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -890,6 +912,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -976,6 +999,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -993,6 +1017,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1010,6 +1035,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1027,6 +1053,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1044,6 +1071,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1138,6 +1166,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1155,6 +1184,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1172,6 +1202,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1189,6 +1220,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1206,6 +1238,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1295,6 +1328,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1312,6 +1346,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1328,6 +1363,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1344,6 +1380,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1360,6 +1397,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1448,6 +1486,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1464,6 +1503,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1480,6 +1520,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1496,6 +1537,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test
@@ -1512,6 +1554,7 @@ public class SparqlTest {
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
                 assertTrue(actualOutput.contains(expectedOutput));
+                assertNotEquals("", actualOutput);
         }
 
         @Test

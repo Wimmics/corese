@@ -47,11 +47,12 @@ public class SPARQLTestUtils {
      * @throws IOException
      * @throws ProtocolException
      */
-    public static HttpURLConnection getConnection(String url, List<List<String>> headers)
-            throws MalformedURLException, ProtocolException, IOException {
+
+    public static HttpURLConnection methodConnection(String method, String url, List<List<String>> headers)
+    throws IOException {
         URL u = new URL(url);
         HttpURLConnection con = (HttpURLConnection) u.openConnection();
-        con.setRequestMethod("GET");
+        con.setRequestMethod(method);
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
         con.setInstanceFollowRedirects(true);
@@ -61,20 +62,45 @@ public class SPARQLTestUtils {
         return con;
     }
 
+    public static HttpURLConnection getConnection(String url, List<List<String>> headers)
+            throws IOException {
+        return methodConnection("GET", url, headers);
+    }
+
     public static HttpURLConnection postConnection(String url, List<List<String>> headers, String body)
-            throws MalformedURLException, IOException, ProtocolException {
-        URL u = new URL(url);
-        HttpURLConnection con = (HttpURLConnection) u.openConnection();
-        con.setRequestMethod("POST");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        con.setInstanceFollowRedirects(true);
-        for (List<String> header : headers) {
-            con.setRequestProperty(header.get(0), header.get(1));
-        }
+            throws IOException {
+        HttpURLConnection con = methodConnection("POST", url, headers);
         con.setDoOutput(true);
         con.getOutputStream().write(body.getBytes());
         return con;
+    }
+
+    public static HttpURLConnection putConnection(String url, List<List<String>> headers, String body)
+            throws IOException {
+        HttpURLConnection con = methodConnection("PUT", url, headers);
+        con.setDoOutput(true);
+        con.getOutputStream().write(body.getBytes());
+        return con;
+    }
+
+    public static HttpURLConnection deleteConnection(String url, List<List<String>> headers)
+            throws IOException {
+        return methodConnection("DELETE", url, headers);
+    }
+
+    public static HttpURLConnection deleteConnection(String url)
+            throws IOException {
+        return deleteConnection( url, new ArrayList<>());
+    }
+
+    public static HttpURLConnection headConnection(String url, List<List<String>> headers)
+            throws IOException {
+        return methodConnection("HEAD", url, headers);
+    }
+
+    public static HttpURLConnection headConnection(String url)
+            throws IOException {
+        return headConnection(url, new ArrayList<>());
     }
 
     public static String generateSPARQLQueryParameters(String query, List<List<String>> optionalParameters) {
@@ -143,8 +169,7 @@ public class SPARQLTestUtils {
 
         con.disconnect();
 
-        Mappings queryResults = SPARQLResult.create().parseString(content.toString());
-        return queryResults;
+        return SPARQLResult.create().parseString(content.toString());
     }
 
     public static boolean sendSPARQLAsk(String query) throws Exception {

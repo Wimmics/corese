@@ -75,6 +75,16 @@ public class SPARQLTestUtils {
         return con;
     }
 
+    public static HttpURLConnection postUrlencodedConnection(String url, List<List<String>> headers, String body)
+            throws IOException {
+        List<List<String>> newHeaders = new ArrayList<>(headers);
+        List<String> contentTypeHeader = new ArrayList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add("application/x-www-form-urlencoded");
+        newHeaders.add(contentTypeHeader);
+        return postConnection(url, newHeaders, body);
+    }
+
     public static HttpURLConnection putConnection(String url, List<List<String>> headers, String body)
             throws IOException {
         HttpURLConnection con = methodConnection("PUT", url, headers);

@@ -67,7 +67,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     static final String TRIG = ResultFormat.TRIG;
     static final String TRIG_TEXT = ResultFormat.TRIG_TEXT;
     static final String NT_TEXT = ResultFormat.NT_TEXT;
-    static final String N_TRILES = ResultFormat.N_TRIPLES;
+    static final String N_TRIPLES = ResultFormat.N_TRIPLES;
     static final String N_QUADS = ResultFormat.N_QUADS;
     static final String TEXT = ResultFormat.TEXT;
     static final String HTML = ResultFormat.HTML;
@@ -266,7 +266,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             return Response.status(404).header(headerAccept, "*").entity(output).build();
         }
 
-        logger.info(output = "Successfully loaded " + remotePath);
+        logger.info(output + "Successfully loaded " + remotePath);
         return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
 
@@ -616,7 +616,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     }
 
     @GET
-    @Produces({ N_TRILES })
+    @Produces({ N_TRIPLES })
     public Response getRDFGraphNTriplesForGet(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name") String name,
             @PathParam("oper") String oper,
@@ -1015,7 +1015,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     }
 
     @POST
-    @Produces({ N_TRILES })
+    @Produces({ N_TRIPLES })
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getRDFGraphNTriplesForPost(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name") String name,

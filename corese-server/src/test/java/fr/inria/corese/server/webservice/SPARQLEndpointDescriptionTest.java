@@ -98,7 +98,7 @@ public class SPARQLEndpointDescriptionTest {
         contentTypeHeader.add(RDF_XML);
         headers.add(contentTypeHeader);
 
-        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = HTTPTestUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -118,7 +118,7 @@ public class SPARQLEndpointDescriptionTest {
         InputStream inputStream = new ByteArrayInputStream(content.toString().getBytes());
         load.parse(inputStream, RDFXML_FORMAT);
 
-        assertEquals(status, 200);
+        assertEquals(200, status);
         assertEquals(con.getContentType(), RDF_XML);
         assertTrue(voidGraph.size() > 0);
     }
@@ -139,7 +139,7 @@ public class SPARQLEndpointDescriptionTest {
         contentTypeHeader.add(TURTLE_TEXT);
         headers.add(contentTypeHeader);
 
-        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = HTTPTestUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -159,7 +159,7 @@ public class SPARQLEndpointDescriptionTest {
         InputStream inputStream = new ByteArrayInputStream(content.toString().getBytes());
         load.parse(inputStream, TURTLE_FORMAT);
 
-        assertEquals(status, 200);
+        assertEquals(200, status);
         assertEquals(con.getContentType(), RDF_XML);
         assertTrue(voidGraph.size() > 0);
     }
@@ -180,7 +180,7 @@ public class SPARQLEndpointDescriptionTest {
         contentTypeHeader.add(RDF_XML);
         headers.add(contentTypeHeader);
 
-        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = HTTPTestUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -200,7 +200,7 @@ public class SPARQLEndpointDescriptionTest {
         InputStream inputStream = new ByteArrayInputStream(content.toString().getBytes());
         load.parse(inputStream, RDFXML_FORMAT);
 
-        assertEquals(status, 200);
+        assertEquals(200, status);
         assertEquals(con.getContentType(), RDF_XML);
         assertTrue(voidGraph.size() > 0);
     }
@@ -221,7 +221,7 @@ public class SPARQLEndpointDescriptionTest {
         contentTypeHeader.add(TURTLE_TEXT);
         headers.add(contentTypeHeader);
 
-        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = HTTPTestUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -241,7 +241,7 @@ public class SPARQLEndpointDescriptionTest {
         InputStream inputStream = new ByteArrayInputStream(content.toString().getBytes());
         load.parse(inputStream, TURTLE_FORMAT);
 
-        assertEquals(status, 200);
+        assertEquals(200, status);
         assertEquals(con.getContentType(), RDF_XML);
         assertTrue(voidGraph.size() > 0);
     }

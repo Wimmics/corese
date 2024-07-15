@@ -27,13 +27,13 @@ import jakarta.ws.rs.core.Response;
  */
 @Path("rdf-graph-store")
 public class GraphProtocol {
-    static private final Logger logger = LogManager.getLogger(GraphProtocol.class);
+    private static final Logger logger = LogManager.getLogger(GraphProtocol.class);
 
-    static final String NAMED_GRAPH_QUERY = "construct {?s ?p ?o} where {graph <%s> {?s ?p ?o}}";
-    static final String DEFAULT_GRAPH_QUERY = "construct  where {?s ?p ?o}";
+    private static final String NAMED_GRAPH_QUERY = "construct {?s ?p ?o} where {graph <%s> {?s ?p ?o}}";
+    private static final String DEFAULT_GRAPH_QUERY = "construct  where {?s ?p ?o}";
 
-    static final String NAMED_GRAPH_INSERT = "insert data {graph <%s> {%s}}";
-    static final String DEFAULT_GRAPH_INSERT = "insert data {%s}";
+    private static final String NAMED_GRAPH_INSERT = "insert data {graph <%s> {%s}}";
+    private static final String DEFAULT_GRAPH_INSERT = "insert data {%s}";
 
     Response get(HttpServletRequest request, String name, String graph, String pattern, String access, int format) {
         String query = pattern;
@@ -111,7 +111,6 @@ public class GraphProtocol {
     public Response put(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name") String name,
             @QueryParam("graph") String graph,
-            // @QueryParam("query")
             String query,
             @QueryParam("access") String access,
             @QueryParam("mode") List<String> mode) {

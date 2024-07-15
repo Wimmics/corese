@@ -167,15 +167,15 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         boolean ent = entailments.equals("true");
         boolean owl = owlrl.equals("true");
         boolean ld = load.equals("true");
-        localProfile = profile;
-        System.out.println("entailment: " + ent);
+        SPARQLRestAPI.localProfile = profile;
+        logger.info("entailment: " + ent);
         // option -init propertyFile may declare db storage path
         // with property STORAGE=path
         // DatasetManager create appropriate DataManager for db storage
         DatasetManagerServer man = new DatasetManagerServer().init();
         Manager.getManager().setDatasetManager(man);
         // create default sparql endpoint
-        store = new TripleStore(ent, owl);
+        SPARQLRestAPI.store = new TripleStore(ent, owl);
         // default db storage DataManager is for sparql endpoint
         store.setDataManager(man.getDataManager());
         // logger.info("DatasetManager: " + store.getDataManager());

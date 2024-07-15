@@ -73,7 +73,7 @@ public class SPARQLEndpointUpdateTest {
         contentTypeHeader.add("Content-Type");
         contentTypeHeader.add("application/x-www-form-urlencoded");
         headers.add(contentTypeHeader);
-        HttpURLConnection con = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, headers, body);
+        HttpURLConnection con = HTTPTestUtils.postConnection(SPARQL_ENDPOINT_URL, headers, body);
         int responseCode = con.getResponseCode();
         con.disconnect();
 
@@ -92,7 +92,7 @@ public class SPARQLEndpointUpdateTest {
         contentTypeHeader.add("Content-Type");
         contentTypeHeader.add("application/sparql-update");
         headers.add(contentTypeHeader);
-        HttpURLConnection con = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, headers, query);
+        HttpURLConnection con = HTTPTestUtils.postConnection(SPARQL_ENDPOINT_URL, headers, query);
         int responseCode = con.getResponseCode();
         con.disconnect();
 
@@ -122,7 +122,7 @@ public class SPARQLEndpointUpdateTest {
         contentTypeFormUrlEncodedHeader.add("Content-Type");
         contentTypeFormUrlEncodedHeader.add("application/sparql-update");
         updateHeaders.add(contentTypeFormUrlEncodedHeader);
-        HttpURLConnection updateCon = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, updateHeaders, updateQuery);
+        HttpURLConnection updateCon = HTTPTestUtils.postConnection(SPARQL_ENDPOINT_URL, updateHeaders, updateQuery);
         int updateResponseCode = updateCon.getResponseCode();
         updateCon.disconnect();
 

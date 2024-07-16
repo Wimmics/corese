@@ -630,6 +630,7 @@ prefix fun: <http://ns.inria.fr/>
 select ?name ?area
 where {
     ?city rdf:type ex:city ;
+            ex:name ?name ;
             ex:area ?area .
     filter(?area > fun:toSquareKm(40))
 }

@@ -1052,6 +1052,7 @@ order by ?s ?p ?o
 <span class="s">select ?name ?area</span>
 <span class="s">where {</span>
 <span class="s">    ?city rdf:type ex:city ;</span>
+<span class="s">            ex:name ?name ;</span>
 <span class="s">            ex:area ?area .</span>
 <span class="s">    filter(?area &gt; fun:toSquareKm(40))</span>
 <span class="s">}</span>

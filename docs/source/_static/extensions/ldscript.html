@@ -1,0 +1,2816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <link rel="stylesheet" href="kgram.css" type="text/css" media="screen, projection, print" />
+  <title>LDScript</title>
+ 
+</head>
+
+<body>
+
+<h1>SPARQL Function</h1>
+<h2>LDScript: a Linked Data Script Language</h2>
+
+<p>
+Created: 2015, November 5th<br/>
+Modified: 2020, December 1st
+</p>
+
+<h3>Authors</h3>
+
+Olivier Corby &lt;<a href="mailto:olivier.corby@inria.fr">olivier.corby@inria.fr</a>&gt; <br/>
+Catherine Faron Zucker &lt;<a href="mailto:faron@i3s.unice.fr">faron@i3s.unice.fr</a>&gt; <br/>
+Fabien Gandon &lt;<a href="mailto:fabien.gandon@inria.fr">fabien.gandon@inria.fr</a>&gt; <br/>
+
+
+
+<hr/>
+
+<h2>Abstract</h2>
+<p>
+This document defines a function definition language on top of <a href="http://www.w3.org/TR/sparql11-query/">SPARQL</a> filter language.  It enables users to define and use simple extension functions directly in (extended) SPARQL. The body of a function is written using SPARQL filter language augmented with additional statements.
+</p>
+
+
+
+<h2>Table of contents</h2>
+
+<a href="#introduction">1 Introduction</a><br/> 
+&nbsp;&nbsp;<a href="#introduction1">1.1 Relationship to W3C Recommendations</a><br/>
+
+<a href="#function">2 Function Definition</a><br/> 
+&nbsp;&nbsp;<a href="#function1">2.1 Function</a><br/>
+&nbsp;&nbsp;<a href="#function2">2.2 Anonymous Function</a><br/>
+&nbsp;&nbsp;<a href="#function3">2.3 Annotation</a><br/>
+
+<a href="#statement">3 Statement</a><br/> 
+&nbsp;&nbsp;<a href="#statement1">3.1 SPARQL</a><br/>
+&nbsp;&nbsp;<a href="#statement2">3.2 Let</a><br/>
+&nbsp;&nbsp;<a href="#statement3">3.3 For</a><br/>
+&nbsp;&nbsp;<a href="#statement4">3.4 Pattern Matching</a><br/>
+&nbsp;&nbsp;<a href="#statement5">3.5 If Then Else</a><br/>
+&nbsp;&nbsp;<a href="#statement6">3.6 Return</a><br/>
+&nbsp;&nbsp;<a href="#statement7">3.7 Error</a><br/>
+&nbsp;&nbsp;<a href="#statement8">3.8 Safe</a><br/>
+
+<a href="#secondorder">4 Second Order Function</a><br/> 
+&nbsp;&nbsp;<a href="#secondorder1">4.1 Funcall</a><br/>
+&nbsp;&nbsp;<a href="#secondorder2">4.2 Apply</a><br/>
+&nbsp;&nbsp;<a href="#secondorder3">4.3 Map</a><br/>
+&nbsp;&nbsp;<a href="#secondorder4">4.4 Reduce</a><br/>
+
+<a href="#extension">5 Predefined Extension Function</a><br/>
+&nbsp;&nbsp;<a href="#extension1">5.1 General Purpose</a><br/>
+&nbsp;&nbsp;<a href="#sttl">5.2 SPARQL Transformation</a><br/>
+&nbsp;&nbsp;<a href="#shacl">5.3 SHACL</a><br/>
+
+<a href="#datatype">6 Datatype</a><br/> 
+&nbsp;&nbsp;<a href="#datatype1">6.1 LDScript Datatype</a><br/>
+&nbsp;&nbsp;<a href="#datatype2">6.2 RDF Datatype</a><br/>
+&nbsp;&nbsp;<a href="#datatype3">6.3 SPARQL Datatype</a><br/>
+
+<a href="#syntax">7 Language Syntax</a><br/> 
+
+<a href="#sparql">8 SPARQL Extension</a><br/> 
+&nbsp;&nbsp;<a href="#sparql1">8.1 LDScript in SPARQL</a><br/>
+&nbsp;&nbsp;<a href="#sparql2">8.2 Aggregate</a><br/>
+&nbsp;&nbsp;<a href="#sparql3">8.3 Values Unnest</a><br/>
+&nbsp;&nbsp;<a href="#sparql4">8.4 Property Path Variable</a><br/>
+&nbsp;&nbsp;<a href="#sparql5">8.5 Named Graph Pattern</a><br/>
+
+<a href="#usecase">9 Use Case</a><br/> 
+&nbsp;&nbsp;<a href="#usecase1">9.1 Functional Property</a><br/>
+&nbsp;&nbsp;<a href="#usecase2">9.2 Functional Service</a><br/>
+&nbsp;&nbsp;<a href="#usecase3">9.3 Approximate Match</a><br/>
+&nbsp;&nbsp;<a href="#usecase4">9.4 Recursive Match</a><br/>
+&nbsp;&nbsp;<a href="#usecase5">9.5 Event Driven Function</a><br/>
+&nbsp;&nbsp;<a href="#usecase6">9.6 Predefined Query</a><br/>
+
+<a href="#implementation">10 Implementation</a><br/>
+
+<a href="#conclusion">11 Conclusion</a><br/> 
+
+
+
+
+<p>&nbsp;</p>
+
+
+<a name='introduction' />
+<h2>1 Introduction</h2>
+<p>
+In  addition  to  the  existing  standards dedicated to representation or querying, Semantic Web programmers could really benefit from a dedicated programming language enabling them to directly define functions on RDF terms, RDF graphs or SPARQL results.  
+This is especially the case, for instance, when defining SPARQL extension functions.
+
+We propose a function definition language on top of <a href="http://www.w3.org/TR/sparql11-query/">SPARQL</a> filter language by introducing a <span class='code'>function</span> clause.  It enables users to define and use simple extension functions directly in (extended) SPARQL. The body of functions is written using SPARQL filter language augmented with additional statements. The language can be seen as a kind of SPARQLScript w.r.t SPARQL in the spirit of JavaScript w.r.t HTML.
+</p>
+
+<p>
+LDScript is provided with extension datatypes that enable programmers to manipulate RDF objects such as graphs and triples as well as 
+XML and JSON objects in a seamless way.
+</p>
+
+
+
+<h4>Example</h4>
+
+<p>
+The example below defines and uses the factorial function. Function definitions occur just after query definition.
+</p>
+
+<pre>
+select *
+where {
+  ?x rdf:value ?n
+  filter (?n >= us:fac(10))
+}
+
+function us:fac(?n) {
+  if (?n = 0, 1, ?n * us:fac(?n - 1))
+}
+</pre>
+
+For the sake of usability, LDScript variables out of a SPARQL Query can be written without "?" as shown below. Variables n and ?n are the same variables.
+
+
+<pre>
+function us:fac(n) {
+  if (n = 0, 1, n * us:fac(n - 1))
+}
+</pre>
+
+
+<a name='introduction1' />
+<h3>1.1 Relationship to W3C Recommendations</h3>
+<p>
+This proposition is strongly related to <a href='https://www.w3.org/TR/sparql11-query/'>SPARQL 1.1 Query Language</a> and to <a href='https://www.w3.org/TR/rdf11-concepts/'>RDF 1.1 Concepts and Abstract Syntax</a>.
+</p>
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+
+<a name='function' />
+<h2>2 Function Definition</h2>
+
+
+
+
+<p>
+The language is built on top of SPARQL filter language extended with the statements defined in this proposition.
+
+The objects of the language are SPARQL variables and RDF terms: URI, literal, blank node. 
+The language objects can also be RDF triple and graph as well as SPARQL query solution  (mapping) and solution sequence (mappings). 
+A list datatype is also introduced whose elements can be any of the objects listed above, including lists. List elements do not need to be of the same kind or of the same datatype.
+Triple, graph, mapping, mappings and list are managed as RDF literals with <a href='#datatype'>extension datatypes</a>: dt:triple, dt:graph, dt:mapping, dt:mappings and dt:list. Their content is accessed by <a href='#patternmatching'>pattern matching</a> and they are iterable.
+
+We call LDScript terms the union of RDF terms and LDScript literals with extension datatype in the dt: namespace.
+</p>
+
+<p>
+In the document, we use prefix and namespaces  shown below:
+</p>
+<pre>
+prefix rq:  &lt;http://ns.inria.fr/sparql-function/>
+prefix dt:  &lt;http://ns.inria.fr/sparql-datatype/>
+prefix st:  &lt;http://ns.inria.fr/sparql-template/>
+prefix xt:  &lt;http://ns.inria.fr/sparql-extension/>
+prefix us:  &lt;http://ns.inria.fr/sparql-extension/user/>
+prefix dom: &lt;http://ns.inria.fr/sparql-extension/dom/>
+prefix sh:  &lt;http://www.w3.org/ns/shacl#> 
+</pre>
+
+
+<a name='function1' />
+<h3>2.1 Function</h3>
+
+<p>
+The <span class='code'>function</span> statement  defines a function that can be used in a  query, a rule,  a template or another function. The name of a function is an URI, it can have zero, one or several arguments that are variables.
+Function overloading is provided: several functions can be defined with the same name and different number of arguments. Functions can call other LDScript functions including themselves, SPARQL functions or extension functions.
+The body is a sequence of expressions.
+The result of the function is the result of the last expression of the body, or the result of the <span class='code'>return</span> statement if any.
+</p>
+
+<pre>
+function us:fun(x, y) {
+  x + y
+}
+</pre>
+
+
+
+<p>
+The parameters and the result of a function may be typed as shown below.
+</p>
+
+<pre>
+function xsd:integer us:fun(xsd:integer x, xsd:integer y) {
+  x + y
+}
+</pre>
+
+
+
+
+
+<a name='function2' />
+<h3>2.2 Anonymous Function</h3>
+<p>
+This statement defines an anonymous function that can be used with <a href='#secondorder'>second order functions</a> such as: apply, funcall, map and reduce. 
+As it is an expression of the language, it can be bound to a variable, passed to a function call as parameter, it can be an element of a list, etc. 
+Compiling an anonymous function produces a function definition with a generated URI. 
+This URI is transparently used at runtime to call and execute the function.
+<!--At runtime, an anonymous function definition evaluates to the URI of the generated function, hence anonymous function definition is transparent for the interpreter as it resumes to its URI.-->
+</p>
+
+<pre>
+function(x) { 1 / (x * x) }
+</pre>
+
+<pre>
+maplist(function(x) { 1 / (x * x) } , xt:iota(5))
+</pre>
+
+
+
+
+<a name='function3' />
+<h3>2.3 Annotation</h3>
+
+<h4>Public</h4>
+<p>
+This @public annotation exports function definitions in the SPARQL interpreter in such a way that future SPARQL queries can use them within current runtime session.
+</p>
+<pre>
+@public 
+function us:foo() {
+  xt:display("Hello World")
+}
+
+@public  {
+
+  function us:bar(x, y) {
+    us:gee(x * y)
+  }
+  
+  function us:gee(x) {
+    x * x
+  }
+}
+</pre>
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+<a name='statement' />
+<h2>3 Statement</h2>
+
+<p>
+This section details LDScript statements.
+</p>
+
+
+<a name='statement1' />
+<h3>3.1 SPARQL</h3>
+<p>
+LSDcript inherits  SPARQL Filter language statements, including the <span class='code'>exists</span> clause,  SPARQL select and construct queries and Update queries. These  statements are evaluated with the Dataset of the embedding SPARQL query that runs the LDScript function. For syntactic reasons, SPARQL queries are embedded in a  <span class='code'>query</span> statement, except in the <span class='code'>let</span> and <span class='code'>for</span> statements where it can be avoided. 
+</p>
+
+<pre>
+query(select ?x ?y where { ?x foaf:knows ?y })
+</pre>
+
+<!--
+<p>
+For deadlock reasons, an Update query may not be performed during the execution of a SPARQL query, unless on another graph. 
+</p>
+
+<pre>
+query(insert { ?x rdfs:seeAlso ?y } where { ?x foaf:knows ?y })
+</pre>
+-->
+
+<p>
+The result of a select (resp. construct) query is a dt:mappings (resp. dt:graph) datatype extension literal. These datatypes act as "pointers" to the underlying data structure that implements the result of the query.
+</p>
+
+<pre>
+datatype(query(select ?x ?y where {?x foaf:knows ?y})) = dt:mappings
+datatype(query(construct    where {?x foaf:knows ?y})) = dt:graph
+</pre>
+
+<p>
+At runtime, variables that are bound in LDScript stack and that are projected in the select clause of a query  are dynamically bound in the where clause. They are bound using an extended <span class='code'>values</span> clause that is generated dynamically. It is extended because it accepts blank node values in addition to URI and literals.
+In the example below, we call us:foo(v),  the value of ?x is v in the stack and an appropriate values clause is dynamically generated. 
+</p>
+<pre>
+us:foo(v) 
+
+function us:foo(?x) {
+  query(select ?x ?y where { values ?x { v }  ?x foaf:knows ?y })
+}
+</pre>
+
+
+<p>
+For <span class='code'>construct</span> queries, variables that are in-scope in the <span class='code'>where</span> clause and that are bound in LDScript stack are dynamically bound in the <span class='code'>where</span> clause using an extended <span class='code'>values</span> clause.
+</p>
+
+
+<p>
+For the <span class='code'>exists</span> { BGP } clause, variables that are in-scope in the <span class='code'>BGP</span>  and that are  bound in LDScript stack are dynamically bound in the BGP using an extended <span class='code'>values</span> clause.
+</p>
+
+
+<p>
+Statements such as <span class='code'>if</span>, <span class='code'>bound</span>, <span class='code'>coalesce</span> are also available. SPARQL predefined functions are also available with the rq: prefix, e.g. <span class='code'>rq:contains</span>. 
+</p>
+
+
+
+<h4>Query and Anonymous Function</h4>
+<p>
+It is worth noticing that, as any statement, a SPARQL query can be embedded in an anonymous function.
+</p>
+<pre>
+let (query = function() { query(select .. where ..) }) {
+    datatype(funcall(query)) = dt:mappings
+}
+</pre>
+
+
+
+
+
+<a name='statement2' />
+<h3>3.2 Let</h3>
+<p>
+The <span class='code'>let</span> statement  defines local variables whose scope is the body of the <span class='code'>let</span> statement. The result of the statement is the result of the last expression of the body, or the result of the <span class='code'>return</span> statement if any.
+</p>
+<pre>
+let (z = x + y, t = 2 * z) {
+  us:foo(t)
+}
+</pre>
+
+
+
+
+<h4>Dynamic Let</h4>
+<p>
+The dynamic let statement is a variant of the let statement where the scope of the declared variable is not only the body but also the functions that are called in the body (and recursively). In the example below, variable x in anonymous function is bound by the dynamic let. 
+</p> 
+
+<pre>
+letdyn (x = exp) { maplist(function(y) { us:fun(x, y) }, list }
+</pre>
+
+
+
+
+
+
+
+
+<h4>Let List</h4>
+
+
+<p>
+The <span class='code'>let</span> statement enables users to map list elements to variables. The number of variables may be less than the size of the list.
+</p>
+<pre>
+let ((x y z) = list) {
+  us:foo(x, y, z)
+}
+</pre>
+
+
+<p>
+The left argument can be a list of lists of variables.
+</p>
+
+<pre>
+let (((x y), (z t)) = @((1 2)(3 4))) {
+  
+}
+</pre>
+
+
+
+
+
+
+<h4>Let Select Query</h4>
+
+<p>
+The <span class='code'>let</span> statement can have a <span class='code'>select-where</span> query as  argument. In this case, the variables in the select clause are defined and bound, in the body of the <span class='code'>let</span> clause, with the values of the first query solution. If a variable has no value in the first solution (e.g. due to an optional),  the body is executed with the variable left unbound. 
+If there is no solution, the body is  executed with all select variables left unbound.
+These cases can be trapped in the body by the <span class='code'>bound</span> or <span class='code'>coalesce</span> functions.
+</p>
+
+
+<pre>
+let (select ?x ?y where { ?x foaf:knows ?y }) {
+    us:bar(?x, ?y)
+}
+</pre>
+
+
+
+<p>
+If the left argument is a list of variables, each variable is bound to the  corresponding query solution (a mapping) in order.
+</p>
+
+<pre>
+let ((s1 s2) = select * where { ?x foaf:knows ?y }) {
+  us:foo(s1, s2)
+}
+</pre>
+
+<p>
+If the left argument is a list of list of variables, each variable is bound to the value of the corresponding variable (with same name) in the first query solution.
+</p>
+
+<pre>
+let (((x y)) = select * where { ?x foaf:knows ?y }) {
+  us:foo(x, y)
+}
+</pre>
+
+
+
+
+<h4>Let Construct Query</h4>
+
+
+<p>
+The <span class='code'>let</span> statement can take as second argument a <span class='code'>construct-where</span> query. The value of the variable is the RDF result graph.
+</p>
+
+<pre>
+function us:foo(?x) {
+    let (g = construct where { ?x foaf:knows ?y}) {
+        g
+    }
+}
+</pre>
+
+<p>
+Variables in-scope in the where clause that are bound in LDScript stack are bound in the where clause using an extended values clause generated at runtime. 
+The query above is evaluated as shown below if the value of ?x is v in the stack.
+</p>
+<pre>
+function us:foo(?x) {
+    let (g = construct where { values ?x { v }  ?x foaf:knows ?y}) {
+        g
+    }
+}
+</pre>
+
+
+<h3>Set</h3>
+<p>
+This statement assigns a value to a variable.
+</p>
+
+<pre>
+set (var = val)
+</pre>
+<pre>
+set (x = x + 1)
+</pre>
+
+
+
+<h4>Global variable</h4>
+<p>
+Local variables are defined by let (var = exp), for (var in exp),  function us:fun(var)  while
+set(var = exp) sets the value of a variable   to the result of the expression.
+</p>
+
+
+
+<p>
+Global variables are defined by set(var = exp)  when var is not  a local variable at that time.
+<br/>
+
+
+
+The runtime scope of a global variable  is the runtime scope of the outermost query within which the variable is defined, including  functions and subqueries.
+When LDScript is used with <a href='http://ns.inria.fr/sparql-template'>STTL</a>, the scope of a global variable is the whole STTL transformation.
+<br/>
+
+When a global variable is defined in a function, the global variable definition remains valid outside the function when the function resumes, until the outermost query resumes. 
+<!-- Hence the @before function can declare global variables and the @after function can access them. -->
+<br/>
+
+A local variable definition temporarily hides a global variable with the same name within the lexical scope of the statement that defines the local variable. 
+<br/>
+
+
+A global variable cannot be referenced directly in a SPARQL query,  
+however it can be accessed by means of a function call that returns the value of the global variable. In other words, global variables belong to LDScript, not to SPARQL.
+<br/>
+</p>
+
+
+
+
+
+
+
+<a name='statement3' />
+<h3>3.3 For</h3>
+<p>
+The <span class='code'>for</span> statement  defines a loop on  LDScript terms that are iterable datatypes.
+The list below specifies the kind of the term iterated in the  statement: 
+for (VAR in EXP).
+</p>
+
+
+<ol>
+<li>VAR : Term in EXP : dt:list  </li> 
+<li>VAR : Term in EXP : dt:triple</li>
+<li>VAR : dt:triple in EXP : dt:path </li> 
+<li>VAR : dt:triple in EXP : dt:graph </li> 
+<li>VAR : dt:mapping in EXP : dt:mappings </li> 
+<li>VAR : dt:list(xsd:string,  Term) in EXP : dt:mapping   where first element is the variable name and  second is the variable value</li>
+</ol>
+
+
+<p>
+The result returned by the for statement is the boolean value <span class='code'>true</span>. 
+A specific result can be returned using the <span class='code'>return</span> statement which has for effect to interrupt the loop.
+If an iteration of the loop returns an error, the loop terminates and returns an error.
+</p>
+<pre>
+for (n in xt:list(1, 2, 3)) {
+  if (us:prime(n)) {
+    xt:display(n)
+  }
+}
+</pre>
+
+
+
+<h4>For Select Query</h4>
+
+
+
+<p>
+The <span class='code'>for</span> statement can take as  argument a <span class='code'>select-where</span> query. In this case, the loop iterates on the solutions of the query and the variables projected in the select clause are bound to their value of the current solution  in the body of the loop. 
+If a variable has no value, it remains unbound.
+
+</p>
+
+<pre>
+for (select ?x ?y where {?x foaf:knows ?y}) {
+    us:foo(x, y)
+}
+</pre>
+
+<!--<p>
+It is possible to specify explicitly the variable(s) to be bound in the loop.
+</p>
+<pre>
+for (m in select * where {?x foaf:knows ?y}) {
+  let ((x y) = m) {
+    ...
+  }
+}
+</pre>-->
+
+
+
+<h4>For Construct Query</h4>
+
+
+<p>
+The <span class='code'>for</span> statement can take as second argument a <span class='code'>construct-where</span> query. In this case, the loop iterates on the triples of the result graph.
+</p>
+<pre>
+for (t in construct where {?x foaf:knows ?y}) {
+  let ((s p o) = t) {
+    
+  }
+}
+</pre>
+
+<pre>
+for ((s p o) in construct where {?x foaf:knows ?y}) {
+  
+}
+</pre>
+
+
+<a name='patternmatching' />
+<a name='statement4' />
+<h3>3.4 Pattern Matching</h3>
+<p>
+The access to the content of extension datatypes can be done  by declarative pattern matching.
+</p>
+
+<h4>Let Pattern Matching</h4>
+<p>
+Iterable datatypes can be mapped  to a list of variables, by pattern matching, using the <span class='code'>let</span> statement.
+</p>
+
+<pre>let ((e1 e2 e3) = list)</pre>
+
+<pre>let ((t1 t2 t3) = graph)</pre>
+
+<pre>let ((s p o)    = triple)</pre>
+
+<pre>let ((m1 m2 m3) = mappings)</pre>
+
+
+<p>
+Pattern matching with  dt:mapping datatype is done by variable name and not by position.
+In the example below, variable x is bound to the value of variable x in current mapping.
+</p>
+
+
+<pre>
+let ((x y) = mapping) 
+</pre>
+
+
+
+
+<h4>Extended Let Pattern Matching</h4>
+
+<p>
+Extended datatypes can be accessed with pattern matching that focuses on first element(s), rest of the elements and last element(s).
+For this purpose, LDScript introduces two Pattern Matching operators: "." and "|" that can be combined.
+</p>
+
+<p>
+The "." operator enables to identify last element(s) of an extension datatype. In the example below, z variable matches the last element  whereas x variable matches the first element.
+If there is only one element, the first and the last element are the same. If the  extended datatype is empty, the variables remain unbound but the statement does not fail.
+</p>
+
+<pre>
+let ((x . z) = term) 
+</pre>
+
+<p>
+It is possible to match several  elements among the first ones and/or several  elements among the last ones, as shown below. If there are not enough elements, some variables  remain unbound.
+</p>
+
+<pre>
+let ((x y . z t) = term) 
+</pre>
+
+
+<p>
+The "|" operator enables LDScript to match a sublist of elements, after the first element(s). In the example below, the rest variable is bound with the sublist starting after the two first elements. The sublist may be empty if there are not enough elements.
+</p>
+
+<pre>
+let ((x y | rest) = term) 
+</pre>
+
+<p>
+It is possible to combine the two operators. In the example below, the sublist starts after the first two elements and stops before the  last two elements. If there are not enough elements, the sublist may be empty.
+</p>
+
+<pre>
+let ((x y | rest . z t) = term) 
+</pre>
+
+
+<p>
+Sublist and last operators can be used on their own.
+</p> 
+
+<pre>
+let (( | list) = term) 
+</pre>
+
+<pre>
+let (( | list . z t) = term) 
+</pre>
+
+<pre>
+let (( . z t) = term) 
+</pre>
+
+<p>
+The "." and "|" operators can be used with these datatypes: 
+dt:list, dt:map, dt:graph,   dt:triple, dt:path, dt:mappings.
+</p>
+
+
+<h4>Examples</h4>
+
+
+<pre>
+let ((x y | rest . z t) = xt:iota(5))
+x = 1 ; y = 2 ; rest = (3) ; z = 4 ; t = 5
+</pre>
+
+<pre>
+let ((x y | rest . z t) = xt:iota(4))
+x = 1 ; y = 2 ; rest = () ; z = 3 ; t = 4
+</pre>
+
+
+<pre>
+let ((x y | rest . z t) = xt:iota(3))
+x = 1 ; y = 2 ; rest = () ; z = 2 ; t = 3
+</pre>
+
+<pre>
+let ((x y | rest . z t) = xt:iota(2))
+x = 1 ; y = 2 ; rest = () ; z = 1 ; t = 2
+</pre>
+
+<pre>
+let ((x y | rest . z t) = xt:iota(1))
+x = 1 ; y is UNBOUND ; rest = () ; z is UNBOUND ; t = 1
+</pre>
+
+
+<h4>For Pattern Matching</h4>
+
+<p>
+LDScript extension datatypes can be iterated and mapped to a list of variables using the <span class='code'>for</span> statement.
+</p>
+
+
+<pre>
+for (elem in list)
+</pre>
+
+<pre>
+for ((x y) in listOfPairs)
+</pre>
+
+<pre>
+for (triple in graph)
+</pre>
+
+<pre>
+for ((s p o) in graph)
+</pre>
+
+<pre>
+for (term in triple)
+</pre>
+
+<pre>
+for (mapping in mappings)
+</pre>
+
+<pre>
+for ((var val) in mapping) 
+</pre>
+
+<p>
+A mappings datatype is iterated as mapping elements.
+Pattern matching with mapping element is done by variable name and not by position.
+In the example below, variable x and y are bound to the values of variable x and y in current mapping.
+</p>
+
+<pre>
+for ((x y) in mappings)
+</pre>
+
+
+
+<!--
+<h4>Lambda Pattern Matching</h4>
+
+<p>
+A syntax for lambda expression arguments is available for pattern matching on query solutions as shown below.
+</p>
+
+
+<pre>
+maplist(lambda((?x, ?y)) { us:foo(?x, ?y) }, 
+  query(select ?x ?y where { .. }))  
+::=
+maplist(lambda(?m) { let ((?x, ?y) = ?m) { us:foo(?x, ?y) } }, 
+  query(select ?x ?y where { .. }))
+</pre>
+
+<pre>
+maplist(lambda((?s, ?p, ?o)) { us:bar(?s, ?p, ?o) }, 
+  query(construct { .. } where { .. }))  
+::=
+maplist(lambda(?t) { let ((?s, ?p, ?o) = ?t) { us:bar(?s, ?p, ?o) } }, 
+  query(construct { .. } where { .. } ))
+</pre>
+-->
+
+
+
+
+<a name='statement5' />
+<h3>3.5 If Then Else</h3>
+<p>
+This statement is a syntactic extension of SPARQL <span class='code'>if then else</span>  statement.
+</p>
+<pre>
+if (x > 0) {
+  us:foo(x)
+}
+else if (y > 0) {
+  us:bar(y)
+}
+else {
+  us:gee(x, y) 
+}
+</pre>
+
+
+
+
+<a name='statement6' />
+<h3>3.6 Return</h3>
+<p>
+This statement resumes the execution of a function and returns its result. 
+</p>
+
+<pre>
+term return(term t)
+</pre>
+<pre>
+function us:test(a, b)
+  for (x in xt:iota(a, b)) {
+     if (us:prime(x)) { return(x) }
+  }
+}
+</pre>
+
+
+<a name='statement7' />
+<h3>3.7 Error</h3>
+<p>
+This statement  returns an error. 
+The execution of the  LDScript expression resumes and returns an error. An error can be trapped by the <span class='code'>coalesce</span> statement as in SPARQL.
+</p>
+<pre>
+if (x &lt; 0) {
+  error()
+}
+</pre>
+
+
+
+<a name='statement8' />
+<h3>3.8 Safe</h3>
+<p>
+This statement  checks that the evaluation of an expression does not produce an error and returns a boolean accordingly.
+It is a generalization of the <span class='code'>bound</span> statement with any expression as argument.
+</p>
+<pre>
+safe(x / y)
+</pre>
+
+
+
+
+
+
+
+
+<a name='secondorder' />
+<h2>4 Second Order Function</h2>
+
+<p>
+A second order function is a  function whose first  argument evaluation returns a function (a function URI or an anonymous function) and which calls this function with the other arguments.
+Second order functions are <span class='code'>funcall</span>, <span class='code'>apply</span>,  <span class='code'>map</span> and <span class='code'>reduce</span>. They  are useful in the context of Linked Data because the name URI of a function to be applied on resources can be determined by a SPARQL query. <br/>
+We use the abstract <span class='code'>function</span> type to denote either the URI of a function or an anonymous function.
+</p>
+
+
+<a name='secondorder1' />
+<h3>4.1 Funcall</h3>
+<p>
+This statement  applies a function which is the result of the evaluation of an expression.
+The first argument of the statement is an expression that must  return either the URI of a function or an anonymous function.
+</p>
+
+
+<pre>
+term funcall (function fun, term t1, ... term tn)
+</pre>
+
+<pre>
+funcall (us:getMethod(us:surface, x), x)
+</pre>
+
+
+
+
+
+
+<a name='secondorder2' />
+<h3>4.2 Apply</h3>
+<p>
+This statement  is similar to the <span class='code'>funcall</span> statement but the arguments of the function call are given as a list.
+</p>
+
+<pre>
+term apply (function fun, dt:list arglist)
+</pre>
+
+<pre>
+apply (rq:regex, xt:list("test", "e", "i"))
+</pre>
+
+
+
+
+<a name='secondorder3' />
+<h3>4.3 Map</h3>
+<p>
+The <span class='code'>map</span>  statement  applies a function iteratively on the elements of an iterable datatype: dt:list, dt:map, dt:graph, dt:mappings, dt:mapping. We use the abstract <span class='code'>iterable</span> type to denote any of these types.
+The first argument of the statement is an expression that must return the URI of a function or an anonymous function. SPARQL filter functions, as well as second order functions, are available as URI with the rq: prefix.
+
+If one of the function evaluations returns an error, the map terminates and returns en error.
+</p>
+
+<pre>
+map (function fun, iterable term)
+</pre>
+
+<pre>
+map (xt:display, xt:list(1, 2, 3))
+</pre>
+
+<!--
+<p>
+The <span class='code'>map</span> functions described here can operate on two (or several)  iterable  datatypes. In this case, the function to be applied must have the same number of arguments as the number of  iterable, and each iterable datatype is iterated at the same pace with the same index.
+</p>
+
+<pre>
+map (us:test, xt:list(1, 2, 3), xt:list(4, 5, 6))
+</pre>
+-->
+
+<p>
+The <span class='code'>map</span> functions described here can also have other arguments. In this case, the  values of the arguments are considered at each step of the iteration of the iterable datatypes. 
+The map functions iterate the first argument that is iterable. If an additional argument is iterable, it is <span class='code'>not</span> iterated. 
+</p>
+
+
+<pre>
+map (us:fun, xt:list(1, 2, 3), 4)
+</pre>
+
+
+<p>
+The <span class='code'>map</span> functions described here can  operate on iterable datatypes such as graph (iterate triple) or mappings (iterate mapping).
+</p>
+
+
+<pre>
+map (us:foo, query(select * where { ?x ?p ?y }))
+</pre>
+
+
+<p>
+The <span class='code'>maplist</span>  statement  applies a function on the elements of a list and returns the list of results
+</p>
+
+<pre>
+dt:list maplist (function fun, iterable term)
+</pre>
+<pre>
+maplist (function(x) { 1 / (x * x) }, xt:list(1, 2, 3))
+</pre>
+
+
+<!--
+<p>
+The <span class='code'>mapmerge</span>  statement  applies a function on the elements of an iterable datatype and returns the merge of the lists of results
+</p>
+<pre>
+mapmerge (fun, xt:list(1, 2, 3))
+</pre>
+-->
+
+<p>
+The <span class='code'>mapfind</span>  statement  search  elements  for which the function returns true. Function <span class='code'>mapfind</span> returns first of such elements or error() if there is no such element. In this latter case, error() can be trapped using coalesce().
+</p>
+
+<pre>
+term mapfind (function fun, iterable term)
+</pre>
+<pre>
+mapfind (us:prime, xt:list(1, 2, 3))
+</pre>
+
+<p>
+The <span class='code'>mapfindlist</span>  statement  finds the elements of an iterable datatype for which the function returns true, return the list of such elements.
+</p>
+<pre>
+dt:list mapfindlist (function fun, iterable term)
+</pre>
+<pre>
+mapfindlist (us:prime, xt:list(1, 2, 3))
+</pre>
+
+<p>
+The <span class='code'>mapevery</span>  statement returns true if  the function returns true on all elements, false otherwise.
+</p>
+
+<pre>
+xsd:boolean mapevery (function fun, iterable term)
+</pre>
+<pre>
+mapevery (us:prime, xt:list(1, 2, 3))
+</pre>
+
+<p>
+The <span class='code'>mapany</span>  statement returns true if  the function returns true on any element, false otherwise.
+</p>
+<pre>
+xsd:boolean mapany (function fun, iterable term)
+</pre>
+<pre>
+mapany (function(y) { exists { x p y } }, xt:list(1, 2, 3))
+</pre>
+
+
+
+<a name='secondorder4' />
+<h3>4.4 Reduce</h3>
+<p>
+This statement  applies a  binary function iteratively to a list of arguments and produces one final result.
+The first argument of the statement is an expression that must return the URI of a function or an anonymous function.
+When the list is empty, if there is a function definition with the same name and  zero argument, this function is called and its result is returned.
+</p>
+
+
+<pre>
+term reduce (function fun, dt:list list)
+</pre>
+<pre>
+reduce (rq:plus, xt:iota(5)) = 15
+</pre>
+
+
+
+
+<h4>Combining second order functions</h4>
+<p>
+Second order functions are available with the rq: prefix and can be combined.
+</p>
+
+<pre>
+reduce(rq:concat, maplist(rq:funcall, 
+  xt:list(rq:year, rq:month, rq:day, rq:hours, rq:minutes, rq:seconds), 
+  now()))
+</pre>
+
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+
+<a name='extension' />
+<h2>5 Predefined Extension Function</h2>
+<p>
+LDScript introduces   general purpose  extension functions.
+</p>
+
+
+
+<a name='extension1' />
+<h3>5.1 General Purpose</h3>
+
+<h3>Display</h3>
+<p>
+Display RDF terms in Turtle syntax.
+</p>
+<pre>
+xt:display(term t)
+</pre>
+
+<h3>Print</h3>
+<p>
+Display RDF terms string value.
+</p>
+<pre>
+xt:print(term t)
+</pre>
+
+
+<h3>Turtle</h3>
+<p>
+Return a xsd:string Turtle representation of an RDF term.
+</p>
+<pre>
+xsd:string xt:turtle(term t)
+</pre>
+
+
+
+<h3>Content</h3>
+<p>
+Return a xsd:string representation of the content of an extension datatype in the dt: namespace.
+</p>
+<pre>
+xsd:string xt:content(LDScript term t)
+</pre>
+
+
+
+
+<h3>Self</h3>
+<p>
+Return the result of the evaluation of its argument.
+</p>
+<pre>
+term xt:self(term t)
+</pre>
+
+
+
+
+<h3>Graph</h3>
+<p>
+Return the current RDF graph.
+</p>
+<pre>
+dt:graph xt:graph()
+</pre>
+
+
+<h3>SPARQL Query</h3>
+<p>
+Execute a SPARQL query whose text is the result of an expression, with possibly a list of variable value bindings.
+</p>
+<pre>
+dt:mappings xt:sparql(xsd:string selectQuery)
+dt:mappings xt:sparql(xsd:string selectQuery, xsd:string var, term val, ...)
+
+dt:graph xt:sparql(xsd:string constructQuery)
+dt:graph xt:sparql(xsd:string constructQuery, xsd:string var, term val, ...)
+</pre>
+
+
+
+
+
+<h3>Load</h3>
+<p>
+The xt:load function implements URI dereferencing, it returns the RDF graph resulting from the parsing of an RDF document.
+</p>
+<pre>
+dt:graph xt:load(URI uri)
+</pre>
+
+<p>
+If there is a graph argument, the RDF document is loaded in the graph.
+</p>
+<pre>
+dt:graph xt:load(URI uri, dt:graph g)
+</pre>
+
+
+<!--
+<h3>Entailment</h3>
+<p>
+Process entailment on a copy of current graph or argument graph, return the copy after entailment.
+</p>
+<pre>
+dt:graph xt:entailment()
+dt:graph xt:entailment(dt:graph)
+</pre>
+-->
+
+
+<h3>Sequence</h3>
+<p>
+The sequence evaluates its arguments in sequence and returns the result of the last argument.
+If an argument returns an error, the sequence returns an error.
+</p>
+
+<pre>
+xt:sequence(exp e1, .. exp en)
+</pre>
+
+
+<h3>Focus Statement</h3>
+<p>
+The first argument MUST returns a graph with datatype dt:graph. 
+The focus statement evaluates other arguments with the graph as current dataset. 
+</p>
+<pre>
+term xt:focus(dt:graph g, exp e1, .., exp en)
+</pre>
+<pre>
+xt:focus(
+    xt:load(&lt;http://example.org/test>),
+    exists { ?x rdf:value 2.718 })
+</pre>
+
+
+
+<a name="sttl"/>
+<h3>5.2 SPARQL Transformation</h3>
+<p>
+LDScript implementations MAY provide functions to execute <a href='http://ns.inria.fr/sparql-template'>STTL</a> SPARQL Transformation.
+STTL is a language that enables users to apply transformations to RDF entities such as   Turtle, RDF/XML or JSON transformations  to  RDF graphs and resources or the functional syntax transformation  of OWL ontologies. Note that these functions belong to the st: namespace. In the example below, "transform" is the name of a transformation:  st:turtle, st:rdfxml, st:json, st:owl, st:spin, etc.
+</p>
+
+<pre>
+xsd:string st:apply-templates-with(URI transform)
+xsd:string st:apply-templates-with(URI transform, term node)
+
+xsd:string st:call-template(URI name, term node_1, .., term node_n)
+xsd:string st:call-template-with(URI transform, URI name, term node_1, .., term node_n)
+</pre>
+
+<!--xsd:string st:apply-templates-all(term node)
+xsd:string st:apply-templates-with-all(URI transform, term node)
+
+xsd:string st:apply-templates-graph(URI|dt:graph graph)
+xsd:string st:apply-templates-with-graph(URI transform, URI|dt:graph graph)-->
+
+
+
+<a name="shacl"/>
+<h3>5.3 SHACL</h3>
+<p>
+LDScript implementations MAY provide functions to evaluate SHACL shapes on the current focus graph.
+The result of shape functions is the validation report graph. 
+</p>
+
+
+<pre>
+dt:graph sh:shacl() 
+dt:graph sh:shaclshape(shape)
+dt:graph sh:shaclshape(shape, node)
+dt:graph sh:shaclnode(node)
+</pre>
+
+<pre>
+xsd:boolean sh:conform(graph)
+</pre>
+
+
+
+
+
+<p>
+Generate  the  Turtle syntax of the report graph.
+</p>
+<pre>
+xsd:string xt:turtle(dt:graph g)
+</pre>
+
+
+
+
+<h3>Format</h3>
+
+<p>
+Generate the SPIN RDF graph of a  SPARQL string query.
+</p>
+<pre>
+dt:graph xt:spin(xsd:string q)
+</pre>
+
+
+<p>
+Generate an RDF graph for SPARQL Query Results using  <a href='https://www.w3.org/2001/sw/DataAccess/tests/result-set'>https://www.w3.org/2001/sw/DataAccess/tests/result-set</a> W3C vocabulary.
+</p>
+
+
+<pre>
+dt:graph xt:tograph(dt:mappings m)
+</pre>
+
+
+<p>
+Generate XML, JSON or RDF text format for SPARQL Query Results. The RDF format is the same as the one returned by the xt:tograph function.
+</p>
+
+<pre>
+xsd:string xt:xml (dt:mappings m) 
+xsd:string xt:json(dt:mappings m)  
+xsd:string xt:rdf (dt:mappings m)
+</pre>
+
+
+
+<p> &nbsp; </p>
+
+
+
+
+
+
+
+<a name='datatype' />
+<h2>6 Datatype</h2>
+
+<p>
+The objects of the language are RDF terms and LDScript terms.
+
+RDF terms are, as usual,  URI, Blank Node and Literal with XSD datatype.
+
+LDScript terms are RDF graph and triple, SPARQL query solution sequence (called mappings), SPARQL query solution (called mapping) and SPARQL property path solution (called path).
+LDScript terms   include list whose elements are LDScript objects and map whose keys and values are LDScript objects.
+LDScript terms  also include datatypes for XML and JSON objects. The XML datatype is provided with (a subset of) the DOM API.
+</p>
+
+<p>
+LDScript objects other than  RDF terms are implemented by means of   literals with specific extension datatypes in the dt: namespace: dt:list, dt:map, dt:xml, dt:json, dt:graph, dt:triple, dt:path, dt:mappings, dt:mapping.
+Hence, they are  implemented as RDF terms (i.e. RDF literals with extension datatypes) and their content can be accessed  by specific statements as shown below.
+These datatypes are iterable by means of the <span class='code'>for</span> and <span class='code'>map</span> statements.
+By extension, we call  LDScript terms the objects of the language.
+</p>
+
+
+
+<a name='datatype1' />
+<h3>6.1 LDScript Datatype</h3>
+
+<h4>List</h4>
+<p>
+The  <span class='code'>dt:list</span> extension datatype implements list of LDScript terms, including lists. Although similar, it is distinct from RDF list (rdf:List class with rdf:first, rdf:rest and rdf:nil).
+List elements  need to be neither of the same kind nor of the same datatype. The dt:list datatype is provided with a set of functions.
+</p>
+
+<p>
+The <span class='code'>xt:list</span> function is the list constructor.
+</p>
+
+<pre>
+dt:list xt:list(term t...)
+</pre>
+<pre>
+xt:list(1, 2, 3)
+xt:list(xt:list(1, 2), xt:list(3, 4))
+</pre>
+
+<p>
+The <span class='code'>xt:iota</span> function  generates a list of successive integers or characters.
+</p>
+<pre>
+dt:list xt:iota(term t)
+dt:list xt:iota(term t1 , term t2)
+</pre>
+<pre>
+xt:iota(5)        = xt:list(1, 2, 3, 4, 5)
+xt:iota(5, 7)     = xt:list(5, 6, 7)
+xt:iota('a', 'c') = xt:list('a', 'b', 'c')
+</pre>
+
+
+<p>
+The <span class='code'>xt:size</span> function returns the number of elements of a list.
+</p>
+<pre>
+xsd:integer xt:size(dt:list list)
+</pre>
+
+
+
+<p>
+The <span class='code'>xt:first</span> function returns the first element of a list.
+</p>
+<pre>
+term xt:first(dt:list list)
+</pre>
+
+<p>
+The <span class='code'>xt:rest</span> function returns the sublist after the first element..
+</p>
+<pre>
+dt:list xt:rest(dt:list list)
+</pre>
+
+<p>
+The <span class='code'>xt:get</span> function returns the nth element of a list.
+</p>
+<pre>
+term xt:get(dt:list list, xsd:integer n)
+</pre>
+
+
+
+<p>
+The <span class='code'>xt:set</span> function sets the value of the nth element of a list. Error if there is no nth element.
+</p>
+<pre>
+xt:set(dt:list list, xsd:integer n, term t)
+</pre>
+
+<p>
+The <span class='code'>xt:add</span> function  adds a tail element to a list. List is modified.
+</p>
+<pre>
+xt:add(dt:list list, term t)
+</pre>
+
+<p>
+The <span class='code'>xt:add</span> function  inserts/adds  element to a list at nth place. List is modified.
+</p>
+<pre>
+xt:add(dt:list list, xsd:integer n, term t)
+</pre>
+
+<p>
+The <span class='code'>xt:cons</span> function  adds a head element to a list. Returns copy of list.
+</p>
+<pre>
+dt:list xt:cons(term t, dt:list list)
+</pre>
+
+<p>
+The <span class='code'>xt:member</span> function  tests if element is member of the list.
+</p>
+<pre>
+xsd:boolean xt:member(term t, dt:list list)
+</pre>
+
+
+<p>
+The <span class='code'>xt:swap</span> function  swaps elements at given index in the list.
+</p>
+<pre>
+dt:list xt:swap(dt:list list, xsd:integer i1, xsd:integer i2)
+</pre>
+
+<p>
+The <span class='code'>xt:remove</span> function  removes the  first occurrence of an element from the list, if it is present. Modify the list.
+</p>
+<pre>
+xt:remove(dt:list list, term t)
+</pre>
+
+<p>
+The <span class='code'>xt:removeindex</span> function  removes the nth element of the list. Modify the list.
+</p>
+<pre>
+xt:removeindex(dt:list list, xsd:integer n)
+</pre>
+
+
+
+<p>
+The <span class='code'>xt:append</span> function  appends two lists, keep duplicates.
+</p>
+<pre>
+dt:list xt:append(dt:list l1, dt:list l2)
+</pre>
+
+<p>
+The <span class='code'>xt:merge</span> function  merges two lists and removes duplicates.
+</p>
+<pre>
+dt:list xt:merge(dt:list l1, dt:list l2)
+</pre>
+
+<p>
+The <span class='code'>xt:reverse</span> function reverses a list.
+</p>
+<pre>
+dt:list xt:reverse(dt:list list)
+</pre>
+
+<p>
+The <span class='code'>xt:sort</span> function sorts a list.
+</p>
+<pre>
+dt:list xt:sort(dt:list list)
+</pre>
+
+
+<p>
+The <span class='code'>xt:sort</span> function sorts a list according to a comparison function.
+</p>
+<pre>
+dt:list xt:sort(dt:list list, function fun)
+</pre>
+
+<pre>
+xt:sort(list, us:compare)
+
+function us:compare(x, y) {
+    if (x &lt; y, -1, if(x = y, 0, 1))
+}
+</pre>
+
+
+
+
+
+
+<h4>Map</h4>
+<p>
+The <span class='code'>dt:map</span> extension datatype implements a Map whose keys and values are LDScript objects.
+</p>
+
+<p>
+It is provided with a  <span class='code'>xt:map</span> constructor function.
+</p>
+
+<pre>
+dt:map xt:map()
+</pre>
+
+<p>
+The  <span class='code'>xt:size</span>  function returns the size of the map.
+</p>
+
+<p>
+The  <span class='code'>xt:set</span>  function enables users to set a key value pair in the map.
+</p>
+
+<pre>
+xt:set(dt:map amap, term key, term value)
+</pre>
+
+
+<p>
+The  <span class='code'>xt:get</span>  function enables users to retrieve the value of a  key in the map.
+</p>
+
+<pre>
+term xt:get(dt:map amap, term key)
+</pre>
+
+<p>
+The  <span class='code'>xt:has</span>  function checks whether the  key is present in the map.
+</p>
+
+<pre>
+term xt:has(dt:map amap, term key)
+</pre>
+
+
+
+
+
+<p>
+The  <span class='code'>dt:map</span>  datatype is iterable as pairs (key, value).
+</p>
+
+<pre>
+for ((key val) in amap) { }
+
+map (function((key, val)) { }, amap)
+</pre>
+
+
+
+
+
+<h4>JSON</h4>
+<p>
+The <span class='code'>dt:json</span> extension datatype implements a JSON Map whose keys and values are LDScript objects.
+</p>
+
+<p>
+It is provided with a  <span class='code'>xt:json</span> constructor function.
+</p>
+
+<pre>
+dt:json xt:json()
+
+dt:json xt:json(xsd:string jsonString)
+</pre>
+
+<p>
+The  <span class='code'>xt:size</span>  function returns the size of the json map.
+</p>
+
+<p>
+The  <span class='code'>xt:set</span>  function enables users to set a key value pair in the json map.
+</p>
+
+<pre>
+xt:set(dt:json json, term key, term value)
+</pre>
+
+
+<p>
+The  <span class='code'>xt:get</span>  function enables users to retrieve the value of a  key in the json map.
+</p>
+
+<pre>
+term xt:get(dt:json json, term key)
+</pre>
+
+
+<p>
+The  <span class='code'>dt:json</span>  datatype is iterable as pairs (key, value).
+</p>
+
+<pre>
+for ((key val) in json) { }
+
+map (function((key, val)) { }, json)
+</pre>
+
+
+
+
+
+
+
+
+
+
+<h4>XML</h4>
+<p>
+The <span class='code'>dt:xml</span> extension datatype represents  XML objects provided with XPath function and the DOM API. More precisely, the XML datatype manages <span class='code'>org.w3c.dom.Node</span>  objects from   <a href='https://docs.oracle.com/en/java/javase/11/docs/api/java.xml/org/w3c/dom/package-summary.html'>Java DOM</a>.
+</p>
+
+<p>
+It is provided with a  <span class='code'>xt:xml</span> constructor function.
+</p>
+
+<pre>
+dt:xml xt:xml(xsd:string xmlString)
+dt:xml xt:xml(URI uri)
+</pre>
+
+
+<p>
+The XML datatype is provided with an <span class='code'>xpath</span> function where exp is a XPath expression.
+</p>
+
+<pre>
+dt:list(dt:xml) xpath(dt:xml doc, exp)
+</pre>
+
+<p>
+The XML datatype is provided with a subset of the DOM API.
+Implementations MAY provide more functions from the DOM API.
+</p>
+
+
+
+<pre>
+xsd:string dom:getNodeType(dt:xml node)     
+xsd:string dom:getNodeName(dt:xml node)     
+xsd:string dom:getLocalName(dt:xml node)
+xsd:string dom:getNodeValue(dt:xml node)    
+xsd:string dom:getTextContent(dt:xml node)
+
+URI dom:getNamespaceURI(dt:xml node)  
+URI dom:getBaseURI(dt:xml node) 
+
+dt:map(xsd:string, xsd:string) dom:getAttributes(dt:xml node)  
+
+dt:list(dt:xml) dom:getElementsByTagName(dt:xml node, xsd:string name)     
+dt:list(dt:xml) dom:getElementsByTagNameNS(dt:xml node, xsd:string ns, xsd:string name)
+dt:list(dt:xml) dom:getChildNodes(dt:xml node)  
+
+dt:xml dom:getElementById(dt:xml node)   
+dt:xml dom:getFirstChild(dt:xml node)    
+dt:xml dom:getNodeParent(dt:xml node)    
+dt:xml dom:getOwnerDocument(dt:xml node) 
+
+xsd:boolean dom:hasAttribute(dt:xml node, xsd:string name)
+xsd:string  dom:getAttribute(dt:xml node, xsd:string name)
+xsd:boolean dom:hasAttributeNS(dt:xml node, xsd:string ns, xsd:tring name)
+xsd:string  dom:getAttributeNS(dt:xml node, xsd:string ns, xsd:tring name)
+</pre>
+
+<p>
+The <span class='code'>dt:xml</span> datatype is iterable on child nodes.
+</p>
+
+<pre>
+for (node in xml) { }
+
+map (function(node) { }, xml)
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<a name='datatype2' />
+<h3>6.2 RDF Datatype</h3>
+
+<p>
+There are two datatypes for RDF entities, dt:graph for RDF graph and dt:triple for RDF triple.
+</p>
+
+
+<h4>Graph Datatype</h4>
+
+<p>
+The  dt:graph datatype is provided with functions.
+Function xt:size returns the number of triples of a graph.
+</p>
+
+
+<pre>
+xsd:integer xt:size(dt:graph g)
+</pre>
+
+<p>
+Function xt:graph returns the current graph.
+</p>
+
+<pre>
+dt:graph xt:graph()
+</pre>
+
+
+<p>
+Function xt:union computes a graph that is the union of two graphs. The arguments are LDScript terms with dt:graph datatype and the result is returned as a LDScript term with dt:graph datatype.
+</p>
+
+<pre>
+dt:graph xt:union(dt:graph g1, dt:graph g2)
+</pre>
+
+<p>
+The dt:graph datatype is iterable on its triples.
+</p>
+
+<pre>
+for (atriple in agraph) { }
+for ((s p o) in agraph) { }
+
+map (function(atriple)   { }, agraph)
+map (function((s, p, o)) { }, agraph)
+</pre>
+
+
+
+
+<h4>Triple Datatype</h4>
+
+<p>
+The dt:triple datatype is provided with functions to access the subject, the property and the object. Implementations MAY provide a function to access the named graph when triples are quads.
+</p>
+
+<pre>
+term xt:subject(dt:triple t)
+term xt:property(dt:triple t)
+term xt:object(dt:triple t)
+term xt:graph(dt:triple t)
+</pre>
+
+<p>
+Triple's elements  are accessible by pattern matching.
+</p>
+
+<pre>
+let ((s p o) = atriple) { }
+</pre>
+
+
+<a name='datatype3' />
+<h3>6.3 SPARQL Datatype</h3>
+
+<p>
+There are datatypes for SPARQL entities: dt:mappings for SPARQL Query solution sequence, dt:mapping for SPARQL Query solution and dt:path for Property Path solutions. 
+</p>
+
+
+
+<h4>Mappings</h4>
+<p>
+The <span class='code'>dt:mappings</span> datatype is the datatype of SPARQL Query Solution Sequences, i.e. of select-where SPARQL queries.
+
+It is provided with a function xt:size that returns the number of solutions.
+</p>
+<pre>
+xsd:integer xt:size(dt:mappings m)
+</pre>
+
+
+<p>
+The dt:mappings datatype is provided with functions that
+perform SPARQL algebra operations on SPARQL query solutions of select-where queries. The results are returned as literals with dt:mappings datatype.
+</p>
+<pre>
+dt:mappings xt:join(dt:mappings m1, dt:mappings m2) 
+dt:mappings xt:union(dt:mappings m1, dt:mappings m2) 
+dt:mappings xt:minus(dt:mappings m1, dt:mappings m2)
+dt:mappings xt:optional(dt:mappings m1, dt:mappings m2) 
+</pre>
+
+<p>
+The <span class='code'>dt:mappings</span> datatype is iterable on its mapping elements.
+</p>
+
+<pre>
+for (mapping in mappings) { }
+
+map (function(mapping) { }, mappings)
+</pre>
+
+
+
+
+
+<h4>Mapping</h4>
+<p>
+The <span class='code'>dt:mapping</span> datatype is the datatype of SPARQL Query Solutions.
+The datatype is iterable as (variable, value) pairs where variable is the name of a variable represented as a xsd:string.
+</p>
+
+<pre>
+for ((var val) in mapping) { }
+
+map (function((var, val)) { }, mapping)
+</pre>
+
+
+<h4>Path</h4>
+<p>
+The <span class='code'>dt:path</span> datatype is provided for the case where the implementation provides <a href='#sparql4'>Property Path variables</a>. It is provided with the <span class='code'>xt:size</span> function.
+</p>
+
+<p>
+The datatype is iterable on its triples.
+</p>
+
+<pre>
+for (atriple in apath) { }
+
+map (function(atriple) { },  apath) 
+</pre>
+
+
+<!--<p>
+There are also dt:expression for filters, dt:statement for statements and dt:query for query.
+</p>-->
+
+<!--
+<a name='datatype4' />
+<h3>6.4 Extension Datatype</h3>
+<p>
+The language enables users to define the binding of extension datatype operators to functions. We give below the correspondance of functions with operators. Functions have a fixed name (e.g. plus) in the namespace of the extension datatype (e.g. ex:plus). When the  interpreter applies an operator on two extended datatypes (e.g. ?x + ?y), it uses the corresponding function definition (e.g. ex:plus(?x, ?y)).
+</p>
+<pre>
+prefix ex: &lt;http://example.org/mydatatype#>
+
+=  ex:equal 
+!= ex:diff 
+&lt;  ex:less 
+&lt;= ex:lessEqual 
+>  ex:greater 
+>= ex:greaterEqual 
+
++ ex:plus 
+- ex:minus 
+* ex:mult 
+- ex:divis
+</pre>
+
+<p>
+Example of ex:plus extension function.
+</p>
+<pre>
+function ex:plus(?x, ?y) {
+  ex:digit(?x) + ex:digit(?y)
+}
+</pre>
+
+<p>
+Example of ls:equal for dt:list recursive equality.
+</p>
+<pre>
+prefix ls: &lt;http://ns.inria.fr/sparql-datatype/list#>
+
+function ls:equal(?l1, ?l2) {
+  xt:size(?l1) = xt:size(?l2) &amp;&amp; 
+  mapevery(lambda(?x, ?y) { ?x = ?y }, ?l1, ?l2)
+}
+</pre>
+
+
+<p>
+Example of tr:equal for dt:triple equality.
+</p>
+<pre>
+prefix tr: &lt;http://ns.inria.fr/sparql-datatype/triple#>
+
+function tr:equal(?t1, ?t2) {
+   mapevery(lambda(?x, ?y) { ?x = ?y }, ?t1, ?t2)
+}
+</pre>
+
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+<a name='syntax' />
+<h2>7 Language Syntax</h2>
+<p>
+The syntax is given in EBNF and relies on <a href='https://www.w3.org/TR/sparql11-query/#sparqlGrammar'>SPARQL syntax</a>.
+</p>
+
+
+
+<pre>
+LDScript   ::= SPARQL_QueryUnit Fun
+Fun        ::= (Annotation Function | Annotation Package)*
+Function   ::= 'function' Type? Uri FunVarList  Body 
+Package    ::= '{' Function+ '}'
+Annotation ::= ( '@public' | '@debug' )*
+
+Body ::= '{' '}' | '{' Exp (';' Exp)* '}'
+
+Exp  ::= SPARQL_Constraint -- with BuiltInCall extended below
+
+BuiltInCall ::= SPARQL_BuiltInCall 
+| Let | For | If | Return | Error | SecondOrder | Lambda | Query
+
+SecondOrder ::= Funcall | Apply | MapFun | Reduce |  
+  
+Query ::= 'query' '('  (SelectQuery | ConstructQuery | Update1)  ')'
+
+ExpQuery = Exp | '@' List | SelectQuery | ConstructQuery  
+
+Let ::=
+LetName '(' LetDecl (',' LetDecl)* ')'  Body  |
+LetName '(' SelectQuery ')'  Body  
+
+LetName = 'let' | 'letdyn'
+
+LetDecl ::= Var '=' ExpQuery | VarExp '=' ExpQuery
+
+Type ::= Uri
+
+VarExp ::= '(' VAR+  ('|' VAR )?  ('.' VAR+)?  ')'
+
+VarList    ::= '(' Var  (Var)* ')'
+VarListSep ::= '(' Var  (',' Var)* ')'
+
+FunVarList ::= '(' ')' | '(' Type? Var (',' Type? Var)* ')'
+
+For ::=
+'for' '(' Var     'in' ExpQuery ')'  Body |
+'for' '(' VarList 'in' ExpQuery ')'  Body |
+'for' '(' SelectQuery ')'  Body  
+
+If ::= 'if'  '(' Exp ')'  Body  ('else' (  Body | If )) ?
+
+Funcall::= 'funcall' '(' Exp (',' Exp)* ')'
+Apply  ::= 'apply'   '(' Exp ',' Exp ')'
+Reduce ::= 'reduce'  '(' Exp ',' Exp ')'
+MapFun ::= Map       '(' Exp (',' Exp)+ ')' 
+Map    ::= 'map' | 'maplist' |  'mapfind' | 'mapfindlist' 
+         | 'mapany' | 'mapevery'
+
+Lambda ::= 'function' LambdaVarList  Body 
+LambdaVarList ::= FunVarList | '(' VarListSep ')'
+
+Error ::= 'error' '(' ')'
+
+Return ::= 'return' '(' Exp ')'
+
+List ::= '(' (RDFTerm | List)* ')'
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+<a name='sparql' />
+<h2>8 SPARQL Extension</h2>
+
+<p>
+LDScript enables us to propose and implement natural SPARQL extensions.
+</p>
+
+
+
+<a name='sparql1' />
+<h3>8.1 LDScript in SPARQL</h3>
+
+<p>
+LDScript statements MAY be available within extended SPARQL Query Filter Constraints.
+</p>
+
+<pre>
+select * where {
+    ?x us:method [ us:name us:validate ; us:function fun ]
+    filter funcall(?fun, ?x) 
+}
+</pre>
+
+
+
+
+
+
+<a name='sparql2' />
+<h3>8.2 Aggregate</h3>
+<p>
+This statement  defines an extension aggregate which computes the list of values of the expression and returns a dt:list literal. 
+</p>
+
+<pre>
+select (aggregate(distinct ?n) as ?list)
+where {
+  ?x rdf:value ?n
+}
+</pre>
+
+
+
+
+<a name='sparql3' />
+<h3>8.3 Values Unnest</h3>
+<p>
+This statement  is   a <span class='code'>values</span> clause where the values are computed by an expression.
+</p>
+<pre>
+values ?n { unnest(xt:list(1, 2, 3)) }
+</pre>
+<p>
+It is equivalent to the <span class='code'>values</span> clause below.
+</p>
+<pre>
+values ?n { 1 2 3 }
+</pre>
+
+
+<p>
+The extended values statement can be used with several variables.
+</p>
+
+<pre>
+values (?n ?m) { unnest(xt:list(xt:list(1, 2), xt:list(3, 4))) }
+</pre>
+
+<p>
+The statement <span class='code'>values unnest</span> can be used on iterable datatypes such as: list, map, json, xml,  graph. 
+</p>
+
+
+<pre>
+values ?elem    { unnest(?list) }
+values ?node    { unnest(?xml) }
+values ?triple  { unnest(?graph) }
+
+values (?key ?val) { unnest(?map) }
+values (?key ?val) { unnest(?json) }
+values (?s ?p ?o)  { unnest(?graph) }
+</pre>
+
+
+
+<a name='sparql4' />
+<h3>8.4 Property Path Variable</h3>
+<p>
+The dt:path datatype is provided for the case where the implementation gives access to Property Path solutions. 
+In the example below, SPARQL is extended with path variables, the $path variable is bound to the property path that relates ?x and ?y.
+The datatype of the value of $path is dt:path. It is conceptually equivalent to dt:list(dt:triple).
+</p>
+
+<pre>
+select * where {
+    ?x foaf:knows+ :: $path ?y
+}
+</pre>
+
+
+
+<a name='sparql5' />
+<h3>8.5 Named Graph Pattern</h3>
+<p>
+When a variable  has for value an RDF graph, the variable can be used in a named graph pattern which is evaluated on the content of the graph. The example below shows this case with variable ?g.
+</p>
+
+
+<pre>
+select * where {
+    bind (us:getGraph() as ?g)
+    graph ?g {  }
+}
+</pre>
+
+
+
+
+
+<h4>LDScript SPARQL Extension</h4>
+
+
+<pre>
+Aggregate ::= SPARQL_Aggregate |
+'aggregate' '(' ('distinct')? Exp ')' 
+
+ValuesClause ::= SPARQL_ValuesClause |
+'values' Var     '{' 'unnest' '(' Exp ')' '}' |
+'values' VarList '{' 'unnest' '(' Exp ')' '}'
+
+VerbPath ::= Path ( '::' Var )?
+</pre>
+
+
+
+
+<!--<pre>
+select * where {
+  bind(query(construct { .. } where { .. }) as ?g)
+  graph ?g { .. }
+}
+</pre>-->
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+
+
+<a name='usecase'/>
+<h2>9 Use Case</h2>
+
+
+<a name='usecase1'/>
+<h3>9.1 Functional Property</h3>
+<p>
+In an ontology,  properties may be defined as functions of other properties. For example, the surface can be defined as the product of the length and the width.
+</p>
+<pre>
+select * where {
+  ?x a us:Figure 
+  bind (us:surface(?x) as ?s)
+}
+
+function us:surface(?x) {
+  let ((?w, ?l) = select * where { ?x us:width ?w ; us:length ?l }) {
+    ?w * ?l
+  }
+}
+</pre>
+
+
+
+<a name='usecase2'/>
+<h3>9.2 Functional Service</h3>
+<p>
+Implement a  function as a service.
+</p>
+<pre>
+function us:service(?x) {
+  let (select ?x ?l where {
+        service &lt;http://fr.dbpedia.org/sparql> {
+          ?x rdfs:label ?l}}) {
+    ?l
+  }
+}
+</pre>
+
+
+<a name='usecase3'/>
+<h3>9.3 Approximate Match</h3>
+<p>
+Functions can be used to program approximate match.
+</p>
+<pre>
+select * where {
+  ?x a ?t
+  filter us:match(foaf:Person, ?t)
+}
+
+function us:match(?q, ?t) { 
+  exists { 
+    { ?t rdfs:subClassOf* ?q } union 
+    { ?q rdfs:subClassOf/(rdfs:subClassOf*|^rdfs:subClassOf) ?t }
+  }    
+}
+</pre>
+
+
+<a name='usecase4'/>
+<h3>9.4 Recursive Match</h3>
+<p>
+Functions can be used to program recursive match.
+</p>
+<pre>
+select * where {
+  ?x a foaf:Person 
+  ?y a foaf:Person 
+  filter us:match(?x, ?y)
+}
+
+function us:match(?x, ?y) { 
+  exists { 
+    { ?x foaf:knows ?y } union 
+    { ?x foaf:knows ?z . ?y a foaf:Person filter us:match(?z, ?y) }
+  }    
+}
+</pre>
+
+
+
+
+
+<a name='usecase5'/>
+<h3>9.5 Event Driven Function Call</h3>
+
+<p>
+A  SPARQL interpreter may define a set of events and emit events during quering processing.
+A SPARQL interpreter may be provided with an event manager that traps events.
+If a SPARQL query is provided with appropriate function definitions for the  events, the  event manager calls these functions.
+
+The association between an event and a function is done by an annotation wich is an identifier prefixed by the '@' character. The  function name is free whereas the annotation name is fixed.
+</p>
+
+<p>
+Function called when query processing starts.
+</p>
+<pre>
+@before function us:before(query) 
+</pre>
+
+<p>
+Function called when query processing resumes.
+</p>
+<pre>
+@after function us:after(mappings) 
+</pre>
+
+
+<p>
+Function called when a solution  is found.
+</p>
+<pre>
+@result us:result(mapping)
+</pre>
+
+
+
+
+<a name='usecase6'/>
+<h3>9.6 Predefined Query</h3>
+
+<p>
+LDScript can be use to manage predefined queries by means of anonymous functions.
+</p>
+
+
+<pre>
+function us:foo() {
+    let (list = xt:list(
+        function() { query(select .. where ..) },
+        function() { query(select .. where ..) }
+    )) {
+        maplist(rq:funcall, list)
+    }
+}
+</pre>
+
+
+
+<h3>9.7 Mapping rdf:List with dt:list</h3>
+
+<p>
+Translate recursively an rdf:List into a dt:list.
+</p>
+<pre>
+select x (us:list(l) as list) where {
+    x rdf:value l .
+}
+
+function us:list(l) {
+  let (select ?l 
+       (aggregate (if (?b, us:list(?e), 
+                   if (?e = rdf:nil, xt:list(), ?e))) as ?list) 
+        where {
+            ?l rdf:rest*/rdf:first ?e
+            bind (exists { ?e rdf:rest ?a } as ?b)
+        } ) {
+    return (list)
+  }
+}
+</pre>
+
+
+<h3>9.8 Aggregate</h3>
+<p>
+This statement  defines an extension aggregate. The first expression (e.g. aggregate(?n)) is the expression to aggregate. The aggregate function computes the list of values of this expression. The second expression (e.g. us:median(?list)) is the  function to be applied to the list of values. In the example below, the aggregate computes the median of the values.
+</p>
+<pre>
+select (aggregate(?n) as ?list) (us:median(?list) as ?med)
+where {
+  ?x rdf:value ?n
+}
+
+function us:median(?list) {
+   xt:get(xt:sort(?list), xsd:integer(xt:size(?list) / 2)) 
+}
+</pre>
+
+
+
+
+
+<h3>9.9 SHACL to SPARQL path translator</h3>
+
+
+
+<pre>
+prefix sh: &lt;http://www.w3.org/ns/shacl#> 
+# 
+# path = URI | bnode
+# bnode : [sh:zeroOrOnePath exp ] | (exp1 .. expn)
+#
+function sh:path(path) {
+    if (isURI(path)) {
+        return (xt:turtle(path))
+    }
+    else {
+        let (select * where { ?path ?oper ?val filter (?oper not in (rdf:first)) } ) {
+            return (if (oper = rdf:rest, sh:sequencePath(path), funcall(oper, val)))
+        }
+    }
+}
+
+function sh:paren(path) {
+    if (isURI(path), sh:path(path), concat("(", sh:path(path), ")"))
+}
+
+function sh:oneOrMorePath(path) {
+     concat(sh:paren(path), "+")
+}
+
+function sh:zeroOrOnePath(path) {
+     concat(sh:paren(path), "?")
+}    
+
+function sh:zeroOrMorePath(path) {
+     concat(sh:paren(path), "*")
+}    
+
+function sh:inversePath(path) {
+     concat("^", sh:paren(path))
+}
+
+# path = (e1 .. en)
+function sh:alternativePath(path) {
+    sh:reduce(path, "|")
+}
+
+# path = (e1 .. en)
+function sh:sequencePath(path) {
+    sh:reduce(path, "/")
+}
+
+function sh:reduce(path, sep) {
+    letdyn (astr = sep) {
+         reduce(function(x, y) { concat(x, astr, y) }, 
+            maplist(sh:path, sh:list(path)))
+    }
+}
+
+function sh:list(path) {
+    let (select path (aggregate(?exp) as ?list) 
+         where { ?path rdf:rest*/rdf:first ?exp } ) {
+         return (list)
+    }
+}
+</pre>
+
+
+
+
+
+<h3>9.10 Create RDF from XML</h3>
+<p>
+This example shows how to parse an XML document and create RDF triples.
+</p>
+
+<pre>
+insert {
+    ?uri foaf:name ?author .  
+    [ us:author ?uri ; us:title ?title ]
+}
+where {
+    values ?book { unnest(xpath(us:xml(), "/doc/book")) }
+    bind (dom:getTextContent(xt:xpath(?book, "title"))  as ?title)
+    bind (dom:getTextContent(xt:xpath(?book, "author")) as ?author)
+    bind (uri(concat(us:, replace(?author, " ", "")))   as ?uri)
+}
+
+
+# XML document
+function us:xml() {
+xt:xml(
+"""
+&lt;doc>
+&lt;book>&lt;title>1984&lt;/title>&lt;author>Georges Orwell&lt;/author>&lt;/book>
+&lt;book>&lt;title>Le Capital au XXIe siècle&lt;/title>&lt;author>Thomas Piketty&lt;/author>&lt;/book>
+&lt;book>&lt;title>Capital et idéologie&lt;/title>&lt;author>Thomas Piketty&lt;/author>&lt;/book>
+&lt;/doc>
+"""
+)
+}
+</pre>
+
+
+
+<p>&nbsp;</p>
+
+
+
+<a name='implementation'/>
+<h2>10 Implementation</h2>
+<p>
+LDScript is implemented and available in the <a href='http://project.inria.fr/corese'>Corese</a> Semantic Web Factory.
+<a href='https://ci.mines-stetienne.fr/sparql-generate/'>SPARQL-Generate</a> provides an implementation of a subset of LDScript where the body of a function is written  solely with SPARQL Filter language.
+</p>
+
+
+<h3>Examples</h3>
+<ul>
+<li><a href='calendar'>Calendar</a></li>
+<li><a href='spqr'>Roman numbers</a></li>
+<li><a href='roman'>Roman number datatype</a></li>
+<li><a href='aggregate'>Custom aggregates</a></li>
+<li><a href='method'>Procedural attachment</a></li>
+</ul>
+
+<p>
+We have also written  a SHACL interpreter using SPARQL Function.
+</p>
+
+
+
+<p>&nbsp;</p>
+
+
+
+<a name='conclusion' />
+<h2>11 Conclusion</h2>
+<p>
+Dedicated programming language enabling Semantic Web programmers to define functions on RDF terms, triples and graphs or SPARQL query results can facilitate the development and improve the reuse and maintenance of the code produced for Linked Data. 
+We propose to extend SPARQL with LDScript,  a script language that enables users to define extension functions.
+Its main characteristics are:
+</p>
+
+<ol>
+<li>Function definition</li>
+<li>Design on top of SPARQL Filter language</li>
+<li>SPARQL predefined functions, including exists clause</li>
+<li>Select, Construct and Update SPARQL query</li>
+<li>Second order functions: funcall, apply, map, reduce</li>
+<li>Statements: let, for, if then else, return</li>
+<li>Pattern matching</li>
+
+<li>List, Map, JSON, XML extension datatypes</li> 
+<li>Graph, Triple, Query Solution Mappings extension datatypes</li>
+<li>LDScript predefined functions</li>
+</ol>
+
+<p>
+In the future we wish to provide a second implementation on top of another Semantic Web Factory.
+We wish to provide a compiler to Java language and  work on performance.
+We would like to design a type checker and  investigate Linked Functions.
+</p>
+
+<p>&nbsp;</p>
+
+
+
+<h2>Bibliography</h2>
+
+
+
+
+<ol>
+<li><p>
+K. L. Clark, F. G. McCabe.
+Ontology oriented programming in go!
+Applied Intelligence. Springer.
+Volume 24, Issue 3, 2006.
+</p></li>
+
+
+<li><p>
+Eyal Oren, Renaud Delbru, Sebastian Gerke, Armin Haller,  Stefan Decker.
+ActiveRDF: object-oriented semantic web programming. 
+International Conference on World Wide Web, WWW 2007, Banff, Alberta,
+Canada,  2007. 
+</p></li>
+
+<li><p>
+Greg Williams.
+Extensible SPARQL functions with embedded javascript.
+In ESWC Workshop on Scripting for the Semantic Web, SFSW,
+Innsbruck, Austria, volume 248 of CEUR Workshop Proceedings, 2007.
+</p></li>
+
+<li><p>
+Diego Berrueta, Jose E. Labra, and Ivan Herman.
+XSLT+SPARQL: Scripting the Semantic Web with SPARQL embedded into XSLT stylesheets.
+4th Workshop on Scripting for the Semantic Web
+2008
+</p></li>
+
+
+<li><p>
+Axel Polleres, 
+Thomas Krennwallner , Nuno Lopes, Jacek Kopecký, Stefan Decker.
+XSPARQL Language Specification.
+W3C Member Submission 
+2009
+</p></li>
+
+
+<li>
+<p>
+Bernhard Schandl. 
+Functions over RDF Language Elements. 
+International Semantic Web Conference, ISWC 2009. 
+</p>
+</li>
+
+
+
+<li><p>
+Sven Groppe, Jana Neumann, and Volker Linnemann. 
+SWOBE - embedding the semantic web languages RDF, SPARQL and SPARUL into java for guaranteeing
+type safety, for checking the satisfiability of queries and for the determination
+of query result types. 
+ACM Symposium on Applied
+Computing (SAC), Honolulu, Hawaii, USA, 2009. 
+</p></li>
+
+<li><p>
+Holger Knublauch.
+SPIN JavaScript Functions (SPINx)
+<a href='https://spinrdf.org/spinx.html'>SPIN JavaScript Functions (SPINx)</a>
+2010
+</p></li>
+
+
+<li><p>
+V. Eisenberg.
+Ruby on Semantic Web.
+IEEE 27th International Conference on Data Engineering.
+2011
+</p></li>
+
+
+<li><p>
+Holger Knublauch.
+SPIN - SPARQL Syntax.
+Member Submission, W3C, 2011.
+http://www.w3.org/Submission/2011/SUBM-spin-sparql-20110222/.
+</p></li>
+
+
+<li><p>
+Espen Suenson, Johan Lilius, Ivan  Porres.
+OWL Web Ontology Language as a Scripting Language for Smart Space Applications
+Rule-Based Reasoning, Programming, and Applications
+Springer Berlin Heidelberg
+Berlin, Heidelberg 
+2011
+</p></li>
+
+<li><p>
+Olivier Corby, Alban Gaignard, Catherine Faron-Zucker, and Johan Montagnat. 
+KGRAM Versatile Data Graphs Querying and 
+Inference Engine
+In Proc. IEEE/WIC/ACM International Conference on Web
+Intelligence, Macau, December 2012.
+</p></li>
+
+<li><p>
+<a href='http://www.w3.org/TR/sparql11-query/'>SPARQL 1.1 Query Language</a>, 
+Steve Harris, Andy Seaborne.
+W3C Recommendation, March 2013    
+</p></li>
+
+<li><p>
+David Mizell, Kristyn J. Maschhoff, Steven P. Reinhardt.
+Extending SPARQL with graph functions.
+IEEE International Conference on Big Data (Big Data).
+2014
+</p></li>
+
+
+<li><p>
+Martin Leinberger,  Stefan Scheglmann, Ralf Lämmel, Steffen  Staab, Matthias  Thimm, Evelyne  Viegas. 
+Semantic Web Application Development with LITEQ. 
+International Semantic Web Conference, ISWC, Riva del Garda, Italy.
+2014. 
+</p></li>
+
+
+<li><p>
+<a href='https://www.w3.org/TR/rdf11-concepts/'>RDF 1.1 Concepts and Abstract Syntax</a>, 
+Graham Klyne, Jeremy J. Carroll, Brian McBride.
+W3C Recommendation, February 2014    
+</p></li>
+
+<li><p>
+Maurizio Atzori.
+Toward the web of functions: Interoperable higher-order functions in
+SPARQL.
+13th International Semantic Web Conference, ISWC, Riva del Garda, Italy, volume 8797 of LNCS, 2014.
+</p></li>
+</p>
+<li><p>
+Olivier Corby and Catherine Faron-Zucker. 
+A Transformation Language for RDF based on SPARQL.
+Web Information Systems and Technologies - Selected Extended
+Papers from WEBIST 2015. Springer-Verlag, Lecture Notes in Business
+Information Processing, 2015. Best paper nominee.
+</p></li>
+
+<li><p>
+Gabriel Ciobanu, Ross Horne, Vladimiro Sassone
+Minimal type inference for Linked Data consumers. J. Log. Algebr. Meth. Program.
+84(4): 485-504 (2015)
+</p></li>
+
+
+<li><p>
+Florian Weber, Andreas Bihlmaier, Heinz Worn.
+Semantic Object-Oriented Programming (SOOP)
+INFORMATIK, Lecture Notes in Informatics (LNI)
+2016
+</p></li>
+
+
+<li><p>
+Olivier Corby, Catherine Faron-Zucker  and Fabien Gandon,
+LDScript: a Linked Data Script Language,
+International Semantic Web Conference, ISWC, spotlight paper,
+2017 October, Vienna, Austria.
+</p></li>
+
+<li><p>
+Martin Leinberger, Ralf Lämmel, Steffen Staab. 
+The Essence of Functional Programming on Semantic Data. 
+Programming Languages and Systems: 26th European Symposium on Programming, ESOP 2017, Held as Part of the European Joint Conferences on Theory and Practice of Software, ETAPS, Uppsala, Sweden, April, 2017.
+</p></li>
+
+<li><p>
+Maxime Lefrançois, Antoine Zimmermann, and Noorani Bakerally.
+A SPARQL extension for generating RDF from heterogeneous formats.
+14th European Semantic Web Conference, ESWC,
+Portoroz, Slovenia, volume 10249 of LNCS, 2017.
+</p></li>
+
+<li><p>
+Chi Zhang, Jakob Beetz, Bauke de Vries.
+BimSPARQL: Domain-specific functional SPARQL extensions for querying RDF building data
+Semantic Web Journal, 2017.
+</p></li>
+
+<li><p>
+Jean-Baptiste Lamy.
+Owlready: Ontology-oriented programming in Python
+with automatic classification and high level constructs
+for biomedical ontologies.
+<a href='https://www.archives-ouvertes.fr/hal-01592746/document'>Technical Report</a>
+2017
+</p></li>
+
+
+<li><p>
+René Schubotz, Christian Vogelgesang, Torsten Spieldenner.  
+SPARQλ: SPARQL as a function.
+Conference: Future of Information and Communication Conference (FICC) 2019, San Francisco, USA.
+2019
+</p></li>
+
+<li><p>
+Philipp Seifer, Martin Leinberger, Ralf Lämmel, and Steffen Staab.
+Semantic Query Integration With Reason.
+Programming journal.
+2019
+</p></li>
+
+</p>
+<li><p>
+Kurt Cagle
+<a href='https://medium.com/@kurtcagle/extending-marklogic-sparql-with-javascript-ec7d7e899ff0'>Extending MarkLogic SPARQL with Javascript</a>
+2018
+</p></li>
+
+
+<li><p>
+Ben De Meester, Tom Seymoens, Anastasia Dimoua, Ruben Verborgh.
+Implementation-independent function reuse,
+2020
+<a href='https://www.sciencedirect.com/science/article/pii/S0167739X19303723#bb20'>Future Generation Computer Systems</a>
+</p></li>
+
+
+<li><p>
+<a href='https://jena.apache.org/documentation/query/extension.html'>Extensions in ARQ</a>
+Jena documentation
+</p></li>
+
+<li><p>
+<a href='https://www.oracle.com/technetwork/database/features/plsql/index.html'>PL/SQL documentation</a>
+</p></li>
+
+<li><p>
+<a href='http://www.earthobservatory.eu/geospatial-extensions-for-rdf-and-sparql'>Geospatial Extensions for RDF and SPARQL</a>
+</p></li>
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

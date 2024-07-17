@@ -1,0 +1,1162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <!-- <link rel="stylesheet" href="sttl.css" type="text/css" media="screen, projection, print" /> -->
+  
+   <style type="text/css">
+  h1,h2,h3,h4 {color:#00428C}
+
+body {
+  font-family: Arial, sans-serif;
+  margin-right:80px;
+  margin-left:80px;
+}
+
+.refer {
+  margin-left:20px;  
+}
+
+pre {
+ font-size:90%;
+ font-weight:bold;
+ font-family:courrier, monospace; 
+ padding-top: 0.2em;
+ padding-bottom: 0.2em;
+ padding-left: 0.5em;
+ padding-right: 0.5em;
+ border-style: solid;
+ border-left-width: 0.5em;
+ border-top-width: thin;
+ border-right-width: thin;
+ border-bottom-width: thin;
+ border-color: #5C4DC4;
+ color: #00428C;
+ background-color: #E4E5E7;
+}
+
+p, div { text-align:justify}
+
+.code2 ,.bold {
+  font-weight: bold;
+}
+.item, .code {
+ font-family:courrier, monospace; 
+ font-size:90%;
+ font-weight: bold;
+}
+
+.table tr:nth-child(even) { background:#fafafa }
+.table tr:nth-child(odd)  { background:#eeeeee }
+
+th {text-align: left}
+
+.top {vertical-align:top}
+
+
+  </style>
+  
+  <title>STTL  Transformations</title> 
+</head>
+
+
+<body>
+
+<h2>STTL Transformations</h2>
+
+<p>
+29 January 2017
+</p>
+
+<p>
+This version: <a href="http://ns.inria.fr/sparql-template">http://ns.inria.fr/sparql-template</a>
+</p>
+
+<h3>Authors:</h3>
+<div>
+Olivier Corby &lt;<a href="olivier.corby@inria.fr">olivier.corby@inria.fr</a>&gt;<br/>
+Catherine Faron Zucker &lt;<a href='cfaron@unice.fr'>faron@i3s.unice.fr</a>&gt;<br/>
+Fabien Gandon &lt;<a href="fabien.gandon@inria.fr">fabien.gandon@inria.fr</a>&gt;<br/>
+</div>
+
+<hr/>
+
+<h2>Abstract</h2>
+<p>
+This document defines the syntax and semantics of the STTL language. STTL stands for SPARQL Template Transformation Language. In STTL transformations describe rules for transforming an RDF source graph into a text result. STTL is designed as an extension of the SPARQL 1.1 Query Language to build on standards and ease its adoption.
+</p>
+
+
+<h2>Table of contents</h2>
+
+<a href="#introduction">1 Introduction</a><br/> 
+&nbsp;&nbsp;<a href="#introduction1">1.1 Relationship to W3C Recommendations</a><br/>
+
+<a href="#structure">2 Transformation Structure</a><br/> 
+&nbsp;&nbsp;<a href="#structure1">2.1 Transformation</a><br/> 
+&nbsp;&nbsp;<a href="#structure2">2.2 Template</a><br/> 
+&nbsp;&nbsp;<a href="#structure3">2.3 Named Template</a><br/> 
+
+<a href="#datamodel">3 Data Model</a><br/> 
+&nbsp;&nbsp;<a href="#datamodel1">3.1 Result Format</a><br/> 
+
+<a href="#template">4 Applying Templates</a><br/> 
+&nbsp;&nbsp;<a href="#template1">4.1 Template Selection</a><br/> 
+&nbsp;&nbsp;<a href="#template2">4.2 Template Processing</a><br/> 
+&nbsp;&nbsp;<a href="#template3">4.3 Named Template Processing</a><br/> 
+&nbsp;&nbsp;<a href="#template4">4.4 Result Processing</a><br/> 
+&nbsp;&nbsp;<a href="#template5">4.5 STTL Functions</a><br/> 
+&nbsp;&nbsp;<a href="#template6">4.6 Utility Functions</a><br/> 
+&nbsp;&nbsp;<a href="#template7">4.7 SPARQL Functions</a><br/> 
+
+
+<a href="#transformation">5 Tuning Transformation</a><br/> 
+&nbsp;&nbsp;<a href="#transformation1">5.1 Extension Functions</a><br/> 
+&nbsp;&nbsp;<a href="#transformation2">5.2 Start Template</a><br/>
+&nbsp;&nbsp;<a href="#transformation3">5.3 Profile Template</a><br/> 
+&nbsp;&nbsp;<a href="#transformation4">5.4 Priority</a><br/> 
+
+
+<a href="#statement">6 Statements</a><br/> 
+&nbsp;&nbsp;<a href="#statement1">6.1 Conditional Processing</a><br/>
+&nbsp;&nbsp;<a href="#statement2">6.2 Recursion</a><br/>
+&nbsp;&nbsp;<a href="#statement3">6.3 Sorting</a><br/>
+&nbsp;&nbsp;<a href="#statement4">6.4 Group</a><br/>
+&nbsp;&nbsp;<a href="#statement5">6.5 Box</a><br/>
+&nbsp;&nbsp;<a href="#statement6">6.6 Format</a><br/>
+
+<a href="#syntax">7 Syntax</a><br/> 
+&nbsp;&nbsp;<a href="#syntax1">7.1 Template Syntax</a><br/> 
+&nbsp;&nbsp;<a href="#syntax2">7.2 Transformation Syntax</a><br/> 
+
+<a href="#semantics">8 Semantics</a><br/> 
+
+<a href="#usecase">9 Use Cases</a><br/> 
+
+<a href="#conclusion">10 Conclusion</a><br/> 
+
+
+<a name="introduction" />
+<h2>1 Introduction</h2>
+<p>
+RDF provides us with a general purpose graph-oriented data model to represent and interchange data on the Web. However, the transformation and presentation of RDF data is still an open issue. Among the initiatives to answer this question there are extensive works for providing RDF with several varied syntaxes (XML, N-Triples,  Turtle,  RDFa,  TriG,  N-Quads,  JSON-LD)  and  for  linking  it  to  other data sources (R2RML, CSV-LD, etc.). With the multiplication of data sources and data formats, developers of the Web of data now spend a lot of time and energy to build transformations to present RDF data to users and transform data from one source to another. Moreover, RDF is more and more used as a syntax to represent other languages (e.g. SPIN) and we consider that RDF can then be viewed as a pivot language to represent the abstract syntax trees of expressions of other languages.
+</p>
+<p>
+For this reason, we propose the SPARQL Template Transformation Language (STTL) that enables Semantic Web developers to write specific yet compact RDF transformers toward other languages and formats. This document defines the syntax and semantics of STTL. A transformation expressed in STTL describes rules for transforming an RDF source graph into a text result. STTL is an extension of SPARQL 1.1 Query Language. To some extend STTL is to RDF what XSLT is to XML. An STTL engine takes an RDF graph and a transformation (a set of templates) as input and generates a textual output format as a character stream. Output format may be unstructured text such as natural language, or structured text such as Turtle, HTML, XML, Latex, CSV, etc. If the RDF graph represents the Abstract Syntax Tree of another language, e.g. SPIN, the transformation engine may generate a concrete syntax, e.g. SPARQL.
+</p>
+
+
+
+
+<a name="introduction1" />
+<h3>1.1 Relationship to W3C Recommendations</h3>
+
+<p>
+STTL is  related with SPARQL, RDF and somehow with XSLT. <br/>
+
+XSLT is a language for transforming XML documents into other XML documents.
+
+STTL is similar to XSLT as it is a language for transforming RDF graphs into text formats such as RDF documents. However, STTL operates on the graph model of RDF, not on its syntax (that is,  not on its RDF/XML syntax).
+
+</p>
+
+<p>
+STTL is  built on top of SPARQL 1.1 Query Language. It is an extension of SPARQL with an additional <em>template</em> query form and a set of extension functions. 
+</p>
+
+
+
+
+<p>&nbsp;</p>
+
+
+<a name="structure" />
+<h2>2 Transformation Structure</h2>
+
+<p>
+STTL  uses the prefix and namespaces shown below, which are omitted in the rest of the document:
+</p>
+
+<pre>
+prefix st:   &lt;http://ns.inria.fr/sparql-template/>
+prefix foaf: &lt;http://xmlns.com/foaf/0.1/>
+prefix ex:   &lt;http://example.org/ns/>
+</pre>
+
+
+
+
+<a name="structure1" />
+<h3>2.1 Transformation</h3>
+<p>
+A transformation is  a set of templates. 
+
+A template is a declarative rule with a condition part and a format part.
+
+A template is applied on a focus node. A focus node  is an  RDF term of the RDF graph  that is currently processed by a  transformation engine.
+</p>
+
+<p>
+A transformation can be defined in two different formats.
+
+<ul>
+<li>
+The first format is a directory that contains the set of templates where each template is written in a separate file with extension <span class='item'>.rq</span>.
+The syntax of <span class='item'>template</span> is an extension of SPARQL syntax.
+</li>
+
+<li>
+The second format is one RDF document with extension <span class='item'>.sttl</span> which contains a list of templates structured with by statements.
+</li>
+</ul>
+
+</p>
+
+
+<p>
+In the process of finding the applicable template, more than one template  may be eligible. However, in the general case, only one template  will be applied. The first template in the transformation is chosen except if templates have priorities. In this case, the template with the highest priority is chosen.
+</p>
+
+
+
+
+
+
+<a name="structure2" />
+<h3>2.2 Template</h3>
+
+<p>
+SPARQL 1.1 Query Language proposes four query forms: <span class='item'>select</span>, <span class='item'>construct</span>, <span class='item'>ask</span> and <span class='item'>describe</span>.
+STTL  proposes an additional query form: <span class='item'>template</span>. 
+
+
+The <span class='item'>template where</span> query form is used to specify a text pattern that is instantiated with the results of the <span class='item'>where</span> clause. It is similar to the <span class='item'>construct</span> clause but generates text instead of generating RDF triples. 
+The text pattern is made of constants (literals) and  evaluable expressions (variables, function calls, etc.). 
+</p>
+
+
+<p>
+The <span class='item'>where</span> clause is executed as a SPARQL query <em>where</em> clause, with focus node bound to variable <span class='item'>?in</span> if any, producing a solution sequence. It must be noted that the <em>from, from named, order by, group by, having, limit, offset</em> and <em>values</em> clauses are available for templates with the same syntax and semantics as SPARQL.
+</p>
+
+<p>
+The <span class='item'>template</span> clause is instantiated for each solution of the <span class='item'>where</span> clause, producing a text for each solution. 
+Variables in the <span class='item'>template</span> clause are replaced by their  value from the solution,  using by default the Turtle syntax.
+The result of a template is the concatenation of the text results  produced by all the solutions.
+It must be noted that aggregates are available in the template clause with the same semantics as SPARQL. In the case of aggregates, the aggregate operations are performed, possibly with group by, thus producing a new solution sequence. The template clause is evaluated on the solution sequence resulting from the aggregate.
+</p>
+
+<p>
+The example below lists all the triples linking URI in the current RDF graph in NTriple format.
+</p>
+
+<pre>
+template {
+  ?in " " ?p " " ?o " ."
+}
+where {
+  ?in ?p ?o
+  filter (isURI(?in) &amp;&amp; isURI(?o))
+}
+</pre>
+
+
+
+<a name="structure3" />
+<h3>2.3 Named Template</h3>
+<p>
+A template can have a name (an URI) and parameters.
+In the example shown below, the name of the template is <span class='item'>ex:display</span> and the parameter list is <span class='item'>(?x)</span>.
+</p>
+
+
+<pre>
+template ex:display(?x) {
+    st:apply-templates(?y)
+}
+where {
+    ?x foaf:knows ?y
+}
+</pre>
+
+
+
+
+
+
+<p>&nbsp;</p>
+
+<a name="datamodel" />
+<h2>3 Data Model</h2>
+
+<p>
+The data model used by STTL is the same as the one  used by SPARQL: RDF Dataset.
+The data model used by STTL is the RDF Dataset resulting from the parsing of the input RDF document(s) whatever their syntax is:  RDF/XML, Turtle, N3, JSON-LD or RDFa. 
+
+If the triple store is provided with an entailment regime (e.g. RDFS), STTL exploits the entailments in the same way than SPARQL.
+</p>
+
+
+<a name="datamodel1" />
+<h3>3.1 Result Format</h3>
+<p>
+The result of a transformation is a text, that is a character stream.
+The text can be structured (HTML, RDF/XML, XML, etc.), it can represent statements of a language (e.g. Turtle, SPARQL, OWL functional syntax, etc.), it can be natural language, etc.
+</p>
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+<a name="template" />
+<h2>4 Applying templates</h2>
+
+
+<a name="template1" />
+<h3>4.1 Template Selection</h3>
+<p>
+In the process of finding the applicable template, more than one template may be eligible. In the
+general case, only one template will be applied. If no indication is given the first template applied
+following the order of the .rq files or the RDF document.
+Alternatively, if the possible templates have specified priorities, the template with the highest priority is chosen.
+</p>
+
+
+
+
+<a name="template2" />
+<h3>4.2  Template Processing</h3>
+<p>
+A template in a transformation may  apply other  templates. This is done using the  <span class='code'>st:apply-templates</span> extension function. Below is an example of template which generates the functional syntax of an OWL <span class='item'>allValuesFrom</span> restriction statement.
+</p>
+
+<pre>
+template {
+  "allValuesFrom(" 
+      st:apply-templates(?p) " " 
+      st:apply-templates(?c) 
+  ")"
+}
+where {
+   ?in a owl:Restriction ;
+      owl:onProperty ?p ;
+      owl:allValuesFrom ?c .
+}
+</pre>
+
+
+<p>The previous template when applied to :</p>
+
+
+<pre>
+[] a owl:Restriction ;
+      owl:onProperty foaf:knows ;
+      owl:allValuesFrom foaf:Person .
+</pre>
+
+<p>generates the text below: </p>
+<!--provided that other templates define the pretty printing of IRIs.-->
+
+<pre>
+allValuesFrom(foaf:knows foaf:Person)
+</pre>
+
+<p>
+In the template above, two variables occur in the template clause: <span class='code'>?p</span>  and <span class='code'>?c</span>. These variables are recursively processed by the <span class='code'>st:apply-templates</span> extension function using the set of templates of the transformation.
+If no template succeeds, a default format is generated  which  is the Turtle format.
+The <span class='item'>where</span> clause is the same as in SPARQL, except that  variable <span class='code'>?in</span>  is bound to the focus node.  The focus node is the node that is the argument of the  current <span class='code'>st:apply-templates</span> function call.
+</p>
+
+<p>
+The <span class='code'>st:apply-templates</span> function applies the first template in the transformation  such that 1) the template were not already applied on the same focus node previously, 2)
+the <span class='code'>where</span> clause, with its <span class='code'>?in</span> variable bound to the focus node, returns a solution sequence that is not empty and   3) the <span class='code'>template</span> clause does not raise an error.
+</p>
+
+
+<p>
+Note that the <span class='code'>st:apply-templates</span> function can be called in the <span class='code'>where</span> part as shown below.
+</p>
+
+
+<pre>
+template {
+  "allValuesFrom(" ?pp  " " ?cc ")"
+}
+where {
+   ?in a owl:Restriction ;
+      owl:onProperty ?p ;
+      owl:allValuesFrom ?c .
+   bind (st:apply-templates(?p) as ?pp)
+   bind (st:apply-templates(?c) as ?cc)   
+}
+</pre>
+
+
+<a name="template3" />
+<h3>4.3 Named Template Processing</h3>
+
+
+<p>
+A named template is called by name with parameter values using the <span class='code'>st:call-template</span> function. When several parameters occur, parameter passing is done by  position (i.e. not by  name).
+</p>
+
+
+<pre>
+template {
+    st:call-template(ex:display, ?in)
+}
+where {
+    ?in a foaf:Person
+}
+</pre>
+
+
+
+<a name="template4" />
+<h3>4.4 Result Processing</h3>
+
+<p>
+The result of a <span class='code'>template</span> is the concatenation of the texts resulting from the instantiation of the <span class='code'>template</span> clause on every solution of the 
+<span class='code'>where</span> clause.
+By default, a <em>newline</em> character is inserted as separator between text solutions. It is possible to overload the separator using the <span class='code'>separator</span> statement, similar to the SPARQL <em>group_concat</em> aggregate <em>separator</em> statement as shown below.
+</p>
+
+<pre>
+template {
+  ?name ; separator = ", "
+}
+where {
+  ?in foaf:name ?name
+}
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<a name="template5" />
+<h3>4.5 STTL Functions</h3>
+<p>
+In order to apply templates, the language provides a set of SPARQL extension functions. Running a transformation engine on a set of templates is done by an initial call to <span class='code'>st:apply-templates-with</span> in a SPARQL query (or a template) where the <span class='code'>st-uri</span> argument is the URI of the   transformation. This function can also be used to apply another transformation within a transformation. Hence a complex transformation can be split into simpler ones.
+
+The uri argument of <span class='code'>st:call-template</span> is the name of a template. 
+The term argument is  the focus node, it is an RDF term.
+</p>
+
+<p>
+In some cases, it is necessary to apply several templates in order to transform a focus node. In this case, the <span class='code'>st:apply-templates-all</span>  function may be  used. The result of <span class='code'>st:apply-templates-all</span> is the concatenation of the results of all the templates that succeed.
+</p>
+
+<p>
+The <span class='code'>st:apply-templates-graph</span> functions enables the transformer to focus on a specific named graph. The <span class='code'>graph-uri</span> argument is the name of a  graph.
+</p>
+
+
+<p>
+The <span class='code'>st:call-template</span> functions enables the transformer to call a specific named template. The <span class='code'>uri</span> argument is the name of a named template.
+</p>
+
+<pre>
+st:apply-templates(term)
+
+st:apply-templates-with(st-uri)
+st:apply-templates-with(st-uri, term)
+
+st:apply-templates-all(term)
+st:apply-templates-with-all(st-uri, term)
+
+st:apply-templates-graph(graph-uri)
+st:apply-templates-with-graph(st-uri, graph-uri)
+
+st:call-template(uri, term_1, .., term_n)
+st:call-template-with(st-uri, uri, term_1, .., term_n)
+</pre>
+
+
+
+
+
+
+<a name="template6" />
+<h3>4.6 Utility functions</h3>
+
+<p>
+There are aditional utility functions.
+</p>
+
+<pre>
+st:turtle(term)
+
+st:format(text-format, term, ...)
+
+st:number()
+
+st:nl()
+</pre>
+<!-- st:load(uri) -->
+
+<p>
+<span class='code'>st:turtle</span>  returns the Turtle format of an RDF term. <br/>
+
+
+<span class='code'>st:format</span> given a text pattern with %s text variables and expressions, returns a formatted string. 
+<br/>
+
+<span class='code'>st:number</span> returns a number corresponding to the  solution position. 
+<br/>
+
+<span class='code'>st:nl</span> returns a new line and take indentation defined by  <span class='code'>box</span> into account. <br/>
+</p>
+
+
+
+<a name="template7" />
+<h3>4.7 SPARQL Functions</h3>
+
+<p>
+SPARQL functions can be used in the template clause. 
+</p>
+
+<pre>
+template {
+   "The name of " xsd:string(?in) " is " xsd:string(?n) "."
+}
+where {
+   ?in foaf:name ?n
+}
+</pre>
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+<a name="transformation" />
+<h2>5 Tuning Transformation</h2>
+
+
+
+<a name="transformation1" />
+<h3>5.1 Extension Functions</h3>
+
+<p>
+STTL provides a "hook" to define extension functions that are  available within a  transformation.
+
+To do so, STTL provides a simple formalism  to define SPARQL extension functions. 
+The <span class='code'>function</span> clause enables users to define a function   with an URI as name and a list of parameter variables.
+The body of the function is defined using SPARQL filter  language.
+</p>
+
+<pre>
+function ex:display(?x) {
+  if (isURI(?x), 
+    concat("&lt;", str(?x), ">"),
+    str(?x))
+}
+
+function ex:fac(?n) {
+  if (?n = 0, 1, ?n * ex:fac(?n - 1))
+}
+</pre>
+
+
+
+<a name="transformation2" />
+<h3>5.2 Start Template</h3>
+<p>
+As there are no natural root nodes in a graph, we provide the possibility to define a specific start template that determines the nodes to start with. The start template, if any, is the <span class='code'>st:start</span> named template. Otherwise, the first template of the transformation that succeeds is applied.
+</p>
+
+<pre>
+template st:start {
+  st:apply-templates(?x)
+}
+where {
+  ?x a foaf:Person
+}
+</pre>
+
+
+
+<a name="transformation3" />
+<h3>5.3 Profile Template</h3>
+<p>
+The <span class='code'>st:profile</span> named template enables users to define extension functions. This template is not executed (this is why it is empty), it is a place holder for function definition and it is considered at compile time only.
+
+By convention, function definitions that are listed below the <span class='code'>st:profile</span> template  are available for all templates of the transformation.
+</p>
+
+<p>
+Function <span class='code'>st:process</span> is a predefined function that specifies the processing of variables in the template clause. 
+The default behaviour is to call <span class='code'>st:turtle</span> to generate the Turtle format of the argument.   
+This function can be overloaded.
+</p>
+
+<p>
+In the example below, <span class='code'>st:apply-templates</span> is called on blank nodes and 
+<span class='code'>st:turtle</span> is called on URIs and literals. 
+</p>
+
+
+<pre>
+template st:profile {}
+where {}
+
+function st:process(?x) {
+  if (isBlank(?x), st:apply-templates(?x), st:turtle(?x))
+}
+</pre>
+
+
+
+
+
+
+
+<a name="transformation4" />
+<h3>5.4 Priority</h3>
+
+<p>
+STTL provides a mechanism to attach a priority to templates. In the case where several templates may be applied, the one with the highest priority is chosen.
+
+In the case where several templates may succeed, it may be necessay to sort templates according to an explicit priority. Smaller numbers represent higher priority.
+</p>
+
+<p>
+Pragma enables to define priority. It 
+may be used in the future to define new features.
+</p>
+
+<pre>
+template { ... }
+where    { ... }
+pragma   { st:template st:priority 1 }
+</pre>
+
+
+
+<p>&nbsp;</p>
+
+
+
+<a name="statement" />
+<h2>6 Statements</h2>
+
+<a name="statement1" />
+<h3>6.1 Conditional Processing</h3>
+
+<p>
+Conditional processing is done using SPARQL <em>if then else</em> filter expression.
+</p>
+<pre>
+template {
+  if (?age >= 18, 
+    st:call-template(st:adult, ?in),
+    st:call-template(st:child, ?in))
+}
+where {
+  ?in foaf:age ?age
+}
+</pre>
+
+
+<a name="statement2" />
+<h3>6.2 Recursion</h3>
+
+
+<p>
+The combined use of <span class='code'>if</span>, <span class='code'>st:call-template</span> and recursion enables to implement powerful processing such as printing the development of n!.
+</p>
+
+<pre>
+template st:fac(?n) {
+   if (?n = 0, 1, 
+     concat(?n, ".", st:call-template(st:fac, ?n - 1)))
+}
+where {}
+</pre>
+
+
+
+<a name="statement3" />
+<h3>6.3 Sorting</h3>
+<p>
+Sorting is done using SPARQL <em>order by</em> clause.
+</p>
+
+<pre>
+template {
+    st:apply-templates(?in)
+}
+where {
+  ?in a foaf:Person ;
+    foaf:name ?name
+}
+order by ?name
+</pre>
+
+
+
+
+
+
+<a name="statement4" />
+<h3>6.4 Group</h3>
+
+<p>
+The <span class='item'>group</span> statement  is syntactic sugar for  <span class='code'>group_concat()</span> aggregate operation, except that it can have several arguments. In addition, it can have a <span class='item'>separator</span> which acts in the same way as SPARQL <em>group_concat</em> aggregate separator.
+
+Below is an example that concatenates the elements of a list.
+</p>
+
+
+<pre>
+template {
+  "list("
+     group { ?elem }
+  ")"
+}
+where {
+  ?in rdf:rest*/rdf:first ?elem
+}
+</pre>
+
+
+<p>
+
+</p>
+
+
+
+
+
+<a name="statement5" />
+<h3>6.5 Box</h3>
+<p>
+Box enable to increment the  indentation of the output character stream when <span class='code'>st:nl()</span> is used.
+</p>
+
+
+<pre>
+template {
+  "list("
+     box {
+       group { ?elem st:nl() }
+     }
+  ")"
+}
+where {
+  ?in rdf:rest*/rdf:first ?elem
+}
+</pre>
+
+
+
+<a name="statement6" />
+<h3>6.6 Format</h3>
+<p>
+Format enable to specify  a  string pattern  with text variables (%s) and a list of expressions. Text variables are replaced by the values of expressions.
+</p>
+
+
+<pre>
+template {
+  format {
+    "&lt;h1>%s&lt;/h1>&lt;p>%s&lt;/p>"
+    ?title ?text
+  }
+}
+where {
+  ?in ex:title ?title ; ex:text ?text
+}
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+<a name="syntax" />
+
+<h2>7 Syntax</h2>
+
+<a name="syntax1" />
+<h3>7.1 Template Syntax</h3>
+
+
+
+<p>
+We provide the syntax of SPARQL template, based on 
+<a href='http://www.w3.org/TR/sparql11-query/#sparqlGrammar'>SPARQL 1.1 grammar</a>.
+</p>
+<pre>
+Template ::= 
+   Prologue 
+   TemplateClause
+   DatasetClause*
+   WhereClause 
+   SolutionModifier
+   ValuesClause
+   Pragma
+   Function*
+   
+TemplateClause ::=
+   'template' NameArg ? '{' 
+     TExpression * 
+     Separator ? 
+   '}'
+   
+TExpression ::= PrimaryExpression | Box | Format | Group
+   
+NameArg ::= (iri VarList) | VarList
+   
+VarList ::= '(' Var * ')'
+             
+Group ::= 
+  'group' ( 'distinct' ) ? '{' 
+   ( PrimaryExpression | Box | Format ) * 
+   Separator ? 
+   '}'
+   
+Box ::= 
+  'box'  '{' TExpression  * '}'
+   
+Format ::= 
+    'format' '{' 
+        PrimaryExpression
+        TExpression +
+    '}'
+               
+Separator ::= ';' 'separator' '=' String
+
+Pragma ::= ( 'pragma' '{' Triple+ '}' ) ?
+
+Function ::= 'function' iri VarList '{' PrimaryExpression '}'
+</pre>
+
+
+
+<a name="syntax2" />
+<h3>7.2 Transformation Syntax</h3>
+
+<p>
+Syntax of the RDF document for tranformations is given in RDF/XML format.
+Each template must define its prefix and namespaces.
+</p>
+
+<pre>
+&lt;rdf:RDF  
+  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' 
+  xmlns='http://ns.inria.fr/sparql-template/'>
+
+&lt;rule>
+&lt;body>
+&lt;![CDATA[
+prefix st: &lt;http://ns.inria.fr/sparql-template/>
+template st:list(?l) {
+  ?e
+}
+where {
+  ?l rdf:rest*/rdf:first ?e
+}
+]]&gt;
+&lt;/body>
+&lt;/rule>
+
+&lt;rule>
+&lt;body>
+...
+&lt;/body>
+&lt;/rule>
+
+&lt;/rdf:RDF>
+</pre>
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+
+<a name="semantics" />
+
+<h2>8 Semantics</h2>
+
+
+<p>
+SPARQL Templates are compiled as select-where SPARQL queries where variables in the template clause are replaced by a call to the  <span class='code'>st:process</span> extension function. Its default behaviour is to call <span class='code'>st:turtle</span>.
+When <span class='code'>st:process</span> is bound to <span class='code'>st:apply-templates</span> in the profile,  it implements the recursive call to the transformation engine. This function plays a similar role as   the <span class='code'>xsl:apply-templates</span> clause in XSLT.
+Its behavior consists in executing templates one by one from the set of templates until one of them succeeds. The result of the <span class='code'>st:apply-templates</span> function call is the result of this successful template execution.
+</p>
+
+<p>
+A template succeeds if the evaluation of the where clause returns solution(s) and if the evaluation of the template clause does not raise an error. An error may be caused by an unbound variable.
+</p>
+
+<p>
+The focus node is the  node that the transformation engine is processing at  the current time.
+It is bound to a distinguished <span class='code'>?in</span> variable the value of which is determined at run time by a process equivalent to the one  shown below where the  <span class='code'>st:getFocusNode()</span> function  
+represents the focus node value determined from the environment. 
+</p>
+
+<p>
+The template below:
+</p>
+
+<pre>
+template {
+  "allValuesFrom(" ?p " " ?c ")"
+}
+where {
+   ?in a owl:Restriction ;
+      owl:onProperty ?p ;
+      owl:allValuesFrom ?c .
+}
+</pre>
+
+<p>
+is compiled  into a select-where SPARQL query as shown below. The <span class='code'>st:concat</span> function is similar to the SPARQL <span class='code'>concat</span> function.
+</p>
+
+<pre>
+select 
+  (st:concat (
+    "allValuesFrom(", 
+     st:process(?p), " ", st:process(?c), ")") 
+   as ?out)
+where {
+   bind (st:getFocusNode() as ?in) .
+   ?in a owl:Restriction ;
+      owl:onProperty ?p ;
+      owl:allValuesFrom ?c .
+}
+</pre>
+
+
+<p>
+Executing a template consists first in executing the where part which results in a   solution sequence (i. e. variable bindings). 
+
+Then the select clause is executed, providing a  solution sequence extended with the projected variable <span class='code'>?out</span>.
+This is  standard SPARQL query execution. 
+
+To finish, an additional <span class='code'>group_concat(?out)</span> aggregate operation is performed on the SPARQL  solution sequence, resulting into one solution where all values of the <span class='code'>?out</span> variable are concatenated into a string value. This is the final result of the template and this is the result returned by the <span class='code'>st:apply-templates</span> function.
+Hence, it is possible to implement a STTL engine on top of a SPARQL interpreter using extension functions.
+</p>
+
+
+
+<p>
+The <span class='code'>group</span> statement:
+</p>
+
+<pre>
+template {
+   "list("
+      group { ?x ?y }
+   ")"
+}
+where {
+  ...
+}
+</pre>
+
+<p>
+is compiled as:
+</p>
+
+<pre>
+select  
+   (st:concat("list(", group_concat(concat(st:process(?x), st:process(?y))), ")") 
+    as ?out)
+where {
+  ...
+}
+</pre>
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+
+
+<a name="usecase" />
+<h2>9 Use Cases</h2>
+
+
+
+
+
+
+
+
+<p>
+We present some use cases for STTL.
+</p>
+
+<h3>RDF</h3>
+
+<p>
+List the content of a graph in Turtle syntax.
+</p>
+
+<pre>
+template {
+  ?x " " ?p " " ?y "."
+}
+where {
+  ?x ?p ?y
+}
+order by ?x ?p ?y
+</pre>
+
+
+<p>
+List the named graphs of a Dataset in Trig syntax.
+</p>
+
+<pre>
+template {
+  "graph " ?g " {\n" 
+      group { ?x " " ?p " " ?y ".\n" }
+  "}"
+}
+where {
+  graph ?g { ?x ?p ?y }
+}
+group by ?g
+order by ?g 
+</pre>
+
+
+<h3>HTML</h3>
+<p>
+Generate an HTML table with the triples of the RDF graph.
+</p>
+
+<pre>
+template {
+  format {
+   """
+   &lt;html>
+   &lt;body>
+   &lt;table>%s&lt;/table>
+   &lt;/body>
+   &lt;/html>
+   """
+   
+   group { 
+    format {
+       "&lt;tr>&lt;td>%s&lt;/td>&lt;td>%s&lt;/td>&lt;td>%s&lt;/td>&lt;/tr>\n"       
+       ?s ?p ?o
+    }
+   }
+  }
+}
+where  {
+   ?s ?p ?o 
+}
+order by ?s ?p ?o
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;</p>
+
+
+<a name="conclusion" />
+
+<h2>10 Conclusion</h2>
+<p>
+SPARQL Template Transformation Language aims at generating presentation format for RDF graphs. It is designed as an extension of SPARQL 1.1 Query Language.
+STTL is  available in the <a href='http://wimmcs.inria.fr/corese'>Corese</a> Semantic Web Factory and it is used in the <a href='http://corese.inria.fr'>Corese Web server</a>.
+Preliminary works show that STTL can also be used to perform constraint checking with templates that return boolean values instead of text.
+</p>
+
+
+
+<p>&nbsp;</p>
+
+
+
+<h2>References</h2>
+
+
+[RDF] 
+<div class='refer'>
+<a href='https://www.w3.org/TR/rdf11-concepts/'>RDF 1.1 Concepts and Abstract Syntax</a>, 
+Graham Klyne, Jeremy J. Carroll, Brian McBride.
+W3C Recommendation, February 2014    
+</div>
+<br/>
+
+[SPARQL] 
+<div class='refer'>
+<a href='http://www.w3.org/TR/sparql11-query/'>SPARQL 1.1 Query Language</a>, 
+Steve Harris, Andy Seaborne.
+W3C Recommendation, March 2013    
+</div>
+<br/>
+
+[XSLT] 
+<div class='refer'>
+<a href='http://www.w3.org/TR/xslt20/'>XSL Transformations (XSLT) Version 2.0</a>, 
+Michael Kay.
+W3C Recommendation, March 2007    
+</div>
+<br/>
+
+
+<p>
+    <a href="http://validator.w3.org/check?uri=referer"><img
+      src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+  </p>
+
+
+
+
+
+</body>
+</html>

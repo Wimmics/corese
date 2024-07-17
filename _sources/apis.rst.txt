@@ -38,6 +38,8 @@ CORESE APIs
       The Corese server provides several functionalities available through a REST API:
 
       * SPARQL endpoint
+      * SPARQL to SPIN conversion endpoint
+      * Graph Store HTTP Protocol endpoint
 
       and more...
 

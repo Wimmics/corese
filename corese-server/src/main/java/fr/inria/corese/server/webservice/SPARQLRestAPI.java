@@ -47,8 +47,8 @@ import jakarta.ws.rs.core.Response;
 @Path("sparql")
 public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     private static final String ERROR_ENDPOINT = "Error while querying Corese SPARQL endpoint";
-    private static final String headerAccept = "Access-Control-Allow-Origin";
-    private static final String headerContent = "Content-type";
+    private static final String HEADER_ACCEPT = "Access-Control-Allow-Origin";
+    private static final String HEADER_CONTENT = "Content-type";
     private static final String TEXT_PLAIN = "text/plain";
 
     static final String SPARQL_RESULTS_XML = ResultFormat.SPARQL_RESULTS_XML;
@@ -72,9 +72,9 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     static final String HTML = ResultFormat.HTML;
 
     // Profiles
-    private final String CN10_SHA = "https://www.w3.org/TR/rdf-canon";
-    private final String CN10_SHA256 = "https://www.w3.org/TR/rdf-canon#sha-256";
-    private final String CN10_SHA384 = "https://www.w3.org/TR/rdf-canon#sha-384";
+    private static final String CN10_SHA = "https://www.w3.org/TR/rdf-canon";
+    private static final String CN10_SHA256 = "https://www.w3.org/TR/rdf-canon#sha-256";
+    private static final String CN10_SHA384 = "https://www.w3.org/TR/rdf-canon#sha-384";
 
     public static final String PROFILE_DEFAULT = "profile.ttl";
     public static final String DEFAULT = NSManager.STL + "default";
@@ -94,11 +94,11 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     static String localProfile;
 
     // default sparql endpoint
-    static TripleStore store = new TripleStore(false, false);
+    private static TripleStore store = new TripleStore(false, false);
 
     private static Profile mprofile;
 
-    static private final Logger logger = LogManager.getLogger(SPARQLRestAPI.class);
+    private static final Logger logger = LogManager.getLogger(SPARQLRestAPI.class);
     private static String key;
 
     static {
@@ -188,7 +188,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         setVisitor(QuerySolverVisitorServer.create(createEval()));
         getVisitor().initServer(EmbeddedJettyServer.BASE_URI);
         init();
-        return Response.status(200).header(headerAccept, "*").entity("Endpoint reset").build();
+        return Response.status(200).header(HEADER_ACCEPT, "*").entity("Endpoint reset").build();
     }
 
     void init() {
@@ -248,7 +248,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         if (remotePath == null) {
             String error = "Null remote path";
             logger.error(error);
-            return Response.status(404).header(headerAccept, "*").entity(error).build();
+            return Response.status(404).header(HEADER_ACCEPT, "*").entity(error).build();
         }
 
         logger.debug(remotePath);
@@ -257,16 +257,16 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             // path with extension : use extension
             // path with no extension : load as turtle
             // use case: rdf: is in Turtle
-            if (!getTripleStore().isProtect()) { // getMode() != QueryProcess.PROTECT_SERVER_MODE) {
+            if (!getTripleStore().isProtect()) {
                 getTripleStore().load(remotePath, source);
             }
         } catch (LoadException ex) {
             logger.error(ex);
-            return Response.status(404).header(headerAccept, "*").entity(output).build();
+            return Response.status(404).header(HEADER_ACCEPT, "*").entity(output).build();
         }
 
         logger.info(output + "Successfully loaded " + remotePath);
-        return Response.status(200).header(headerAccept, "*").entity(output).build();
+        return Response.status(200).header(HEADER_ACCEPT, "*").entity(output).build();
     }
 
     @GET
@@ -278,7 +278,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         if (detail != null) {
             isDetail = detail.equals("true");
         }
-        return Response.status(200).header(headerAccept, "*")
+        return Response.status(200).header(HEADER_ACCEPT, "*")
                 .entity("debug: " + isDebug + " ; " + "detail: " + isDetail).build();
     }
 
@@ -384,6 +384,10 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
 
     /**
      * Get the profiles from the Accept header
+
+     * eg: Accept:
+     * application/n-quads;profile="https://www.w3.org/TR/rdf-canon/#sha-256
+     * https://www.w3.org/TR/rdf-canon#sha-384"
      * 
      * @param accept The Accept header
      * @return The profiles
@@ -405,10 +409,6 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             }
         }
         return profiles;
-
-        // eg: Accept:
-        // application/n-quads;profile="https://www.w3.org/TR/rdf-canon/#sha-256
-        // https://www.w3.org/TR/rdf-canon#sha-384"
     }
 
     @GET
@@ -877,21 +877,6 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
                 transform);
     }
 
-    // try {
-    // query = getQuery(query, update, message);
-    // logger.info("getTriplesCSVForPost");
-    //
-    // return Response.status(200).header(headerAccept,
-    // "*").entity(CSVFormat.create(getTripleStore(name)
-    // .query(request, query, createDataset(request, defaut, named,
-    // access))).toString()).build();
-    // } catch (Exception ex) {
-    // logger.error(ERROR_ENDPOINT, ex);
-    // return Response.status(ERROR).header(headerAccept,
-    // "*").entity(ERROR_ENDPOINT).build();
-    // }
-    // }
-
     @POST
     @Produces(SPARQL_RESULTS_TSV)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -913,21 +898,6 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         return getResultFormat(request, name, oper, uri, param, mode, query, access, defaut, named, null, TSV_FORMAT,
                 transform);
     }
-
-    // try {
-    // query = getQuery(query, update, message);
-    // logger.info("getTriplesTSVForPost");
-    //
-    // return Response.status(200).header(headerAccept,
-    // "*").entity(TSVFormat.create(getTripleStore(name)
-    // .query(request, query, createDataset(request, defaut, named,
-    // access))).toString()).build();
-    // } catch (Exception ex) {
-    // logger.error(ERROR_ENDPOINT, ex);
-    // return Response.status(ERROR).header(headerAccept,
-    // "*").entity(ERROR_ENDPOINT).build();
-    // }
-    // }
 
     // ----------------------------------------------------
     // SPARQL QUERY - DESCRIBE and CONSTRUCT with HTTP POST
@@ -1089,14 +1059,14 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             }
 
             Response resp = Response.status(200)
-                    .header(headerAccept, "*")
-                    .header(headerContent, TEXT_PLAIN)
+                    .header(HEADER_ACCEPT, "*")
+                    .header(HEADER_CONTENT, TEXT_PLAIN)
                     .entity("").build();
             afterRequest(request, resp, message, map, resp.getEntity().toString());
             return resp;
         } catch (Exception ex) {
             logger.error(ERROR_ENDPOINT, ex);
-            return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
+            return Response.status(ERROR).header(HEADER_ACCEPT, "*").entity(ERROR_ENDPOINT).build();
         }
     }
 
@@ -1110,11 +1080,11 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         try {
             logger.info("getTriplesForHead");
             Mappings mp = getTripleStore(name).query(request, query, createDataset(request, defaut, named, access));
-            return Response.status(mp.size() > 0 ? 200 : 400).header(headerAccept, "*").entity("Query has no response")
+            return Response.status(mp.size() > 0 ? 200 : 400).header(HEADER_ACCEPT, "*").entity("Query has no response")
                     .build();
         } catch (Exception ex) {
             logger.error(ERROR_ENDPOINT, ex);
-            return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
+            return Response.status(ERROR).header(HEADER_ACCEPT, "*").entity(ERROR_ENDPOINT).build();
         }
     }
 
@@ -1163,7 +1133,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
 
         } catch (Exception ex) {
             logger.error(ERROR_ENDPOINT, ex);
-            return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
+            return Response.status(ERROR).header(HEADER_ACCEPT, "*").entity(ERROR_ENDPOINT).build();
         }
     }
 

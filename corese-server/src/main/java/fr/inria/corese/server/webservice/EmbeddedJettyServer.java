@@ -306,9 +306,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
             logger.info("BASE_URI = {}", BASE_URI);
 
             logger.info("----------------------------------------------");
-            logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/sparql");
+            logger.info("Corese endpoint started on " + BASE_URI + "/sparql");
 
-            // Server server = JettyHttpContainerFactory.createServer(baseUri, false);
             Server server = new Server(port);
             ContextHandlerCollection root = new ContextHandlerCollection();
             server.setHandler(root);
@@ -322,7 +321,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 
             ContextHandler staticContextHandler = new ContextHandler(root, "/");
             staticContextHandler.setHandler(resource_handler);
-            logger.info("Corese/KGRAM webapp UI started on http://localhost:" + port);
+            logger.info("Corese webapp UI started on http://localhost:" + port);
             logger.info("----------------------------------------------");
 
             // @TODO Check regularly whether it is still required by jetty or it is already
@@ -331,8 +330,6 @@ public class EmbeddedJettyServer extends ResourceConfig {
             mimeTypes.addMimeMapping("mjs", "application/javascript");
             staticContextHandler.setMimeTypes(mimeTypes);
 
-            // Server server = JettyHttpContainerFactory.createServer(baseUri, config,
-            // false);
             // === SSL Connector begin ====
             if (enableSsl) {
                 SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
@@ -368,7 +365,9 @@ public class EmbeddedJettyServer extends ResourceConfig {
                     SPIN.class,
                     MultiPartFeature.class,
                     SDK.class,
-                    Tutorial.class, ServiceOnline.class, ServiceOnline2.class,
+                    Tutorial.class, 
+                    ServiceOnline.class, 
+                    ServiceOnline2.class,
                     Transformer.class,
                     Processor.class,
                     Agent.class);
@@ -394,17 +393,9 @@ public class EmbeddedJettyServer extends ResourceConfig {
             }
             logger.info("before localhost uri: " + uri);
 
-            if (true) {
-                target.path("sparql").path("reset")
-                        .request(APPLICATION_FORM_URLENCODED_TYPE)
-                        .post(Entity.form(formData));
-            } else {
-                new SPARQLRestAPI().initRDF(
-                        Boolean.toString(owlrl),
-                        Boolean.toString(entailments),
-                        Boolean.toString(loadProfileData),
-                        localProfile, "false");
-            }
+            target.path("sparql").path("reset")
+                    .request(APPLICATION_FORM_URLENCODED_TYPE)
+                    .post(Entity.form(formData));
             logger.info("after localhost uri");
 
             if (dataPaths != null) {
@@ -483,7 +474,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 
             // Return URI of extracted directory
             URI extractedDirectoryUri = destinationDirectory.getURL().toURI();
-            
+
             resourceURI = extractedDirectoryUri;
 
             return extractedDirectoryUri;

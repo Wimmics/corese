@@ -34,7 +34,7 @@ The ``remote-sparql`` command allows executing SPARQL queries on a remote server
 
 - `-o`, `\-\-output-data` `<output_file>` : Optional path to save the query results. Default: standard output.
 
-- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file. Default: `config.properties` file in the current directory. Is this true??
+- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file.
 - `-w`, `\-\-no-owl-import` : Disables the automatic import of referenced ontologies specified in 'owl:imports' statements in the `profile.ttl` file. Default: enabled.
 
 - `-v`, `\-\-verbose` : Display verbose output.

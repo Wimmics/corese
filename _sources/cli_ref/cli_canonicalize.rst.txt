@@ -21,10 +21,10 @@ The ``canonicalize`` command allows applying a specific canonicalization algorit
 - `-f`, `-if`, `\-\-input-format` `<format>` : Input format is automatically detected for files. Use this option with the standard input or if you want to force the input file format. Supported input formats are listed :ref:`below <corese-command-canonicalize-input-formats>`. Default: `rdfc-1.0-sha256`.
 - `-R`, `\-\-recursive`: Recursively input all the files in the input directory and sub-directories.
 
-- `-r`, `-a`, `ca`, `-of`, `\-\-canonical-algo` `<algo>` : Canonicalization algorithm to apply. Supported algorithms/formats are listed :ref:`below <corese-command-canonicalize-output-formats>`. Default: `markdown` table.
+- `-a`, `-r`, `-ca`, `-of`, `\-\-canonical-algo` `<algo>` : Canonicalization algorithm to apply. Supported algorithms/formats are listed :ref:`below <corese-command-canonicalize-output-formats>`. Default: `rdfc-1.0-sha256`.
 - `-o`, `\-\-output-data` `<output_file>` : Optional path to save the query results. Default: standard output.
 
-- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file. Default: `config.properties` file in the current directory. Is this true??
+- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file.
 - `-w`, `\-\-no-owl-import` : Disables the automatic import of referenced ontologies specified in 'owl:imports' statements in the `profile.ttl` file. Default: enabled.
 
 - `-v`, `\-\-verbose` : Display verbose output.
@@ -38,7 +38,7 @@ To run this example you can download the sample data files :download:`beatles_bl
 
 .. code-block:: bash
 
-    corese-command canonicalize -i beatles_blank.rdf -r rdfc-1.0 
+    corese-command canonicalize -i beatles_blank.ttl -r rdfc-1.0 
 
 
 .. code-block:: xml

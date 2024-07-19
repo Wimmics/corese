@@ -29,7 +29,7 @@ The ``shacl`` command allows validation of RDF files against SHACL shapes.
 - `-o`, `\-\-output-data` `<file>` : Optional file path to save the validation report. Default: standard output.
 - `-r`, `-of`, `\-\-result-format` `<format>` : Optional validation report format. Default: turtle.  Supported report formats are listed :ref:`below <corese-command-shacl-output-formats>`. 
 
-- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file. Default: `config.properties` file in the current directory. Is this true??
+- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file.
 - `-w`, `\-\-no-owl-import` : Disables the automatic import of referenced ontologies specified in 'owl:imports' statements in the `profile.ttl` file. Default: enabled.
 
 - `-v`, `\-\-verbose` : Display verbose output.

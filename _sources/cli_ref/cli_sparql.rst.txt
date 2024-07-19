@@ -27,7 +27,7 @@ The ``sparql`` command allows executing SPARQL queries specifying various option
 - `-r`, `-of`, `\-\-result-format` `<format>` : Output format of the query results. Supported output formats are listed :ref:`below <corese-command-sparql-output-formats>`. Default: `markdown` table.
 - `-o`, `\-\-output-data` `<output_file>` : Optional path to save the query results. Default: standard output.
 
-- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file. Default: `config.properties` file in the current directory. Is this true??
+- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file.
 - `-w`, `\-\-no-owl-import` : Disables the automatic import of referenced ontologies specified in 'owl:imports' statements in the `profile.ttl` file. Default: enabled.
 
 - `-v`, `\-\-verbose` : Display verbose output.

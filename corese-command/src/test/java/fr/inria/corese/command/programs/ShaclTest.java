@@ -1,8 +1,8 @@
 package fr.inria.corese.command.programs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,8 +12,8 @@ import java.io.StringWriter;
 import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
@@ -43,8 +43,8 @@ public class ShaclTest {
     private static final String UUID_REGEX = "<urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}>";
     private static final String NEUTRAL_UUID = "<urn:uuid:00000000-0000-0000-0000-000000000000>";
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         PrintWriter out = new PrintWriter(this.out);
         PrintWriter err = new PrintWriter(this.err);
         cmd.setOut(out);

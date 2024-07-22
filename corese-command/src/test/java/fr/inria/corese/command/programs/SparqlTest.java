@@ -1,8 +1,8 @@
 package fr.inria.corese.command.programs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,8 +13,8 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import picocli.CommandLine;
 
@@ -36,8 +36,8 @@ public class SparqlTest {
         private String queriesPath = SparqlTest.class.getResource("/fr/inria/corese/command/programs/sparql/queries/")
                         .getPath();
 
-        @Before
-        public void setUp() throws Exception {
+        @BeforeEach
+        public void setUp() {
                 PrintWriter out = new PrintWriter(this.out);
                 PrintWriter err = new PrintWriter(this.err);
                 cmd.setOut(out);

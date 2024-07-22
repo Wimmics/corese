@@ -1,17 +1,17 @@
 package fr.inria.corese.command.programs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.rdf.RdfDataLoader;
@@ -51,8 +51,8 @@ public class ConvertTest {
         return CanonicalRdf10Format.create(graph).toString();
     }
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         PrintWriter out = new PrintWriter(this.out);
         PrintWriter err = new PrintWriter(this.err);
         cmd.setOut(out);

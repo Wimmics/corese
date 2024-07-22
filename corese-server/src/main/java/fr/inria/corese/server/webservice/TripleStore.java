@@ -35,13 +35,11 @@ import jakarta.servlet.http.HttpServletRequest;
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
-public class TripleStore implements URLParam {
-    private static final String LOG_DIR = "/log/";
+public class TripleStore {
 
-    public static org.slf4j.Logger logger = LoggerFactory.getLogger(TripleStore.class);
+    public static final org.slf4j.Logger logger = LoggerFactory.getLogger(TripleStore.class);
     static HashMap<String, Integer> metaMap;
     GraphStore graph = GraphStore.create(false);
-    // QueryProcess exec;// = QueryProcess.create(graph);
     boolean rdfs = false;
     boolean owl = false;
     private boolean match = false;
@@ -56,8 +54,8 @@ public class TripleStore implements URLParam {
     static void init() {
         metaMap = new HashMap<>();
         metaMap.put(URLParam.SPARQL, Metadata.SPARQL);
-        metaMap.put(TRACE, Metadata.TRACE);
-        metaMap.put(PROVENANCE, Metadata.VARIABLE);
+        metaMap.put(URLParam.TRACE, Metadata.TRACE);
+        metaMap.put(URLParam.PROVENANCE, Metadata.VARIABLE);
         metaMap.put("index", Metadata.INDEX);
         metaMap.put("move", Metadata.MOVE);
         metaMap.put("count", Metadata.SERVER);
@@ -151,19 +149,6 @@ public class TripleStore implements URLParam {
 
     }
 
-    // void load(String[] load) {
-    // Load ld = Load.create(graph);
-    // for (String f : load) {
-    // try {
-    // logger.info("Load: " + f);
-    // //ld.loadWE(f, f, Load.TURTLE_FORMAT);
-    // ld.parse(f, Load.TURTLE_FORMAT);
-    // } catch (LoadException ex) {
-    // logger.error(ex.getMessage());
-    // }
-    // }
-    // }
-
     void load(String path, String src) throws LoadException {
         Load ld = Load.create(getGraph());
         ld.setDataManager(getDataManager());
@@ -180,11 +165,11 @@ public class TripleStore implements URLParam {
      * sh:conforms ?b }
      */
     Mappings query(HttpServletRequest request, String query, Dataset ds) throws EngineException {
-        if (ds.getCreateContext().hasValue(TRACE)) {
-            trace(request);
-        }
         if (ds == null) {
             ds = new Dataset();
+        }
+        if (ds.getCreateContext().hasValue(URLParam.TRACE)) {
+            trace(request);
         }
         Context c = ds.getContext();
         complete(c, request);
@@ -205,7 +190,6 @@ public class TripleStore implements URLParam {
                     if (isCompile(c)) {
                         Query qq = exec.compile(federate(query, ds), ds);
                         map = Mappings.create(qq);
-                        // exec.getLog().share(qq.getAST().getLog());
                     } else {
                         map = exec.query(federate(query, ds), ds);
                     }
@@ -219,7 +203,7 @@ public class TripleStore implements URLParam {
                     map = exec.query(query, ds);
                 }
             } catch (EngineException e) {
-                if (c.hasEveryValue(MES, CATCH)) {
+                if (c.hasEveryValue(URLParam.MES, URLParam.CATCH)) {
                     // mode=message;error
                     // return empty Mappings with message/log etc.
                     Query q = exec.compile(query, ds);
@@ -253,11 +237,11 @@ public class TripleStore implements URLParam {
         c.setService(getName());
         c.setUserQuery(true);
         c.setRemoteHost(request.getRemoteHost());
-        c.set(REQUEST, DatatypeMap.createObject(request));
-        String platform = getCookie(request, PLATFORM);
+        c.set(URLParam.REQUEST, DatatypeMap.createObject(request));
+        String platform = getCookie(request, URLParam.PLATFORM);
         if (platform != null) {
             // calling platform
-            c.set(PLATFORM, platform);
+            c.set(URLParam.PLATFORM, platform);
         }
     }
 
@@ -267,13 +251,13 @@ public class TripleStore implements URLParam {
             QueryLoad ql = QueryLoad.create();
             ql.setAccessRight(ds.getContext().getAccessRight());
             String str = ql.readWithAccess(dt.getLabel());
-            System.out.println("TS: before: " + str);
+            logger.trace("TS: before: {}", str);
             Mappings map = exec.query(str, ds);
         }
-        if (ds.getContext().hasValue(EXPLAIN)) {
+        if (ds.getContext().hasValue(URLParam.EXPLAIN)) {
             exec.setDebug(true);
         }
-        ds.getContext().set(QUERY, query);
+        ds.getContext().set(URLParam.QUERY, query);
     }
 
     void after(QueryProcess exec, String query, Dataset ds) throws LoadException, EngineException {
@@ -282,56 +266,54 @@ public class TripleStore implements URLParam {
             QueryLoad ql = QueryLoad.create();
             ql.setAccessRight(ds.getContext().getAccessRight());
             String str = ql.readWithAccess(dt.getLabel());
-            System.out.println("TS: after: " + str);
+            logger.trace("TS: after: {}" , str);
             Mappings map = exec.query(str, ds);
         }
     }
 
     IDatatype getBefore(Context c) {
-        return c.get(URI).get(0);
+        return c.get(URLParam.URI).get(0);
     }
 
     IDatatype getAfter(Context c) {
-        return c.get(URI).get(c.get(URI).size() - 1);
+        return c.get(URLParam.URI).get(c.get(URLParam.URI).size() - 1);
     }
 
     boolean isSpin(Context c) {
-        return c.hasValue(TO_SPIN);
+        return c.hasValue(URLParam.TO_SPIN);
     }
 
     boolean isParse(Context c) {
-        return c.hasValue(PARSE);
+        return c.hasValue(URLParam.PARSE);
     }
 
     boolean isCompile(Context c) {
-        return c.hasValue(COMPILE);
+        return c.hasValue(URLParam.COMPILE);
     }
 
     boolean isBefore(Context c) {
-        return c.hasValue(BEFORE) && hasValueList(c, URI);
+        return c.hasValue(URLParam.BEFORE) && hasValueList(c, URLParam.URI);
     }
 
     boolean isAfter(Context c) {
-        return c.hasValue(AFTER) && hasValueList(c, URI);
+        return c.hasValue(URLParam.AFTER) && hasValueList(c, URLParam.URI);
     }
 
     boolean isShacl(Context c) {
-        return c.hasValue(SHACL) && hasValueList(c, URI);
+        return c.hasValue(URLParam.SHACL) && hasValueList(c, URLParam.URI);
     }
 
     boolean isConstruct(Context c) {
-        return c.hasValue(CONSTRUCT);
+        return c.hasValue(URLParam.CONSTRUCT);
     }
 
     boolean hasValueList(Context c, String name) {
         return c.hasValue(name) && c.get(name).isList() && c.get(name).size() > 0;
     }
 
-    // federate?query=select where {}
     boolean isFederate(Dataset ds) {
         Context c = ds.getContext();
-        return c.hasValue(FEDERATE);
-        // && ds.getUriList() != null && !ds.getUriList().isEmpty();
+        return c.hasValue(URLParam.FEDERATE);
     }
 
     Mappings spin(String query, Dataset ds) throws EngineException {
@@ -353,7 +335,7 @@ public class TripleStore implements URLParam {
         Graph shacl = Graph.create();
         Load ld = Load.create(shacl);
         try {
-            for (IDatatype dt : ds.getContext().get(URI)) {
+            for (IDatatype dt : ds.getContext().get(URLParam.URI)) {
                 ld.parse(dt.getLabel());
             }
         } catch (LoadException ex) {
@@ -373,7 +355,7 @@ public class TripleStore implements URLParam {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         try {
-            for (IDatatype dt : ds.getContext().get(URI)) {
+            for (IDatatype dt : ds.getContext().get(URLParam.URI)) {
                 ld.parse(dt.getLabel());
             }
             g.init();
@@ -391,7 +373,7 @@ public class TripleStore implements URLParam {
     ASTQuery federate(String query, Dataset ds) throws EngineException {
         QueryProcess exec = getQueryProcess();
         ASTQuery ast = exec.parse(query, ds);
-        // ast.setAnnotation(metadata(ast, ds));
+        
         ast.addMetadata(metadata(ast, ds));
         logger.info("metadata: " + ast.getMetadata());
         return ast;
@@ -403,23 +385,23 @@ public class TripleStore implements URLParam {
      */
     Metadata metadata(ASTQuery ast, Dataset ds) {
         Metadata meta = new Metadata();
-        if (ds.getContext().hasValue(FEDERATE)) {
+        if (ds.getContext().hasValue(URLParam.FEDERATE)) {
             if (ds.getUriList() == null) {
                 meta.add(Metadata.FEDERATION);
             } else {
                 meta.set(Metadata.FEDERATION, ds.getUriList());
             }
         }
-        if (ds.getContext().hasValue(MERGE)) {
+        if (ds.getContext().hasValue(URLParam.MERGE)) {
             // heuristic to merge services on the intersection of service URLs
             meta.add(Metadata.MERGE_SERVICE);
         }
 
-        for (String key : metaMap.keySet()) {
-            if (ds.getContext().hasValue(key)) {
-                meta.add(metaMap.get(key));
+        metaMap.entrySet().forEach(entry -> {
+            if (ds.getContext().hasValue(entry.getKey())) {
+                meta.add(entry.getValue());
             }
-        }
+        });
 
         return meta;
     }
@@ -437,20 +419,20 @@ public class TripleStore implements URLParam {
     }
 
     void trace(HttpServletRequest request) {
-        System.out.println("Endpoint HTTP Request");
+        logger.trace("Endpoint HTTP Request");
         if (request.getCookies() != null) {
             for (Cookie cook : request.getCookies()) {
-                System.out.println("cookie: " + cook.getName() + " " + cook.getValue()); // + " " + cook.getPath());
+                logger.trace("cookie: " + cook.getName() + " " + cook.getValue()); 
             }
         }
         Enumeration<String> enh = request.getHeaderNames();
         while (enh.hasMoreElements()) {
-            String name = enh.nextElement();
-            System.out.println("header: " + name + ": " + request.getHeader(name));
+            String headerName = enh.nextElement();
+            logger.trace("header: " + headerName + ": " + request.getHeader(headerName));
         }
         for (Object obj : request.getParameterMap().keySet()) {
-            String name = obj.toString();
-            System.out.println("param: " + name + "=" + request.getParameter(name));
+            String headerName = obj.toString();
+            logger.trace("param: " + headerName + "=" + request.getParameter(headerName));
         }
     }
 

@@ -1,5 +1,5 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix ns1: <http://stardog.com/tutorial/> .
+@prefix ns1: <http://example.com/> .
 
 ns1:George_Harrison ns1:age 30 ;
   a ns1:SoloArtist .

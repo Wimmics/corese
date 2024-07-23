@@ -1,13 +1,13 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix xsh: <http://www.w3.org/ns/shacl#> .
-@prefix ns1: <http://stardog.com/tutorial/> .
+@prefix ns1: <http://example.com/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <http://example.org/ns#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 <urn:uuid:ab36c05f-1578-4277-9936-050c4757b11c> a sh:ValidationResult ;
   sh:focusNode ns1:Please_Please_Me ;
-  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]" ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://example.com/name>]" ;
   sh:resultPath ns1:name ;
   sh:resultSeverity sh:Violation ;
   sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
@@ -34,7 +34,7 @@
 
 <urn:uuid:5aa74b3a-0c51-4384-8bdd-e3b9ebe2d4f1> a sh:ValidationResult ;
   sh:focusNode ns1:Please_Please_Me ;
-  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]" ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://example.com/name>]" ;
   sh:resultPath ns1:name ;
   sh:resultSeverity sh:Violation ;
   sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
@@ -61,7 +61,7 @@
 
 <urn:uuid:acb7daf0-c53f-496b-a119-e55aa1ad7b63> a sh:ValidationResult ;
   sh:focusNode ns1:Please_Please_Me ;
-  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]" ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://example.com/name>]" ;
   sh:resultPath ns1:name ;
   sh:resultSeverity sh:Violation ;
   sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;

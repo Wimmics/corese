@@ -1,4 +1,4 @@
-@prefix : <http://stardog.com/tutorial/> .
+@prefix : <http://example.com/> .
 
 :Please_Please_Me :artist :The_Beatles .
 

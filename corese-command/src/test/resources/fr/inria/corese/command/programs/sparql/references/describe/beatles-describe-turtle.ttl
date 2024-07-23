@@ -1,4 +1,4 @@
-@prefix : <http://stardog.com/tutorial/> .
+@prefix : <http://example.com/> .
 
 :The_Beatles :member :John_Lennon ;
   :member :Paul_McCartney ;

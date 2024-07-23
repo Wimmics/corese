@@ -22,7 +22,7 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Spec;
 
 @Command(name = "canonicalize", version = App.version, description = "Canonicalize an RDF file to a specific format.", mixinStandardHelpOptions = true)
-public class canonicalize implements Callable<Integer> {
+public class Canonicalize implements Callable<Integer> {
 
     private final String DEFAULT_OUTPUT_FILE_NAME = "output";
     private final int ERROR_EXIT_CODE_SUCCESS = 0;
@@ -43,7 +43,7 @@ public class canonicalize implements Callable<Integer> {
             "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.", arity = "0..1", fallbackValue = DEFAULT_OUTPUT_FILE_NAME)
     private Path output;
 
-    @Option(names = { "-r", "-a", "-ca", "-of",
+    @Option(names = { "-a", "-ca", "-r", "-of",
             "--canonical-algo" }, required = true, description = "Canonicalization algorithm to which the input file should be converted. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.", defaultValue = "RDFC10SHA256")
     private EnumCanonicAlgo canonicalAlgo;
 
@@ -67,7 +67,7 @@ public class canonicalize implements Callable<Integer> {
 
     private boolean isDefaultOutputName = false;
 
-    public canonicalize() {
+    public Canonicalize() {
     }
 
     @Override

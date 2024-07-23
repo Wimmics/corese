@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 
 import com.github.jsonldjava.shaded.com.google.common.io.Files;
 
+import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.ConfigManager;
 import fr.inria.corese.command.utils.ConvertString;
 import fr.inria.corese.command.utils.TestType;
@@ -23,7 +24,7 @@ import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Spec;
 
-@Command(name = "remote-sparql", version = "1.0", description = "Execute a SPARQL query on a remote endpoint.", mixinStandardHelpOptions = true)
+@Command(name = "remote-sparql", version = App.version, description = "Execute a SPARQL query on a remote endpoint.", mixinStandardHelpOptions = true)
 public class RemoteSparql implements Callable<Integer> {
 
     private final int ERROR_EXIT_CODE_SUCCESS = 0;

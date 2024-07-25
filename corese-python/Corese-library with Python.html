@@ -674,12 +674,12 @@ document.write(`
 <span class="n">printTitle</span><span class="p">(</span><span class="s2">&quot;SPARQL Query&quot;</span><span class="p">)</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span>
-    <span class="s2">&quot;https://raw.githubusercontent.com/stardog-union/stardog-tutorials/master/music/beatles.ttl&quot;</span><span class="p">)</span> <span class="c1"># Uri or path to the graph</span>
+    <span class="s2">&quot;https://files.inria.fr/corese/data/unit-test/beatles.ttl&quot;</span><span class="p">)</span> <span class="c1"># Uri or path to the graph</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Graph load ! (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; triplets)&quot;</span><span class="p">)</span>
 
 <span class="c1"># List of U2 albums</span>
 <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        prefix : &lt;http://stardog.com/tutorial/&gt;</span>
+<span class="s2">        prefix : &lt;http://example.org/&gt;</span>
 
 <span class="s2">        SELECT ?member </span>
 <span class="s2">        WHERE {</span>
@@ -715,7 +715,7 @@ document.write(`
 <span class="n">printTitle</span><span class="p">(</span><span class="s2">&quot;Load / Export&quot;</span><span class="p">)</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span>
-    <span class="s2">&quot;https://raw.githubusercontent.com/stardog-union/stardog-tutorials/master/music/beatles.ttl&quot;</span><span class="p">)</span>
+    <span class="s2">&quot;https://files.inria.fr/corese/data/unit-test/beatles.ttl&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Graph load ! (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot; triplets)&quot;</span><span class="p">)</span>
 
 <span class="n">path_export_file</span> <span class="o">=</span> <span class="s2">&quot;export.rdf&quot;</span>
@@ -747,10 +747,10 @@ Print Graph:
 Graph load ! (28 triplets)
 
 Query result ! (List of members of bands &quot;The Beatles&quot;): 
-01 ?member = &lt;http://stardog.com/tutorial/John_Lennon&gt;; 
-02 ?member = &lt;http://stardog.com/tutorial/Paul_McCartney&gt;; 
-03 ?member = &lt;http://stardog.com/tutorial/Ringo_Starr&gt;; 
-04 ?member = &lt;http://stardog.com/tutorial/George_Harrison&gt;; 
+01 ?member = &lt;http://example.org/John_Lennon&gt;; 
+02 ?member = &lt;http://example.org/Paul_McCartney&gt;; 
+03 ?member = &lt;http://example.org/Ringo_Starr&gt;; 
+04 ?member = &lt;http://example.org/George_Harrison&gt;; 
 
 
 

@@ -1,7 +1,6 @@
 package fr.inria.corese.server.webservice;
 
 import static fr.inria.corese.core.print.ResultFormat.JSON_LD;
-import static fr.inria.corese.core.print.ResultFormat.TURTLE;
 import static fr.inria.corese.core.print.ResultFormat.TURTLE_TEXT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,7 +18,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.print.JSONLDFormat;
 import fr.inria.corese.core.print.NTriplesFormat;
 
 /**
@@ -589,8 +587,8 @@ public class LDPEndpointWithSudoTest {
 
         @Test
         public void putTurtleResourceBasicContainer() throws Exception {
-                String containerURI = LDP_ENDPOINT + "putJsonldResourceBasicContainer";
-                String resourceURI = LDP_ENDPOINT + "putJsonldResourceBasicContainer/resource";
+                String containerURI = LDP_ENDPOINT + "putTurtleResourceBasicContainer";
+                String resourceURI = LDP_ENDPOINT + "putTurtleResourceBasicContainer/resource";
                 List<List<String>> containerCreationHeaders = new LinkedList<>();
                 List<List<String>> resourceCreationHeaders = new LinkedList<>();
                 List<String> acceptHeader = new LinkedList<>();
@@ -640,9 +638,61 @@ public class LDPEndpointWithSudoTest {
         }
 
         @Test
-        public void putTurtleResourceDirectContainerNoMembershipResource() throws Exception {
-                String containerURI = LDP_ENDPOINT + "putJsonldResourceBasicContainer";
-                String resourceURI = LDP_ENDPOINT + "putJsonldResourceBasicContainer/resource";
+        public void postTurtleResourceBasicContainer() throws Exception {
+                String containerURI = LDP_ENDPOINT + "postTurtleResourceBasicContainer";
+                String resourceURI = LDP_ENDPOINT + "postTurtleResourceBasicContainer/resource";
+                List<List<String>> containerCreationHeaders = new LinkedList<>();
+                List<List<String>> resourceCreationHeaders = new LinkedList<>();
+                List<String> acceptHeader = new LinkedList<>();
+                acceptHeader.add("Content-Type");
+                acceptHeader.add(TURTLE_TEXT);
+                List<String> linkHeader = new LinkedList<>();
+                linkHeader.add("Link");
+                linkHeader.add("<http://www.w3.org/ns/ldp#BasicContainer>; rel=\"type\"");
+                List<String> slugHeader = new LinkedList<>();
+                slugHeader.add("Slug");
+                slugHeader.add("resource");
+                containerCreationHeaders.add(acceptHeader);
+                containerCreationHeaders.add(linkHeader);
+                resourceCreationHeaders.add(acceptHeader);
+                resourceCreationHeaders.add(slugHeader);
+
+                String turtleContainerDescription = "<> a <http://corese.inria.fr/#TestContainer> .";
+                String turtleResourceDescription = "<> a <http://corese.inria.fr/#TestResource> .";
+
+                HttpURLConnection containerCreationCon = HTTPTestUtils.postConnection(containerURI,
+                                containerCreationHeaders, turtleContainerDescription);
+                containerCreationCon.connect();
+                int containerCreationStatus = containerCreationCon.getResponseCode();
+                containerCreationCon.disconnect();
+
+                HttpURLConnection resourceCreationCon = HTTPTestUtils.postConnection(containerURI,
+                                resourceCreationHeaders, turtleResourceDescription);
+                resourceCreationCon.connect();
+                int resourceCreationStatus = resourceCreationCon.getResponseCode();
+                resourceCreationCon.disconnect();
+
+                String askQueryCheckResourceExists = "ASK { <" + resourceURI
+                                + "> a <http://corese.inria.fr/#TestResource> }";
+                boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
+                String askQueryCheckContainerExists = "ASK { <" + containerURI
+                                + "> a <http://corese.inria.fr/#TestContainer> }";
+                boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
+                String askQueryResourceIsInContainer = "ASK { <" + containerURI
+                                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> }";
+                boolean isTheResourceInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsInContainer);
+
+                assertEquals(201, containerCreationStatus);
+                assertEquals(201, resourceCreationStatus);
+                assertTrue(isTheContainerInTheSparqlEndpoint);
+                assertTrue(isTheResourceInTheSparqlEndpoint);
+                assertTrue(isTheResourceInContainer);
+        }
+
+        @Test
+        public void putTurtleResourceDirectContainerWithNoMembershipResource() throws Exception {
+                String containerURI = LDP_ENDPOINT + "putTurtleResourceDirectContainerWithNoMembershipResource";
+                String resourceURI = LDP_ENDPOINT + "putTurtleResourceDirectContainerWithNoMembershipResource/resource";
                 List<List<String>> containerCreationHeaders = new LinkedList<>();
                 List<List<String>> resourceCreationHeaders = new LinkedList<>();
                 List<String> acceptHeader = new LinkedList<>();
@@ -698,4 +748,258 @@ public class LDPEndpointWithSudoTest {
                 assertTrue(isTheResourceInContainerUsingMember);
                 assertTrue(isTheResourceInContainerUsingCustomMemberProperty);
         }
+
+        @Test
+        public void postTurtleResourceDirectContainerWithNoMembershipResource() throws Exception {
+                String containerURI = LDP_ENDPOINT + "postTurtleResourceDirectContainerWithNoMembershipResource";
+                String resourceURI = LDP_ENDPOINT
+                                + "postTurtleResourceDirectContainerWithNoMembershipResource/resource";
+                List<List<String>> containerCreationHeaders = new LinkedList<>();
+                List<List<String>> resourceCreationHeaders = new LinkedList<>();
+                List<String> acceptHeader = new LinkedList<>();
+                acceptHeader.add("Content-Type");
+                acceptHeader.add(TURTLE_TEXT);
+                List<String> linkHeader = new LinkedList<>();
+                linkHeader.add("Link");
+                linkHeader.add("<http://www.w3.org/ns/ldp#DirectContainer>; rel=\"type\"");
+                List<String> slugHeader = new LinkedList<>();
+                slugHeader.add("Slug");
+                slugHeader.add("resource");
+                containerCreationHeaders.add(acceptHeader);
+                containerCreationHeaders.add(linkHeader);
+                resourceCreationHeaders.add(acceptHeader);
+                resourceCreationHeaders.add(slugHeader);
+
+                String turtleContainerDescription = "<> a <http://corese.inria.fr/#TestContainer> ;"
+                                + "    <http://www.w3.org/ns/ldp#hasMemberRelation> <http://corese.inria.fr/#memberProperty> ;"
+                                + "    <http://www.w3.org/ns/ldp#membershipResource> <> .";
+                String turtleResourceDescription = "<> a <http://corese.inria.fr/#TestResource> .";
+
+                HttpURLConnection containerCreationCon = HTTPTestUtils.postConnection(containerURI,
+                                containerCreationHeaders, turtleContainerDescription);
+                containerCreationCon.connect();
+                int containerCreationStatus = containerCreationCon.getResponseCode();
+                containerCreationCon.disconnect();
+
+                HttpURLConnection resourceCreationCon = HTTPTestUtils.postConnection(containerURI,
+                                resourceCreationHeaders, turtleResourceDescription);
+                resourceCreationCon.connect();
+                int resourceCreationStatus = resourceCreationCon.getResponseCode();
+                resourceCreationCon.disconnect();
+
+                String askQueryCheckResourceExists = "ASK { <" + resourceURI
+                                + "> a <http://corese.inria.fr/#TestResource> }";
+                boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
+                String askQueryCheckContainerExists = "ASK { <" + containerURI
+                                + "> a <http://corese.inria.fr/#TestContainer> }";
+                boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
+                String askQueryResourceIsInContainerUsingMember = "ASK { <" + containerURI
+                                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> . }";
+                String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <" + containerURI
+                                + "> <http://corese.inria.fr/#memberProperty> <" + resourceURI + "> }";
+                boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
+                                .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
+                boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
+                                .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
+
+                assertEquals(201, containerCreationStatus);
+                assertEquals(201, resourceCreationStatus);
+                assertTrue(isTheContainerInTheSparqlEndpoint);
+                assertTrue(isTheResourceInTheSparqlEndpoint);
+                assertTrue(isTheResourceInContainerUsingMember);
+                assertTrue(isTheResourceInContainerUsingCustomMemberProperty);
+        }
+
+        @Test
+        public void putTurtleResourceDirectContainerWithMembershipResource() throws Exception {
+                String containerURI = LDP_ENDPOINT + "putTurtleResourceDirectContainerWithMembershipResource";
+                String resourceURI = LDP_ENDPOINT + "putTurtleResourceDirectContainerWithMembershipResource/resource";
+                List<List<String>> containerCreationHeaders = new LinkedList<>();
+                List<List<String>> resourceCreationHeaders = new LinkedList<>();
+                List<String> acceptHeader = new LinkedList<>();
+                acceptHeader.add("Content-Type");
+                acceptHeader.add(TURTLE_TEXT);
+                List<String> linkHeader = new LinkedList<>();
+                linkHeader.add("Link");
+                linkHeader.add("<http://www.w3.org/ns/ldp#DirectContainer>; rel=\"type\"");
+                List<String> slugHeader = new LinkedList<>();
+                slugHeader.add("Slug");
+                slugHeader.add("resource");
+                containerCreationHeaders.add(acceptHeader);
+                containerCreationHeaders.add(linkHeader);
+                resourceCreationHeaders.add(acceptHeader);
+                resourceCreationHeaders.add(slugHeader);
+
+                String turtleContainerDescription = "<> a <http://corese.inria.fr/#TestContainer> ;"
+                                + "    <http://www.w3.org/ns/ldp#hasMemberRelation> <http://corese.inria.fr/#memberProperty> ;"
+                                + "    <http://www.w3.org/ns/ldp#membershipResource> <http://corese.inria.fr/#membershipResource> .";
+                String turtleResourceDescription = "<> a <http://corese.inria.fr/#TestResource> .";
+
+                HttpURLConnection containerCreationCon = HTTPTestUtils.putConnection(containerURI,
+                                containerCreationHeaders, turtleContainerDescription);
+                containerCreationCon.connect();
+                int containerCreationStatus = containerCreationCon.getResponseCode();
+                containerCreationCon.disconnect();
+
+                HttpURLConnection resourceCreationCon = HTTPTestUtils.putConnection(containerURI,
+                                resourceCreationHeaders, turtleResourceDescription);
+                resourceCreationCon.connect();
+                int resourceCreationStatus = resourceCreationCon.getResponseCode();
+                resourceCreationCon.disconnect();
+
+                String askQueryCheckResourceExists = "ASK { <" + resourceURI
+                                + "> a <http://corese.inria.fr/#TestResource> }";
+                boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
+                String askQueryCheckContainerExists = "ASK { <" + containerURI
+                                + "> a <http://corese.inria.fr/#TestContainer> }";
+                boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
+                String askQueryResourceIsInContainerUsingMember = "ASK { <http://corese.inria.fr/#membershipResource> <http://www.w3.org/ns/ldp#member> <"
+                                + resourceURI + "> . }";
+                String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <http://corese.inria.fr/#membershipResource> <http://corese.inria.fr/#memberProperty> <"
+                                + resourceURI + "> }";
+                boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
+                                .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
+                boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
+                                .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
+
+                assertEquals(201, containerCreationStatus);
+                assertEquals(201, resourceCreationStatus);
+                assertTrue(isTheContainerInTheSparqlEndpoint);
+                assertTrue(isTheResourceInTheSparqlEndpoint);
+                assertTrue(isTheResourceInContainerUsingMember);
+                assertTrue(isTheResourceInContainerUsingCustomMemberProperty);
+        }
+
+        @Test
+        public void postTurtleResourceDirectContainerWithMembershipResource() throws Exception {
+                String containerURI = LDP_ENDPOINT + "postTurtleResourceDirectContainerWithMembershipResource";
+                String resourceURI = LDP_ENDPOINT + "postTurtleResourceDirectContainerWithMembershipResource/resource";
+                List<List<String>> containerCreationHeaders = new LinkedList<>();
+                List<List<String>> resourceCreationHeaders = new LinkedList<>();
+                List<String> acceptHeader = new LinkedList<>();
+                acceptHeader.add("Content-Type");
+                acceptHeader.add(TURTLE_TEXT);
+                List<String> linkHeader = new LinkedList<>();
+                linkHeader.add("Link");
+                linkHeader.add("<http://www.w3.org/ns/ldp#DirectContainer>; rel=\"type\"");
+                List<String> slugHeader = new LinkedList<>();
+                slugHeader.add("Slug");
+                slugHeader.add("resource");
+                containerCreationHeaders.add(acceptHeader);
+                containerCreationHeaders.add(linkHeader);
+                resourceCreationHeaders.add(acceptHeader);
+                resourceCreationHeaders.add(slugHeader);
+
+                String turtleContainerDescription = "<> a <http://corese.inria.fr/#TestContainer> ;"
+                                + "    <http://www.w3.org/ns/ldp#hasMemberRelation> <http://corese.inria.fr/#memberProperty> ;"
+                                + "    <http://www.w3.org/ns/ldp#membershipResource> <http://corese.inria.fr/#membershipResource> .";
+                String turtleResourceDescription = "<> a <http://corese.inria.fr/#TestResource> .";
+
+                HttpURLConnection containerCreationCon = HTTPTestUtils.postConnection(containerURI,
+                                containerCreationHeaders, turtleContainerDescription);
+                containerCreationCon.connect();
+                int containerCreationStatus = containerCreationCon.getResponseCode();
+                containerCreationCon.disconnect();
+
+                HttpURLConnection resourceCreationCon = HTTPTestUtils.postConnection(containerURI,
+                                resourceCreationHeaders, turtleResourceDescription);
+                resourceCreationCon.connect();
+                int resourceCreationStatus = resourceCreationCon.getResponseCode();
+                resourceCreationCon.disconnect();
+
+                String askQueryCheckResourceExists = "ASK { <" + resourceURI
+                                + "> a <http://corese.inria.fr/#TestResource> }";
+                boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
+                String askQueryCheckContainerExists = "ASK { <" + containerURI
+                                + "> a <http://corese.inria.fr/#TestContainer> }";
+                boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
+                String askQueryResourceIsInContainerUsingMember = "ASK { <http://corese.inria.fr/#membershipResource> <http://www.w3.org/ns/ldp#member> <"
+                                + resourceURI + "> . }";
+                String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <http://corese.inria.fr/#membershipResource> <http://corese.inria.fr/#memberProperty> <"
+                                + resourceURI + "> }";
+                boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
+                                .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
+                boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
+                                .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
+
+                assertEquals(201, resourceCreationStatus);
+                assertTrue(isTheContainerInTheSparqlEndpoint);
+                assertTrue(isTheResourceInTheSparqlEndpoint);
+                assertTrue(isTheResourceInContainerUsingMember);
+                assertTrue(isTheResourceInContainerUsingCustomMemberProperty);
+        }
+
+        @Test
+        public void putTurtleResourceIndirectContainerWithMembershipResource() throws Exception {
+                String containerURI = LDP_ENDPOINT + "putTurtleResourceIndirectContainerWithNoMembershipResource";
+                String containerMembershipResourceURI = LDP_ENDPOINT + "putTurtleResourceIndirectContainerWithNoMembershipResource#membershipResource";
+                String resourceURI = LDP_ENDPOINT
+                                + "putTurtleResourceIndirectContainerWithNoMembershipResource/resource";
+                List<List<String>> containerCreationHeaders = new LinkedList<>();
+                List<List<String>> resourceCreationHeaders = new LinkedList<>();
+                List<String> acceptHeader = new LinkedList<>();
+                acceptHeader.add("Content-Type");
+                acceptHeader.add(TURTLE_TEXT);
+                List<String> linkHeader = new LinkedList<>();
+                linkHeader.add("Link");
+                linkHeader.add("<http://www.w3.org/ns/ldp#IndirectContainer>; rel=\"type\"");
+                List<String> slugHeader = new LinkedList<>();
+                slugHeader.add("Slug");
+                slugHeader.add("resource");
+                containerCreationHeaders.add(acceptHeader);
+                containerCreationHeaders.add(linkHeader);
+                resourceCreationHeaders.add(acceptHeader);
+                resourceCreationHeaders.add(slugHeader);
+
+                String turtleContainerDescription = "<> a <http://corese.inria.fr/#TestContainer> ;"
+                                + "    <http://www.w3.org/ns/ldp#hasMemberRelation> <http://corese.inria.fr/#memberProperty> ;"
+                                + "    <http://www.w3.org/ns/ldp#membershipResource> <" + containerMembershipResourceURI + "> ;"
+                                + "    <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> .";
+                String turtleResourceDescription = "<> a <http://corese.inria.fr/#TestResource> . <> <http://corese.inria.fr/#inverseMemberProperty> <http://te.st/1> . <> a <http://corese.inria.fr/#TestResource> . <> <http://corese.inria.fr/#inverseMemberProperty> <http://te.st/2> .";
+
+                HttpURLConnection containerCreationCon = HTTPTestUtils.putConnection(containerURI,
+                                containerCreationHeaders, turtleContainerDescription);
+                containerCreationCon.connect();
+                int containerCreationStatus = containerCreationCon.getResponseCode();
+                containerCreationCon.disconnect();
+
+                HttpURLConnection resourceCreationCon = HTTPTestUtils.putConnection(containerURI,
+                                resourceCreationHeaders, turtleResourceDescription);
+                resourceCreationCon.connect();
+                int resourceCreationStatus = resourceCreationCon.getResponseCode();
+                resourceCreationCon.disconnect();
+
+                String askQueryCheckResourceExists = "ASK { <" + resourceURI
+                                + "> a <http://corese.inria.fr/#TestResource> }";
+                boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
+                String askQueryCheckContainerExists = "ASK { <" + containerURI
+                                + "> a <http://corese.inria.fr/#TestContainer> }";
+                boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
+                String askQueryResourceIsInContainerUsingMember = "ASK { <" + containerMembershipResourceURI + "> <http://corese.inria.fr/#memberProperty> <"
+                                + resourceURI + "> ; <http://corese.inria.fr/#inverseMemberProperty> <" + resourceURI
+                                + "1> ; <http://corese.inria.fr/#inverseMemberProperty> <" + resourceURI + "2> . }";
+                String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <" + containerMembershipResourceURI + "> <http://corese.inria.fr/#memberProperty> <"
+                                + resourceURI + "> ; <http://corese.inria.fr/#inverseMemberProperty> <" + resourceURI
+                                + "1> ; <http://corese.inria.fr/#inverseMemberProperty> <" + resourceURI + "2> . }";
+                boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
+                                .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
+                boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
+                                .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
+
+                Graph containerResourceDescription = SPARQLTestUtils
+                                .sendSPARQLConstructDescribe("DESCRIBE <" + containerURI + ">");
+                NTriplesFormat.create(containerResourceDescription).write(System.err);
+
+                Graph membershipResourceDescription = SPARQLTestUtils
+                                .sendSPARQLConstructDescribe("DESCRIBE <" + containerMembershipResourceURI + ">");
+                NTriplesFormat.create(membershipResourceDescription).write(System.err);
+
+                assertEquals(201, containerCreationStatus);
+                assertEquals(201, resourceCreationStatus);
+                assertTrue(isTheContainerInTheSparqlEndpoint);
+                assertTrue(isTheResourceInTheSparqlEndpoint);
+                assertTrue(isTheResourceInContainerUsingMember);
+                assertTrue(isTheResourceInContainerUsingCustomMemberProperty);
+        }
+
 }

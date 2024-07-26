@@ -71,6 +71,7 @@ public class LdpRequestAPI {
     private static final String URI_LDP_MEMBERSHIP_RESOURCE = NAMESPACE_LDP + "membershipResource";
     private static final String URI_LDP_HAS_MEMBERSHIP_RELATION = NAMESPACE_LDP + "hasMemberRelation";
     private static final String URI_LDP_IS_MEMBER_OF_RELATION = NAMESPACE_LDP + "isMemberOfRelation";
+    private static final String URI_LDP_INSERTED_CONTENT_RELATION = NAMESPACE_LDP + "insertedContentRelation";
     private static final String URI_LDP_RESOURCE = NAMESPACE_LDP + "Resource";
     private static final String URI_LDP_CONTAINER = NAMESPACE_LDP + "Container";
     private static final String URI_LDP_BASIC_CONTAINER = NAMESPACE_LDP + "BasicContainer";
@@ -266,7 +267,7 @@ public class LdpRequestAPI {
                     String newResourceURI = resourceURI + "/" + slug;
 
                     createResource(newResourceURI, rawContent, format);
-                    addResourceToContainer(resourceURI, newResourceURI);
+                    addResourceToContainer(resourceURI, newResourceURI, rawContent, format);
                     successStatusCode = 201;
                 } else {
                     return Response.status(Response.Status.BAD_REQUEST)
@@ -321,6 +322,7 @@ public class LdpRequestAPI {
             }
 
         } catch (LoadException e) {
+            logger.error(e);
             throw new EngineException(e);
         }
     }
@@ -361,7 +363,7 @@ public class LdpRequestAPI {
      */
     private void createBasicContainer(String resURI)
             throws EngineException {
-                logger.info("Creating basic container: " + resURI);
+        logger.info("Creating basic container: " + resURI);
         Node containerResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
         Node ldpBasicContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_BASIC_CONTAINER);
         SPARQLRestAPI.getTripleStore().getGraph().insert(containerResource, rdfTypeProperty, ldpBasicContainer);
@@ -455,8 +457,12 @@ public class LdpRequestAPI {
         String resURI = request.getRequestURL().toString();
         Node containerResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
         Node ldpIndirectContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_INDIRECT_CONTAINER);
+        Node ldpDirectContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_DIRECT_CONTAINER);
 
         SPARQLRestAPI.getTripleStore().getGraph().insert(containerResource, rdfTypeProperty, ldpIndirectContainer);
+        createDirectContainer(request, rawContent, format);
+        SPARQLRestAPI.getTripleStore().getGraph().delete(containerResource, rdfTypeProperty, ldpDirectContainer);
+
     }
 
     private Response getHeadResourceResponse(String res) throws EngineException {
@@ -628,6 +634,7 @@ public class LdpRequestAPI {
 
     private boolean containerIsDirect(String containerURI) {
         String sparql = String.format(LDP_CONTAINER_IS_DIRECT, containerURI);
+        logger.info("Checking if container is direct: " + containerURI + " with query: " + sparql);
         try {
             Mappings m = exec.query(sparql);
             return m.size() > 0;
@@ -639,6 +646,7 @@ public class LdpRequestAPI {
 
     private boolean containerIsIndirect(String containerURI) {
         String sparql = String.format(LDP_CONTAINER_IS_INDIRECT, containerURI);
+        logger.info("Checking if container is indirect: " + containerURI + " with query: " + sparql);
         try {
             Mappings m = exec.query(sparql);
             return m.size() > 0;
@@ -648,14 +656,29 @@ public class LdpRequestAPI {
         }
     }
 
+    private void addResourceToContainer(String containerURI, String resourceURI, String rawContent, String format) throws EngineException {
+        Graph content = new Graph();
+        Load load = Load.create(content);
+        try {
+            if (format.equals(TURTLE_TEXT)) {
+                load.loadString(rawContent, Load.TURTLE_FORMAT);
+            } else if (format.equals(JSON_LD)) {
+                load.loadString(rawContent, Load.JSONLD_FORMAT);
+            } else {
+                throw new EngineException("Unsupported format: " + format);
+            }
+        } catch (LoadException e) {
+            throw new EngineException(e);
+        }
+        addResourceToContainer(containerURI, resourceURI, content);
+    }
+
     /**
      * Add a resource to a container.
-     * A basic container is linked to its contained resources by ldp:contains
-     * property
      * 
      * @throws EngineException
      */
-    private void addResourceToContainer(String containerURI, String resourceURI) throws EngineException {
+    private void addResourceToContainer(String containerURI, String resourceURI, Graph content) throws EngineException {
         logger.info("Adding resource " + resourceURI + " to container: " + containerURI);
         Node container = SPARQLRestAPI.getTripleStore().getGraph().createNode(containerURI);
         Node resource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resourceURI);
@@ -665,8 +688,11 @@ public class LdpRequestAPI {
         } else if (containerIsDirect(containerURI)) {
             logger.info("Adding resource " + resourceURI + " to direct container: " + containerURI);
             addResourceToDirectContainer(container, resource);
-            // } else if(containerIsIndirect(containerURI)) {
-            // addResourceToIndirectContainer(container, resource);
+        } else if (containerIsIndirect(containerURI) && content != null) {
+            logger.info("Adding resource " + resourceURI + " to indirect container: " + containerURI);
+            addResourceToIndirectContainer(container, resource, content);
+        } else {
+            throw new EngineException("Container is not a valid LDP container");
         }
     }
 
@@ -681,6 +707,7 @@ public class LdpRequestAPI {
     private void addResourceToDirectContainer(Node container, Node resource) throws EngineException {
         String resURI = resource.getLabel();
         String containerURI = container.getLabel();
+        logger.info("Adding resource " + resURI + " to direct container: " + containerURI);
 
         ArrayList<Node> membershipResourceList = new ArrayList<>();
 
@@ -728,6 +755,65 @@ public class LdpRequestAPI {
             membershipProperty = isMemberOfRelationList.get(0);
             SPARQLRestAPI.getTripleStore().getGraph().insert(resource, membershipProperty, membershipResource);
         }
+    }
+
+    /**
+     * Resources added to a IndirectContainer must be link to the containers's
+     * membership resource by ldp:member and by the container's membership property.
+     * All resources object of the property object of the
+     * ldp:insertedContentRelation must be linked to the container's membership
+     * resource by the container's membership property. More than one
+     * ldp:insertedContentRelation can be defined.
+     * 
+     * @param container
+     * @param resource
+     * @throws EngineException
+     */
+    private void addResourceToIndirectContainer(Node container, Node resource, Graph content) throws EngineException {
+        String containerURI = container.getLabel();
+
+        logger.info("Adding resource " + resource.getLabel() + " to indirect container: " + containerURI);
+
+        addResourceToDirectContainer(container, resource);
+
+        ArrayList<Node> insertedContentRelation = new ArrayList<>();
+        QueryProcess resourceContentExec = QueryProcess.create(content);
+        String selectInsertedContentRelationQueryString = "SELECT DISTINCT ?insertedContentRelation { <" + containerURI
+                + "> <"
+                + URI_LDP_INSERTED_CONTENT_RELATION + "> ?insertedContentRelation }";
+        logger.info(selectInsertedContentRelationQueryString);
+        Mappings insertedContentRelationMappings = resourceContentExec.query(selectInsertedContentRelationQueryString);
+        if(insertedContentRelationMappings.size() == 0) {
+            throw new EngineException("Indirect Container must have at least one ldp:insertedContentRelation");
+        }
+        insertedContentRelationMappings.forEach(insertedContentRelationMapping -> {
+            Node insertedContentRelationNode = insertedContentRelationMapping.getNode("?insertedContentRelation");
+            insertedContentRelation.add(insertedContentRelationNode);
+        });
+
+        insertedContentRelation.forEach(insertedContentRelationNode -> {
+            ArrayList<Node> membershipResourceList = new ArrayList<>();
+            Mappings membershipResourceMappings;
+            try {
+                membershipResourceMappings = resourceContentExec
+                        .query("SELECT DISTINCT ?membershipResource { ?any <" + insertedContentRelationNode.getLabel() + "> ?membershipResource }");
+                membershipResourceMappings.forEach(membershipResourceMapping -> {
+                    Node membershipResource = membershipResourceMapping.getNode("?membershipResource");
+                    membershipResourceList.add(membershipResource);
+                });
+
+                membershipResourceList.forEach(membershipResource -> {
+                    try {
+                        addResourceToDirectContainer(container, membershipResource);
+                    } catch (EngineException e) {
+                        logger.error(e);
+                    }
+                });
+            } catch (EngineException e) {
+                logger.error(e);
+            }
+        });
+
     }
 
     /**

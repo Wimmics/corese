@@ -197,19 +197,6 @@ public class Load
         qengine = eng;
     }
 
-    // public void setPlugin(LoadPlugin p) {
-    // if (p != null) {
-    // plugin = p;
-    // hasPlugin = true;
-    // }
-    // }
-
-    // public void setBuild(BuildImpl b) {
-    // if (b != null) {
-    // build = b;
-    // }
-    // }
-
     public void setMax(int n) {
         maxFile = n;
     }

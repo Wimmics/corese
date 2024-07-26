@@ -13,6 +13,7 @@ import java.net.URL;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -177,7 +178,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
         String footer = "\nPlease report any issues at: <https://github.com/Wimmics/corese/issues>";
 
         try {
-            CommandLineParser parser = new BasicParser();
+            CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
             if (cmd.hasOption("h")) {
                 HelpFormatter formatter = new HelpFormatter();
@@ -314,13 +315,13 @@ public class EmbeddedJettyServer extends ResourceConfig {
 
             // Configure the ResourceHandler. Setting the resource base indicates where the
             // files should be served out of.
-            ResourceHandler resource_handler = new ResourceHandler();
-            resource_handler.setWelcomeFiles(new String[] { HOME_PAGE, "index.html" });
+            ResourceHandler resourceHandler = new ResourceHandler();
+            resourceHandler.setWelcomeFiles(new String[] { HOME_PAGE, "index.html" });
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
-            resource_handler.setResourceBase(new File(webappUri.getRawPath()).getAbsolutePath());
+            resourceHandler.setResourceBase(new File(webappUri.getRawPath()).getAbsolutePath());
 
             ContextHandler staticContextHandler = new ContextHandler(root, "/");
-            staticContextHandler.setHandler(resource_handler);
+            staticContextHandler.setHandler(resourceHandler);
             logger.info("Corese webapp UI started on http://localhost:" + port);
             logger.info("----------------------------------------------");
 

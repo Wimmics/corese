@@ -421,6 +421,22 @@ public class Graph extends GraphObject implements
         return dp.iterate(bnvalue(s), bnvalue(p), bnvalue(o));
     }
 
+    /**
+     * Return statements with the specified subject, predicate, object that exist in this graph.
+     * Redirects to getEdgesRDF4J(Node s, Node p, Node o, Node... from).
+     *
+     * @param s    The subject of the statements to match, null to match statements
+     *             with any subject.
+     * @param p    Predicate of the statements to match, null to match statements
+     *             with any predicate.
+     * @param o    Object of the statements to match, null to match statements with
+     *             any object.
+     * @return List of edges that match the specified pattern.
+     */
+    public Iterable<Edge> getEdgesRDF4J(Node s, Node p, Node o) {
+        return getEdgesRDF4J(s, p, o, (Node) null);
+    }
+
     IDatatype bnvalue(Node n) {
         if (n == null) {
             return DatatypeMap.createBlank();
@@ -2297,14 +2313,12 @@ public class Graph extends GraphObject implements
 
     public void addGraphNode(Node gNode) {
         if (!containsCoreseNode(gNode)) {
-            //graph.put(gNode.getLabel(), gNode);
             graph.put(getID(gNode), gNode);
             indexNode( gNode.getValue(), gNode);
         }
     }
 
     public boolean containsCoreseNode(Node node) {
-        //return graph.containsKey(node.getLabel());
         return graph.containsKey(getID(node));
     }
 

@@ -239,7 +239,6 @@ public class LdpRequestAPI {
         int successStatusCode = 201;
         String link = request.getHeader(HEADER_LINK);
 
-        logger.info("Creating resource: " + resourceURI);
         try {
             // Check if the resource already exists
             if (resourceExists(resourceURI)) {
@@ -411,8 +410,8 @@ public class LdpRequestAPI {
             membershipResourceList.add(membershipResource);
         });
 
-        if (membershipResourceList.size() != 1) {
-            throw new EngineException("Direct Container must have exactly one ldp:membershipResource");
+        if (membershipResourceList.size() > 1) {
+            throw new EngineException("Direct Container must have one or more ldp:membershipResource");
         }
 
         ArrayList<Node> hasMemberRelationList = new ArrayList<>();
@@ -431,18 +430,14 @@ public class LdpRequestAPI {
             Node isMemberOfRelation = isMemberOfRelationMapping.getNode("?isMemberOfRelation");
             isMemberOfRelationList.add(isMemberOfRelation);
         });
-        if (hasMemberRelationList.size() != 1 && isMemberOfRelationList.size() != 1) {
-            logger.error(hasMemberRelationList.size());
-            logger.error(isMemberOfRelationList.size());
+        if (hasMemberRelationList.size() > 1 && isMemberOfRelationList.size() > 1) {
             throw new EngineException(
-                    "Direct Container must have exactly one ldp:hasMemberRelation or ldp:isMemberOfRelation");
+                    "Direct Container must have zero or one ldp:hasMemberRelation or ldp:isMemberOfRelation");
         } else {
             if (hasMemberRelationList.size() == 1 && isMemberOfRelationList.size() == 1) {
                 Node hasMemberRelation = hasMemberRelationList.get(0);
                 Node isMemberOfRelation = isMemberOfRelationList.get(0);
                 if (!hasMemberRelation.equals(isMemberOfRelation)) {
-                    logger.error(hasMemberRelation);
-                    logger.error(isMemberOfRelation);
                     throw new EngineException(
                             "Direct Container must have exactly one ldp:hasMemberRelation or ldp:isMemberOfRelation");
                 }
@@ -679,17 +674,13 @@ public class LdpRequestAPI {
      * @throws EngineException
      */
     private void addResourceToContainer(String containerURI, String resourceURI, Graph content) throws EngineException {
-        logger.info("Adding resource " + resourceURI + " to container: " + containerURI);
         Node container = SPARQLRestAPI.getTripleStore().getGraph().createNode(containerURI);
         Node resource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resourceURI);
         if (containerIsBasic(containerURI)) {
-            logger.info("Adding resource " + resourceURI + " to basic container: " + containerURI);
             SPARQLRestAPI.getTripleStore().getGraph().insert(container, ldpMemberProperty, resource);
         } else if (containerIsDirect(containerURI)) {
-            logger.info("Adding resource " + resourceURI + " to direct container: " + containerURI);
             addResourceToDirectContainer(container, resource);
         } else if (containerIsIndirect(containerURI) && content != null) {
-            logger.info("Adding resource " + resourceURI + " to indirect container: " + containerURI);
             addResourceToIndirectContainer(container, resource, content);
         } else {
             throw new EngineException("Container is not a valid LDP container");
@@ -707,7 +698,6 @@ public class LdpRequestAPI {
     private void addResourceToDirectContainer(Node container, Node resource) throws EngineException {
         String resURI = resource.getLabel();
         String containerURI = container.getLabel();
-        logger.info("Adding resource " + resURI + " to direct container: " + containerURI);
 
         ArrayList<Node> membershipResourceList = new ArrayList<>();
 
@@ -772,17 +762,12 @@ public class LdpRequestAPI {
     private void addResourceToIndirectContainer(Node container, Node resource, Graph content) throws EngineException {
         String containerURI = container.getLabel();
 
-        logger.info("Adding resource " + resource.getLabel() + " to indirect container: " + containerURI);
-
-        addResourceToDirectContainer(container, resource);
-
         ArrayList<Node> insertedContentRelation = new ArrayList<>();
-        QueryProcess resourceContentExec = QueryProcess.create(content);
         String selectInsertedContentRelationQueryString = "SELECT DISTINCT ?insertedContentRelation { <" + containerURI
                 + "> <"
                 + URI_LDP_INSERTED_CONTENT_RELATION + "> ?insertedContentRelation }";
-        logger.info(selectInsertedContentRelationQueryString);
-        Mappings insertedContentRelationMappings = resourceContentExec.query(selectInsertedContentRelationQueryString);
+        Mappings insertedContentRelationMappings = exec.query(selectInsertedContentRelationQueryString);
+
         if(insertedContentRelationMappings.size() == 0) {
             throw new EngineException("Indirect Container must have at least one ldp:insertedContentRelation");
         }
@@ -795,8 +780,8 @@ public class LdpRequestAPI {
             ArrayList<Node> membershipResourceList = new ArrayList<>();
             Mappings membershipResourceMappings;
             try {
-                membershipResourceMappings = resourceContentExec
-                        .query("SELECT DISTINCT ?membershipResource { ?any <" + insertedContentRelationNode.getLabel() + "> ?membershipResource }");
+                String resourcelinkedWithInsertedContentRelation = "SELECT DISTINCT ?membershipResource { ?any <" + insertedContentRelationNode.getLabel() + "> ?membershipResource }";
+                membershipResourceMappings = exec.query(resourcelinkedWithInsertedContentRelation);
                 membershipResourceMappings.forEach(membershipResourceMapping -> {
                     Node membershipResource = membershipResourceMapping.getNode("?membershipResource");
                     membershipResourceList.add(membershipResource);
@@ -858,3 +843,4 @@ public class LdpRequestAPI {
     }
 
 }
+

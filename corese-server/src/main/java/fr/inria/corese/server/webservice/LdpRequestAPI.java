@@ -75,17 +75,13 @@ public class LdpRequestAPI {
     private static final String URI_LDP_INDIRECT_CONTAINER = NAMESPACE_LDP + "IndirectContainer";
     private static final String URI_LDP_RDF_SOURCE = NAMESPACE_LDP + "RDFSource";
     private static final Node rdfTypeProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(RDF.TYPE);
-    private static final Node ldpContainsProperty = SPARQLRestAPI.getTripleStore().getGraph()
-            .createNode(URI_LDP_CONTAINS);
+    private static final Node ldpContainsProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_CONTAINS);
     private static final Node ldpMemberProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_MEMBER);
-    private static final Node ldpMembershipResourceProperty = SPARQLRestAPI.getTripleStore().getGraph()
-            .createNode(URI_LDP_MEMBERSHIP_RESOURCE);
-    private static final Node ldpHasMemberRelationProperty = SPARQLRestAPI.getTripleStore().getGraph()
-            .createNode(URI_LDP_HAS_MEMBERSHIP_RELATION);
-    private static final Node ldpIsMemberOfRelationProperty = SPARQLRestAPI.getTripleStore().getGraph()
-            .createNode(URI_LDP_IS_MEMBER_OF_RELATION);
+    private static final Node ldpMembershipResourceProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_MEMBERSHIP_RESOURCE);
+    private static final Node ldpHasMemberRelationProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_HAS_MEMBERSHIP_RELATION);
+    private static final Node ldpIsMemberOfRelationProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_IS_MEMBER_OF_RELATION);
 
-    private static final String SPARQL_DESCRIBE_QUERY = "DESCRIBE <%1$s>";
+    private static final String SPARQL_DESCRIBE_QUERY = "CONSTRUCT { ?s ?p ?o } { { GRAPH <%1$s> { ?s ?p ?o } } UNION { GRAPH ?g { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } } UNION { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } }";
     private static final String SPARQL_TYPE_QUERY = "SELECT DISTINCT ?type WHERE { <%1$s> a ?type }";
     private static final String SPARQL_EXISTS_QUERY = "ASK { { <%1$s> ?p ?o } UNION { ?s ?p <%1$s> } }";
     private static final String SPARQL_CONTAINER_IS_BASIC_QUERY = "ASK { <%1$s> a <" + URI_LDP_BASIC_CONTAINER + "> }";
@@ -278,6 +274,7 @@ public class LdpRequestAPI {
                             .entity("Delete not implemented for containers")
                             .build();
                 } else {
+                    // Removing the resource if it is not a container
                     // Removing membership triples
                     String memberRelationShipQueryString = String
                             .format(SPARQL_MEMBERSHIP_TRIPLES_LIST_FOR_RESOURCE_QUERY, resourceURI);
@@ -286,8 +283,9 @@ public class LdpRequestAPI {
                         Node s = memberRelationShipMapping.getNode("?s");
                         Node p = memberRelationShipMapping.getNode("?p");
                         Node o = memberRelationShipMapping.getNode("?o");
-                        SPARQLRestAPI.getTripleStore().getGraph().delete(s, p, o);
+                        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resourceURI).delete(s, p, o);
                     });
+                    SPARQLRestAPI.getTripleStore().getGraph().deleteGraph(resourceURI);
 
                     return Response.status(Response.Status.NO_CONTENT)
                             .header(HEADER_ACCESS_ALLOW_ORIGIN, "*")
@@ -315,10 +313,13 @@ public class LdpRequestAPI {
             throws EngineException {
         Node resource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
         Node ldpResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_RESOURCE);
+            
+        if(SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI) == null) {
+            SPARQLRestAPI.getTripleStore().getGraph().createNamedGraph(resURI);
+        }
 
-        SPARQLRestAPI.getTripleStore().getGraph().insert(resource, rdfTypeProperty, ldpResource);
-
-        Load load = Load.create(SPARQLRestAPI.getTripleStore().getGraph());
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(resource, rdfTypeProperty, ldpResource);
+        Load load = Load.create(SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI));
         try {
             if (format.equals(TURTLE_TEXT)) {
                 load.loadString(rawContent, resURI, Load.TURTLE_FORMAT);
@@ -327,14 +328,6 @@ public class LdpRequestAPI {
             } else {
                 throw new EngineException("Unsupported format: " + format);
             }
-
-            Load loadTest = Load.create(new Graph());
-            if (format.equals(TURTLE_TEXT)) {
-                loadTest.loadString(rawContent, resURI, Load.TURTLE_FORMAT);
-            } else if (format.equals(JSON_LD)) {
-                loadTest.loadString(rawContent, resURI, Load.JSONLD_FORMAT);
-            }
-
         } catch (LoadException e) {
             logger.error(e);
             throw new EngineException(e);
@@ -367,7 +360,10 @@ public class LdpRequestAPI {
             createIndirectContainer(request, rawContent, format);
         }
 
-        SPARQLRestAPI.getTripleStore().getGraph().insert(containerResource, rdfTypeProperty, ldpContainer);
+        if(SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI) == null) {
+            SPARQLRestAPI.getTripleStore().getGraph().createNamedGraph(resURI);
+        }
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(containerResource, rdfTypeProperty, ldpContainer);
         createResource(resURI, rawContent, format);
     }
 
@@ -380,7 +376,7 @@ public class LdpRequestAPI {
         logger.info("Creating basic container: " + resURI);
         Node containerResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
         Node ldpBasicContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_BASIC_CONTAINER);
-        SPARQLRestAPI.getTripleStore().getGraph().insert(containerResource, rdfTypeProperty, ldpBasicContainer);
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(containerResource, rdfTypeProperty, ldpBasicContainer);
     }
 
     /**
@@ -469,9 +465,9 @@ public class LdpRequestAPI {
         Node ldpIndirectContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_INDIRECT_CONTAINER);
         Node ldpDirectContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_DIRECT_CONTAINER);
 
-        SPARQLRestAPI.getTripleStore().getGraph().insert(containerResource, rdfTypeProperty, ldpIndirectContainer);
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(containerResource, rdfTypeProperty, ldpIndirectContainer);
         createDirectContainer(request, rawContent, format);
-        SPARQLRestAPI.getTripleStore().getGraph().delete(containerResource, rdfTypeProperty, ldpDirectContainer);
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).delete(containerResource, rdfTypeProperty, ldpDirectContainer);
 
     }
 
@@ -530,8 +526,7 @@ public class LdpRequestAPI {
             }
 
         } catch (EngineException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e);
         }
 
         String content = "";
@@ -662,7 +657,6 @@ public class LdpRequestAPI {
 
     private boolean containerIsBasic(String containerURI) {
         String sparql = String.format(SPARQL_CONTAINER_IS_BASIC_QUERY, containerURI);
-        logger.info("Checking if container is basic: " + containerURI + " with query: " + sparql);
         try {
             Mappings m = exec.query(sparql);
             return m.size() > 0;
@@ -674,7 +668,6 @@ public class LdpRequestAPI {
 
     private boolean containerIsDirect(String containerURI) {
         String sparql = String.format(SPARQL_CONTAINER_IS_DIRECT_QUERY, containerURI);
-        logger.info("Checking if container is direct: " + containerURI + " with query: " + sparql);
         try {
             Mappings m = exec.query(sparql);
             return m.size() > 0;
@@ -686,7 +679,6 @@ public class LdpRequestAPI {
 
     private boolean containerIsIndirect(String containerURI) {
         String sparql = String.format(SPARQL_CONTAINER_IS_INDIRECT_QUERY, containerURI);
-        logger.info("Checking if container is indirect: " + containerURI + " with query: " + sparql);
         try {
             Mappings m = exec.query(sparql);
             return m.size() > 0;
@@ -723,7 +715,7 @@ public class LdpRequestAPI {
         Node container = SPARQLRestAPI.getTripleStore().getGraph().createNode(containerURI);
         Node resource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resourceURI);
         if (containerIsBasic(containerURI)) {
-            SPARQLRestAPI.getTripleStore().getGraph().insert(container, ldpMemberProperty, resource);
+            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(container, ldpMemberProperty, resource);
         } else if (containerIsDirect(containerURI)) {
             addResourceToDirectContainer(container, resource);
         } else if (containerIsIndirect(containerURI) && content != null) {
@@ -756,13 +748,12 @@ public class LdpRequestAPI {
         });
 
         Node membershipResource = container;
-        SPARQLRestAPI.getTripleStore().getGraph().insert(container, ldpMemberProperty, resource);
         if (membershipResourceList.size() > 1) {
             throw new EngineException("Direct Container must have zero or one ldp:membershipResource");
         } else if (membershipResourceList.size() == 1) {
             membershipResource = membershipResourceList.get(0);
         }
-        SPARQLRestAPI.getTripleStore().getGraph().insert(membershipResource, ldpMemberProperty, resource);
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(membershipResource, ldpMemberProperty, resource);
 
         Node membershipProperty = ldpMemberProperty;
 
@@ -786,10 +777,11 @@ public class LdpRequestAPI {
 
         if (hasMemberRelationList.size() == 1) {
             membershipProperty = hasMemberRelationList.get(0);
-            SPARQLRestAPI.getTripleStore().getGraph().insert(membershipResource, membershipProperty, resource);
+            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(membershipResource, membershipProperty, resource);
+            logger.info("Adding resource " + resource.getLabel() + " to Direct Container membershipResource " + membershipResource.getLabel() + " with hasMemberRelation: " + membershipProperty.getLabel());
         } else if (isMemberOfRelationList.size() == 1) {
             membershipProperty = isMemberOfRelationList.get(0);
-            SPARQLRestAPI.getTripleStore().getGraph().insert(resource, membershipProperty, membershipResource);
+            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(resource, membershipProperty, membershipResource);
         }
     }
 
@@ -877,7 +869,7 @@ public class LdpRequestAPI {
 
     /**
      * Check if the given property is a protected LDP property that must not be
-     * modified by the user
+     * modified by the user. To be used with PATCH.
      * 
      * @param propertyUri
      * @return

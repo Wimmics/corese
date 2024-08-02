@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.TestType;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
@@ -39,7 +40,7 @@ public class SparqlHttpClient {
 
     private int redirectCount = 0;
     private int maxRedirects = 5;
-    private final String USERAGENT = "Corese-Command/4.5.1";
+    private final String USERAGENT = "Corese-Command/" + App.version;
 
     /////////////////
     // Constructor //
@@ -234,23 +235,23 @@ public class SparqlHttpClient {
 
         // Print URL
         if (webTarget != null && webTarget.getUri() != null) {
-            System.err.println("  URL: " + webTarget.getUri());
+            System.err.println("\tURL: " + webTarget.getUri());
         }
 
         // Print request method
-        if (this.requestMethod != null && this.requestMethod.getName() != null && !this.requestMethod.getName().isEmpty()) {
-            System.err.println("  method: " + this.requestMethod.getName());
+        if (this.requestMethod != null) {
+            System.err.println("\tmethod: " + this.requestMethod);
         }
 
         // Print query string parameter
         if (webTarget != null && webTarget.getUri() != null && webTarget.getUri().getQuery() != null
                 && !webTarget.getUri().getQuery().isEmpty()) {
-            System.err.println("  Query string parameter: " + webTarget.getUri().getQuery());
+            System.err.println("\tQuery string parameter: " + webTarget.getUri().getQuery());
         }
 
         // Print headers
         if (this.headers != null && !this.headers.isEmpty()) {
-            System.err.println("  Headers:");
+            System.err.println("\tHeaders:");
             for (Pair<String, String> header : this.headers) {
 
                 System.err.println("    " + header.getKey() + ": " + header.getValue());
@@ -258,7 +259,7 @@ public class SparqlHttpClient {
         }
 
         if (bodyContent != null && !bodyContent.isEmpty()) {
-            System.err.println("  Request body: " + bodyContent);
+            System.err.println("\tRequest body: " + bodyContent);
         }
     }
 

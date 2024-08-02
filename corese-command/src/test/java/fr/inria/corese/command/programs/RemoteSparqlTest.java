@@ -122,11 +122,11 @@ public class RemoteSparqlTest {
         // Test Cases //
         ////////////////
 
-        // Query via GET
+        // Query via get
 
         @Test
         public void getQueryTest() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "GET" };
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "get" };
                 int exitCode = cmd.execute(args);
 
                 // Asserts
@@ -139,7 +139,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void getQueryTestDefaultGraphUri() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "GET", "-d", graphUri };
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "get", "-d", graphUri };
                 int exitCode = cmd.execute(args);
 
                 // Asserts
@@ -153,7 +153,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void getQueryTestNamedGraphUri() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "GET", "-n", graphUri };
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "get", "-n", graphUri };
                 int exitCode = cmd.execute(args);
 
                 // Asserts
@@ -167,7 +167,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void getQueryTestAcceptHeader() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "GET", "-a", "application/json" };
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "get", "-a", "application/json" };
                 int exitCode = cmd.execute(args);
 
                 // Asserts
@@ -180,7 +180,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void getQueryTestMultipleHeaders() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "GET", "-H", "Accept: application/json",
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "get", "-H", "Accept: application/json",
                                 "-H", "Authorization: Bearer 1234" };
                 int exitCode = cmd.execute(args);
 
@@ -197,7 +197,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryUrlEncodedQueryTest() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Encoded" };
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-urlencoded" };
                 int exitCode = cmd.execute(args);
 
                 // Asserts
@@ -211,7 +211,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryUrlEncodedQueryTestDefaultGraphUri() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Encoded", "-d",
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-urlencoded", "-d",
                                 graphUri };
                 int exitCode = cmd.execute(args);
 
@@ -227,7 +227,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryUrlEncodedQueryTestNamedGraphUri() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Encoded", "-n",
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-urlencoded", "-n",
                                 graphUri };
                 int exitCode = cmd.execute(args);
 
@@ -243,7 +243,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryUrlEncodedQueryTestAcceptHeader() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Encoded", "-a",
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-urlencoded", "-a",
                                 "application/json" };
                 int exitCode = cmd.execute(args);
 
@@ -258,7 +258,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryUrlEncodedQueryTestMultipleHeaders() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Encoded", "-H",
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-urlencoded", "-H",
                                 "Accept: application/json", "-H", "Authorization: Bearer 1234" };
                 int exitCode = cmd.execute(args);
 
@@ -276,7 +276,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryDirectQueryTest() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Direct" };
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-direct" };
                 int exitCode = cmd.execute(args);
 
                 // Asserts
@@ -290,7 +290,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryDirectQueryTestDefaultGraphUri() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Direct", "-d",
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-direct", "-d",
                                 graphUri };
                 int exitCode = cmd.execute(args);
 
@@ -306,7 +306,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryDirectQueryTestNamedGraphUri() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Direct", "-n",
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-direct", "-n",
                                 graphUri };
                 int exitCode = cmd.execute(args);
 
@@ -322,7 +322,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryDirectQueryTestAcceptHeader() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Direct", "-a",
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-direct", "-a",
                                 "application/json" };
                 int exitCode = cmd.execute(args);
 
@@ -337,7 +337,7 @@ public class RemoteSparqlTest {
 
         @Test
         public void postQueryDirectQueryTestMultipleHeaders() {
-                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "POST-Direct", "-H",
+                String[] args = { "-e", serverUrl, "-q", querySelect, "-m", "post-direct", "-H",
                                 "Accept: application/json", "-H", "Authorization: Bearer 1234" };
                 int exitCode = cmd.execute(args);
 

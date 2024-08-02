@@ -13,8 +13,8 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import fr.inria.corese.command.utils.format.EnumInputFormat;
-import fr.inria.corese.command.utils.rdf.RdfDataLoader;
+import fr.inria.corese.command.utils.loader.rdf.EnumRdfInputFormat;
+import fr.inria.corese.command.utils.loader.rdf.RdfDataLoader;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.print.CanonicalRdf10Format;
@@ -737,7 +737,7 @@ public class ConvertTest {
         int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", inputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
-        assertTrue(err.toString().trim().contains("Input path is same as output path"));
+        assertTrue(err.toString().trim().contains("Input path cannot be same as output path"));
     }
 
     @Test
@@ -767,7 +767,8 @@ public class ConvertTest {
         Path inputPath = Paths.get(referencesPath, "beatles.ttl");
 
         try {
-            RdfDataLoader.loadFromFile(inputPath, EnumInputFormat.JSONLD, Graph.create(), null, false);
+            RdfDataLoader loader = new RdfDataLoader(null, false);
+            loader.load(new String[] { inputPath.toString() }, EnumRdfInputFormat.JSONLD, false);
             fail("Expected an IllegalArgumentException to be thrown");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Failed to open RDF data file:"));

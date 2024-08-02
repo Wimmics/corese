@@ -21,7 +21,7 @@ public class CanonicalizeTest {
     private StringWriter out = new StringWriter();
     private StringWriter err = new StringWriter();
 
-    private String inputPath = ConvertTest.class
+    private String inputPath = CanonicalizeTest.class
             .getResource("/fr/inria/corese/command/programs/canonicalize/input/")
             .getPath();
     private String referencesPath = CanonicalizeTest.class

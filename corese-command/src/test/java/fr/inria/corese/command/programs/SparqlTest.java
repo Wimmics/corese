@@ -4,18 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.print.CanonicalRdf10Format;
 import picocli.CommandLine;
 
 public class SparqlTest {
@@ -44,29 +43,28 @@ public class SparqlTest {
                 cmd.setErr(err);
         }
 
-        private boolean compareFiles(String filePath1, String filePath2) throws IOException {
-                // Créer deux sets pour stocker les lignes de chaque fichier
-                Set<String> file1Lines = new HashSet<>();
-                Set<String> file2Lines = new HashSet<>();
+        public boolean compareFiles(String filePath1, String filePath2) throws IOException {
+                // Canonicalize RDF content
+                String canonicallFile1 = canonicalize(filePath1);
+                String canonicallFile2 = canonicalize(filePath2);
 
-                // Lire le premier fichier et stocker chaque ligne dans le set
-                try (BufferedReader reader = new BufferedReader(new FileReader(filePath1))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                                file1Lines.add(line);
-                        }
+                return canonicallFile1.equals(canonicallFile2);
+        }
+
+        private String canonicalize(String filePath) {
+
+                // Load RDF content into a Graph
+                Graph graph = Graph.create();
+                Load ld = Load.create(graph);
+
+                try {
+                        ld.parse(filePath, "");
+                } catch (Exception e) {
+                        e.printStackTrace();
                 }
 
-                // Lire le deuxième fichier et stocker chaque ligne dans le set
-                try (BufferedReader reader = new BufferedReader(new FileReader(filePath2))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                                file2Lines.add(line);
-                        }
-                }
-
-                // Vérifier que les deux sets sont identiques
-                return file1Lines.equals(file2Lines);
+                // Return Canonical RDF content
+                return CanonicalRdf10Format.create(graph).toString();
         }
 
         @Test

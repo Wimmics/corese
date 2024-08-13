@@ -12,11 +12,11 @@ import picocli.CommandLine.Option;
 public class Canonicalize extends AbstractInputCommand {
 
     @Option(names = { "-f", "-if",
-            "--input-format" }, description = "Specifies the RDF serialization format of the input file. Available options are: \u001b[34m${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--input-format" }, description = "Specifies the RDF serialization format of the input file. Available options are: :@|fg(225) ${COMPLETION-CANDIDATES}|@.")
     private EnumRdfInputFormat inputFormat;
 
     @Option(names = { "-a", "-ca", "-r", "-of",
-            "--canonical-algo" }, required = true, description = "Specifies the canonicalization algorithm to be applied to the input file. Available options are: \u001b[34m${COMPLETION-CANDIDATES}\u001b[0m. The default algorithm is ${DEFAULT-VALUE}.", defaultValue = "rdfc-1.0")
+            "--canonical-algo" }, required = true, description = "Specifies the canonicalization algorithm to be applied to the input file. Available options are: :@|fg(225) ${COMPLETION-CANDIDATES}|@. The default algorithm is ${DEFAULT-VALUE}.", defaultValue = "rdfc-1.0")
     private EnumCanonicAlgo canonicalAlgo;
 
     public Canonicalize() {
@@ -38,7 +38,7 @@ public class Canonicalize extends AbstractInputCommand {
 
             return this.ERROR_EXIT_CODE_SUCCESS;
         } catch (IllegalArgumentException e) {
-            this.spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            this.spec.commandLine().getErr().println("Error: " + e.getMessage());
             return this.ERROR_EXIT_CODE_ERROR;
         }
     }

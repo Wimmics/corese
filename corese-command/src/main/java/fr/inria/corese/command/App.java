@@ -7,6 +7,8 @@ import fr.inria.corese.command.programs.Shacl;
 import fr.inria.corese.command.programs.Sparql;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Help.Ansi.Style;
+import picocli.CommandLine.Help.ColorScheme;
 
 @Command(name = "Corese-command", version = App.version, mixinStandardHelpOptions = true, subcommands = {
         Convert.class, Sparql.class, Shacl.class, RemoteSparql.class, Canonicalize.class
@@ -17,7 +19,18 @@ public final class App implements Runnable {
     public final static String version = "4.5.1";
 
     public static void main(String[] args) {
-        int exitCode = new CommandLine(new App()).execute(args);
+        ColorScheme colorScheme = new ColorScheme.Builder()
+                .commands(Style.bold) // Commands in blue
+                .options(Style.fg_yellow) // Options in yellow
+                .parameters(Style.fg_cyan, Style.bold) // Parameters in cyan and bold
+                .optionParams(Style.italic, Style.fg_cyan) // Option parameters in italic
+                .errors(Style.fg_red, Style.bold) // Errors in red and bold
+                .stackTraces(Style.italic) // Stack traces in italic
+                .applySystemProperties() // Apply system properties for colors
+                .build();
+
+        CommandLine commandLine = new CommandLine(new App()).setColorScheme(colorScheme);
+        int exitCode = commandLine.execute(args);
         System.exit(exitCode);
     }
 

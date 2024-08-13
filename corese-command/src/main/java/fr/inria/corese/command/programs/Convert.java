@@ -13,11 +13,11 @@ import picocli.CommandLine.Option;
 public class Convert extends AbstractInputCommand {
 
     @Option(names = { "-f", "-if",
-            "--input-format" }, description = "Specifies the RDF serialization format of the input file. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--input-format" }, description = "Specifies the RDF serialization format of the input file. Possible values:@|fg(225) ${COMPLETION-CANDIDATES}|@.")
     private EnumRdfInputFormat inputFormat = null;
 
     @Option(names = { "-r", "-of",
-            "--output-format" }, required = true, description = "Specifies the RDF serialization format of the output file. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--output-format" }, required = true, description = "Specifies the RDF serialization format of the output file. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}|@.")
     private EnumRdfOutputFormat outputFormat;
 
     public Convert() {
@@ -39,7 +39,7 @@ public class Convert extends AbstractInputCommand {
 
             return this.ERROR_EXIT_CODE_SUCCESS;
         } catch (IllegalArgumentException e) {
-            this.spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            this.spec.commandLine().getErr().println("Error: " + e.getMessage());
             return this.ERROR_EXIT_CODE_ERROR;
         }
     }

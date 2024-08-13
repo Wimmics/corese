@@ -14,11 +14,11 @@ import picocli.CommandLine.Option;
 public class Shacl extends AbstractInputCommand {
 
     @Option(names = { "-f", "-if",
-            "--input-format" }, description = "Specifies the RDF serialization format of the input file. Possible values are: \u001b[34m${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--input-format" }, description = "Specifies the RDF serialization format of the input file. Possible values are: :@|fg(225) ${COMPLETION-CANDIDATES}|@.")
     private EnumRdfInputFormat inputFormat = null;
 
     @Option(names = { "-a", "-sf",
-            "--shapes-format" }, description = "Specifies the serialization format of the SHACL shapes. Possible values are: \u001b[34m${COMPLETION-CANDIDATES}\u001b[0m.)")
+            "--shapes-format" }, description = "Specifies the serialization format of the SHACL shapes. Possible values are: :@|fg(225) ${COMPLETION-CANDIDATES}|@.)")
     private EnumRdfInputFormat reportFormat = null;
 
     @Option(names = { "-s",
@@ -26,7 +26,7 @@ public class Shacl extends AbstractInputCommand {
     private String[] shaclShapes;
 
     @Option(names = { "-r", "-of",
-            "--output-format" }, description = "Specifies the serialization format of the validation report. Possible values are: \u001b[34m${COMPLETION-CANDIDATES}\u001b[0m. Default value: ${DEFAULT-VALUE}.", defaultValue = "TURTLE")
+            "--output-format" }, description = "Specifies the serialization format of the validation report. Possible values are: :@|fg(225) ${COMPLETION-CANDIDATES}|@. Default value: ${DEFAULT-VALUE}.", defaultValue = "TURTLE")
     private EnumRdfOutputFormat outputFormat = null;
 
     public Integer call() {
@@ -55,7 +55,7 @@ public class Shacl extends AbstractInputCommand {
 
             return this.ERROR_EXIT_CODE_SUCCESS;
         } catch (Exception e) {
-            this.spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            this.spec.commandLine().getErr().println("Error: " + e.getMessage());
             return this.ERROR_EXIT_CODE_ERROR;
         }
     }

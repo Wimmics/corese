@@ -32,7 +32,7 @@ public class RemoteSparql extends AbstractCommand {
     private String accept;
 
     @Option(names = { "-m",
-            "--request-method" }, description = "Specifies the HTTP request method to use. Possible values are: \u001b[34m${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--request-method" }, description = "Specifies the HTTP request method to use. Possible values are: :@|fg(225) ${COMPLETION-CANDIDATES}|@.")
     private EnumRequestMethod requestMethod;
 
     @Option(names = { "-r",
@@ -78,7 +78,7 @@ public class RemoteSparql extends AbstractCommand {
             this.exportResult(res);
 
         } catch (Exception e) {
-            this.spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            this.spec.commandLine().getErr().println("Error: " + e.getMessage());
             return this.ERROR_EXIT_CODE_ERROR;
         }
 

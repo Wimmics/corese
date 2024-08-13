@@ -16,11 +16,11 @@ import picocli.CommandLine.Option;
 public class Sparql extends AbstractInputCommand {
 
     @Option(names = { "-f", "-if",
-            "--input-format" }, description = "Specifies the RDF serialization format of the input file. Possible values are: \u001b[34m${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--input-format" }, description = "Specifies the RDF serialization format of the input file. Possible values are: :@|fg(225) ${COMPLETION-CANDIDATES}|@.")
     private EnumRdfInputFormat inputFormat = null;
 
     @Option(names = { "-r", "-of",
-            "--result-format" }, description = "Specifies the format of the result file. Possible values are: \u001b[34m${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--result-format" }, description = "Specifies the format of the result file. Possible values are: :@|fg(225) ${COMPLETION-CANDIDATES}|@.")
     private EnumResultFormat resultFormat = null;
 
     @Option(names = { "-q",
@@ -54,7 +54,7 @@ public class Sparql extends AbstractInputCommand {
 
             return this.ERROR_EXIT_CODE_SUCCESS;
         } catch (Exception e) {
-            this.spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            this.spec.commandLine().getErr().println("Error: " + e.getMessage());
             return this.ERROR_EXIT_CODE_ERROR;
         }
     }

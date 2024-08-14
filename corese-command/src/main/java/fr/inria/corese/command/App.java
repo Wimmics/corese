@@ -5,13 +5,14 @@ import fr.inria.corese.command.programs.Convert;
 import fr.inria.corese.command.programs.RemoteSparql;
 import fr.inria.corese.command.programs.Shacl;
 import fr.inria.corese.command.programs.Sparql;
+import picocli.AutoComplete.GenerateCompletion;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Ansi.Style;
 import picocli.CommandLine.Help.ColorScheme;
 
 @Command(name = "Corese-command", version = App.version, mixinStandardHelpOptions = true, subcommands = {
-        Convert.class, Sparql.class, Shacl.class, RemoteSparql.class, Canonicalize.class
+        Convert.class, Sparql.class, Shacl.class, RemoteSparql.class, Canonicalize.class, GenerateCompletion.class
 })
 
 public final class App implements Runnable {
@@ -19,6 +20,7 @@ public final class App implements Runnable {
     public final static String version = "4.5.1";
 
     public static void main(String[] args) {
+        // Define the color scheme
         ColorScheme colorScheme = new ColorScheme.Builder()
                 .commands(Style.bold) // Commands in blue
                 .options(Style.fg_yellow) // Options in yellow
@@ -30,6 +32,12 @@ public final class App implements Runnable {
                 .build();
 
         CommandLine commandLine = new CommandLine(new App()).setColorScheme(colorScheme);
+
+        // Hide the generate-completion command
+        CommandLine gen = commandLine.getSubcommands().get("generate-completion");
+        gen.getCommandSpec().usageMessage().hidden(true);
+
+        // Execute the command
         int exitCode = commandLine.execute(args);
         System.exit(exitCode);
     }

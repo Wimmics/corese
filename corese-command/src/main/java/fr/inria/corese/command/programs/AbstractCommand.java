@@ -43,11 +43,11 @@ public abstract class AbstractCommand implements Callable<Integer> {
     private Path configFilePath;
 
     @Option(names = { "-v",
-            "--verbose" }, description = "Enables verbose mode, printing more information about the execution of the command.")
+            "--verbose" }, description = "Enables verbose mode, printing more information about the execution of the command.", negatable = true)
     protected boolean verbose = false;
 
     @Option(names = { "-w",
-            "--no-owl-import" }, description = "Disables the automatic importation of ontologies specified in 'owl:imports' statements. When this flag is set, the application will not fetch and include referenced ontologies.", required = false, defaultValue = "false")
+            "--owl-import" }, description = "Disables the automatic importation of ontologies specified in 'owl:imports' statements. When this flag is set, the application will not fetch and include referenced ontologies. Default is '${DEFAULT-VALUE}'.", required = false, defaultValue = "false", negatable = true)
     private boolean noOwlImport;
 
     ////////////////

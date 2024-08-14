@@ -17,7 +17,7 @@ public class Convert extends AbstractInputCommand {
     private EnumRdfInputFormat inputFormat = null;
 
     @Option(names = { "-r", "-of",
-            "--output-format" }, required = true, description = "Specifies the RDF serialization format of the output file. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}|@.")
+            "--output-format" }, required = true, description = "Specifies the RDF serialization format of the output file. Possible values::@|fg(225)${COMPLETION-CANDIDATES}|@.")
     private EnumRdfOutputFormat outputFormat;
 
     public Convert() {

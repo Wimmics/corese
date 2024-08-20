@@ -1,0 +1,195 @@
+# Configuration file for the Sphinx documentation builder.
+#
+# For the full list of built-in configuration values, see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
+
+# -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here.
+import pathlib
+import sys
+import os
+
+sys.path.insert(0, pathlib.Path(__file__).parents[1].resolve().as_posix())
+sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
+#sys.path.insert(0, pathlib.Path(__file__).parents[2].joinpath('code').resolve().as_posix())
+
+
+project = 'CORESE'
+copyright = '2024, WIMMICS'
+author = 'WIMMICS'
+release = '4.6.0'
+
+# -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
+extensions = [
+    'sphinx.ext.duration', # to display the duration of Sphinx processing
+    'sphinx.ext.todo', # to include todo items in the documentation
+    # Uncomment the following lines if/when include the python code (not used in this project yet)
+    #'sphinx.ext.doctest', # to test code snippets in the documentation
+    #'sphinx.ext.autodoc', # to automatically generate documentation from docstrings
+    #'sphinx.ext.autosummary', # this extension generates function/method/attribute summary lists
+    #'sphinx.ext.autosectionlabel', # to automatically generate section labels
+    'sphinx_design', # to render panels
+    'myst_parser', # to parse markdown
+    'sphinxcontrib.mermaid', # to render mermaid diagrams
+    # Alternative ways to include markdown files, cannot be used together with myst_parser
+    # advantages of sphynx_mdinclude/m2r3: it can include partial markdown files
+    # 
+    #'sphinx_mdinclude', # to include partial markdown files
+    #'m2r3', # to include markdown files
+    'sphinx_copybutton', # to add copy buttons to code blocks
+    'breathe', # to include doxygen generated documentation for java code
+    'exhale' # to process doxygen xml files
+    ]
+
+templates_path = ['_templates']
+exclude_patterns = []
+
+# The suffix(es) of source filenames.
+source_suffix = ['.rst', '.md']
+
+# -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+
+html_theme = 'pydata_sphinx_theme'
+html_static_path = ['_static']
+
+html_css_files = [
+    "css/custom.css",
+]
+html_js_files = []
+
+# Project logo, to place at the top of the sidebar.
+html_logo = "_static/corese.svg"
+
+# Icon to put in the browser tab.
+html_favicon = "_static/Corese-square-logo-transparent.svg"
+
+# Modify the title to get good social-media links
+html_title = "CORESE"
+html_short_title = "CORESE"
+
+# -- Theme Options -----------------------------------------------------------
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+html_theme_options = {
+     "logo": {
+         "image_relative": "_static/corese.svg",
+         "image_light": "_static/corese.svg",
+         "image_dark": "_static/corese.svg",
+     },
+    "navbar_center": [ "navbar-nav" ],
+    "navbar_end": ["navbar-icon-links", "version-switcher"],
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/Wimmics/corese",
+            "icon": "fab fa-github-square",
+        }
+    ],
+    #"navigation_depth": 0,
+    #"show_toc_level": 3,
+    # TODO:  The versioning switch has to be review after the final version of the documentation is ready
+    #https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/version-dropdown.html
+    
+    "switcher": {"json_url": "http://127.0.0.1:3000/docs/source/_static/switcher.json",
+                 "version_match": r"v\d+\.\d+\.\d+",
+                 },
+ }
+
+# since the markdown files don't have TOC 
+# we can either  hide the Section Navigation bar (left) by adding the dictionary entry
+#  "install": [],
+#
+# or we can create a custom navigation bar in the _templates folder
+# <!-- user_guide_sidebar.html -->
+# <div class="custom-nav-links">
+#    <div class="sidebar-primary-items__start sidebar-primary__section">
+#        <div class="sidebar-primary-item">
+# <nav class="bd-docs-nav bd-links"  aria-label="Section Navigation">
+#   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+#   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+#     <li class="toctree-l1"><a class="reference internal" href="../getting%20started/Getting%20Started%20With%20Corese-library.html">   Corese-library</a></li>
+#     <li class="toctree-l1"><a class="reference internal" href="../docker/README.html">   Corese Docker</a></li>
+# </ul>
+# </div>
+# </nav></div>
+# </div></div>
+#  
+# and add the following lines
+# "user_guide": ["user_guide_sidebar.html"],
+# "getting started/**": ["user_guide_sidebar_subdir.html"],
+
+html_sidebars = {
+  "install": [],
+}
+
+# -- MySt-parcer extension Options -------------------------------------------
+# https://myst-parser.readthedocs.io/en/latest/
+
+myst_heading_anchors = 4
+myst_fence_as_directive = ["mermaid"]
+
+# -- Doxygen/breath/exhale extensions Options --------------------------------
+# Setup absolute paths for communicating with breathe / exhale where
+# items are expected / should be trimmed by.
+# https://breathe.readthedocs.io/en/latest/quickstart.html
+# https://exhale.readthedocs.io/en/latest/usage.html
+
+this_file_dir = os.path.abspath(os.path.dirname(__file__))
+repo_root = os.path.dirname(  # {repo_root}
+            os.path.dirname(  # {repo_root}/docs
+            this_file_dir     # {repo_root}/docs/source
+        )
+    ) # TODO: delete in a final version if not used
+
+# Setup the breathe extension 
+# https://breathe.readthedocs.io/en/latest/
+breathe_projects = {
+    "corese": "../build/doxygen_xml"
+}
+
+breathe_default_project = "corese"
+
+# Setup the exhale extension
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./java_api",
+    "rootFileName":          "library_root.rst", # EXCLUDE - if we want to change the sections
+    "doxygenStripFromPath":  repo_root, # "..",
+
+    # Heavily encouraged optional argument (see docs)
+    "rootFileTitle":         "Java API",
+
+    # Suggested optional arguments
+    "createTreeView":        True,
+    # TIP: if using the sphinx-bootstrap-theme, you need
+    # "treeViewIsBootstrap": True,
+    "exhaleExecutesDoxygen": True,
+    # all Doxygen configuration will be done in the Doxyfile
+    "exhaleUseDoxyfile": True, 
+    "verboseBuild": False,
+
+    # Exclude certain entities from Full API
+    # https://exhale.readthedocs.io/en/latest/reference/configs.html#root-api-document-customization
+    "unabridgedOrphanKinds": {'dir', 'file', 'page', 'namespace' },
+}
+
+
+# Tell sphinx what the primary language being documented is.
+# Java is not one of the available options. Keep it as cpp.
+primary_domain = 'cpp'
+
+# Tell sphinx what the pygments highlight language should be.
+# Java is not one of the available options. Keep it as cpp.
+highlight_language = 'cpp'
+
+# Setup the sphinx.ext.todo extension 
+
+# Set to false in the final version
+todo_include_todos = True

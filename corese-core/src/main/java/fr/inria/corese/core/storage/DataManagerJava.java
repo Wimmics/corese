@@ -128,7 +128,7 @@ public class DataManagerJava extends CoreseGraphDataManager {
         return str.replace("%20", " ");
     }
 
-    @Override
+    //@Override
     void init() {
         if (isLdscript()) {
             initldscript();
@@ -149,9 +149,10 @@ public class DataManagerJava extends CoreseGraphDataManager {
         Load ld = Load.create(getGraph());
         ld.setDataManager(this);
         // temporary authorize xt:read file to read e.g. json document 
-        Level read     = Access.setValue(Feature.READ, Level.DEFAULT);
-        Level readFile = Access.setValue(Feature.READ_FILE, Level.DEFAULT);
-
+        //Level read     = Access.setValue(Feature.READ, Level.DEFAULT);
+        // Level readFile = Access.setValue(Feature.READ_FILE, Level.DEFAULT);
+        // authorize xt:read() because accept list is empty during this initialization
+        Access.setDefaultResultWhenEmptyAccept(true);
         try {
             if (getLoad()!=null) {
                 for (String name : getLoad()) {
@@ -186,8 +187,9 @@ public class DataManagerJava extends CoreseGraphDataManager {
             logger.error(ex.getMessage());
         }
         finally {
-            Access.set(Feature.READ, read);
-            Access.set(Feature.READ_FILE, readFile);
+            //Access.set(Feature.READ, read);
+            //Access.set(Feature.READ_FILE, readFile);
+            Access.setDefaultResultWhenEmptyAccept(false);
         }
     }
 

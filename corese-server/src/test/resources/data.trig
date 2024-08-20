@@ -1,0 +1,19 @@
+@prefix ex: <http://example.com/> .
+@prefix o: <http://dbpedia.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix p: <http://fr.dbpedia.org/property/> .
+@prefix r: <http://fr.dbpedia.org/resource/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:A {
+    ex:A a owl:Thing .
+}
+
+ex:B {
+    ex:B a owl:Thing .
+}
+
+ex:nothing {
+    ex:nothing a owl:Nothing .
+}

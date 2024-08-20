@@ -234,10 +234,18 @@ public class GraphSpecificFunction extends LDScript {
                 }
 
             case READ:
-                check(Feature.READ, b, path, READ_MESS);
                 if (isFile(path)) {
-                    check(Feature.READ_FILE, b, path, READ_MESS);
+                    // do not accept file path when accept list is empty
+                    Access.check(Feature.READ, b.getAccessLevel(), path, READ_MESS, false);
+                } else {
+                    // may accept url path when accept list is empty
+                    check(Feature.READ, b, path, READ_MESS);
                 }
+                
+//                check(Feature.READ, b, path, READ_MESS);
+//                if (isFile(path)) {
+//                    check(Feature.READ_FILE, b, path, READ_MESS);
+//                }
                 IDatatype res = proc.read(dt);
                 return  res;
                 

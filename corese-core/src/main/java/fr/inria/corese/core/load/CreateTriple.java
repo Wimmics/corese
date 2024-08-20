@@ -124,8 +124,12 @@ public class CreateTriple {
         return graph.addGraph(src);
     }
     
+    Node addGraph(String src, boolean bnode) {
+        return graph.addGraph(src, bnode);
+    }
+    
     Node addGraph(Atom src) {
-        return graph.addGraph(src.getLabel(), src.isBlank());
+        return graph.addGraph(src.getLabel(), src.isBlankOrBlankNode());
     }
 
     Node addDefaultGraphNode() {

@@ -1,11 +1,20 @@
 package fr.inria.corese.server.webservice;
 
 import static fr.inria.corese.server.webservice.EmbeddedJettyServer.HOME_PAGE;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import jakarta.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
@@ -17,13 +26,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 /**
  * This class enables to assign an URL to services because as services are
@@ -48,26 +50,28 @@ public class SrvWrapper {
 	@Path(pathRegex)
 	@Produces("text/html")
 	public Response transformGet(
-		@Context HttpServletRequest request,
-		@PathParam("path") String path,
-		@QueryParam("profile") String profile, // query + transform
-		@QueryParam("uri") String resource, // URI of resource focus
-		@QueryParam("mode") String mode,
-		@QueryParam("param") String param,
-                @QueryParam("arg")      String arg,
-		@QueryParam("format") String format,
-		@QueryParam("access") String access,
-		@QueryParam("query") String query, // SPARQL query
-		@QueryParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
-		@QueryParam("value") String value, // values clause that may complement query           
-		@QueryParam("transform") String transform, // Transformation URI to post process result
-		@QueryParam("default-graph-uri") List<String> defaultGraphUris,
-		@QueryParam("named-graph-uri") List<String> namedGraphUris) {
+			@Context HttpServletRequest request,
+			@PathParam("path") String path,
+			@QueryParam("profile") String profile, // query + transform
+			@QueryParam("uri") String resource, // URI of resource focus
+			@QueryParam("mode") String mode,
+			@QueryParam("param") String param,
+			@QueryParam("arg") String arg,
+			@QueryParam("format") String format,
+			@QueryParam("access") String access,
+			@QueryParam("query") String query, // SPARQL query
+			@QueryParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
+			@QueryParam("value") String value, // values clause that may complement query
+			@QueryParam("transform") String transform, // Transformation URI to post process result
+			@QueryParam("default-graph-uri") List<String> defaultGraphUris,
+			@QueryParam("named-graph-uri") List<String> namedGraphUris) {
 
 		Response rs;
 		if (path.equalsIgnoreCase("template")) {
 			rs = new Transformer()
-                                .queryGETHTML(request, profile, resource, mode, param, arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
+					.queryGETHTML(request, Transformer.getTemplateService(), profile, resource, mode, param, arg,
+							format,
+							access, query, name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.equalsIgnoreCase("spin/tospin")) {
 			rs = new SPIN().toSPIN(query);
 		} else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -76,18 +80,19 @@ public class SrvWrapper {
 			rs = new SDK().sdk(query, name, value);
 		} else if (path.startsWith("tutorial")) {
 			rs = new Tutorial()
-                                .get(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);		
-                } else if (path.startsWith("service")) {
-                    logger.info("service get");
-		rs = new ServiceOnline() // processList vs get
-                .processList(request, getService(path), profile, resource, 
-                        mode, param, arg, format, access, query, name, 
-                        value, transform, defaultGraphUris, namedGraphUris);
-		}
-                else if (path.startsWith("process")) {
+					.get(request, getService(path), profile, resource, mode, param, arg, format, query, name, value,
+							transform, defaultGraphUris, namedGraphUris);
+		} else if (path.startsWith("service")) {
+			logger.info("service get");
+			rs = new ServiceOnline() // processList vs get
+					.processList(request, getService(path), profile, resource,
+							mode, param, arg, format, access, query, name,
+							value, transform, defaultGraphUris, namedGraphUris);
+		} else if (path.startsWith("process")) {
 			rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
 		} else {
-			rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*").entity("Can not get right service solver.").build();
+			rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*")
+					.entity("Can not get right service solver.").build();
 		}
 
 		return Response.status(rs.getStatus()).header(headerAccept, "*").entity(wrapper(rs).toString()).build();
@@ -98,26 +103,28 @@ public class SrvWrapper {
 	@Path(pathRegex)
 	@Produces("text/html")
 	public Response transformPost(
-		@Context HttpServletRequest request,
-		@PathParam("path") String path,
-		@FormParam("profile") String profile, // query + transform
-		@FormParam("uri") String resource, // URI of resource focus
-		@FormParam("mode") String mode,
-		@FormParam("param") String param,
-                @FormParam("arg")   String arg,
-		@FormParam("format") String format,
-		@FormParam("access") String access,
-		@FormParam("query") String query, // SPARQL query
-		@FormParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
-		@FormParam("value") String value, // values clause that may complement query           
-		@FormParam("transform") String transform, // Transformation URI to post process result
-		@FormParam("default-graph-uri") List<String> defaultGraphUris,
-		@FormParam("named-graph-uri") List<String> namedGraphUris) {
+			@Context HttpServletRequest request,
+			@PathParam("path") String path,
+			@FormParam("profile") String profile, // query + transform
+			@FormParam("uri") String resource, // URI of resource focus
+			@FormParam("mode") String mode,
+			@FormParam("param") String param,
+			@FormParam("arg") String arg,
+			@FormParam("format") String format,
+			@FormParam("access") String access,
+			@FormParam("query") String query, // SPARQL query
+			@FormParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
+			@FormParam("value") String value, // values clause that may complement query
+			@FormParam("transform") String transform, // Transformation URI to post process result
+			@FormParam("default-graph-uri") List<String> defaultGraphUris,
+			@FormParam("named-graph-uri") List<String> namedGraphUris) {
 
 		Response rs;
 
 		if (path.equalsIgnoreCase("template")) {
-			rs = new Transformer().queryPOSTHTML(request, profile, resource, mode, param, arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
+			rs = new Transformer().queryPOSTHTML(request, Transformer.getTemplateService(), profile, resource, mode,
+					param,
+					arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.equalsIgnoreCase("spin/tospin")) {
 			rs = new SPIN().toSPINPOST(query);
 		} else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -125,14 +132,17 @@ public class SrvWrapper {
 		} else if (path.equalsIgnoreCase("sdk")) {
 			rs = new SDK().sdk(query, name, value);
 		} else if (path.startsWith("tutorial")) {
-			rs = new Tutorial().post(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
+			rs = new Tutorial().post(request, getService(path), profile, resource, mode, param, arg, format, query,
+					name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.startsWith("service")) {
 			rs = new ServiceOnline()
-                                .post(request, getService(path), profile, resource, mode, param, arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
+					.post(request, getService(path), profile, resource, mode, param, arg, format, access, query, name,
+							value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.startsWith("process")) {
 			rs = new Processor().typecheck(resource, "std", transform, query, getService(path));
 		} else {
-			rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*").entity("Can not get right service solver.").build();
+			rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*")
+					.entity("Can not get right service solver.").build();
 		}
 
 		return Response.status(rs.getStatus()).header(headerAccept, "*").entity(wrapper(rs).toString()).build();
@@ -143,26 +153,27 @@ public class SrvWrapper {
 	@Path(pathRegex)
 	@Produces("text/html")
 	public Response transformPostMD(
-		@Context HttpServletRequest request,
-		@PathParam("path") String path,
-		@FormDataParam("profile") String profile, // query + transform
-		@FormDataParam("uri") String resource, // URI of resource focus
-		@FormDataParam("mode") String mode, // URI of resource focus
-		@FormDataParam("param") String param, // URI of resource focus
-                @FormDataParam("arg")   String arg,
-		@FormDataParam("format") String format, // URI of resource focus
-		@FormDataParam("access") String access, 
-		@FormDataParam("query") String query, // SPARQL query
-		@FormDataParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
-		@FormDataParam("value") String value, // values clause that may complement query           
-		@FormDataParam("transform") String transform, // Transformation URI to post process result
-		@FormDataParam("default-graph-uri") List<FormDataBodyPart> defaultGraphUris,
-		@FormDataParam("named-graph-uri") List<FormDataBodyPart> namedGraphUris) {
+			@Context HttpServletRequest request,
+			@PathParam("path") String path,
+			@FormDataParam("profile") String profile, // query + transform
+			@FormDataParam("uri") String resource, // URI of resource focus
+			@FormDataParam("mode") String mode, // URI of resource focus
+			@FormDataParam("param") String param, // URI of resource focus
+			@FormDataParam("arg") String arg,
+			@FormDataParam("format") String format, // URI of resource focus
+			@FormDataParam("access") String access,
+			@FormDataParam("query") String query, // SPARQL query
+			@FormDataParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
+			@FormDataParam("value") String value, // values clause that may complement query
+			@FormDataParam("transform") String transform, // Transformation URI to post process result
+			@FormDataParam("default-graph-uri") List<FormDataBodyPart> defaultGraphUris,
+			@FormDataParam("named-graph-uri") List<FormDataBodyPart> namedGraphUris) {
 
 		Response rs;
 
 		if (path.equalsIgnoreCase("template")) {
-			rs = new Transformer().queryPOSTHTML_MD(request, profile, resource, mode, param, arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
+			rs = new Transformer().queryPOSTHTML_MD(request, profile, resource, mode, param, arg, format, access, query,
+					name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.equalsIgnoreCase("spin/tospin")) {
 			rs = new SPIN().toSPINPOST_MD(query);
 		} else if (path.equalsIgnoreCase("spin/tosparql")) {
@@ -170,26 +181,29 @@ public class SrvWrapper {
 		} else if (path.equalsIgnoreCase("sdk")) {
 			rs = new SDK().sdkPostMD(query, name, value);
 		} else if (path.startsWith("tutorial")) {
-			rs = new Tutorial().postMD(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);
+			rs = new Tutorial().postMD(request, getService(path), profile, resource, mode, param, arg, format, query,
+					name, value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.startsWith("service")) {
 			rs = new ServiceOnline()
-                                .postMD(request, getService(path), profile, resource, mode, param, arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
+					.postMD(request, getService(path), profile, resource, mode, param, arg, format, access, query, name,
+							value, transform, defaultGraphUris, namedGraphUris);
 		} else if (path.startsWith("process")) {
 			rs = new Processor().typecheckPost_MD(resource, "std", transform, query, getService(path));
 		} else {
-			rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*").entity("Can not get right service solver.").build();
+			rs = Response.status(Response.Status.BAD_REQUEST).header(headerAccept, "*")
+					.entity("Can not get right service solver.").build();
 		}
 
 		return Response.status(rs.getStatus()).header(headerAccept, "*").entity(wrapper(rs).toString()).build();
 	}
 
-	//Put the response text in the #content of home page
+	// Put the response text in the #content of home page
 	private String wrapper(Response rs) {
-		//if not using ajax, donot wrap
+		// if not using ajax, donot wrap
 		if (!SPARQLRestAPI.isAjax) {
 			return rs.getEntity().toString();
 		} else {
-			String home = EmbeddedJettyServer.resourceURI.getPath() + "/" + HOME_PAGE;//get file path
+			String home = EmbeddedJettyServer.resourceURI.getPath() + "/" + HOME_PAGE;// get file path
 			try {
 				Document doc;
 				doc = Jsoup.parse(new File(home), null);
@@ -203,7 +217,7 @@ public class SrvWrapper {
 		}
 	}
 
-	//get the string after first "/"
+	// get the string after first "/"
 	private String getService(String s) {
 		return (s == null || s.isEmpty()) ? "" : s.substring(s.indexOf("/") + 1);
 	}

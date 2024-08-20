@@ -240,7 +240,7 @@ public class GraphEngine {
 
     public void load(String path) throws EngineException, LoadException {
         Load ld = loader();
-        ld.parse(path);
+        ld.parse(path, ld.defaultGraph());
         // in case of load rule
         if (ld.getRuleEngine() != null) {
             setRuleEngine(ld.getRuleEngine());

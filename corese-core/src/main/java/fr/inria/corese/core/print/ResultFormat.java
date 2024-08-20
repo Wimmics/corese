@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.print.rdfc10.HashingUtility.HashAlgorithm;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.MappingsGraph;
 import fr.inria.corese.kgram.api.core.Node;
@@ -34,6 +35,7 @@ public class ResultFormat implements ResultFormatDef {
     public static final String SPARQL_RESULTS_CSV = "text/csv"; // application/sparql-results+csv";
     public static final String SPARQL_RESULTS_TSV = "text/tab-separated-values"; // application/sparql-results+tsv";
     public static final String SPARQL_RESULTS_MD = "text/markdown";
+    public static final String SPARQL_RESULTS_HTML = "application/n-quads";
 
     static final String HEADER = "<html>\n"
             + "<head>\n"
@@ -67,6 +69,7 @@ public class ResultFormat implements ResultFormatDef {
     private Graph graph;
     private Binding bind;
     private Context context;
+    private NSManager nsmanager;
     int type = UNDEF_FORMAT;
     private int transformType = UNDEF_FORMAT;
     private int construct_format = DEFAULT_CONSTRUCT_FORMAT;
@@ -95,7 +98,6 @@ public class ResultFormat implements ResultFormatDef {
         table.put(Metadata.DISPLAY_RDF, RDF_FORMAT);
         table.put(Metadata.DISPLAY_XML, XML_FORMAT);
         table.put(Metadata.DISPLAY_JSON, JSON_FORMAT);
-        table.put(Metadata.DISPLAY_MARKDOWN, MARKDOWN_FORMAT);
 
     }
 
@@ -112,11 +114,14 @@ public class ResultFormat implements ResultFormatDef {
         defContent(SPARQL_RESULTS_CSV, CSV_FORMAT);
         defContent(SPARQL_RESULTS_TSV, TSV_FORMAT);
         defContent(SPARQL_RESULTS_MD, MARKDOWN_FORMAT);
+
         // Graph
         defContent(RDF_XML, RDF_XML_FORMAT);
         defContent(TURTLE_TEXT, TURTLE_FORMAT);
         defContent(TRIG, TRIG_FORMAT);
         defContent(JSON_LD, JSONLD_FORMAT);
+        defContent(N_TRIPLES, NTRIPLES_FORMAT);
+        defContent(N_QUADS, NQUADS_FORMAT);
         // defContent(JSON, JSON_LD_FORMAT);
 
         format.put(TRIG_TEXT, TRIG_FORMAT);
@@ -140,6 +145,8 @@ public class ResultFormat implements ResultFormatDef {
         format.put("turtle", TURTLE_FORMAT);
         format.put("trig", TRIG_FORMAT);
         format.put("rdfxml", RDF_XML_FORMAT);
+        format.put("nt", NTRIPLES_FORMAT);
+        format.put("nq", NQUADS_FORMAT);
     }
 
     static void defContent(String f, int t) {
@@ -168,6 +175,12 @@ public class ResultFormat implements ResultFormatDef {
 
     ResultFormat(Graph g, int type) {
         this(g);
+        this.type = type;
+    }
+    
+    ResultFormat(Graph g, NSManager nsm, int type) {
+        this(g);
+        setNsmanager(nsm);
         this.type = type;
     }
 
@@ -276,6 +289,10 @@ public class ResultFormat implements ResultFormatDef {
 
     static public ResultFormat create(Graph g, int type) {
         return new ResultFormat(g, type);
+    }
+    
+    static public ResultFormat create(Graph g, NSManager nsm, int type) {
+        return new ResultFormat(g, nsm, type);
     }
 
     static public ResultFormat create(Graph g, String type) {
@@ -435,20 +452,23 @@ public class ResultFormat implements ResultFormatDef {
             case RDF_XML_FORMAT:
                 return RDFFormat.create(getGraph()).toString();
             case TRIG_FORMAT:
-                return TripleFormat.create(getGraph(), true)
+                return TripleFormat.create(getGraph(), getNsmanager(), true)
                         .setNbTriple(getNbTriple()).toString(node);
             case JSONLD_FORMAT:
                 return JSONLDFormat.create(getGraph()).toString();
             case NTRIPLES_FORMAT:
                 return NTriplesFormat.create(getGraph()).toString();
             case NQUADS_FORMAT:
-                return TripleFormat.create(getGraph(), true)
-                        .setNbTriple(getNbTriple()).toString(node);
+                return NQuadsFormat.create(getGraph()).toString();
+            case RDFC10_FORMAT:
+                return CanonicalRdf10Format.create(getGraph(), HashAlgorithm.SHA_256).toString();
+            case RDFC10_SHA384_FORMAT:
+                return CanonicalRdf10Format.create(getGraph(), HashAlgorithm.SHA_384).toString();
             case TURTLE_FORMAT:
             default:
                 // e.g. HTML
-                String str = TripleFormat.create(getGraph())
-                        .setNbTriple(getNbTriple()).toString(node);
+                TripleFormat tf = TripleFormat.create(getGraph(), getNsmanager());
+                String str = tf.setNbTriple(getNbTriple()).toString(node);
                 if (type() == HTML_FORMAT) {
                     return html(str);
                 }
@@ -485,6 +505,10 @@ public class ResultFormat implements ResultFormatDef {
             case TURTLE_FORMAT:
             case TRIG_FORMAT:
             case JSONLD_FORMAT:
+            case NTRIPLES_FORMAT:
+            case NQUADS_FORMAT:
+            case RDFC10_FORMAT:
+            case RDFC10_SHA384_FORMAT:
                 // case RDF_FORMAT:
                 return true;
             default:
@@ -535,6 +559,14 @@ public class ResultFormat implements ResultFormatDef {
                 return TripleFormat.create(map, true).setNbTriple(getNbTriple()).toString();
             case JSONLD_FORMAT:
                 return JSONLDFormat.create(map).toString();
+            case NTRIPLES_FORMAT:
+                return NTriplesFormat.create(map).toString();
+            case NQUADS_FORMAT:
+                return NQuadsFormat.create(map).toString();
+            case RDFC10_FORMAT:
+                return CanonicalRdf10Format.create(map, HashAlgorithm.SHA_256).toString();
+            case RDFC10_SHA384_FORMAT:
+                return CanonicalRdf10Format.create(map, HashAlgorithm.SHA_384).toString();
 
             case RDF_FORMAT:
                 // W3C RDF Graph Mappings
@@ -753,6 +785,14 @@ public class ResultFormat implements ResultFormatDef {
     public ResultFormat setNbTriple(int nbTriple) {
         this.nbTriple = nbTriple;
         return this;
+    }
+
+    public NSManager getNsmanager() {
+        return nsmanager;
+    }
+
+    public void setNsmanager(NSManager nsmanager) {
+        this.nsmanager = nsmanager;
     }
 
 }

@@ -17,6 +17,7 @@ Corese also implements the LDScript and STTL SPARQL extensions.
 
 The Docker image tag includes the Corese version installed in the image. The following versions are currently available:
 
+- corese:4.5.1
 - corese:4.5.0
 - corese:4.4.1
 - corese:4.4.0

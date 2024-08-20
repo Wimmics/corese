@@ -1,0 +1,23 @@
+@prefix ex: <http://example.org/ns#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+ex:Alice ex:ssn "987-65-4323" ;
+    ex:worksFor ex:Haribo, ex:KitKat ;
+    rdf:type ex:Person .
+
+ex:Bob ex:ssn "124-35-6789" ;
+    ex:worksFor ex:Twitch ;
+    rdf:type ex:Person .
+
+ex:Calvin ex:ssn "648-67-6545" ;
+    ex:worksFor ex:UntypedCompany ;
+    rdf:type ex:Person .
+
+ex:Haribo rdf:type ex:Company .
+
+ex:KitKat rdf:type ex:Company .
+
+ex:Twitch rdf:type ex:Company .
+
+ex:UntypedCompany rdf:type ex:Company .
+

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 /**
- *
+ * Corese main class, used to initialize the Corese system.
  * @author edemairy
  */
 public class Corese {

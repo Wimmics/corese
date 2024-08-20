@@ -1,5 +1,6 @@
 package fr.inria.corese.server.webservice;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +55,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     static final String SPARQL_RESULTS_JSON = ResultFormat.SPARQL_RESULTS_JSON;
     static final String SPARQL_RESULTS_CSV = ResultFormat.SPARQL_RESULTS_CSV;
     static final String SPARQL_RESULTS_TSV = ResultFormat.SPARQL_RESULTS_TSV;
+    static final String SPARQL_RESULTS_MD = ResultFormat.SPARQL_RESULTS_MD;
     static final String SPARQL_QUERY = ResultFormat.SPARQL_QUERY;
 
     static final String XML = ResultFormat.XML;
@@ -65,8 +67,15 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     static final String TRIG = ResultFormat.TRIG;
     static final String TRIG_TEXT = ResultFormat.TRIG_TEXT;
     static final String NT_TEXT = ResultFormat.NT_TEXT;
+    static final String N_TRIPLES = ResultFormat.N_TRIPLES;
+    static final String N_QUADS = ResultFormat.N_QUADS;
     static final String TEXT = ResultFormat.TEXT;
     static final String HTML = ResultFormat.HTML;
+
+    // Profiles
+    private final String CN10_SHA = "https://www.w3.org/TR/rdf-canon";
+    private final String CN10_SHA256 = "https://www.w3.org/TR/rdf-canon#sha-256";
+    private final String CN10_SHA384 = "https://www.w3.org/TR/rdf-canon#sha-384";
 
     public static final String PROFILE_DEFAULT = "profile.ttl";
     public static final String DEFAULT = NSManager.STL + "default";
@@ -124,6 +133,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         return store;
     }
 
+    // Named sparql endpoint
     static TripleStore getTripleStore(String name) {
         if (name == null) {
             return getTripleStore();
@@ -256,7 +266,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             return Response.status(404).header(headerAccept, "*").entity(output).build();
         }
 
-        logger.info(output = "Successfully loaded " + remotePath);
+        logger.info(output + "Successfully loaded " + remotePath);
         return Response.status(200).header(headerAccept, "*").entity(output).build();
     }
 
@@ -373,6 +383,35 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         return getResultFormat(map, format).toString();
     }
 
+    /**
+     * Get the profiles from the Accept header
+     * 
+     * @param accept The Accept header
+     * @return The profiles
+     */
+    private ArrayList<String> getProfiles(String accept) {
+        ArrayList<String> profiles = new ArrayList<>();
+        String[] parts = accept.split(";");
+        for (String part : parts) {
+            if (part.contains("profile=")) {
+                String[] profileParts = part.split("=");
+                String[] profileUrls = profileParts[1].split(" ");
+
+                for (String profileUrl : profileUrls) {
+                    // Remove the quotes
+                    profileUrl = profileUrl.replace("\"", "");
+
+                    profiles.add(profileUrl);
+                }
+            }
+        }
+        return profiles;
+
+        // eg: Accept:
+        // application/n-quads;profile="https://www.w3.org/TR/rdf-canon/#sha-256
+        // https://www.w3.org/TR/rdf-canon#sha-384"
+    }
+
     @GET
     @Produces({ HTML })
     public Response getHTMLForGet(@jakarta.ws.rs.core.Context HttpServletRequest request,
@@ -396,8 +435,22 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
                 (mode == null || mode.isEmpty())) {
             query = "select * where {?s ?p ?o} limit 5";
             return new Transformer()
-                    .queryGETHTML(request, fr.inria.corese.core.transform.Transformer.SPARQL,
-                            null, null, null, null, format, access, query, null, null, null, defaut, named);
+                    .queryGETHTML(
+                            request,
+                            oper,
+                            fr.inria.corese.core.transform.Transformer.SPARQL,
+                            null,
+                            null,
+                            null,
+                            null,
+                            format,
+                            access,
+                            query,
+                            name,
+                            null,
+                            null,
+                            defaut,
+                            named);
         }
         return getResultFormat(request, name, oper, uri, param, mode, query, access, defaut, named, null, HTML_FORMAT,
                 transform);
@@ -473,6 +526,23 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, TSV_FORMAT);
     }
 
+    @GET
+    @Produces(SPARQL_RESULTS_MD)
+    public Response getTriplesMDForGet(@jakarta.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name") String name,
+            @PathParam("oper") String oper,
+            @QueryParam("query") String query,
+            @QueryParam("access") String access,
+            @QueryParam("default-graph-uri") List<String> defaut,
+            @QueryParam("named-graph-uri") List<String> named,
+            @QueryParam("param") List<String> param,
+            @QueryParam("mode") List<String> mode,
+            @QueryParam("uri") List<String> uri) {
+
+        logger.info("getTriplesMDForGet");
+        return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, MARKDOWN_FORMAT);
+    }
+
     // ----------------------------------------------------
     // SPARQL QUERY - DESCRIBE and CONSTRUCT with HTTP GET
     // ----------------------------------------------------
@@ -541,8 +611,58 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @QueryParam("mode") List<String> mode,
             @QueryParam("uri") List<String> uri) {
 
-        logger.info("getRDFGraphJsonLDForGet");
+        System.out.println("getRDFGraphJsonLDForGet");
         return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, JSONLD_FORMAT);
+    }
+
+    @GET
+    @Produces({ N_TRIPLES })
+    public Response getRDFGraphNTriplesForGet(@jakarta.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name") String name,
+            @PathParam("oper") String oper,
+            @QueryParam("query") String query,
+            @QueryParam("access") String access,
+            @QueryParam("default-graph-uri") List<String> defaut,
+            @QueryParam("named-graph-uri") List<String> named,
+            @QueryParam("param") List<String> param,
+            @QueryParam("mode") List<String> mode,
+            @QueryParam("uri") List<String> uri) {
+
+        logger.info("getRDFGraphNTriplesForGet");
+        return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, NTRIPLES_FORMAT);
+    }
+
+    @GET
+    @Produces({ N_QUADS })
+    public Response getRDFGraphNQuadsForGet(@jakarta.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name") String name,
+            @PathParam("oper") String oper,
+            @QueryParam("query") String query,
+            @QueryParam("access") String access,
+            @QueryParam("default-graph-uri") List<String> defaut,
+            @QueryParam("named-graph-uri") List<String> named,
+            @QueryParam("param") List<String> param,
+            @QueryParam("mode") List<String> mode,
+            @QueryParam("uri") List<String> uri) {
+
+        logger.info("getRDFGraphNQuadsForGet");
+
+        // Get the profiles from the Accept header
+        ArrayList<String> profiles = getProfiles(request.getHeader("Accept"));
+
+        for (String profile : profiles) {
+            if (profile.equals(this.CN10_SHA) || profile.equals(this.CN10_SHA256)) {
+                logger.info("Profile: " + profile);
+                return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, RDFC10_FORMAT);
+            }
+            if (profile.equals(this.CN10_SHA384)) {
+                logger.info("Profile: " + profile);
+                return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named,
+                        RDFC10_SHA384_FORMAT);
+            }
+        }
+
+        return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, NQUADS_FORMAT);
     }
 
     // ----------------------------------------------------
@@ -599,6 +719,43 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         query = getQuery(query, message);
 
         return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, TEXT_FORMAT);
+    }
+
+    @POST
+    @Produces(HTML)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response getHTMLForPost(@jakarta.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name") String name,
+            @PathParam("oper") String oper,
+            @DefaultValue("") @FormParam("query") String query,
+            @FormParam("access") String access,
+            @FormParam("default-graph-uri") List<String> defaut,
+            @FormParam("named-graph-uri") List<String> named,
+            @FormParam("param") List<String> param,
+            @FormParam("mode") List<String> mode,
+            @FormParam("uri") List<String> uri,
+            String message) {
+
+        logger.info("getHTMLForPost");
+
+        query = getQuery(query, message);
+
+        return new Transformer().queryPOSTHTML(
+                request,
+                oper,
+                fr.inria.corese.core.transform.Transformer.SPARQL,
+                null,
+                null,
+                null,
+                null,
+                HTML,
+                access,
+                query,
+                name,
+                null,
+                null,
+                defaut,
+                named);
     }
 
     /**
@@ -855,7 +1012,62 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         query = getQuery(query, update, message);
         logger.info("getRDFGraphJsonLDForPost");
         return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, JSONLD_FORMAT);
+    }
 
+    @POST
+    @Produces({ N_TRIPLES })
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response getRDFGraphNTriplesForPost(@jakarta.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name") String name,
+            @PathParam("oper") String oper,
+            @DefaultValue("") @FormParam("query") String query,
+            @DefaultValue("") @FormParam("update") String update,
+            @FormParam("access") String access,
+            @FormParam("default-graph-uri") List<String> defaut,
+            @FormParam("named-graph-uri") List<String> named,
+            @FormParam("param") List<String> param,
+            @FormParam("mode") List<String> mode,
+            @FormParam("uri") List<String> uri,
+            String message) {
+        query = getQuery(query, update, message);
+        logger.info("getRDFGraphNTriplesForPost");
+        return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, NTRIPLES_FORMAT);
+    }
+
+    @POST
+    @Produces({ N_QUADS })
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response getRDFGraphNQuadsForPost(@jakarta.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name") String name,
+            @PathParam("oper") String oper,
+            @DefaultValue("") @FormParam("query") String query,
+            @DefaultValue("") @FormParam("update") String update,
+            @FormParam("access") String access,
+            @FormParam("default-graph-uri") List<String> defaut,
+            @FormParam("named-graph-uri") List<String> named,
+            @FormParam("param") List<String> param,
+            @FormParam("mode") List<String> mode,
+            @FormParam("uri") List<String> uri,
+            String message) {
+        query = getQuery(query, update, message);
+        logger.info("getRDFGraphNQuadsForPost");
+
+        // Get the profiles from the Accept header
+        ArrayList<String> profiles = getProfiles(request.getHeader("Accept"));
+
+        for (String profile : profiles) {
+            if (profile.equals(this.CN10_SHA) || profile.equals(this.CN10_SHA256)) {
+                logger.info("Profile: " + profile);
+                return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, RDFC10_FORMAT);
+            }
+            if (profile.equals(this.CN10_SHA384)) {
+                logger.info("Profile: " + profile);
+                return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named,
+                        RDFC10_SHA384_FORMAT);
+            }
+        }
+
+        return myGetResult(request, name, oper, uri, param, mode, query, access, defaut, named, NQUADS_FORMAT);
     }
 
     // ----------------------------------------------------

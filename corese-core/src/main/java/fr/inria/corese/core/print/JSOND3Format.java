@@ -1,15 +1,15 @@
 package fr.inria.corese.core.print;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import java.util.HashMap;
+import java.util.Map;
+
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.core.Graph;
-import java.util.HashMap;
-import java.util.Map;
-import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 public class JSOND3Format extends RDFFormat {
 
@@ -86,17 +86,17 @@ public class JSOND3Format extends RDFFormat {
             return sb;
         }
 
-//        if (isGraph) {
-//            graphNodes();
-//        } else {
-//            nodes();
-//        }
+        // if (isGraph) {
+        // graphNodes();
+        // } else {
+        // nodes();
+        // }
         StringBuilder bb = new StringBuilder();
 
-//        header(bb);
+        // header(bb);
         bb.append(OOBJ);
         bb.append(NL);
-//        bb.append(TAB);
+        // bb.append(TAB);
         bb.append(" \"nodes\" : [ ");
         bb.append(NL);
         d3Nodes();
@@ -104,7 +104,7 @@ public class JSOND3Format extends RDFFormat {
 
         bb.append("] ,");
         bb.append(NL);
-//        bb.append(TAB);
+        // bb.append(TAB);
         bb.append(" \"edges\" : [ ");
         bb.append(NL);
         d3Edges();
@@ -117,7 +117,7 @@ public class JSOND3Format extends RDFFormat {
     }
 
     void d3Nodes() {
-        
+
         for (Node node : graph.getRBNodes()) {
             int group = 1;
             if (node.isBlank()) {
@@ -125,12 +125,12 @@ public class JSOND3Format extends RDFFormat {
             } else if (node.toString().contains("/sparql")) {
                 group = 2;
             }
-            
+
             sdisplay(TAB);
             sdisplay(OOBJ);
             sdisplay("\"name\" : ");
             sdisplay(DQUOTE);
-            
+
             sdisplay(JSONFormat.addJSONEscapes(node.toString()));
             sdisplay(DQUOTE);
             sdisplay(V);
@@ -144,12 +144,12 @@ public class JSOND3Format extends RDFFormat {
         }
 
         for (Node node : graph.getLiteralNodes()) {
-//        for (Entity e :  graph.getRBNodes()) {
+            // for (Entity e : graph.getRBNodes()) {
             sdisplay(TAB);
             sdisplay(OOBJ);
             sdisplay("\"name\" : ");
             sdisplay(DQUOTE);
-            
+
             sdisplay(JSONFormat.addJSONEscapes(node.toString()));
             sdisplay(DQUOTE);
             sdisplay(V);
@@ -171,7 +171,9 @@ public class JSOND3Format extends RDFFormat {
 
         for (Edge e : graph.getEdges()) {
 
-            Edge edge = e;
+            // Create a new clean iterable (because corse iterable does not have a perfectly
+            // defined behavior for optimization reasons)
+            Edge edge = this.graph.getEdgeFactory().copy(e);
 
             sdisplay(TAB);
             sdisplay(OOBJ);
@@ -194,8 +196,7 @@ public class JSOND3Format extends RDFFormat {
             sb.deleteCharAt(sb.lastIndexOf(V));
         }
     }
-    
-    
+
     void nodes() {
         for (Node node : getNodes()) {
             print(null, node);

@@ -1,34 +1,40 @@
-PREFIX : <http://stardog.com/tutorial/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
-:The_Beatles      rdf:type  :Band .
-:The_Beatles      :name     "The Beatles" .
-:The_Beatles      :member   :John_Lennon .
-:The_Beatles      :member   :Paul_McCartney .
-:The_Beatles      :member   :Ringo_Starr .
-:The_Beatles      :member   :George_Harrison .
-:John_Lennon      rdf:type  :SoloArtist .
-:Paul_McCartney   rdf:type  :SoloArtist .
-:Ringo_Starr      rdf:type  :SoloArtist .
-:George_Harrison  rdf:type  :SoloArtist .
-:Please_Please_Me rdf:type  :Album .
-:Please_Please_Me :name     "Please Please Me" .
-:Please_Please_Me :date     "1963-03-22"^^xsd:date .
-:Please_Please_Me :artist   :The_Beatles .
-:Please_Please_Me :track    :Love_Me_Do .
-:Love_Me_Do       rdf:type  :Song .
-:Love_Me_Do       :name     "Love Me Do" .
-:Love_Me_Do       :length   125 .
-:Love_Me_Do       :writer   :John_Lennon .
-:Love_Me_Do       :writer   :Paul_McCartney .
+ex:Love_Me_Do ex:length 125 ;
+    ex:name "Love Me Do" ;
+    ex:writer ex:John_Lennon ;
+    ex:writer ex:Paul_McCartney ;
+    rdf:type ex:Song .
 
-:McCartney        rdf:type  :Album .
-:McCartney        :name     "McCartney" .
-:McCartney        :date     "1970-04-17"^^xsd:date .
-:McCartney        :artist   :Paul_McCartney .
+ex:The_Beatles ex:member ex:John_Lennon ;
+    ex:member ex:Paul_McCartney ;
+    ex:member ex:Ringo_Starr ;
+    ex:member ex:George_Harrison ;
+    ex:name "The Beatles" ;
+    rdf:type ex:Band .
 
-:Imagine          rdf:type  :Album .
-:Imagine          :name     "Imagine" .
-:Imagine          :date     "1971-10-11"^^xsd:date .
-:Imagine          :artist   :John_Lennon .
+ex:Please_Please_Me ex:artist ex:The_Beatles ;
+    ex:date "1963-03-22"^^xsd:date ;
+    ex:name "Please Please Me" ;
+    ex:track ex:Love_Me_Do ;
+    rdf:type ex:Album .
+
+ex:George_Harrison rdf:type ex:SoloArtist .
+
+ex:Ringo_Starr rdf:type ex:SoloArtist .
+
+ex:John_Lennon rdf:type ex:SoloArtist .
+
+ex:Paul_McCartney rdf:type ex:SoloArtist .
+
+ex:McCartney ex:artist ex:Paul_McCartney ;
+    ex:date "1970-04-17"^^xsd:date ;
+    ex:name "McCartney" ;
+    rdf:type ex:Album .
+
+ex:Imagine ex:artist ex:John_Lennon ;
+    ex:date "1971-10-11"^^xsd:date ;
+    ex:name "Imagine" ;
+    rdf:type ex:Album .

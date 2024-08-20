@@ -100,3 +100,9 @@ earl-report-test.ttl
 ## flatpak
 ##############################
 .flatpak-builder/
+
+##############################
+## test report
+##############################
+earlReport.ttl
+testReport.csv

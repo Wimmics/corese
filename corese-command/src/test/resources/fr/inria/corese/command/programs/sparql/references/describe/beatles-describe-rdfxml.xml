@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <rdf:RDF
-  xmlns='http://stardog.com/tutorial/'
+  xmlns='http://example.com/'
   xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
 
-  <Band rdf:about='http://stardog.com/tutorial/The_Beatles'>
-    <member rdf:resource='http://stardog.com/tutorial/John_Lennon' />
-    <member rdf:resource='http://stardog.com/tutorial/Paul_McCartney' />
-    <member rdf:resource='http://stardog.com/tutorial/Ringo_Starr' />
-    <member rdf:resource='http://stardog.com/tutorial/George_Harrison' />
+  <Band rdf:about='http://example.com/The_Beatles'>
+    <member rdf:resource='http://example.com/John_Lennon' />
+    <member rdf:resource='http://example.com/Paul_McCartney' />
+    <member rdf:resource='http://example.com/Ringo_Starr' />
+    <member rdf:resource='http://example.com/George_Harrison' />
     <name rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>The Beatles</name>
   </Band>
 
-  <rdf:Description rdf:about='http://stardog.com/tutorial/Please_Please_Me'>
-    <artist rdf:resource='http://stardog.com/tutorial/The_Beatles' />
+  <rdf:Description rdf:about='http://example.com/Please_Please_Me'>
+    <artist rdf:resource='http://example.com/The_Beatles' />
   </rdf:Description>
 
 </rdf:RDF>

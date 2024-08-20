@@ -16,7 +16,7 @@ rs:value "1963-03-22"^^xsd:date
 ] ; 
 rs:binding [
 rs:variable 'artist' ; 
-rs:value <http://stardog.com/tutorial/The_Beatles>
+rs:value <http://example.com/The_Beatles>
 ] ; 
 ] ;
 rs:solution [
@@ -31,7 +31,7 @@ rs:value "1970-04-17"^^xsd:date
 ] ; 
 rs:binding [
 rs:variable 'artist' ; 
-rs:value <http://stardog.com/tutorial/Paul_McCartney>
+rs:value <http://example.com/Paul_McCartney>
 ] ; 
 ] ;
 rs:solution [
@@ -46,6 +46,6 @@ rs:value "1971-10-11"^^xsd:date
 ] ; 
 rs:binding [
 rs:variable 'artist' ; 
-rs:value <http://stardog.com/tutorial/John_Lennon>
+rs:value <http://example.com/John_Lennon>
 ] ; 
 ].

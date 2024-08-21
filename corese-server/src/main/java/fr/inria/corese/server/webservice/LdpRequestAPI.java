@@ -75,20 +75,27 @@ public class LdpRequestAPI {
     private static final String URI_LDP_INDIRECT_CONTAINER = NAMESPACE_LDP + "IndirectContainer";
     private static final String URI_LDP_RDF_SOURCE = NAMESPACE_LDP + "RDFSource";
     private static final Node rdfTypeProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(RDF.TYPE);
-    private static final Node ldpContainsProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_CONTAINS);
+    private static final Node ldpContainsProperty = SPARQLRestAPI.getTripleStore().getGraph()
+            .createNode(URI_LDP_CONTAINS);
     private static final Node ldpMemberProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_MEMBER);
-    private static final Node ldpMembershipResourceProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_MEMBERSHIP_RESOURCE);
-    private static final Node ldpHasMemberRelationProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_HAS_MEMBERSHIP_RELATION);
-    private static final Node ldpIsMemberOfRelationProperty = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_IS_MEMBER_OF_RELATION);
+    private static final Node ldpMembershipResourceProperty = SPARQLRestAPI.getTripleStore().getGraph()
+            .createNode(URI_LDP_MEMBERSHIP_RESOURCE);
+    private static final Node ldpHasMemberRelationProperty = SPARQLRestAPI.getTripleStore().getGraph()
+            .createNode(URI_LDP_HAS_MEMBERSHIP_RELATION);
+    private static final Node ldpIsMemberOfRelationProperty = SPARQLRestAPI.getTripleStore().getGraph()
+            .createNode(URI_LDP_IS_MEMBER_OF_RELATION);
 
     private static final String SPARQL_DESCRIBE_QUERY = "CONSTRUCT { ?s ?p ?o } { { GRAPH <%1$s> { ?s ?p ?o } } UNION { GRAPH ?g { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } } UNION { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } }";
     private static final String SPARQL_TYPE_QUERY = "SELECT DISTINCT ?type WHERE { <%1$s> a ?type }";
     private static final String SPARQL_EXISTS_QUERY = "ASK { { <%1$s> ?p ?o } UNION { ?s ?p <%1$s> } }";
-    private static final String SPARQL_CONTAINER_IS_BASIC_QUERY = "ASK { <%1$s> a <" + URI_LDP_BASIC_CONTAINER + "> }";
-    private static final String SPARQL_CONTAINER_IS_DIRECT_QUERY = "ASK { <%1$s> a <" + URI_LDP_DIRECT_CONTAINER
-            + "> }";
-    private static final String SPARQL_CONTAINER_IS_INDIRECT_QUERY = "ASK { <%1$s> a <" + URI_LDP_INDIRECT_CONTAINER
-            + "> }";
+    private static final String SPARQL_CONTAINER_IS_BASIC_QUERY = "ASK { GRAPH <%1$s> { <%1$s> a <"
+            + URI_LDP_BASIC_CONTAINER + "> } }";
+    private static final String SPARQL_CONTAINER_IS_DIRECT_QUERY = "ASK { GRAPH <%1$s> { <%1$s> a <"
+            + URI_LDP_DIRECT_CONTAINER
+            + "> } }";
+    private static final String SPARQL_CONTAINER_IS_INDIRECT_QUERY = "ASK { GRAPH <%1$s> { <%1$s> a <"
+            + URI_LDP_INDIRECT_CONTAINER
+            + "> } }";
     private static final String SPARQL_IS_LDP_RESOURCE_QUERY = "ASK { <%1$s> a <" + URI_LDP_RESOURCE + "> }";
     private static final String SPARQL_IS_CONTAINER_QUERY = "ASK { <%1$s> a ?type . VALUES ?type { <"
             + URI_LDP_CONTAINER + "> <" + URI_LDP_BASIC_CONTAINER + "> <" + URI_LDP_DIRECT_CONTAINER + "> <"
@@ -313,8 +320,8 @@ public class LdpRequestAPI {
             throws EngineException {
         Node resource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
         Node ldpResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_RESOURCE);
-            
-        if(SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI) == null) {
+
+        if (SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI) == null) {
             SPARQLRestAPI.getTripleStore().getGraph().createNamedGraph(resURI);
         }
 
@@ -347,24 +354,27 @@ public class LdpRequestAPI {
     private void createContainer(HttpServletRequest request, String rawContent, String format) throws EngineException {
         String resURI = request.getRequestURL().toString();
         String link = request.getHeader(HEADER_LINK);
-        Node containerResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
-        Node ldpContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_CONTAINER);
 
-        if (link.contains("<" + URI_LDP_BASIC_CONTAINER + ">")) {
-            createBasicContainer(resURI);
-        }
-        if (link.contains("<" + URI_LDP_DIRECT_CONTAINER + ">")) {
-            createDirectContainer(request, rawContent, format);
-        }
-        if (link.contains("<" + URI_LDP_INDIRECT_CONTAINER + ">")) {
-            createIndirectContainer(request, rawContent, format);
-        }
+        if (link.contains(URI_LDP_BASIC_CONTAINER) || link.contains(URI_LDP_DIRECT_CONTAINER)
+                || link.contains(URI_LDP_INDIRECT_CONTAINER)) {
 
-        if(SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI) == null) {
-            SPARQLRestAPI.getTripleStore().getGraph().createNamedGraph(resURI);
+            Node containerResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
+            Node ldpContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_CONTAINER);
+
+            createResource(resURI, rawContent, format);
+
+            if (link.contains("<" + URI_LDP_BASIC_CONTAINER + ">")) {
+                createBasicContainer(resURI);
+            }
+            if (link.contains("<" + URI_LDP_DIRECT_CONTAINER + ">")) {
+                createDirectContainer(request, rawContent, format);
+            }
+            if (link.contains("<" + URI_LDP_INDIRECT_CONTAINER + ">")) {
+                createIndirectContainer(request, rawContent, format);
+            }
+            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(containerResource, rdfTypeProperty,
+                    ldpContainer);
         }
-        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(containerResource, rdfTypeProperty, ldpContainer);
-        createResource(resURI, rawContent, format);
     }
 
     /**
@@ -376,7 +386,8 @@ public class LdpRequestAPI {
         logger.info("Creating basic container: " + resURI);
         Node containerResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
         Node ldpBasicContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_BASIC_CONTAINER);
-        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(containerResource, rdfTypeProperty, ldpBasicContainer);
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(containerResource, rdfTypeProperty,
+                ldpBasicContainer);
     }
 
     /**
@@ -392,30 +403,21 @@ public class LdpRequestAPI {
      */
     private void createDirectContainer(HttpServletRequest request, String rawContent, String format)
             throws EngineException {
-        String resURI = request.getRequestURL().toString();
-        Node containerResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
+        String containerURI = request.getRequestURL().toString();
+        Node containerResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(containerURI);
         Node ldpDirectContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_DIRECT_CONTAINER);
 
-        Graph directContainerGraph = new Graph();
-        Load load = Load.create(directContainerGraph);
-        try {
-            if (format.equals(TURTLE_TEXT)) {
-                load.loadString(rawContent, resURI, Load.TURTLE_FORMAT);
-            } else if (format.equals(JSON_LD)) {
-                load.loadString(rawContent, resURI, Load.JSONLD_FORMAT);
-            } else {
-                throw new EngineException("Unsupported format: " + format);
-            }
-        } catch (LoadException e) {
-            throw new EngineException(e);
-        }
-        directContainerGraph.init();
+        createResource(containerURI, rawContent, format);
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(containerResource, rdfTypeProperty,
+                ldpDirectContainer);
+
+        Graph directContainerGraph = SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI);
 
         ArrayList<Node> membershipResourceList = new ArrayList<>();
         QueryProcess directContainerContentExec = QueryProcess.create(directContainerGraph);
 
         Mappings membershipResourceMappings = directContainerContentExec.query("SELECT DISTINCT ?membershipResource { <"
-                + resURI + "> <" + URI_LDP_MEMBERSHIP_RESOURCE + "> ?membershipResource }");
+                + containerURI + "> <" + URI_LDP_MEMBERSHIP_RESOURCE + "> ?membershipResource }");
         membershipResourceMappings.forEach(membershipResourceMapping -> {
             Node membershipResource = membershipResourceMapping.getNode("?membershipResource");
             membershipResourceList.add(membershipResource);
@@ -427,7 +429,7 @@ public class LdpRequestAPI {
 
         ArrayList<Node> hasMemberRelationList = new ArrayList<>();
         Mappings hasMemberRelationMappings = directContainerContentExec.query("SELECT DISTINCT ?hasMemberRelation { <"
-                + resURI + "> <" + URI_LDP_HAS_MEMBERSHIP_RELATION + "> ?hasMemberRelation }");
+                + containerURI + "> <" + URI_LDP_HAS_MEMBERSHIP_RELATION + "> ?hasMemberRelation }");
         hasMemberRelationMappings.forEach(hasMemberRelationMapping -> {
             Node hasMemberRelation = hasMemberRelationMapping.getNode("?hasMemberRelation");
             hasMemberRelationList.add(hasMemberRelation);
@@ -436,7 +438,7 @@ public class LdpRequestAPI {
         ArrayList<Node> isMemberOfRelationList = new ArrayList<>();
         Mappings isMemberOfRelationMappings = directContainerContentExec
                 .query("SELECT DISTINCT ?isMemberOfRelation { ?isMemberOfRelation <" + URI_LDP_IS_MEMBER_OF_RELATION
-                        + "> <" + resURI + "> }");
+                        + "> <" + containerURI + "> }");
         isMemberOfRelationMappings.forEach(isMemberOfRelationMapping -> {
             Node isMemberOfRelation = isMemberOfRelationMapping.getNode("?isMemberOfRelation");
             isMemberOfRelationList.add(isMemberOfRelation);
@@ -464,10 +466,10 @@ public class LdpRequestAPI {
         Node containerResource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resURI);
         Node ldpIndirectContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_INDIRECT_CONTAINER);
         Node ldpDirectContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_DIRECT_CONTAINER);
-
-        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(containerResource, rdfTypeProperty, ldpIndirectContainer);
         createDirectContainer(request, rawContent, format);
-        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).delete(containerResource, rdfTypeProperty, ldpDirectContainer);
+
+        SPARQLRestAPI.getTripleStore().getGraph().delete(containerResource, rdfTypeProperty, ldpDirectContainer);
+        SPARQLRestAPI.getTripleStore().getGraph().insert(containerResource, rdfTypeProperty, ldpIndirectContainer);
 
     }
 
@@ -515,7 +517,7 @@ public class LdpRequestAPI {
             String isContainerSparqlQuery = String.format(SPARQL_IS_CONTAINER_QUERY, subject);
             Mappings isContainerMappings = exec.query(isContainerSparqlQuery);
             if (isContainerMappings.size() > 0) {
-                // If its is a resource, is it linbked to a container ?
+                // If its is a resource, is it linked to a container ?
                 String isContainedSparqlQuery = String.format(SPARQL_IS_CONTAINED_QUERY, subject);
                 Mappings isContainedMappings = exec.query(isContainedSparqlQuery);
                 if (isContainedMappings.size() == 0) {
@@ -715,7 +717,8 @@ public class LdpRequestAPI {
         Node container = SPARQLRestAPI.getTripleStore().getGraph().createNode(containerURI);
         Node resource = SPARQLRestAPI.getTripleStore().getGraph().createNode(resourceURI);
         if (containerIsBasic(containerURI)) {
-            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(container, ldpMemberProperty, resource);
+            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(container, ldpMemberProperty,
+                    resource);
         } else if (containerIsDirect(containerURI)) {
             addResourceToDirectContainer(container, resource);
         } else if (containerIsIndirect(containerURI) && content != null) {
@@ -736,12 +739,13 @@ public class LdpRequestAPI {
     private void addResourceToDirectContainer(Node container, Node resource) throws EngineException {
         String resURI = resource.getLabel();
         String containerURI = container.getLabel();
+        logger.info("Adding resource " + resURI + " to Direct Container " + containerURI);
 
         ArrayList<Node> membershipResourceList = new ArrayList<>();
 
         Mappings membershipResourceMappings = exec
-                .query("SELECT DISTINCT ?membershipResource { <" + containerURI + "> <"
-                        + URI_LDP_MEMBERSHIP_RESOURCE + "> ?membershipResource }");
+                .query("SELECT DISTINCT ?membershipResource { GRAPH <" + containerURI + "> { <" + containerURI + "> <"
+                        + URI_LDP_MEMBERSHIP_RESOURCE + "> ?membershipResource } }");
         membershipResourceMappings.forEach(membershipResourceMapping -> {
             Node membershipResource = membershipResourceMapping.getNode("?membershipResource");
             membershipResourceList.add(membershipResource);
@@ -753,13 +757,16 @@ public class LdpRequestAPI {
         } else if (membershipResourceList.size() == 1) {
             membershipResource = membershipResourceList.get(0);
         }
-        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(membershipResource, ldpMemberProperty, resource);
+        logger.info(containerURI + " has membershipResource: " + membershipResource.getLabel());
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(membershipResource,
+                ldpMemberProperty, resource);
 
         Node membershipProperty = ldpMemberProperty;
 
         ArrayList<Node> hasMemberRelationList = new ArrayList<>();
-        String selectHasMemberRelationQueryString = "SELECT DISTINCT ?hasMemberRelation { <" + containerURI + "> <"
-                + URI_LDP_HAS_MEMBERSHIP_RELATION + "> ?hasMemberRelation }";
+        String selectHasMemberRelationQueryString = "SELECT DISTINCT ?hasMemberRelation { GRAPH <" + containerURI
+                + "> { <" + containerURI + "> <"
+                + URI_LDP_HAS_MEMBERSHIP_RELATION + "> ?hasMemberRelation } }";
         Mappings hasMemberRelationMappings = exec.query(selectHasMemberRelationQueryString);
         hasMemberRelationMappings.forEach(hasMemberRelationMapping -> {
             Node hasMemberRelation = hasMemberRelationMapping.getNode("?hasMemberRelation");
@@ -767,8 +774,9 @@ public class LdpRequestAPI {
         });
 
         ArrayList<Node> isMemberOfRelationList = new ArrayList<>();
-        String selectIsMemberOfRelationQueryString = "SELECT DISTINCT ?isMemberOfRelation { ?isMemberOfRelation <"
-                + URI_LDP_IS_MEMBER_OF_RELATION + "> <" + containerURI + "> }";
+        String selectIsMemberOfRelationQueryString = "SELECT DISTINCT ?isMemberOfRelation { GRAPH <" + containerURI
+                + "> { ?isMemberOfRelation <"
+                + URI_LDP_IS_MEMBER_OF_RELATION + "> <" + containerURI + "> } }";
         Mappings isMemberOfRelationMappings = exec.query(selectIsMemberOfRelationQueryString);
         isMemberOfRelationMappings.forEach(isMemberOfRelationMapping -> {
             Node isMemberOfRelation = isMemberOfRelationMapping.getNode("?isMemberOfRelation");
@@ -777,11 +785,17 @@ public class LdpRequestAPI {
 
         if (hasMemberRelationList.size() == 1) {
             membershipProperty = hasMemberRelationList.get(0);
-            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(membershipResource, membershipProperty, resource);
-            logger.info("Adding resource " + resource.getLabel() + " to Direct Container membershipResource " + membershipResource.getLabel() + " with hasMemberRelation: " + membershipProperty.getLabel());
+            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(membershipResource,
+                    membershipProperty, resource);
+            logger.info("Adding resource " + resource.getLabel() + " to Direct Container membershipResource "
+                    + membershipResource.getLabel() + " with hasMemberRelation: " + membershipProperty.getLabel());
         } else if (isMemberOfRelationList.size() == 1) {
             membershipProperty = isMemberOfRelationList.get(0);
-            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(resource, membershipProperty, membershipResource);
+            SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(containerURI).insert(resource, membershipProperty,
+                    membershipResource);
+        } else {
+            logger.info("No hasMemberRelation or isMemberOfRelation found for Direct Container membershipResource "
+                    + membershipResource.getLabel());
         }
     }
 
@@ -801,9 +815,11 @@ public class LdpRequestAPI {
         String containerURI = container.getLabel();
 
         ArrayList<Node> insertedContentRelation = new ArrayList<>();
-        String selectInsertedContentRelationQueryString = "SELECT DISTINCT ?insertedContentRelation { <" + containerURI
+        String selectInsertedContentRelationQueryString = "SELECT DISTINCT ?insertedContentRelation {  GRAPH <"
+                + containerURI
+                + "> { <" + containerURI
                 + "> <"
-                + URI_LDP_INSERTED_CONTENT_RELATION + "> ?insertedContentRelation }";
+                + URI_LDP_INSERTED_CONTENT_RELATION + "> ?insertedContentRelation } }";
         Mappings insertedContentRelationMappings = exec.query(selectInsertedContentRelationQueryString);
 
         if (insertedContentRelationMappings.size() == 0) {
@@ -818,9 +834,11 @@ public class LdpRequestAPI {
             ArrayList<Node> membershipResourceList = new ArrayList<>();
             Mappings membershipResourceMappings;
             try {
-                String resourcelinkedWithInsertedContentRelation = "SELECT DISTINCT ?membershipResource { ?any <"
-                        + insertedContentRelationNode.getLabel() + "> ?membershipResource }";
-                membershipResourceMappings = exec.query(resourcelinkedWithInsertedContentRelation);
+                String resourceLinkedWithInsertedContentRelation = "SELECT DISTINCT ?membershipResource { GRAPH <"
+                        + resource.getLabel()
+                        + "> { ?any <"
+                        + insertedContentRelationNode.getLabel() + "> ?membershipResource } }";
+                membershipResourceMappings = exec.query(resourceLinkedWithInsertedContentRelation);
                 membershipResourceMappings.forEach(membershipResourceMapping -> {
                     Node membershipResource = membershipResourceMapping.getNode("?membershipResource");
                     membershipResourceList.add(membershipResource);

@@ -3,7 +3,7 @@
     <id>fr.inria.corese.CoreseGui</id>
 
     <name>Corese-Gui</name>
-    
+
     <summary>Unlock the power of the Semantic Web</summary>
     <summary xml:lang="fr">Débloquez la puissance du Web sémantique</summary>
 
@@ -26,7 +26,8 @@
             the creation, manipulation, analysis, serialization, and querying of RDF data.
         </p>
         <p>
-            Moreover, the GUI brings advanced capabilities to your fingertips, incorporating extended
+            Moreover, the GUI brings advanced capabilities to your fingertips, incorporating
+            extended
             functionalities such as STTL SPARQL, SPARQL Rule, and LDScript. This enhances your data
             processing and reasoning workflows, making Corese-GUI an indispensable tool for both
             novices and experts in the Semantic Web domain.
@@ -124,6 +125,10 @@
     </recommends>
 
     <releases>
+        <release version="4.5.1" date="">
+            <description>
+            </description>
+        </release>
         <release version="4.5.0" date="2023-12-14">
             <description>
                 <ul>
@@ -134,7 +139,8 @@
                 <!-- French translation -->
                 <ul xml:lang="fr">
                     <li>Mise à jour du message de chargement dans Corese-GUI.</li>
-                    <li>Correction de la requête fédérée avec des déclarations PREFIX échouant dans certaines conditions.</li>
+                    <li>Correction de la requête fédérée avec des déclarations PREFIX échouant dans
+                        certaines conditions.</li>
                     <li>Mise à jour de la bibliothèque json à 20231013.</li>
                 </ul>
             </description>

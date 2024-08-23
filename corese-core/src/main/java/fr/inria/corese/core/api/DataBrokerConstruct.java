@@ -23,7 +23,7 @@ import fr.inria.corese.sparql.triple.update.Basic;
 public interface DataBrokerConstruct extends DataBroker {
 
     default void startRuleEngine() {
-        System.out.println("DataBrokerConstruct startRuleEngine");
+        // System.out.println("DataBrokerConstruct startRuleEngine");
     }
 
     default void endRuleEngine() {

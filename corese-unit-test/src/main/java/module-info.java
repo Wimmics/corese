@@ -13,6 +13,5 @@ module fr.inria.corese.corese_test {
     requires transitive org.apache.jena.iri;
     requires com.google.common;
     requires org.slf4j;
-
-    opens fr.inria.corese.engine;
+    requires org.apache.logging.log4j;
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.TestType;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
@@ -31,14 +32,15 @@ import jakarta.ws.rs.core.Response;
 public class SparqlHttpClient {
 
     private final String endpointUrl;
-    private EnumRequestMethod queryMethod = EnumRequestMethod.GET;
+    private EnumRequestMethod requestMethod = EnumRequestMethod.GET;
+    private Boolean requestMethodIsDefinedByUser = false;
     private List<Pair<String, String>> headers = new ArrayList<>();
 
     private boolean verbose = false;
 
     private int redirectCount = 0;
     private int maxRedirects = 5;
-    private final String USERAGENT = "Corese-Command/4.5.0";
+    private final String USERAGENT = "Corese-Command/" + App.version;
 
     /////////////////
     // Constructor //
@@ -61,12 +63,15 @@ public class SparqlHttpClient {
     ///////////////////////
 
     /**
-     * Sets the query method.
+     * Sets the request method.
      * 
-     * @param requestMethod the query method
+     * @param requestMethod the request method
      */
-    public void setQueryMethod(EnumRequestMethod requestMethod) {
-        this.queryMethod = requestMethod;
+    public void setRequestMethod(EnumRequestMethod requestMethod) {
+        if (requestMethod != null) {
+            this.requestMethod = requestMethod;
+            this.requestMethodIsDefinedByUser = true;
+        }
     }
 
     /**
@@ -158,10 +163,10 @@ public class SparqlHttpClient {
             this.validateQuery(query, defaultGraphUris, namedGraphUris);
         }
 
-        // Create the web target based on type of query method
+        // Create the web target based on type of request method
         WebTarget webTarget = this.buildWebTarget(this.endpointUrl, query, defaultGraphUris, namedGraphUris);
 
-        // Create the request body based on type of query method
+        // Create the request body based on type of request method
         String bodyContent = this.buildRequestBody(query, defaultGraphUris, namedGraphUris);
 
         // Print query and body content if verbose mode is enabled
@@ -230,23 +235,23 @@ public class SparqlHttpClient {
 
         // Print URL
         if (webTarget != null && webTarget.getUri() != null) {
-            System.err.println("  URL: " + webTarget.getUri());
+            System.err.println("\tURL: " + webTarget.getUri());
         }
 
-        // Print query method
-        if (this.queryMethod != null && this.queryMethod.getName() != null && !this.queryMethod.getName().isEmpty()) {
-            System.err.println("  method: " + this.queryMethod.getName());
+        // Print request method
+        if (this.requestMethod != null) {
+            System.err.println("\tmethod: " + this.requestMethod);
         }
 
         // Print query string parameter
         if (webTarget != null && webTarget.getUri() != null && webTarget.getUri().getQuery() != null
                 && !webTarget.getUri().getQuery().isEmpty()) {
-            System.err.println("  Query string parameter: " + webTarget.getUri().getQuery());
+            System.err.println("\tQuery string parameter: " + webTarget.getUri().getQuery());
         }
 
         // Print headers
         if (this.headers != null && !this.headers.isEmpty()) {
-            System.err.println("  Headers:");
+            System.err.println("\tHeaders:");
             for (Pair<String, String> header : this.headers) {
 
                 System.err.println("    " + header.getKey() + ": " + header.getValue());
@@ -254,7 +259,7 @@ public class SparqlHttpClient {
         }
 
         if (bodyContent != null && !bodyContent.isEmpty()) {
-            System.err.println("  Request body: " + bodyContent);
+            System.err.println("\tRequest body: " + bodyContent);
         }
     }
 
@@ -280,10 +285,21 @@ public class SparqlHttpClient {
 
         Query query = buildQuery(queryString);
 
+        if (!this.requestMethodIsDefinedByUser) {
+            // Check if the query is an update query.
+            if (query.getAST().isSPARQLUpdate()) {
+                // If it is an update query, set the request method to POST_Encoded.
+                this.requestMethod = EnumRequestMethod.POST_URLENCODED;
+            } else {
+                // If the query is not an update query, set the request method to GET.
+                // No need to set it here as GET is already the default value.
+            }
+        }
+
         // Check if the query is an update query and the method is GET
         // which is not allowed by the SPARQL specification
         // (see https://www.w3.org/TR/sparql11-protocol/#update-operation)
-        if (this.queryMethod == EnumRequestMethod.GET && query.getAST().isSPARQLUpdate()) {
+        if (this.requestMethod == EnumRequestMethod.GET && query.getAST().isSPARQLUpdate()) {
             throw new IllegalArgumentException(
                     "SPARQL query is an update query, but GET method is used. Please use a POST method instead.");
         }
@@ -369,12 +385,12 @@ public class SparqlHttpClient {
         WebTarget webTarget = client.target(endpoint);
 
         // Add the query parameter
-        if (this.queryMethod == EnumRequestMethod.GET) {
+        if (this.requestMethod == EnumRequestMethod.GET) {
             webTarget = webTarget.queryParam("query", this.encode(query));
         }
 
         // Add graph URIs
-        if (this.queryMethod == EnumRequestMethod.GET || this.queryMethod == EnumRequestMethod.POST_DIRECT) {
+        if (this.requestMethod == EnumRequestMethod.GET || this.requestMethod == EnumRequestMethod.POST_DIRECT) {
             for (String defaultGraphUri : defaultGraphUris) {
                 webTarget = webTarget.queryParam("default-graph-uri", this.encode(defaultGraphUri));
             }
@@ -401,7 +417,7 @@ public class SparqlHttpClient {
 
         StringBuilder bodyContent = new StringBuilder();
 
-        if (this.queryMethod == EnumRequestMethod.POST_URLENCODED) {
+        if (this.requestMethod == EnumRequestMethod.POST_URLENCODED) {
             // Add the query parameter
             bodyContent.append("query=").append(this.encode(query));
 
@@ -412,7 +428,7 @@ public class SparqlHttpClient {
             for (String namedGraphUri : namedGraphUris) {
                 bodyContent.append("&named-graph-uri=").append(this.encode(namedGraphUri));
             }
-        } else if (this.queryMethod == EnumRequestMethod.POST_DIRECT) {
+        } else if (this.requestMethod == EnumRequestMethod.POST_DIRECT) {
             // Add the query parameter
             bodyContent.append(query);
         }
@@ -439,11 +455,11 @@ public class SparqlHttpClient {
         }
 
         // Send the request
-        if (this.queryMethod == EnumRequestMethod.GET) {
+        if (this.requestMethod == EnumRequestMethod.GET) {
             response = builder.get();
-        } else if (this.queryMethod == EnumRequestMethod.POST_URLENCODED) {
+        } else if (this.requestMethod == EnumRequestMethod.POST_URLENCODED) {
             response = builder.post(Entity.entity(bodyContent, MediaType.APPLICATION_FORM_URLENCODED));
-        } else if (this.queryMethod == EnumRequestMethod.POST_DIRECT) {
+        } else if (this.requestMethod == EnumRequestMethod.POST_DIRECT) {
             response = builder.post(Entity.entity(bodyContent, "application/sparql-query"));
         }
 

@@ -4,8 +4,8 @@
 
 1. Install java and python
 2. Install python dependencies `pip install --user py4j`
-3. Download [corese-library-python-4.5.0.jar](https://github.com/Wimmics/corese/releases/download/release-4.5.0/corese-library-python-4.5.0.jar)
-4. Place in the same directory `corese-library-python-4.5.0.jar` and your code `myCode.py`
+3. Download [corese-library-python-4.5.1.jar](https://github.com/Wimmics/corese/releases/download/release-4.5.1/corese-library-python-4.5.1.jar)
+4. Place in the same directory `corese-library-python-4.5.1.jar` and your code `myCode.py`
 5. Run with `python myCode.py`
 
 ## 2. Template
@@ -22,7 +22,7 @@ from py4j.java_gateway import JavaGateway
 
 # Start java gateway
 java_process = subprocess.Popen(
-    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.5.0.jar'])
+    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.5.1.jar'])
 sleep(1)
 gateway = JavaGateway()
 
@@ -59,7 +59,7 @@ from py4j.java_gateway import JavaGateway
 
 # Start java gateway
 java_process = subprocess.Popen(
-    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.5.0.jar'])
+    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.5.1.jar'])
 sleep(1)
 gateway = JavaGateway()
 
@@ -76,9 +76,14 @@ atexit.register(exit_handler)
 # Import of class
 Graph = gateway.jvm.fr.inria.corese.core.Graph
 Load = gateway.jvm.fr.inria.corese.core.load.Load
-Transformer = gateway.jvm.fr.inria.corese.core.transform.Transformer
 QueryProcess = gateway.jvm.fr.inria.corese.core.query.QueryProcess
 RDF = gateway.jvm.fr.inria.corese.core.logic.RDF
+TripleFormat = gateway.jvm.fr.inria.corese.core.print.TripleFormat
+RDFFormat = gateway.jvm.fr.inria.corese.core.print.RDFFormat
+JSONLDFormat = gateway.jvm.fr.inria.corese.core.print.JSONLDFormat
+NTripleFormat = gateway.jvm.fr.inria.corese.core.print.NTripleFormat
+NQuadsFormat = gateway.jvm.fr.inria.corese.core.print.NQuadsFormat
+Shacl = gateway.jvm.fr.inria.corese.core.shacl.Shacl
 
 ###############
 # Build Graph #
@@ -118,22 +123,58 @@ def sparqlQuery(graph, query):
     exec = QueryProcess.create(graph)
     return exec.query(query)
 
+#########
+# SHACL #
+#########
+
+def shaclValidation(graph, shacl):
+    """Run a SHACL validation on a graph
+
+    :param graph: the graph on which the SHACL validation is executed
+    :param shacl: the SHACL graph
+    :returns: SHACL validation report
+    """
+    shacl = Shacl(graph, shacl)
+    result = shacl.eval()
+    return result
 
 #################
 # Load / Export #
 #################
 
 
-def exportToFile(graph, format, path):
+def serialize(graph, format):
     """Export a graph to a file
 
     :param graph: graph to export
     :param format: format of export
-    :param path: path of the exported file
+    :returns: the graph export
     """
-    transformer = Transformer.create(graph, format)
-    transformer.write(path)
+    if format == 'turtle':
+        content = TripleFormat.create(graph).toString()
+    elif format == 'rdfxml':
+        content = RDFFormat.create(graph).toString()
+    elif format == 'jsonld':
+        content = JSONLDFormat.create(graph).toString()
+    elif format == 'n3':
+        content = NTripleFormat.create(graph).toString()
+    elif format == 'n4':
+        content = NQuadsFormat.create(graph).toString()
+    else:
+        raise Exception('Format not supported : ' + format)
+    
+    return content
 
+def writeToFile(content, path):
+    """Write content to a file
+
+    :param content: content to write
+    :param path: path of the file
+    :returns: the file write
+    """
+    with open(path, "w") as file:
+        file.write(content)
+    return file
 
 def load(path):
     """Load a graph from a local file or a URL
@@ -147,7 +188,6 @@ def load(path):
     ld.parse(path)
 
     return graph
-
 
 ########
 # Main #
@@ -172,7 +212,7 @@ graph = BuildGraphCoreseApi()
 print("Graph build ! (" + str(graph.size()) + " triplets)")
 
 print("\nPrint Graph:")
-print(graph.display())
+print(serialize(graph, 'n4'))
 
 
 ###
@@ -181,12 +221,12 @@ print(graph.display())
 printTitle("SPARQL Query")
 
 graph = load(
-    "https://raw.githubusercontent.com/stardog-union/stardog-tutorials/master/music/beatles.ttl")
+    "https://files.inria.fr/corese/data/unit-test/beatles.ttl") # Uri or path to the graph
 print("Graph load ! (" + str(graph.size()) + " triplets)")
 
 # List of U2 albums
 query = """
-        prefix : <http://stardog.com/tutorial/>
+        prefix : <http://example.org/>
 
         SELECT ?member 
         WHERE {
@@ -198,6 +238,23 @@ map = sparqlQuery(graph, query)
 print("\nQuery result ! (List of members of bands \"The Beatles\"): ")
 print(map)
 
+###
+# SHACL Validation
+###
+printTitle("SHACL Validation")
+
+graph = load(
+    "https://files.inria.fr/corese/data/unit-test/beatles.ttl")
+print("Graph load ! (" + str(graph.size()) + " triplets)")
+
+shacl = load(
+    "https://files.inria.fr/corese/data/unit-test/beatles-validator.ttl")
+print("SHACL load ! (" + str(shacl.size()) + " triplets)")
+
+result = shaclValidation(graph, shacl)
+print("SHACL validation report: ")
+print(serialize(result, 'turtle'))
+
 
 ###
 # Load / Export
@@ -205,18 +262,20 @@ print(map)
 printTitle("Load / Export")
 
 graph = load(
-    "https://raw.githubusercontent.com/stardog-union/stardog-tutorials/master/music/beatles.ttl")
+    "https://files.inria.fr/corese/data/unit-test/beatles.ttl")
 print("Graph load ! (" + str(graph.size()) + " triplets)")
 
 path_export_file = "export.rdf"
-exportToFile(graph, Transformer.RDFXML, path_export_file)
+writeToFile(serialize(graph, 'turtle'), path_export_file)
 print("Graph Export in file (" + path_export_file + ")")
+
 ```
 
 Results :
 
 ```plaintext
-Gateway Server Started
+Loaded default config
+CoresePy4j gateway server started on port 25333
 
 
 
@@ -226,8 +285,7 @@ Gateway Server Started
 Graph build ! (1 triplets)
 
 Print Graph:
-predicate rdf:type [1]
-00 kg:default <http://example.org/EdithPiaf> rdf:type <http://example.org/Singer>
+<http://example.org/EdithPiaf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/Singer>  .
 
 
 
@@ -238,10 +296,27 @@ predicate rdf:type [1]
 Graph load ! (28 triplets)
 
 Query result ! (List of members of bands "The Beatles"): 
-01 ?member = <http://stardog.com/tutorial/John_Lennon>; 
-02 ?member = <http://stardog.com/tutorial/Paul_McCartney>; 
-03 ?member = <http://stardog.com/tutorial/Ringo_Starr>; 
-04 ?member = <http://stardog.com/tutorial/George_Harrison>; 
+01 ?member = <http://example.org/John_Lennon>; 
+02 ?member = <http://example.org/Paul_McCartney>; 
+03 ?member = <http://example.org/Ringo_Starr>; 
+04 ?member = <http://example.org/George_Harrison>; 
+
+
+
+
+======================
+== SHACL Validation ==
+======================
+Graph load ! (28 triplets)
+SHACL load ! (46 triplets)
+SHACL validation report: 
+@prefix xsh: <http://www.w3.org/ns/shacl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+_:b8 a sh:ValidationReport ;
+  sh:conforms true .
+
 
 
 

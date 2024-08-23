@@ -147,7 +147,7 @@ public class NSManager extends ASTObject {
     static final String NL = System.getProperty("line.separator");
     static final char[] END_CHAR = { '#', '/', '?' }; // , ':'}; // may end an URI ...
     static final String[] PB_CHAR_NAME = { ".", "\u2013", ":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}",
-            "?", "&" };
+            "?", "&", "=" };
     static final String[] PB_CHAR_URI = { "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&" };
     static final String pchar = ":";
     int count = 0;
@@ -519,6 +519,11 @@ public class NSManager extends ASTObject {
             return nsname;
         }
 
+        String name = extractLocalName(nsname, namespace);
+        if (containsForbiddenCharacters(name)) {
+            return nsname;
+        }
+        
         String prefix = getPrefix(namespace);
         if (prefix == null) {
             if (skip) {
@@ -527,10 +532,6 @@ public class NSManager extends ASTObject {
             prefix = defineDefaultNamespace(namespace);
         }
 
-        String name = extractLocalName(nsname, namespace);
-        if (containsForbiddenCharacters(name)) {
-            return nsname;
-        }
 
         String result = assembleResult(prefix, name, xml);
         record(namespace);
@@ -926,20 +927,40 @@ public class NSManager extends ASTObject {
         return "/" + strip(uri, ns);
     }
 
-    public static String namespace(String type) { // retourne le namespace d'un type
+    /**
+     * Create a namespace from a URI
+     * 
+     * @param type URI
+     * @return namespace
+     */
+    public static String namespace(String type) {
+        if (type == null || type.isEmpty()) {
+            return "";
+        }
+
+        // Return empty string if type starts with HASH
         if (type.startsWith(HASH)) {
             return "";
         }
-        int index;
-        for (int i = 0; i < END_CHAR.length; i++) {
-            index = type.lastIndexOf(END_CHAR[i]);
-            if (index != -1) {
-                String str = type.substring(0, index + 1);
-                if (!str.equals("http://")) {
-                    return str;
-                }
+
+        // Iterate through END_CHAR array to find the last occurrence of any char in it
+        int lastIndex = -1;
+        for (char endChar : END_CHAR) {
+            int currentIndex = type.lastIndexOf(endChar);
+            if (currentIndex > lastIndex) {
+                lastIndex = currentIndex;
             }
         }
+
+        // Check if a valid index is found and the substring is not a specific unwanted
+        // string
+        if (lastIndex != -1) {
+            String namespace = type.substring(0, lastIndex + 1);
+            if (!"http://".equals(namespace)) {
+                return namespace;
+            }
+        }
+
         return "";
     }
 

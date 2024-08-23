@@ -1,7 +1,7 @@
 {
 	"@context": {
 		"xsd": "http://www.w3.org/2001/XMLSchema#",
-		"ns1": "http://stardog.com/tutorial/",
+		"ns1": "http://example.com/",
 		"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	},
 	"@graph": [

@@ -28,7 +28,8 @@ public class Access {
     // throw exception for coalesce  
     // false -> sparql semantics, coalesce trap error
     public static boolean COALESCE_EXCEPTION = false;
-    
+    // by default, access is denied when accept list is empty
+    private static boolean DefaultResultWhenEmptyAccept = false;    
     // true -> skip access control
     public static boolean SKIP = false;
 
@@ -62,6 +63,7 @@ public class Access {
         public static Level USER    = PUBLIC;
         // deny access to feature
         public static Level DENY    = DENIED;
+
         
         private Level(int n) {
             value = n;
@@ -313,8 +315,12 @@ public class Access {
         return alist;
     }
     
+    // by default, isDefaultResultWhenEmptyAccept() is false
+    // DataManagerJava initGraph() set it true in order to authorize xt:read()
+    // in init query
     static boolean accept(String uri, boolean resultWhenEmptyAccept) {
-        return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri, resultWhenEmptyAccept);
+        return NSManager.isPredefinedNamespace(uri) 
+            || AccessNamespace.access(uri, isDefaultResultWhenEmptyAccept() || resultWhenEmptyAccept);
     }
     
     public static void define(String ns, boolean b) {
@@ -451,7 +457,7 @@ public class Access {
         deny(READ_WRITE);
         deny(WRITE);
         deny(SUPER_WRITE);
-        deny(READ_FILE);
+        //deny(READ_FILE);
         deny(LOAD_FILE);
         deny(JAVA_FUNCTION);
         // user query on protected server have USER access level
@@ -464,7 +470,7 @@ public class Access {
         // draft test for st:logger
         set(LDSCRIPT_SPARQL, RESTRICTED);
         set(DEFINE_FUNCTION, RESTRICTED);
-        set(READ, RESTRICTED);
+        //set(READ, RESTRICTED);
     }
     
     /**
@@ -475,12 +481,16 @@ public class Access {
      */
     void init() {
         deny(LINKED_FUNCTION);
-        // xt:read st:format cannot read the file system
+        // xt:read cannot read the file system
         // use case: server mode
-        deny(READ_FILE);
+        //deny(READ_FILE);
         set(LDSCRIPT, PUBLIC);
         // authorize server for query + transform when transform is authorized
         set(LINKED_TRANSFORMATION, PUBLIC);
+        // public but check authorized path namespace
+        set(LINKED_RULE, PUBLIC);
+        // read authorized source is allowed
+        set(READ, PUBLIC);
     }
     
     /**
@@ -523,7 +533,14 @@ public class Access {
         }
         return ((fr.inria.corese.sparql.triple.function.term.Binding)m.getBind()).getAccessLevel();
     }
-    
+
+    public static boolean isDefaultResultWhenEmptyAccept() {
+        return DefaultResultWhenEmptyAccept;
+    }
+
+    public static void setDefaultResultWhenEmptyAccept(boolean aDefaultResultWhenEmptyAccept) {
+        DefaultResultWhenEmptyAccept = aDefaultResultWhenEmptyAccept;
+    }
     
     
 }

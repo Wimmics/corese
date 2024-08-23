@@ -1,4 +1,4 @@
-PREFIX : <http://stardog.com/tutorial/>
+PREFIX : <http://example.com/>
 
 INSERT DATA
 {

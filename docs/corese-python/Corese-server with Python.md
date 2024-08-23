@@ -65,34 +65,18 @@ Done
 ### 2.3. Execute a select query
 
 ```python
-import json
-
-import pandas as pd
-from SPARQLWrapper import JSON, SPARQLWrapper
+from SPARQLWrapper import get_sparql_dataframe
 
 
-def sparql_service_to_dataframe(service, query):
+def sparql_service_to_dataframe(endpoint, query):
     """
-    Helper function to convert SPARQL results into a Pandas DataFrame.
-
-    Credit to Ted Lawless https://lawlesst.github.io/notebook/sparql-dataframe.html
+    Query the given endpoint with the given query and return the result as a pandas DataFrame.
+    :param endpoint: The SPARQL endpoint to query
+    :param query: The SPARQL query
+    :return: A pandas DataFrame containing the query result
     """
-    sparql = SPARQLWrapper(service)
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    result = sparql.query()
-
-    processed_results = json.load(result.response)
-    cols = processed_results['head']['vars']
-
-    out = []
-    for row in processed_results['results']['bindings']:
-        item = []
-        for c in cols:
-            item.append(row.get(c, {}).get('value'))
-        out.append(item)
-
-    return pd.DataFrame(out, columns=cols)
+    df = get_sparql_dataframe(endpoint, query)
+    return df
 
 
 query = '''

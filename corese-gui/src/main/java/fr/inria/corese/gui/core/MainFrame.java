@@ -46,6 +46,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
@@ -71,7 +72,10 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.result.SPARQLResultParser;
+import fr.inria.corese.core.print.CanonicalRdf10Format;
 import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.print.rdfc10.CanonicalRdf10.CanonicalizationException;
+import fr.inria.corese.core.print.rdfc10.HashingUtility.HashAlgorithm;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
@@ -108,7 +112,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.5.0 - Inria UCA I3S - 2023-10-14";
+    private static final String TITLE = "Corese 4.5.1 - Inria UCA I3S - 2023-10-14";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -133,15 +137,25 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem loadRule;
     private JMenuItem loadStyle;
     private JMenuItem cpTransform, shex;
+    private JMenu fileMenuSaveResult;
     private JMenuItem saveQuery;
-    private JMenuItem saveResult;
+    private JMenuItem saveResultXml;
+    private JMenuItem saveResultJson;
+    private JMenuItem saveResultCsv;
+    private JMenuItem saveResultTsv;
+    private JMenuItem saveResultMarkdown;
     private JMenuItem loadAndRunRule;
     private JMenuItem refresh;
     private JMenuItem exportRDF;
     private JMenuItem exportTurtle;
-    private JMenuItem exportOwl;
-    private JMenuItem exportJson;
     private JMenuItem exportTrig;
+    private JMenuItem exportJson;
+    private JMenuItem exportNt;
+    private JMenuItem exportNq;
+    private JMenuItem exportOwl;
+    private JMenu exportCanonic;
+    private JMenuItem saveRDFC_1_0_sha256;
+    private JMenuItem saveRDFC_1_1_sha384;
     private JMenuItem copy;
     private JMenuItem cut;
     private JMenuItem paste;
@@ -351,7 +365,7 @@ public class MainFrame extends JFrame implements ActionListener {
                             duplicateFrom.setEnabled(true);
                             comment.setEnabled(true);
                             saveQuery.setEnabled(true);
-                            saveResult.setEnabled(true);
+                            fileMenuSaveResult.setEnabled(true);
 
                             MyJPanelQuery temp = (MyJPanelQuery) getConteneurOnglets().getComponentAt(selected);
 
@@ -370,7 +384,7 @@ public class MainFrame extends JFrame implements ActionListener {
                             duplicateFrom.setEnabled(false);
                             comment.setEnabled(false);
                             saveQuery.setEnabled(false);
-                            saveResult.setEnabled(false);
+                            fileMenuSaveResult.setEnabled(false);
                         }
                         // Si l'onglet sélectionné est le "+" on crée un nouvel onglet Query
                         if (c == plus) {
@@ -636,17 +650,34 @@ public class MainFrame extends JFrame implements ActionListener {
         exportTurtle.addActionListener(this);
         exportTurtle.setToolTipText("Export graph in Turtle format");
 
+        exportTrig = new JMenuItem("TriG");
+        exportTrig.addActionListener(this);
+        exportTrig.setToolTipText("Export graph in TriG format");
+
+        exportJson = new JMenuItem("JsonLD");
+        exportJson.addActionListener(this);
+        exportJson.setToolTipText("Export graph in JSON format");
+
+        exportNt = new JMenuItem("NTriple");
+        exportNt.addActionListener(this);
+        exportNt.setToolTipText("Export graph in NTriple format");
+
+        exportNq = new JMenuItem("NQuad");
+        exportNq.addActionListener(this);
+        exportNq.setToolTipText("Export graph in NQuad format");
+
         exportOwl = new JMenuItem("OWL");
         exportOwl.addActionListener(this);
         exportOwl.setToolTipText("Export graph in OWL format");
 
-        exportJson = new JMenuItem("JSON");
-        exportJson.addActionListener(this);
-        exportJson.setToolTipText("Export graph in JSON format");
+        exportCanonic = new JMenu("Canonic");
+        exportCanonic.addActionListener(this);
 
-        exportTrig = new JMenuItem("TriG");
-        exportTrig.addActionListener(this);
-        exportTrig.setToolTipText("Export graph in TriG format");
+        saveRDFC_1_0_sha256 = new JMenuItem("RDFC-1.0 (sha256)");
+        saveRDFC_1_0_sha256.addActionListener(this);
+
+        saveRDFC_1_1_sha384 = new JMenuItem("RDFC-1.0 (sha384)");
+        saveRDFC_1_1_sha384.addActionListener(this);
 
         execWorkflow = new JMenuItem("Process Workflow");
         execWorkflow.addActionListener(this);
@@ -660,8 +691,20 @@ public class MainFrame extends JFrame implements ActionListener {
         saveQuery = new JMenuItem("Save Query");
         saveQuery.addActionListener(this);
 
-        saveResult = new JMenuItem("Save Result");
-        saveResult.addActionListener(this);
+        saveResultXml = new JMenuItem("XML");
+        saveResultXml.addActionListener(this);
+
+        saveResultJson = new JMenuItem("JSON");
+        saveResultJson.addActionListener(this);
+
+        saveResultCsv = new JMenuItem("CSV");
+        saveResultCsv.addActionListener(this);
+
+        saveResultTsv = new JMenuItem("TSV");
+        saveResultTsv.addActionListener(this);
+
+        saveResultMarkdown = new JMenuItem("Markdown");
+        saveResultMarkdown.addActionListener(this);
 
         itable = new HashMap<>();
 
@@ -798,6 +841,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         JMenu fileMenuLoad = new JMenu("Load");
         JMenu fileMenuSaveGraph = new JMenu("Save Graph");
+        fileMenuSaveResult = new JMenu("Save Result");
 
         // On ajoute tout au menu
         fileMenu.add(fileMenuLoad);
@@ -823,12 +867,23 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(fileMenuSaveGraph);
         fileMenuSaveGraph.add(exportRDF);
         fileMenuSaveGraph.add(exportTurtle);
-        fileMenuSaveGraph.add(exportOwl);
-        fileMenuSaveGraph.add(exportJson);
         fileMenuSaveGraph.add(exportTrig);
+        fileMenuSaveGraph.add(exportJson);
+        fileMenuSaveGraph.add(exportNt);
+        fileMenuSaveGraph.add(exportNq);
+        fileMenuSaveGraph.add(exportOwl);
+        fileMenuSaveGraph.add(exportCanonic);
+        exportCanonic.add(saveRDFC_1_0_sha256);
+        exportCanonic.add(saveRDFC_1_1_sha384);
 
         fileMenu.add(saveQuery);
-        fileMenu.add(saveResult);
+
+        fileMenu.add(fileMenuSaveResult);
+        fileMenuSaveResult.add(saveResultXml);
+        fileMenuSaveResult.add(saveResultJson);
+        fileMenuSaveResult.add(saveResultCsv);
+        fileMenuSaveResult.add(saveResultTsv);
+        fileMenuSaveResult.add(saveResultMarkdown);
 
         queryMenu.add(iselect);
         queryMenu.add(iconstruct);
@@ -1150,7 +1205,7 @@ public class MainFrame extends JFrame implements ActionListener {
             duplicateFrom.setEnabled(false);
             comment.setEnabled(false);
             saveQuery.setEnabled(false);
-            saveResult.setEnabled(false);
+            fileMenuSaveResult.setEnabled(false);
         }
     }
 
@@ -1308,23 +1363,47 @@ public class MainFrame extends JFrame implements ActionListener {
             String style = loadText();
             defaultStylesheet = style;
         } // Sauvegarde le résultat sous forme XML dans un fichier texte
-        else if (e.getSource() == saveResult) {
-            save(current.getTextAreaXMLResult().getText());
+        else if (e.getSource() == saveResultXml) {
+            saveResult(ResultFormat.XML_FORMAT);
+        } // Sauvegarde le résultat sous forme JSON dans un fichier texte
+        else if (e.getSource() == saveResultJson) {
+            saveResult(ResultFormat.JSON_FORMAT);
+        } // Sauvegarde le résultat sous forme CSV dans un fichier texte
+        else if (e.getSource() == saveResultCsv) {
+            saveResult(ResultFormat.CSV_FORMAT);
+        } // Sauvegarde le résultat sous forme TSV dans un fichier texte
+        else if (e.getSource() == saveResultTsv) {
+            saveResult(ResultFormat.TSV_FORMAT);
+        } // Sauvegarde le résultat sous forme Markdown dans un fichier texte
+        else if (e.getSource() == saveResultMarkdown) {
+            saveResult(ResultFormat.MARKDOWN_FORMAT);
         } // Exporter le graph au format RDF/XML
         else if (e.getSource() == exportRDF) {
             saveGraph(Transformer.RDFXML);
         } // Exporter le graph au format Turle
         else if (e.getSource() == exportTurtle) {
             saveGraph(Transformer.TURTLE);
-        } // Exporter le graph au format OWL
-        else if (e.getSource() == exportOwl) {
-            saveGraph(Transformer.OWL);
-        } // Exporter le graph au format Json
-        else if (e.getSource() == exportJson) {
-            saveGraph(Transformer.JSON);
         } // Exporter le graph au format TriG
         else if (e.getSource() == exportTrig) {
             saveGraph(Transformer.TRIG);
+        } // Exporter le graph au format Json
+        else if (e.getSource() == exportJson) {
+            saveGraph(Transformer.JSON);
+        } // Exporter le graph au format NTriple
+        else if (e.getSource() == exportNt) {
+            saveGraph(ResultFormat.NTRIPLES_FORMAT);
+        } // Exporter le graph au format NQuad
+        else if (e.getSource() == exportNq) {
+            saveGraph(ResultFormat.NQUADS_FORMAT);
+        } // Exporter le graph au format OWL
+        else if (e.getSource() == exportOwl) {
+            saveGraph(Transformer.OWL);
+        } // Exporter le graph au format RDFC-1.0 (sha256)
+        else if (e.getSource() == saveRDFC_1_0_sha256) {
+            saveGraphCanonic(HashAlgorithm.SHA_256);
+        } // Exporter le graph au format RDFC-1.0 (sha384)
+        else if (e.getSource() == saveRDFC_1_1_sha384) {
+            saveGraphCanonic(HashAlgorithm.SHA_384);
         } // Charge et exécute une règle directement
         else if (e.getSource() == loadAndRunRule) {
             loadRunRule();
@@ -1481,6 +1560,52 @@ public class MainFrame extends JFrame implements ActionListener {
         } catch (EngineException ex) {
             LOGGER.error(ex);
         }
+    }
+
+    /**
+     * Save the graph in canonic format with the specified algorithm
+     * 
+     * @param format the format in which the graph will be saved
+     */
+    void saveGraphCanonic(HashAlgorithm algo) {
+        Graph graph = myCorese.getGraph();
+        CanonicalRdf10Format transformer = null;
+
+        try {
+            transformer = new CanonicalRdf10Format(graph, algo);
+        } catch (CanonicalizationException ex) {
+            // Create a new alert dialog with the error message and ok button
+            String errorMessage = "Unable to canonicalize the RDF data. " + ex.getMessage();
+            JOptionPane.showMessageDialog(this, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (transformer != null) {
+            save(transformer.toString());
+        }
+    }
+
+    /**
+     * Save the graph in the specified format
+     * 
+     * @param format the format in which the graph will be saved
+     *               (See ResultFormat.java for the list of formats)
+     */
+    void saveGraph(int format) {
+        Graph graph = myCorese.getGraph();
+
+        ResultFormat ft = ResultFormat.create(graph, format);
+        save(ft.toString());
+    }
+
+    /**
+     * Save the result of a query in the specified format
+     * 
+     * @param format the format in which the result will be saved
+     *               (See ResultFormat.java for the list of formats)
+     */
+    void saveResult(int format) {
+        ResultFormat ft = ResultFormat.create(current.getMappings(), format);
+        save(ft.toString());
     }
 
     void saveQuery() {
@@ -1729,6 +1854,14 @@ public class MainFrame extends JFrame implements ActionListener {
                 if (!model.contains(lPath) && !wf) {
                     model.addElement(lPath);
                 }
+
+                if (extension(lPath) == null) {
+                    appendMsg("Error: No extension for file: " + lPath + "\n");
+                    appendMsg("Please select a file with an extension (e.g: .ttl, .rdf, .trig, .jsonld, .html, ...)\n");
+                    appendMsg("Load is aborted\n");
+                    return;
+                }
+
                 appendMsg("Loading " + extension(lPath) + " File from path : " + lPath + "\n");
                 if (wf) {
                     if (exec) {

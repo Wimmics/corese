@@ -1,6 +1,6 @@
-| ?s                                             | ?p                                   | ?o                                                    |
-| ---------------------------------------------- | ------------------------------------ | ----------------------------------------------------- |
-| <http://stardog.com/tutorial/Please_Please_Me> | <http://stardog.com/tutorial/artist> | <http://stardog.com/tutorial/The_Beatles>             |
-| <http://stardog.com/tutorial/McCartney>        | <http://stardog.com/tutorial/artist> | <http://stardog.com/tutorial/Paul_McCartney>          |
-| <http://stardog.com/tutorial/Imagine>          | <http://stardog.com/tutorial/artist> | <http://stardog.com/tutorial/John_Lennon>             |
-| <http://stardog.com/tutorial/Please_Please_Me> | <http://stardog.com/tutorial/date>   | "1963-03-22"^^<http://www.w3.org/2001/XMLSchema#date> |
+| ?s                                    | ?p                          | ?o                                                    |
+| ------------------------------------- | --------------------------- | ----------------------------------------------------- |
+| <http://example.com/Please_Please_Me> | <http://example.com/artist> | <http://example.com/The_Beatles>                      |
+| <http://example.com/McCartney>        | <http://example.com/artist> | <http://example.com/Paul_McCartney>                   |
+| <http://example.com/Imagine>          | <http://example.com/artist> | <http://example.com/John_Lennon>                      |
+| <http://example.com/Please_Please_Me> | <http://example.com/date>   | "1963-03-22"^^<http://www.w3.org/2001/XMLSchema#date> |

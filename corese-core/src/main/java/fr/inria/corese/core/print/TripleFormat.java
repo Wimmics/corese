@@ -1,12 +1,14 @@
 package fr.inria.corese.core.print;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.util.List;
 
 /**
  * Turtle & Trig Format
@@ -27,7 +29,7 @@ public class TripleFormat extends RDFFormat {
     static final String RDF_TYPE = "rdf:type";
     static final String TAB = "  ";
 
-    static final boolean addPrefix = true;
+    public boolean addPrefix = true;
 
     boolean isGraph = false;
     // when true: display default graph kg:default with embedding graph kg:default
@@ -55,6 +57,9 @@ public class TripleFormat extends RDFFormat {
     }
 
     public static TripleFormat create(Graph g, NSManager n) {
+        if (n == null) {
+            return new TripleFormat(g, nsm());
+        }
         return new TripleFormat(g, n);
     }
 
@@ -91,6 +96,12 @@ public class TripleFormat extends RDFFormat {
     // isGraph = true -> Trig
     public static TripleFormat create(Graph g, boolean isGraph) {
         TripleFormat t = new TripleFormat(g, nsm());
+        t.setGraph(isGraph);
+        return t;
+    }
+    
+    public static TripleFormat create(Graph g, NSManager nsm, boolean isGraph) {
+        TripleFormat t = TripleFormat.create(g, nsm);
         t.setGraph(isGraph);
         return t;
     }
@@ -215,14 +226,12 @@ public class TripleFormat extends RDFFormat {
     }
 
     private boolean isRdfPrefixNeeded() {
-        //for (Node node : graph.getGraphNodes()) {
-            for (Edge edge : graph.getEdges()) {
-                String pred = nsm.toPrefix(edge.getEdgeNode().getLabel(), !addPrefix);
-                if (pred.startsWith("rdf:") && !pred.equals(RDF_TYPE)) {
-                    return true;
-                }
+        for (Edge edge : graph.getEdges()) {
+            String pred = nsm.toPrefix(edge.getEdgeNode().getLabel(), !addPrefix);
+            if (pred.startsWith("rdf:") && !pred.equals(RDF_TYPE)) {
+                return true;
             }
-        //}
+        }
         return false;
     }
 
@@ -230,12 +239,6 @@ public class TripleFormat extends RDFFormat {
     void header(StringBuilder bb) {
         link(bb);
         bb.append(nsm.toString(PREFIX, false, false));
-//        if (isRdfPrefixNeeded()) {
-//            bb.append(nsm.toString(PREFIX, false, false));
-//        } else {
-//            // Si le préfixe rdf: n'est pas nécessaire, supprimez-le de la sortie
-//            bb.append(nsm.toString(PREFIX, false, false).replaceAll("@prefix rdf:.*\n", ""));
-//        }
     }
 
     void link(StringBuilder bb) {
@@ -265,10 +268,6 @@ public class TripleFormat extends RDFFormat {
                 }
                 if (first) {
                     first = false;
-//                    if (isBlankNode) {
-//                        sdisplay("[");
-//                    } 
-//                    else 
                     {
                         subject(edge);
                         sdisplay(SPACE);
@@ -284,9 +283,6 @@ public class TripleFormat extends RDFFormat {
         }
 
         if (!first) {
-//            if (isBlankNode) {
-//                sdisplay("]");
-//            }
             sdisplay(DOT);
             sdisplay(NL);
             sdisplay(NL);
@@ -312,13 +308,10 @@ public class TripleFormat extends RDFFormat {
     }
 
     void predicate(Node node) {
-        String pred = nsm.toPrefix(node.getLabel(), !addPrefix);
-        if (pred.equals(RDF_TYPE)) {
+        if (node.getLabel().equals(RDF.TYPE)) {
             sdisplay("a");
-        } else if (pred.equals(node.getLabel())) { // Si l'URI n'est pas abrégée
-            uri(node.getLabel()); // Utiliser la méthode uri pour ajouter des chevrons si nécessaire
-        } else { // Si l'URI est abrégée
-            sdisplay(pred);
+        } else {
+            node(node);
         }
     }
 
@@ -336,8 +329,13 @@ public class TripleFormat extends RDFFormat {
         } else if (dt.isBlank()) {
             sdisplay(dt.getLabel());
         } else {
-            uri(dt.getLabel());
+            // uri(dt.getLabel());
+            sdisplay(dt.toSparql(true, false, !addPrefix, nsm));
         }
+    }
+    
+    void blank(Node node) {
+        List<Node> list = graph.getList(node);
     }
 
     // node is triple reference of edge
@@ -365,19 +363,6 @@ public class TripleFormat extends RDFFormat {
         sdisplay(SPACE);
         node(edge.getObjectNode(), true);
     }
-
-    // void triple2(Node node, Edge edge, boolean rec) {
-    // if (edge.isNested() || hasNestedTriple(edge) || rec) {
-    // nestedTriple(node, edge, rec);
-    // } else {
-    // basicTriple(node, edge, rec);
-    // }
-    // }
-    //
-
-    // void basicTriple(Node node, Edge edge) {
-    // basicTriple(node, edge, false);
-    // }
 
     boolean hasNestedTriple(Edge edge) {
         return edge.getSubjectValue().isTripleWithEdge() || edge.getObjectValue().isTripleWithEdge();

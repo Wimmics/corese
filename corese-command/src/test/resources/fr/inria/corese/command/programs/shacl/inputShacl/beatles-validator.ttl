@@ -1,66 +1,65 @@
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX : <http://stardog.com/tutorial/>
+PREFIX ex: <http://example.com/>
 
 # Shape for Bands
-:BandShape a sh:NodeShape ;
-    sh:targetClass :Band ;
+ex:BandShape a sh:NodeShape ;
+    sh:targetClass ex:Band ;
     sh:property [
-        sh:path :name ;
+        sh:path ex:name ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path :member ;
-        sh:class :SoloArtist ;
+        sh:path ex:member ;
+        sh:class ex:SoloArtist ;
         sh:minCount 1 ;
     ] .
 
 # Shape for Solo Artists
-:SoloArtistShape a sh:NodeShape ;
-    sh:targetClass :SoloArtist .
+ex:SoloArtistShape a sh:NodeShape ;
+    sh:targetClass ex:SoloArtist .
 
 # Shape for Albums
-:AlbumShape a sh:NodeShape ;
-    sh:targetClass :Album ;
+ex:AlbumShape a sh:NodeShape ;
+    sh:targetClass ex:Album ;
     sh:property [
-        sh:path :name ;
+        sh:path ex:name ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path :date ;
+        sh:path ex:date ;
         sh:datatype xsd:date ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path :artist ;
+        sh:path ex:artist ;
         sh:nodeKind sh:IRI ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] .
 
 # Shape for Songs
-:SongShape a sh:NodeShape ;
-    sh:targetClass :Song ;
+ex:SongShape a sh:NodeShape ;
+    sh:targetClass ex:Song ;
     sh:property [
-        sh:path :name ;
+        sh:path ex:name ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path :length ;
+        sh:path ex:length ;
         sh:datatype xsd:integer ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] ;
     sh:property [
-        sh:path :writer ;
+        sh:path ex:writer ;
         sh:nodeKind sh:IRI ;
         sh:minCount 1 ;
     ] .
-

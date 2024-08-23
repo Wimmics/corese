@@ -597,7 +597,8 @@ public final class MyJPanelQuery extends JPanel {
                 case Property.RDF_XML:
                     return ResultFormat.create(g, ResultFormat.RDF_XML_FORMAT).toString();
                 case Property.TURTLE:
-                    return ResultFormat.create(g, ResultFormat.TURTLE_FORMAT).toString();
+                    return ResultFormat.create(g, map.getQuery().getAST().getNSM(),
+                            ResultFormat.TURTLE_FORMAT).toString();
                 case Property.TRIG:
                     return ResultFormat.create(g, ResultFormat.TRIG_FORMAT).toString();
                 case Property.JSON:
@@ -605,7 +606,8 @@ public final class MyJPanelQuery extends JPanel {
             }
         }
         // default
-        return ResultFormat.create(g, ResultFormat.TRIG_FORMAT).toString();
+        return ResultFormat.create(g,
+                map.getQuery().getAST().getNSM(), ResultFormat.TRIG_FORMAT).toString();
         // return turtle(g);
     }
 

@@ -16,13 +16,11 @@ import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
 import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -359,10 +357,6 @@ public class Mappings extends PointerObject
 
             i++;
             sb.append(NL);
-//            for (Node n : alist) {
-//                sb.append(n).append(" : ").append(n.getEdge()).append(NL);
-//            }
-//            alist.clear();
         }
         return sb.toString();
     }
@@ -371,9 +365,6 @@ public class Mappings extends PointerObject
         Node node = map.getNode(qNode);
         if (node != null) {
             sb.append(qNode).append(" = ").append(node);
-//            if (node.isTripleWithEdge()) {
-//                list.add(node);
-//            }
             Object obj = node.getNodeObject();
             if (ptr && obj != null
                     && obj != this
@@ -654,9 +645,6 @@ public class Mappings extends PointerObject
      * Compute order by array again and set it in every Mapping
      */
     void setOrderBy(Eval eval, Query q) {
-        if (q.isDebug()) {
-            System.out.println("Order By: " + this.toString(true));
-        }
         for (Mapping m : this) {
             int i = 0;
                         
@@ -669,17 +657,9 @@ public class Mappings extends PointerObject
                         // @todo: complete Mapping m with Binding, etc.
                         m.setBind(eval.getEnvironment().getBind());
                         node = eval.eval(null, exp.getFilter(), m, eval.getProducer());
-                        if (q.isDebug()) {
-                            System.out.println("Order By eval: " + exp);
-                            System.out.println(m);
-                        }
                     } catch (SparqlException ex) {
                         Eval.logger.error("Order By error: " + ex);
                     }
-                }
-                if (q.isDebug()) {
-                    System.out.println("Order By Result: " + exp + " " + node);
-                    System.out.println("__");
                 }
                 // order by array was reset by prepareModify()
                 m.getOrderBy()[i++] = node;
@@ -901,9 +881,6 @@ public class Mappings extends PointerObject
         } else if (n2 == null) {
             res = -unbound;
         } 
-//        else {
-//            res = 0;
-//        }
         return res;
     }
 
@@ -1089,7 +1066,6 @@ public class Mappings extends PointerObject
         Eval ev = memory.getEval();
         
         if (n == HAVING) {
-            //res = eval.test(exp.getFilter(), memory, p);
             res = exp.getFilter().getExp().test(eval, memory.getBind(), memory, p);
             if (ev != null) {
                 ev.getVisitor().having(ev, exp.getFilter().getExp(), res);
@@ -1134,7 +1110,6 @@ public class Mappings extends PointerObject
     }
     
     Node eval(Filter f, Evaluator eval, Environment env, Producer p) throws SparqlException {
-        //return eval.eval(f, env, p);
         return f.getExp().evalWE(eval, env.getBind(), env, p);
     }
 
@@ -1234,7 +1209,6 @@ public class Mappings extends PointerObject
         for (Mappings lm : g.getValues()) {
             for (Mapping map : lm) {
                 mem.push(map, -1);
-                //if (eval.test(f, mem, p)) {
                 if (f.getExp().test(eval, mem.getBind(), mem, p)) {
                     add(map);
                 }
@@ -1242,22 +1216,6 @@ public class Mappings extends PointerObject
             }
         }
     }
-    
-    
-    /**
-     * Eliminate all Mapping that do not match filter
-     */
-//    void filter(Evaluator eval, Filter f, Memory mem) throws SparqlException {
-//        ArrayList<Mapping> l = new ArrayList<>();
-//        for (Mapping map : this) {
-//            mem.push(map, -1);
-//            if (eval.test(f, mem)) {
-//                l.add(map);
-//            }
-//            mem.pop(map);
-//        }
-//        setList(l);
-//    }
 
     /**
      * Template perform additionnal group_concat(?out)
@@ -1942,16 +1900,8 @@ public class Mappings extends PointerObject
      */
     public void setNodeList(List<Node> nodeList) {
         this.nodeList = nodeList;
-    }
-
-//    public Node getResult() {
-//        return result;
-//    }
-//
-//   
-//    public void setResult(Node result) {
-//        this.result = result;
-//    }
+    } 
+    
     public Binding getBinding() {
         return binding;
     }

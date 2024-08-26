@@ -101,9 +101,6 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     private static final Logger logger = LogManager.getLogger(SPARQLRestAPI.class);
     private static String key;
 
-    static {
-    }
-
     QuerySolverVisitorServer visitor;
 
     public SPARQLRestAPI() {

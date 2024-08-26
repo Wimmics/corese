@@ -16,6 +16,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.core.print.JSONFormat;
+import fr.inria.corese.core.print.NTriplesFormat;
 import fr.inria.corese.core.print.TripleFormat;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Node;
@@ -87,7 +88,7 @@ public class LdpRequestAPI {
 
     private static final String SPARQL_DESCRIBE_QUERY = "CONSTRUCT { ?s ?p ?o } { { GRAPH <%1$s> { ?s ?p ?o } } UNION { GRAPH ?g { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } } UNION { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } }";
     private static final String SPARQL_TYPE_QUERY = "SELECT DISTINCT ?type WHERE { <%1$s> a ?type }";
-    private static final String SPARQL_EXISTS_QUERY = "ASK { { <%1$s> ?p ?o } UNION { ?s ?p <%1$s> } }";
+    private static final String SPARQL_EXISTS_QUERY = "ASK { GRAPH <%1$s> { ?s ?p ?o } }";
     private static final String SPARQL_CONTAINER_IS_BASIC_QUERY = "ASK { GRAPH <%1$s> { <%1$s> a <"
             + URI_LDP_BASIC_CONTAINER + "> } }";
     private static final String SPARQL_CONTAINER_IS_DIRECT_QUERY = "ASK { GRAPH <%1$s> { <%1$s> a <"
@@ -106,7 +107,9 @@ public class LdpRequestAPI {
             + URI_LDP_MEMBERSHIP_RESOURCE + "> ?s . ?s ?p <%1$s> . } UNION { ?p <" + URI_LDP_IS_MEMBER_OF_RELATION
             + "> ?s . ?s ?p <%1$s> } UNION { ?p <" + URI_LDP_IS_MEMBER_OF_RELATION + "> ?container ; <"
             + URI_LDP_MEMBERSHIP_RESOURCE + "> ?s . ?s ?p <%1$s> . } }";
-    private static final String SPARQL_MEMBERSHIP_TRIPLES_LIST_FOR_RESOURCE_QUERY = "PREFIX ldp: <http://www.w3.org/ns/ldp#> SELECT DISTINCT ?s ?p ?o { { { ?s a ?container . VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } VALUES ?p { ldp:member ldp:contains } } UNION { ?c a ?container . VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } ?c ldp:membershipResource ?s .  VALUES ?p { ldp:member ldp:contains } }  UNION { ?s a ?container . VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } { ?s ldp:hasMemberRelation ?p . } UNION { ?p ldp:isMemberOfRelation ?s . } }  UNION { ?c a ?container . VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } ?c ldp:membershipResource ?s .  { ?c ldp:hasMemberRelation ?p . } UNION { ?p ldp:isMemberOfRelation ?c . } FILTER(?o = <%1$s>) } UNION { ?c a ?container . { ?c ldp:insertedContentRelation ?insertP . } UNION { ?insertP ldp:isMemberOfRelation ?c } VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } ?c ldp:membershipResource ?s . { ?c ldp:hasMemberRelation ?p . } UNION { ?p ldp:isMemberOfRelation ?c . } ?res ?insertP ?s . FILTER(?res = <%1$s>) } ?s ?p ?o . } }";
+    private static final String SPARQL_MEMBERSHIP_TRIPLES_LIST_FOR_RESOURCE_QUERY_IN_BASIC_CONTAINER = "PREFIX ldp: <http://www.w3.org/ns/ldp#> SELECT DISTINCT ?container ?s ?p ?o { GRAPH ?s { ?s ?p ?o . } FILTER(?o = <%1$s>)  FILTER(?p = ldp:member) FILTER(?s = ?container)}";
+    private static final String SPARQL_MEMBERSHIP_TRIPLES_LIST_FOR_RESOURCE_QUERY_IN_DIRECT_CONTAINER = "PREFIX ldp: <http://www.w3.org/ns/ldp#>SELECT DISTINCT ?s ?p ?o { { GRAPH ?container { { ?container ldp:hasMemberRelation ?p . } UNION { ?p ldp:isMemberOfRelation ?container . } FILTER(?s = ?container) } } UNION { GRAPH ?container { ?container ldp:membershipResource ?s . { ?container ldp:hasMemberRelation ?p . } UNION { ?p ldp:isMemberOfRelation ?container . } } } UNION { GRAPH ?container { ?container ldp:membershipResource ?s . FILTER(?p = ldp:member) } } GRAPH ?container {  ?s ?p ?o . } FILTER(?o = <%1$s>)}";
+    private static final String SPARQL_MEMBERSHIP_TRIPLES_LIST_FOR_RESOURCE_QUERY_IN_INDIRECT_CONTAINER = "PREFIX ldp: <http://www.w3.org/ns/ldp#> SELECT DISTINCT ?s ?p ?o { GRAPH ?g { ?s a ?container . } VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } VALUES ?p { ldp:member ldp:contains } } UNION { GRAPH ?g { ?c a ?container . ?c ldp:membershipResource ?s . } VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } VALUES ?p { ldp:member ldp:contains } } UNION { GRAPH ?g { ?s a ?container . { ?s ldp:hasMemberRelation ?p . } UNION { ?p ldp:isMemberOfRelation ?s . } } VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } } UNION { GRAPH ?g { ?c a ?container . ?c ldp:membershipResource ?s . { ?c ldp:hasMemberRelation ?p . } UNION { ?p ldp:isMemberOfRelation ?c . } } VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } FILTER(?o = <%1$s>) } UNION { GRAPH ?g { ?c a ?container . ?c ldp:insertedContentRelation ?insertP . } } UNION { GRAPH ?g { ?insertP ldp:isMemberOfRelation ?c . ?c ldp:membershipResource ?s . ?c ldp:hasMemberRelation ?p . } } UNION { GRAPH ?g { ?p ldp:isMemberOfRelation ?c . } GRAPH ?og { ?res ?insertP ?s . } VALUES ?container { ldp:BasicContainer ldp:DirectContainer ldp:IndirectContainer } FILTER(?res = <%1$s>) } ?s ?p ?o . }";
 
     @Context
     private UriInfo context;
@@ -263,12 +266,15 @@ public class LdpRequestAPI {
     @DELETE
     @Path("{path:.+}")
     public Response deleteResource(@Context HttpServletRequest request) {
+        logger.info("Deleting resource: " + request.getRequestURL().toString());
         String resourceURI = request.getRequestURL().toString();
         // Verifying that the target is a resource, not a container
-        String existsSparqlQuery = String.format(SPARQL_EXISTS_QUERY, resourceURI);
+        String existsSparqlQuery = "DESCRIBE <" + resourceURI + ">";
+        logger.info("Searching for resource with query: " + existsSparqlQuery);
         try {
             Mappings m = exec.query(existsSparqlQuery);
             if (m.size() == 0) {
+                logger.info("Resource not found: " + resourceURI);
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity("Resource not found")
                         .build();
@@ -281,17 +287,42 @@ public class LdpRequestAPI {
                             .entity("Delete not implemented for containers")
                             .build();
                 } else {
+                    Mappings resourceDescription = exec.query(String.format("SELECT DISTINCT ?container ?s ?p ?o { GRAPH ?container { ?s ?p ?o } FILTER(?s = <%1$s> || ?o = <%1$s> ) }", resourceURI));
+                    resourceDescription.forEach(mapping -> {
+                        Node container = mapping.getNode("?container");
+                        Node s = mapping.getNode("?s");
+                        Node p = mapping.getNode("?p");
+                        Node o = mapping.getNode("?o");
+                        logger.info("Resource description: " + container + " " + s + " " + p + " " + o);
+                    });
+                    logger.info(resourceDescription.toString());
+
                     // Removing the resource if it is not a container
                     // Removing membership triples
-                    String memberRelationShipQueryString = String
-                            .format(SPARQL_MEMBERSHIP_TRIPLES_LIST_FOR_RESOURCE_QUERY, resourceURI);
-                    Mappings memberRelationShipMappings = exec.query(memberRelationShipQueryString);
-                    memberRelationShipMappings.forEach(memberRelationShipMapping -> {
+                    String memberRelationShipBasicContainerQueryString = String.format(SPARQL_MEMBERSHIP_TRIPLES_LIST_FOR_RESOURCE_QUERY_IN_BASIC_CONTAINER, resourceURI);
+                    logger.info("Searching for membership triples in basic container with query: " + memberRelationShipBasicContainerQueryString);
+                    Mappings memberRelationshipBasicMappings = exec.query(memberRelationShipBasicContainerQueryString);
+                    logger.info("Removing " + memberRelationshipBasicMappings.size() + " membership triples  in basic container for resource: " + resourceURI);
+                    memberRelationshipBasicMappings.forEach(memberRelationShipMapping -> {
+                        Node container = memberRelationShipMapping.getNode("?container");
                         Node s = memberRelationShipMapping.getNode("?s");
                         Node p = memberRelationShipMapping.getNode("?p");
                         Node o = memberRelationShipMapping.getNode("?o");
-                        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resourceURI).delete(s, p, o);
+                        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(container.getLabel()).delete(s, p, o);
                     });
+
+                    String memberRelationShipDirectContainerQueryString = String.format(SPARQL_MEMBERSHIP_TRIPLES_LIST_FOR_RESOURCE_QUERY_IN_DIRECT_CONTAINER, resourceURI);
+                    logger.info("Searching for membership triples in direct container with query: " + memberRelationShipDirectContainerQueryString);
+                    Mappings memberRelationshipDirectMappings = exec.query(memberRelationShipDirectContainerQueryString);
+                    logger.info("Removing " + memberRelationshipDirectMappings.size() + " membership triples  in direct container for resource: " + resourceURI);
+                    memberRelationshipDirectMappings.forEach(memberRelationShipMapping -> {
+                        Node container = memberRelationShipMapping.getNode("?container");
+                        Node s = memberRelationShipMapping.getNode("?s");
+                        Node p = memberRelationShipMapping.getNode("?p");
+                        Node o = memberRelationShipMapping.getNode("?o");
+                        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(container.getLabel()).delete(s, p, o);
+                    });
+
                     SPARQLRestAPI.getTripleStore().getGraph().deleteGraph(resourceURI);
 
                     return Response.status(Response.Status.NO_CONTENT)
@@ -468,8 +499,8 @@ public class LdpRequestAPI {
         Node ldpDirectContainer = SPARQLRestAPI.getTripleStore().getGraph().createNode(URI_LDP_DIRECT_CONTAINER);
         createDirectContainer(request, rawContent, format);
 
-        SPARQLRestAPI.getTripleStore().getGraph().delete(containerResource, rdfTypeProperty, ldpDirectContainer);
-        SPARQLRestAPI.getTripleStore().getGraph().insert(containerResource, rdfTypeProperty, ldpIndirectContainer);
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).delete(containerResource, rdfTypeProperty, ldpDirectContainer);
+        SPARQLRestAPI.getTripleStore().getGraph().getNamedGraph(resURI).insert(containerResource, rdfTypeProperty, ldpIndirectContainer);
 
     }
 
@@ -814,6 +845,7 @@ public class LdpRequestAPI {
     private void addResourceToIndirectContainer(Node container, Node resource, Graph content) throws EngineException {
         String containerURI = container.getLabel();
 
+        // Detection of the indirect container's membership relation declared in the container description
         ArrayList<Node> insertedContentRelation = new ArrayList<>();
         String selectInsertedContentRelationQueryString = "SELECT DISTINCT ?insertedContentRelation {  GRAPH <"
                 + containerURI
@@ -831,22 +863,24 @@ public class LdpRequestAPI {
         });
 
         insertedContentRelation.forEach(insertedContentRelationNode -> {
-            ArrayList<Node> membershipResourceList = new ArrayList<>();
-            Mappings membershipResourceMappings;
+            logger.info("Adding resource linked to Indirect Container " + containerURI + " with insertedContentRelation "
+                    + insertedContentRelationNode.getLabel());
+            ArrayList<Node> memberResourceList = new ArrayList<>();
+            Mappings memberResourceMappings;
             try {
-                String resourceLinkedWithInsertedContentRelation = "SELECT DISTINCT ?membershipResource { GRAPH <"
+                String resourceLinkedWithInsertedContentRelation = "SELECT DISTINCT ?memberResource { GRAPH <"
                         + resource.getLabel()
                         + "> { ?any <"
-                        + insertedContentRelationNode.getLabel() + "> ?membershipResource } }";
-                membershipResourceMappings = exec.query(resourceLinkedWithInsertedContentRelation);
-                membershipResourceMappings.forEach(membershipResourceMapping -> {
-                    Node membershipResource = membershipResourceMapping.getNode("?membershipResource");
-                    membershipResourceList.add(membershipResource);
+                        + insertedContentRelationNode.getLabel() + "> ?memberResource } }";
+                memberResourceMappings = exec.query(resourceLinkedWithInsertedContentRelation);
+                memberResourceMappings.forEach(memberResourceMapping -> {
+                    Node membershipResource = memberResourceMapping.getNode("?memberResource");
+                    memberResourceList.add(membershipResource);
                 });
 
-                membershipResourceList.forEach(membershipResource -> {
+                memberResourceList.forEach(memberResource -> {
                     try {
-                        addResourceToDirectContainer(container, membershipResource);
+                        addResourceToDirectContainer(container, memberResource);
                     } catch (EngineException e) {
                         logger.error(e);
                     }
@@ -880,7 +914,7 @@ public class LdpRequestAPI {
      */
     private boolean isAValidContainerType(String typeUri) {
         boolean isValidHeaderType = Stream
-                .of(URI_LDP_BASIC_CONTAINER, URI_LDP_DIRECT_CONTAINER, URI_LDP_INDIRECT_CONTAINER, URI_LDP_RESOURCE)
+                .of(URI_LDP_BASIC_CONTAINER, URI_LDP_DIRECT_CONTAINER, URI_LDP_INDIRECT_CONTAINER)
                 .anyMatch(validType -> typeUri.contains(validType));
         return isValidHeaderType;
     }

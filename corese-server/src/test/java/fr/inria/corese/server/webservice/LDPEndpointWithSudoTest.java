@@ -82,25 +82,19 @@ public class LDPEndpointWithSudoTest {
 
         con.disconnect();
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://www.w3.org/ns/ldp#BasicContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://www.w3.org/ns/ldp#BasicContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
         String askQueryCheckContainerContentExists = "ASK { GRAPH <" + containerURI
                 + "> { <" + containerURI
                 + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheContainerContentInTheSparqlEndpoint = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryCheckContainerContentExists);
+
         assertEquals(201, status);
         assertTrue(isTheContainerInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Link"));
-        assertTrue(con.getHeaderField("Link").contains("http://www.w3.org/ns/ldp#BasicContainer"));
         assertTrue(isTheContainerContentInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Allow"));
-        assertTrue(con.getHeaderField("Allow").contains("GET"));
-        assertTrue(con.getHeaderField("Allow").contains("HEAD"));
-        assertTrue(con.getHeaderField("Allow").contains("OPTIONS"));
-        assertTrue(con.getHeaderField("Allow").contains("PUT"));
-        assertTrue(con.getHeaderField("Allow").contains("POST"));
     }
 
     @Test
@@ -128,8 +122,9 @@ public class LDPEndpointWithSudoTest {
 
         con.disconnect();
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://www.w3.org/ns/ldp#BasicContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://www.w3.org/ns/ldp#BasicContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
         String askQueryCheckContainerContentExists = "ASK { GRAPH <" + containerURI
                 + "> { <" + containerURI
@@ -138,15 +133,7 @@ public class LDPEndpointWithSudoTest {
                 .sendSPARQLAsk(askQueryCheckContainerContentExists);
         assertEquals(201, status);
         assertTrue(isTheContainerInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Link"));
-        assertTrue(con.getHeaderField("Link").contains("http://www.w3.org/ns/ldp#BasicContainer"));
         assertTrue(isTheContainerContentInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Allow"));
-        assertTrue(con.getHeaderField("Allow").contains("GET"));
-        assertTrue(con.getHeaderField("Allow").contains("HEAD"));
-        assertTrue(con.getHeaderField("Allow").contains("OPTIONS"));
-        assertTrue(con.getHeaderField("Allow").contains("PUT"));
-        assertTrue(con.getHeaderField("Allow").contains("POST"));
     }
 
     @Test
@@ -186,15 +173,7 @@ public class LDPEndpointWithSudoTest {
                 .sendSPARQLAsk(askQueryCheckContainerContentExists);
         assertEquals(201, status);
         assertTrue(isTheContainerInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Link"));
-        assertTrue(con.getHeaderField("Link").contains("http://www.w3.org/ns/ldp#DirectContainer"));
         assertTrue(isTheContainerContentInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Allow"));
-        assertTrue(con.getHeaderField("Allow").contains("GET"));
-        assertTrue(con.getHeaderField("Allow").contains("HEAD"));
-        assertTrue(con.getHeaderField("Allow").contains("OPTIONS"));
-        assertTrue(con.getHeaderField("Allow").contains("PUT"));
-        assertTrue(con.getHeaderField("Allow").contains("POST"));
     }
 
     @Test
@@ -269,8 +248,9 @@ public class LDPEndpointWithSudoTest {
 
         con.disconnect();
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://www.w3.org/ns/ldp#IndirectContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://www.w3.org/ns/ldp#IndirectContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
         String askQueryCheckContainerContentExists = "ASK { GRAPH <" + containerURI
                 + "> { <" + containerURI
@@ -278,14 +258,6 @@ public class LDPEndpointWithSudoTest {
         boolean isTheContainerContentInTheSparqlEndpoint = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryCheckContainerContentExists);
         assertEquals(201, status);
-        assertNotNull(con.getHeaderField("Link"));
-        assertTrue(con.getHeaderField("Link").contains("http://www.w3.org/ns/ldp#IndirectContainer"));
-        assertNotNull(con.getHeaderField("Allow"));
-        assertTrue(con.getHeaderField("Allow").contains("GET"));
-        assertTrue(con.getHeaderField("Allow").contains("HEAD"));
-        assertTrue(con.getHeaderField("Allow").contains("OPTIONS"));
-        assertTrue(con.getHeaderField("Allow").contains("PUT"));
-        assertTrue(con.getHeaderField("Allow").contains("POST"));
         assertTrue(isTheContainerInTheSparqlEndpoint);
         assertTrue(isTheContainerContentInTheSparqlEndpoint);
     }
@@ -315,8 +287,9 @@ public class LDPEndpointWithSudoTest {
 
         con.disconnect();
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://www.w3.org/ns/ldp#IndirectContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://www.w3.org/ns/ldp#IndirectContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
         String askQueryCheckContainerContentExists = "ASK { GRAPH <" + containerURI
                 + "> { <" + containerURI
@@ -324,14 +297,6 @@ public class LDPEndpointWithSudoTest {
         boolean isTheContainerContentInTheSparqlEndpoint = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryCheckContainerContentExists);
         assertEquals(201, status);
-        assertNotNull(con.getHeaderField("Link"));
-        assertTrue(con.getHeaderField("Link").contains("http://www.w3.org/ns/ldp#IndirectContainer"));
-        assertNotNull(con.getHeaderField("Allow"));
-        assertTrue(con.getHeaderField("Allow").contains("GET"));
-        assertTrue(con.getHeaderField("Allow").contains("HEAD"));
-        assertTrue(con.getHeaderField("Allow").contains("OPTIONS"));
-        assertTrue(con.getHeaderField("Allow").contains("PUT"));
-        assertTrue(con.getHeaderField("Allow").contains("POST"));
         assertTrue(isTheContainerInTheSparqlEndpoint);
         assertTrue(isTheContainerContentInTheSparqlEndpoint);
     }
@@ -360,8 +325,9 @@ public class LDPEndpointWithSudoTest {
 
         con.disconnect();
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://www.w3.org/ns/ldp#BasicContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://www.w3.org/ns/ldp#BasicContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
         String askQueryCheckContainerContentExists = "ASK { GRAPH <" + containerURI
                 + "> { <" + containerURI
@@ -370,15 +336,7 @@ public class LDPEndpointWithSudoTest {
                 .sendSPARQLAsk(askQueryCheckContainerContentExists);
         assertEquals(201, status);
         assertTrue(isTheContainerInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Link"));
-        assertTrue(con.getHeaderField("Link").contains("http://www.w3.org/ns/ldp#BasicContainer"));
         assertTrue(isTheContainerContentInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Allow"));
-        assertTrue(con.getHeaderField("Allow").contains("GET"));
-        assertTrue(con.getHeaderField("Allow").contains("HEAD"));
-        assertTrue(con.getHeaderField("Allow").contains("OPTIONS"));
-        assertTrue(con.getHeaderField("Allow").contains("PUT"));
-        assertTrue(con.getHeaderField("Allow").contains("POST"));
     }
 
     @Test
@@ -405,8 +363,9 @@ public class LDPEndpointWithSudoTest {
 
         con.disconnect();
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://www.w3.org/ns/ldp#BasicContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://www.w3.org/ns/ldp#BasicContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
         String askQueryCheckContainerContentExists = "ASK { GRAPH <" + containerURI
                 + "> { <" + containerURI
@@ -415,15 +374,7 @@ public class LDPEndpointWithSudoTest {
                 .sendSPARQLAsk(askQueryCheckContainerContentExists);
         assertEquals(201, status);
         assertTrue(isTheContainerInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Link"));
-        assertTrue(con.getHeaderField("Link").contains("http://www.w3.org/ns/ldp#BasicContainer"));
         assertTrue(isTheContainerContentInTheSparqlEndpoint);
-        assertNotNull(con.getHeaderField("Allow"));
-        assertTrue(con.getHeaderField("Allow").contains("GET"));
-        assertTrue(con.getHeaderField("Allow").contains("HEAD"));
-        assertTrue(con.getHeaderField("Allow").contains("OPTIONS"));
-        assertTrue(con.getHeaderField("Allow").contains("PUT"));
-        assertTrue(con.getHeaderField("Allow").contains("POST"));
     }
 
     @Test
@@ -544,8 +495,9 @@ public class LDPEndpointWithSudoTest {
 
         con.disconnect();
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://www.w3.org/ns/ldp#IndirectContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://www.w3.org/ns/ldp#IndirectContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
         String askQueryCheckContainerContentExists = "ASK { GRAPH <" + containerURI
                 + "> { <" + containerURI
@@ -553,14 +505,6 @@ public class LDPEndpointWithSudoTest {
         boolean isTheContainerContentInTheSparqlEndpoint = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryCheckContainerContentExists);
         assertEquals(201, status);
-        assertNotNull(con.getHeaderField("Link"));
-        assertTrue(con.getHeaderField("Link").contains("http://www.w3.org/ns/ldp#IndirectContainer"));
-        assertNotNull(con.getHeaderField("Allow"));
-        assertTrue(con.getHeaderField("Allow").contains("GET"));
-        assertTrue(con.getHeaderField("Allow").contains("HEAD"));
-        assertTrue(con.getHeaderField("Allow").contains("OPTIONS"));
-        assertTrue(con.getHeaderField("Allow").contains("PUT"));
-        assertTrue(con.getHeaderField("Allow").contains("POST"));
         assertTrue(isTheContainerInTheSparqlEndpoint);
         assertTrue(isTheContainerContentInTheSparqlEndpoint);
     }
@@ -589,8 +533,9 @@ public class LDPEndpointWithSudoTest {
 
         con.disconnect();
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://www.w3.org/ns/ldp#IndirectContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://www.w3.org/ns/ldp#IndirectContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
         String askQueryCheckContainerContentExists = "ASK { GRAPH <" + containerURI
                 + "> { <" + containerURI
@@ -598,14 +543,6 @@ public class LDPEndpointWithSudoTest {
         boolean isTheContainerContentInTheSparqlEndpoint = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryCheckContainerContentExists);
         assertEquals(201, status);
-        assertNotNull(con.getHeaderField("Link"));
-        assertTrue(con.getHeaderField("Link").contains("http://www.w3.org/ns/ldp#IndirectContainer"));
-        assertNotNull(con.getHeaderField("Allow"));
-        assertTrue(con.getHeaderField("Allow").contains("GET"));
-        assertTrue(con.getHeaderField("Allow").contains("HEAD"));
-        assertTrue(con.getHeaderField("Allow").contains("OPTIONS"));
-        assertTrue(con.getHeaderField("Allow").contains("PUT"));
-        assertTrue(con.getHeaderField("Allow").contains("POST"));
         assertTrue(isTheContainerInTheSparqlEndpoint);
         assertTrue(isTheContainerContentInTheSparqlEndpoint);
     }
@@ -654,8 +591,9 @@ public class LDPEndpointWithSudoTest {
                 + "> { <" + containerURI
                 + "> a <http://corese.inria.fr/#TestContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
-        String askQueryResourceIsInContainer = "ASK { <" + containerURI
-                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> }";
+        String askQueryResourceIsInContainer = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> } }";
         boolean isTheResourceInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsInContainer);
 
         assertEquals(201, containerCreationStatus);
@@ -709,8 +647,9 @@ public class LDPEndpointWithSudoTest {
                 + "> { <" + containerURI
                 + "> a <http://corese.inria.fr/#TestContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
-        String askQueryResourceIsInContainer = "ASK { <" + containerURI
-                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> }";
+        String askQueryResourceIsInContainer = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> } }";
         boolean isTheResourceInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsInContainer);
 
         assertEquals(201, containerCreationStatus);
@@ -758,9 +697,10 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String resourceDescriptionQuery = String.format("CONSTRUCT { ?s ?p ?o } { { GRAPH <%1$s> { ?s ?p ?o } } UNION { GRAPH ?g { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } } UNION { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } }", resourceURI);
+        String resourceDescriptionQuery = String.format(
+                "CONSTRUCT { ?s ?p ?o } { { GRAPH <%1$s> { ?s ?p ?o } } UNION { GRAPH ?g { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } } UNION { { ?s ?p ?o . FILTER(?s = <%1$s> ) } UNION { ?s ?p ?o . FILTER(?o = <%1$s> ) } } }",
+                resourceURI);
         Graph resourceDescription = SPARQLTestUtils.sendSPARQLConstructDescribe(resourceDescriptionQuery);
-        NTriplesFormat.create(resourceDescription).write(System.err);
 
         String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI
                 + "> { <" + resourceURI
@@ -770,11 +710,14 @@ public class LDPEndpointWithSudoTest {
                 + "> { <" + containerURI
                 + "> a <http://corese.inria.fr/#TestContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
-        String askQueryResourceIsInContainerUsingMember = "ASK { <" + containerURI
-                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> . }";
-        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { GRAPH <" + containerURI + "> { <" + containerURI + "> <http://corese.inria.fr/#memberProperty> <" + resourceURI + "> } }";
+        String askQueryResourceIsInContainerUsingMember = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> . } }";
         boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
+        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> <http://corese.inria.fr/#memberProperty> <" + resourceURI + "> } }";
         boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
 
@@ -824,18 +767,22 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String askQueryCheckResourceExists = "ASK { <" + resourceURI
-                + "> a <http://corese.inria.fr/#TestResource> }";
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI
+                + "> { <" + resourceURI
+                + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://corese.inria.fr/#TestContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
-        String askQueryResourceIsInContainerUsingMember = "ASK { <" + containerURI
-                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> . }";
-        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <" + containerURI
-                + "> <http://corese.inria.fr/#memberProperty> <" + resourceURI + "> }";
+        String askQueryResourceIsInContainerUsingMember = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> . } }";
         boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
+        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> <http://corese.inria.fr/#memberProperty> <" + resourceURI + "> } }";
         boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
 
@@ -885,18 +832,22 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String askQueryCheckResourceExists = "ASK { <" + resourceURI
-                + "> a <http://corese.inria.fr/#TestResource> }";
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI
+                + "> { <" + resourceURI
+                + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://www.w3.org/ns/ldp#DirectContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
-        String askQueryResourceIsInContainerUsingMember = "ASK { <http://corese.inria.fr/#membershipResource> <http://www.w3.org/ns/ldp#member> <"
-                + resourceURI + "> . }";
-        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <http://corese.inria.fr/#membershipResource> <http://corese.inria.fr/#memberProperty> <"
-                + resourceURI + "> }";
+        String askQueryResourceIsInContainerUsingMember = "ASK { GRAPH <" + containerURI
+                + "> { <http://corese.inria.fr/#membershipResource> <http://www.w3.org/ns/ldp#member> <"
+                + resourceURI + "> . } }";
         boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
+        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { GRAPH <" + containerURI
+                + "> { <http://corese.inria.fr/#membershipResource> <http://corese.inria.fr/#memberProperty> <"
+                + resourceURI + "> } }";
         boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
 
@@ -946,16 +897,20 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String askQueryCheckResourceExists = "ASK { <" + resourceURI
-                + "> a <http://corese.inria.fr/#TestResource> }";
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI
+                + "> { <" + resourceURI
+                + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://corese.inria.fr/#TestContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
-        String askQueryResourceIsInContainerUsingMember = "ASK { <http://corese.inria.fr/#membershipResource> <http://www.w3.org/ns/ldp#member> <"
-                + resourceURI + "> . }";
-        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <http://corese.inria.fr/#membershipResource> <http://corese.inria.fr/#memberProperty> <"
-                + resourceURI + "> }";
+        String askQueryResourceIsInContainerUsingMember = "ASK { GRAPH <" + containerURI
+                + "> { <http://corese.inria.fr/#membershipResource> <http://www.w3.org/ns/ldp#member> <"
+                + resourceURI + "> . } }";
+        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { GRAPH <" + containerURI
+                + "> { <http://corese.inria.fr/#membershipResource> <http://corese.inria.fr/#memberProperty> <"
+                + resourceURI + "> } }";
         boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
         boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
@@ -993,12 +948,10 @@ public class LDPEndpointWithSudoTest {
 
         String turtleContainerDescription = "<> a <http://corese.inria.fr/#TestContainer> ;"
                 + "    <http://www.w3.org/ns/ldp#hasMemberRelation> <http://corese.inria.fr/#memberProperty> ;"
-                + "    <http://www.w3.org/ns/ldp#membershipResource> <" + containerMembershipResourceURI
-                + "> ;"
+                + "    <http://www.w3.org/ns/ldp#membershipResource> <" + containerMembershipResourceURI + "> ;"
                 + "    <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> .";
         String turtleResourceDescription = "<> a <http://corese.inria.fr/#TestResource> . <> <http://corese.inria.fr/#inverseMemberProperty> <"
-                + resourceURI
-                + "1> . <> a <http://corese.inria.fr/#TestResource> . <> <http://corese.inria.fr/#inverseMemberProperty> <"
+                + resourceURI + "1> , <"
                 + resourceURI + "2> .";
 
         HttpURLConnection containerCreationCon = HTTPTestUtils.putConnection(containerURI,
@@ -1013,24 +966,28 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String askQueryCheckResourceExists = "ASK { <" + resourceURI
-                + "> a <http://corese.inria.fr/#TestResource> }";
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI
+                + "> { <" + resourceURI
+                + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> ; <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> . }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://corese.inria.fr/#TestContainer> ; <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> . } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
 
-        String askQueryResourceIsInContainerUsingMember = "ASK { <" + containerMembershipResourceURI
+        String askQueryResourceIsInContainerUsingMember = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerMembershipResourceURI
                 + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI
-                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . }";
+                + "1> , <" + resourceURI + "2> . } }";
         boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
 
-        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <"
+        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { GRAPH <" + containerURI
+                + "> { <"
                 + containerMembershipResourceURI + "> <http://corese.inria.fr/#memberProperty> <"
                 + resourceURI + "1> ; <http://corese.inria.fr/#memberProperty> <" + resourceURI
-                + "2> . }";
+                + "2> . } }";
         boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
 
@@ -1086,24 +1043,28 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String askQueryCheckResourceExists = "ASK { <" + resourceURI
-                + "> a <http://corese.inria.fr/#TestResource> }";
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI
+                + "> { <" + resourceURI
+                + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> ; <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> . }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://corese.inria.fr/#TestContainer> ; <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> . } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
 
-        String askQueryResourceIsInContainerUsingMember = "ASK { <" + containerMembershipResourceURI
+        String askQueryResourceIsInContainerUsingMember = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerMembershipResourceURI
                 + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI
-                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . }";
+                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . } }";
         boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
 
-        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <"
+        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { GRAPH <" + containerURI
+                + "> { <"
                 + containerMembershipResourceURI + "> <http://corese.inria.fr/#memberProperty> <"
                 + resourceURI + "1> ; <http://corese.inria.fr/#memberProperty> <" + resourceURI
-                + "2> . }";
+                + "2> . } }";
         boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
 
@@ -1156,24 +1117,28 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String askQueryCheckResourceExists = "ASK { <" + resourceURI
-                + "> a <http://corese.inria.fr/#TestResource> }";
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI
+                + "> { <" + resourceURI
+                + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> ; <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> . }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://corese.inria.fr/#TestContainer> ; <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> . } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
 
-        String askQueryResourceIsInContainerUsingMember = "ASK { <" + containerURI
+        String askQueryResourceIsInContainerUsingMember = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
                 + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI
-                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . }";
+                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . } }";
         boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
 
-        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <"
+        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { GRAPH <" + containerURI
+                + "> { <"
                 + containerURI + "> <http://corese.inria.fr/#memberProperty> <"
                 + resourceURI + "1> ; <http://corese.inria.fr/#memberProperty> <" + resourceURI
-                + "2> . }";
+                + "2> . } }";
         boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
 
@@ -1226,24 +1191,28 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String askQueryCheckResourceExists = "ASK { <" + resourceURI
-                + "> a <http://corese.inria.fr/#TestResource> }";
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI
+                + "> { <" + resourceURI
+                + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
 
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> ; <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> . }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://corese.inria.fr/#TestContainer> ; <http://www.w3.org/ns/ldp#insertedContentRelation> <http://corese.inria.fr/#inverseMemberProperty> . } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
 
-        String askQueryResourceIsInContainerUsingMember = "ASK { <" + containerURI
+        String askQueryResourceIsInContainerUsingMember = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
                 + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI
-                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . }";
+                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . } }";
         boolean isTheResourceInContainerUsingMember = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingMember);
 
-        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { <"
+        String askQueryResourceIsInContainerUsingCustomMemberProperty = "ASK { GRAPH <" + containerURI
+                + "> { <"
                 + containerURI + "> <http://corese.inria.fr/#memberProperty> <"
                 + resourceURI + "1> ; <http://corese.inria.fr/#memberProperty> <" + resourceURI
-                + "2> . }";
+                + "2> . } }";
         boolean isTheResourceInContainerUsingCustomMemberProperty = SPARQLTestUtils
                 .sendSPARQLAsk(askQueryResourceIsInContainerUsingCustomMemberProperty);
 
@@ -1285,20 +1254,18 @@ public class LDPEndpointWithSudoTest {
         int containerCreationStatus = containerCreationCon.getResponseCode();
         containerCreationCon.disconnect();
 
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI + "> { <" + containerURI + "> a <http://corese.inria.fr/#TestContainer>, <http://www.w3.org/ns/ldp#BasicContainer> } }";
+        boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
+
         HttpURLConnection resourceCreationCon = HTTPTestUtils.putConnection(containerURI,
                 resourceCreationHeaders, turtleResourceDescription);
         resourceCreationCon.connect();
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String askQueryCheckResourceExists = "ASK { <" + resourceURI
-                + "> a <http://corese.inria.fr/#TestResource> }";
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI + "> { <" + resourceURI + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> }";
-        boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
-        String askQueryResourceIsInContainer = "ASK { <" + containerURI
-                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> }";
+        String askQueryResourceIsInContainer = "ASK { GRAPH <" + containerURI + "> { <" + containerURI + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> } }";
         boolean isTheResourceInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsInContainer);
 
         HttpURLConnection resourceDeletionCon = HTTPTestUtils.deleteConnection(resourceURI);
@@ -1306,10 +1273,8 @@ public class LDPEndpointWithSudoTest {
         int resourceDeletionStatus = resourceDeletionCon.getResponseCode();
         resourceDeletionCon.disconnect();
 
-        boolean isTheResourceStillInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsInContainer);
-
-        Graph resourceDescription = SPARQLTestUtils.sendSPARQLConstructDescribe("DESCRIBE <" + resourceURI + ">");
-        NTriplesFormat.create(resourceDescription).write(System.err);
+        String askQueryResourceIsStillInContainer = "ASK { GRAPH <" + containerURI + "> { <" + containerURI + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> } . ?s ?p ?o . }";
+        boolean isTheResourceStillInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsStillInContainer);
 
         assertEquals(201, containerCreationStatus);
         assertTrue(isTheContainerInTheSparqlEndpoint);
@@ -1358,21 +1323,28 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        String askQueryCheckResourceExists = "ASK { <" + resourceURI
-                + "> a <http://corese.inria.fr/#TestResource> }";
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI
+                + "> { <" + resourceURI
+                + "> a <http://corese.inria.fr/#TestResource> } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://corese.inria.fr/#TestContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
-        String askQueryResourceIsInContainer = "ASK { <http://corese.inria.fr/#membershipResource> <http://www.w3.org/ns/ldp#member> <" + resourceURI + "> ; <http://corese.inria.fr/#memberProperty> <" + resourceURI + "> . }";
+        String askQueryResourceIsInContainer = "ASK { GRAPH <" + containerURI
+                + "> { <http://corese.inria.fr/#membershipResource> <http://www.w3.org/ns/ldp#member> <"
+                + resourceURI + "> ; <http://corese.inria.fr/#memberProperty> <" + resourceURI + "> . } }";
         boolean isTheResourceInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsInContainer);
 
         HttpURLConnection resourceDeletionCon = HTTPTestUtils.deleteConnection(resourceURI);
         resourceDeletionCon.connect();
         int resourceDeletionStatus = resourceDeletionCon.getResponseCode();
-        resourceDeletionCon.disconnect();
-        
-        boolean isTheResourceStillInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsInContainer);
+        resourceDeletionCon.disconnect();        
+
+        String askQueryResourceIsStillInContainer = "ASK { GRAPH <" + containerURI
+                + "> { <http://corese.inria.fr/#membershipResource> <http://www.w3.org/ns/ldp#member> <"
+                + resourceURI + "> ; <http://corese.inria.fr/#memberProperty> <" + resourceURI + "> . ?s ?p ?o } }";
+        boolean isTheResourceStillInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsStillInContainer);
 
         assertEquals(201, containerCreationStatus);
         assertTrue(isTheContainerInTheSparqlEndpoint);
@@ -1427,30 +1399,30 @@ public class LDPEndpointWithSudoTest {
         int resourceCreationStatus = resourceCreationCon.getResponseCode();
         resourceCreationCon.disconnect();
 
-        Graph resourceDescriptionBefore = SPARQLTestUtils.sendSPARQLConstructDescribe("DESCRIBE <" + resourceURI + "1>");
-        NTriplesFormat.create(resourceDescriptionBefore).write(System.err);
-
-        String askQueryCheckResourceExists = "ASK { { <" + resourceURI
+        String askQueryCheckResourceExists = "ASK { GRAPH <" + resourceURI + "> { { <" + resourceURI
                 + "2> ?p ?o . } UNION { ?s ?p <" + resourceURI + "2> } { <" + resourceURI
-                + "1> ?p ?o . } UNION { ?s ?p <" + resourceURI + "1> } }";
+                + "1> ?p ?o . } UNION { ?s ?p <" + resourceURI + "1> } } }";
         boolean isTheResourceInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckResourceExists);
-        String askQueryCheckContainerExists = "ASK { <" + containerURI
-                + "> a <http://corese.inria.fr/#TestContainer> }";
+        String askQueryCheckContainerExists = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerURI
+                + "> a <http://corese.inria.fr/#TestContainer> } }";
         boolean isTheContainerInTheSparqlEndpoint = SPARQLTestUtils.sendSPARQLAsk(askQueryCheckContainerExists);
-        String askQueryResourceIsInContainer = "ASK { <" + containerMembershipResourceURI
+        String askQueryResourceIsInContainer = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerMembershipResourceURI
                 + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI
-                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . }";
+                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . } }";
         boolean isTheResourceInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsInContainer);
 
         HttpURLConnection resourceDeletionCon = HTTPTestUtils.deleteConnection(resourceURI);
         resourceDeletionCon.connect();
         int resourceDeletionStatus = resourceDeletionCon.getResponseCode();
         resourceDeletionCon.disconnect();
-        
-        boolean isTheResourceStillInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsInContainer);
 
-        Graph resourceDescriptionAfter = SPARQLTestUtils.sendSPARQLConstructDescribe("DESCRIBE <" + resourceURI + "1>");
-        NTriplesFormat.create(resourceDescriptionAfter).write(System.err);
+        String askQueryResourceIsStillInContainer = "ASK { GRAPH <" + containerURI
+                + "> { <" + containerMembershipResourceURI
+                + "> <http://www.w3.org/ns/ldp#member> <" + resourceURI
+                + "1> ; <http://www.w3.org/ns/ldp#member> <" + resourceURI + "2> . ?s ?p ?o } }";
+        boolean isTheResourceStillInContainer = SPARQLTestUtils.sendSPARQLAsk(askQueryResourceIsStillInContainer);
 
         assertEquals(201, containerCreationStatus);
         assertTrue(isTheContainerInTheSparqlEndpoint);

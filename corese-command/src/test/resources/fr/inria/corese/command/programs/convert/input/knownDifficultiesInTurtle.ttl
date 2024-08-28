@@ -1,0 +1,9 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix orcid: <http://orcid.org/> .
+@prefix ex: <http://example.com/> .
+
+ex:1 ex:property ex:%3CspanStyle .
+
+ex: dc:contributor orcid:0000-0001-6938-0820 ;
+  dc:contributor orcid:0000-0002-0643-3144 ;
+  dc:contributor orcid:0000-0002-5711-4872 .

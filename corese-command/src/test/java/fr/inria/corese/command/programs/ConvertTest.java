@@ -775,4 +775,20 @@ public class ConvertTest {
         }
     }
 
+    @Test
+    public void testConvertDifficultTurtleToJsonld() {
+        String pathInputBeatlesTTL = Paths.get(inputPath, "knownDifficultiesInTurtle.ttl").toString();
+        String pathRefBeatlesJSON = Paths.get(referencesPath, "ttl.knownDifficultiesInTurtle.jsonld").toString();
+        String pathOutBeatlesJSON = Paths.get(resultPath, "ttl.knownDifficultiesInTurtle.jsonld").toString();
+
+        int exitCode = cmd.execute("-i", pathInputBeatlesTTL, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
+
+        assertEquals(0, exitCode);
+        assertEquals(out.toString(), "");
+        assertEquals(err.toString(), "");
+        assertEquals(canonicalize(pathRefBeatlesJSON), canonicalize(pathOutBeatlesJSON));
+        assertNotEquals("", pathOutBeatlesJSON);
+
+    }
+
 }

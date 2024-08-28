@@ -4,11 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
@@ -65,19 +70,201 @@ public class SPARQLEndpointUpdateTest {
      * @throws Exception
      */
     @Test
-    public void postUrlencodedUpdateTest() throws Exception {
+    public void postUrlencodedAcceptSPARQLXmlUpdateTest() throws Exception {
         String query = "INSERT DATA { <http://example.org/s> <http://example.org/p> <http://example.org/o> }";
-        String body = SPARQLTestUtils.generateSPARQLUpdateParameters(query);
+        String body = "update=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
         List<List<String>> headers = new LinkedList<>();
         List<String> contentTypeHeader = new LinkedList<>();
         contentTypeHeader.add("Content-Type");
         contentTypeHeader.add("application/x-www-form-urlencoded");
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add("application/sparql-results+xml");
         headers.add(contentTypeHeader);
-        HttpURLConnection con = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, headers, body);
+        headers.add(acceptHeader);
+        HttpURLConnection con = HTTPConnectionUtils.postConnection(SPARQL_ENDPOINT_URL, headers, body);
         int responseCode = con.getResponseCode();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
         con.disconnect();
 
         assertEquals(200, responseCode);
+        assertEquals("<?xml version=\"1.0\" ?><sparql xmlns='http://www.w3.org/2005/sparql-results#'><head></head><results><result></result></results></sparql>", content.toString());
+    }
+
+    /**
+     * Test the insertion of a triple in the server using a POST request with a URL-encoded body.
+     * @throws Exception
+     */
+    @Test
+    public void postUrlencodedAcceptCSVUpdateTest() throws Exception {
+        String query = "INSERT DATA { <http://example.org/s> <http://example.org/p> <http://example.org/o> }";
+        String body = "update=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add("application/x-www-form-urlencoded");
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add("text/csv");
+        headers.add(contentTypeHeader);
+        headers.add(acceptHeader);
+        HttpURLConnection con = HTTPConnectionUtils.postConnection(SPARQL_ENDPOINT_URL, headers, body);
+        int responseCode = con.getResponseCode();
+        
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        con.disconnect();
+
+        assertEquals(200, responseCode);
+        assertEquals("", content.toString());
+    }
+
+    /**
+     * Test the insertion of a triple in the server using a POST request with a URL-encoded body.
+     * @throws Exception
+     */
+    @Test
+    public void postUrlencodedAcceptJSONUpdateTest() throws Exception {
+        String query = "INSERT DATA { <http://example.org/s> <http://example.org/p> <http://example.org/o> }";
+        String body = "update=" + URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add("application/x-www-form-urlencoded");
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add("application/sparql-results+json");
+        headers.add(contentTypeHeader);
+        headers.add(acceptHeader);
+        HttpURLConnection con = HTTPConnectionUtils.postConnection(SPARQL_ENDPOINT_URL, headers, body);
+        int responseCode = con.getResponseCode();
+        
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        con.disconnect();
+
+        assertEquals(200, responseCode);
+        assertEquals("{\"head\": { \"vars\": []},\"results\": { \"bindings\": [{}] }}", content.toString());
+    }
+
+    /**
+     * Test the insertion of a triple in the server using a POST request with a URL-encoded body.
+     * @throws Exception
+     */
+    @Test
+    public void postAcceptSPARQLXmlUpdateTest() throws Exception {
+        String query = "INSERT DATA { <http://example.org/s> <http://example.org/p> <http://example.org/o> }";
+        String body = query;
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add("application/sparql-update");
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add("application/sparql-results+xml");
+        headers.add(contentTypeHeader);
+        headers.add(acceptHeader);
+        HttpURLConnection con = HTTPConnectionUtils.postConnection(SPARQL_ENDPOINT_URL, headers, body);
+        int responseCode = con.getResponseCode();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        con.disconnect();
+
+        assertEquals(200, responseCode);
+        assertEquals("<?xml version=\"1.0\" ?><sparql xmlns='http://www.w3.org/2005/sparql-results#'><head></head><results><result></result></results></sparql>", content.toString());
+    }
+
+    /**
+     * Test the insertion of a triple in the server using a POST request with a URL-encoded body.
+     * @throws Exception
+     */
+    @Test
+    public void postAcceptCSVUpdateTest() throws Exception {
+        String query = "INSERT DATA { <http://example.org/s> <http://example.org/p> <http://example.org/o> }";
+        String body = query;
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add("application/sparql-update");
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add("text/csv");
+        headers.add(contentTypeHeader);
+        headers.add(acceptHeader);
+        HttpURLConnection con = HTTPConnectionUtils.postConnection(SPARQL_ENDPOINT_URL, headers, body);
+        int responseCode = con.getResponseCode();
+        
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        con.disconnect();
+
+        assertEquals(200, responseCode);
+        assertEquals("", content.toString());
+    }
+
+    /**
+     * Test the insertion of a triple in the server using a POST request with a URL-encoded body.
+     * @throws Exception
+     */
+    @Test
+    public void postAcceptJSONUpdateTest() throws Exception {
+        String query = "INSERT DATA { <http://example.org/s> <http://example.org/p> <http://example.org/o> }";
+        String body = query;
+        List<List<String>> headers = new LinkedList<>();
+        List<String> contentTypeHeader = new LinkedList<>();
+        contentTypeHeader.add("Content-Type");
+        contentTypeHeader.add("application/sparql-update");
+        List<String> acceptHeader = new LinkedList<>();
+        acceptHeader.add("Accept");
+        acceptHeader.add("application/sparql-results+json");
+        headers.add(contentTypeHeader);
+        headers.add(acceptHeader);
+        HttpURLConnection con = HTTPConnectionUtils.postConnection(SPARQL_ENDPOINT_URL, headers, body);
+        int responseCode = con.getResponseCode();
+        
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        con.disconnect();
+
+        assertEquals(200, responseCode);
+        assertEquals("{\"head\": { \"vars\": []},\"results\": { \"bindings\": [{}] }}", content.toString());
     }
 
     /**
@@ -92,7 +279,7 @@ public class SPARQLEndpointUpdateTest {
         contentTypeHeader.add("Content-Type");
         contentTypeHeader.add("application/sparql-update");
         headers.add(contentTypeHeader);
-        HttpURLConnection con = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, headers, query);
+        HttpURLConnection con = HTTPConnectionUtils.postConnection(SPARQL_ENDPOINT_URL, headers, query);
         int responseCode = con.getResponseCode();
         con.disconnect();
 
@@ -122,7 +309,7 @@ public class SPARQLEndpointUpdateTest {
         contentTypeFormUrlEncodedHeader.add("Content-Type");
         contentTypeFormUrlEncodedHeader.add("application/sparql-update");
         updateHeaders.add(contentTypeFormUrlEncodedHeader);
-        HttpURLConnection updateCon = SPARQLTestUtils.postConnection(SPARQL_ENDPOINT_URL, updateHeaders, updateQuery);
+        HttpURLConnection updateCon = HTTPConnectionUtils.postConnection(SPARQL_ENDPOINT_URL, updateHeaders, updateQuery);
         int updateResponseCode = updateCon.getResponseCode();
         updateCon.disconnect();
 

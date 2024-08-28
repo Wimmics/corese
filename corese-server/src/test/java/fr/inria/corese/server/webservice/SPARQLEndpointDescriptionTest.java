@@ -98,7 +98,7 @@ public class SPARQLEndpointDescriptionTest {
         contentTypeHeader.add(RDF_XML);
         headers.add(contentTypeHeader);
 
-        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = HTTPConnectionUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -139,7 +139,7 @@ public class SPARQLEndpointDescriptionTest {
         contentTypeHeader.add(TURTLE_TEXT);
         headers.add(contentTypeHeader);
 
-        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = HTTPConnectionUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -180,7 +180,7 @@ public class SPARQLEndpointDescriptionTest {
         contentTypeHeader.add(RDF_XML);
         headers.add(contentTypeHeader);
 
-        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = HTTPConnectionUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -221,7 +221,7 @@ public class SPARQLEndpointDescriptionTest {
         contentTypeHeader.add(TURTLE_TEXT);
         headers.add(contentTypeHeader);
 
-        HttpURLConnection con = SPARQLTestUtils.getConnection(sparqlEndpoint, headers);
+        HttpURLConnection con = HTTPConnectionUtils.getConnection(sparqlEndpoint, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));

@@ -79,7 +79,7 @@ public class GraphStoreProtocolTest {
         headers.add(acceptHeader);
 
         String urlQuery = GRAPH_STORE_ENDPOINT + "?" + SPARQLTestUtils.generateGraphStoreParameters("http://example.com/A");
-        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+        HttpURLConnection con = HTTPConnectionUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -112,7 +112,7 @@ public class GraphStoreProtocolTest {
         headers.add(acceptHeader);
 
         String urlQuery = GRAPH_STORE_ENDPOINT + "?" + SPARQLTestUtils.generateGraphStoreParameters("default");
-        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+        HttpURLConnection con = HTTPConnectionUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -147,7 +147,7 @@ public class GraphStoreProtocolTest {
         headers.add(acceptHeader);
 
         String urlQuery = GRAPH_STORE_ENDPOINT + "?" + SPARQLTestUtils.generateGraphStoreParameters("http://example.com/Z");
-        HttpURLConnection con = SPARQLTestUtils.getConnection(urlQuery, headers);
+        HttpURLConnection con = HTTPConnectionUtils.getConnection(urlQuery, headers);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -186,7 +186,7 @@ public class GraphStoreProtocolTest {
 
         String rdfPayload = "@prefix ex: <http://example.com/> . ex:C a ex:Thing .";
 
-        HttpURLConnection con = SPARQLTestUtils.putConnection(urlQuery, headers, rdfPayload);
+        HttpURLConnection con = HTTPConnectionUtils.putConnection(urlQuery, headers, rdfPayload);
 
         int status = con.getResponseCode();
 
@@ -214,7 +214,7 @@ public class GraphStoreProtocolTest {
 
         String rdfPayload = "@prefix ex: <http://example.com/> . ex:C a ex:Thing .";
 
-        HttpURLConnection con = SPARQLTestUtils.putConnection(urlQuery, headers, rdfPayload);
+        HttpURLConnection con = HTTPConnectionUtils.putConnection(urlQuery, headers, rdfPayload);
 
         int status = con.getResponseCode();
 
@@ -233,7 +233,7 @@ public class GraphStoreProtocolTest {
         boolean presenceTest = SPARQLTestUtils.sendSPARQLAsk("ASK { GRAPH <http://example.com/B> { ?s ?p ?o } }");
 
         String urlQuery = GRAPH_STORE_ENDPOINT + "?" + SPARQLTestUtils.generateGraphStoreParameters("http://example.com/B");
-        HttpURLConnection deleteCon = SPARQLTestUtils.deleteConnection(urlQuery);
+        HttpURLConnection deleteCon = HTTPConnectionUtils.deleteConnection(urlQuery);
 
         int status = deleteCon.getResponseCode();
 
@@ -252,7 +252,7 @@ public class GraphStoreProtocolTest {
         boolean presenceTest = ! SPARQLTestUtils.sendSPARQLAsk("ASK { GRAPH <http://example.com/Z> { ?s ?p ?o } }");
 
         String urlQuery = GRAPH_STORE_ENDPOINT + "?" + SPARQLTestUtils.generateGraphStoreParameters("http://example.com/Z");
-        HttpURLConnection deleteCon = SPARQLTestUtils.deleteConnection(urlQuery);
+        HttpURLConnection deleteCon = HTTPConnectionUtils.deleteConnection(urlQuery);
 
         int status = deleteCon.getResponseCode();
 
@@ -280,7 +280,7 @@ public class GraphStoreProtocolTest {
 
         String rdfPayload = "@prefix ex: <http://example.com/> . ex:C a ex:Thing .";
 
-        HttpURLConnection con = SPARQLTestUtils.postConnection(urlQuery, headers, rdfPayload);
+        HttpURLConnection con = HTTPConnectionUtils.postConnection(urlQuery, headers, rdfPayload);
 
         int status = con.getResponseCode();
 
@@ -308,7 +308,7 @@ public class GraphStoreProtocolTest {
 
         String rdfPayload = "@prefix ex: <http://example.com/> . ex:C a ex:Thing .";
 
-        HttpURLConnection con = SPARQLTestUtils.postConnection(urlQuery, headers, rdfPayload);
+        HttpURLConnection con = HTTPConnectionUtils.postConnection(urlQuery, headers, rdfPayload);
 
         int status = con.getResponseCode();
 
@@ -331,7 +331,7 @@ public class GraphStoreProtocolTest {
         headers.add(acceptHeader);
 
         String urlQuery = GRAPH_STORE_ENDPOINT + "?" + SPARQLTestUtils.generateGraphStoreParameters("default");
-        HttpURLConnection con = SPARQLTestUtils.headConnection(urlQuery);
+        HttpURLConnection con = HTTPConnectionUtils.headConnection(urlQuery);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
@@ -356,7 +356,7 @@ public class GraphStoreProtocolTest {
         boolean presenceTest = SPARQLTestUtils.sendSPARQLAsk("ASK { GRAPH <http://example.com/A> { ?x ?y ?z } }");
 
         String urlQuery = GRAPH_STORE_ENDPOINT + "?" + SPARQLTestUtils.generateGraphStoreParameters("http://example.com/A");
-        HttpURLConnection con = SPARQLTestUtils.headConnection(urlQuery);
+        HttpURLConnection con = HTTPConnectionUtils.headConnection(urlQuery);
 
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
@@ -381,7 +381,7 @@ public class GraphStoreProtocolTest {
         boolean absenceTest = ! SPARQLTestUtils.sendSPARQLAsk("ASK { GRAPH <http://example.com/Z> { ?x ?y ?z } }");
 
         String urlQuery = GRAPH_STORE_ENDPOINT + "?" + SPARQLTestUtils.generateGraphStoreParameters("http://example.com/Z");
-        HttpURLConnection con = SPARQLTestUtils.headConnection(urlQuery);
+        HttpURLConnection con = HTTPConnectionUtils.headConnection(urlQuery);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));

@@ -53,10 +53,10 @@ public class ConvertTest {
 
     @BeforeEach
     public void setUp() {
-        PrintWriter out = new PrintWriter(this.out);
-        PrintWriter err = new PrintWriter(this.err);
-        cmd.setOut(out);
-        cmd.setErr(err);
+        PrintWriter systemOut = new PrintWriter(this.out);
+        PrintWriter systemErr = new PrintWriter(this.err);
+        cmd.setOut(systemOut);
+        cmd.setErr(systemErr);
     }
 
     @Test
@@ -733,8 +733,8 @@ public class ConvertTest {
 
     @Test
     public void testConvertWithSameInputAndOutputPath() {
-        String inputPath = Paths.get(referencesPath, "beatles.ttl").toString();
-        int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", inputPath);
+        String testInputPath = Paths.get(referencesPath, "beatles.ttl").toString();
+        int exitCode = cmd.execute("-i", testInputPath, "-of", "TURTLE", "-o", inputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
         assertTrue(err.toString().trim().contains("Input path cannot be same as output path"));
@@ -742,10 +742,10 @@ public class ConvertTest {
 
     @Test
     public void testConvertWithInvalidInputPath() {
-        String inputPath = "invalid_path.ttl";
+        String testInputPath = "invalid_path.ttl";
         String outputPath = Paths.get(resultPath, "ttlbeatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", outputPath);
+        int exitCode = cmd.execute("-i", testInputPath, "-of", "TURTLE", "-o", outputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
         assertTrue(err.toString().trim().contains("Failed to open RDF data file:"));
@@ -753,10 +753,10 @@ public class ConvertTest {
 
     @Test
     public void testConvertWithInvalidOutputPath() {
-        String inputPath = Paths.get(referencesPath, "beatles.ttl").toString();
+        String testInputPath = Paths.get(referencesPath, "beatles.ttl").toString();
         String outputPath = "/invalid/path/for/output.ttl";
 
-        int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", outputPath);
+        int exitCode = cmd.execute("-i", testInputPath, "-of", "TURTLE", "-o", outputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
         assertTrue(err.toString().trim().contains("Failed to open RDF data file:"));
@@ -764,11 +764,11 @@ public class ConvertTest {
 
     @Test
     public void testGraphUtilsLoadWithInvalidFormat() {
-        Path inputPath = Paths.get(referencesPath, "beatles.ttl");
+        Path testInputPath = Paths.get(referencesPath, "beatles.ttl");
 
         try {
             RdfDataLoader loader = new RdfDataLoader(null, false);
-            loader.load(new String[] { inputPath.toString() }, EnumRdfInputFormat.JSONLD, false);
+            loader.load(new String[] { testInputPath.toString() }, EnumRdfInputFormat.JSONLD, false);
             fail("Expected an IllegalArgumentException to be thrown");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("Failed to open RDF data file:"));

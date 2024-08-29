@@ -3,6 +3,7 @@ package fr.inria.corese.server.webservice;
 import static fr.inria.corese.core.print.ResultFormat.TURTLE_TEXT;
 import static fr.inria.corese.core.api.Loader.TURTLE_FORMAT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -174,7 +175,7 @@ public class GraphStoreProtocolTest {
     @Test 
     public void putGraphStoreProtocolNewGraph() throws Exception {
         
-        boolean absenceTest = ! SPARQLTestUtils.sendSPARQLAsk("ASK { GRAPH <http://example.com/C> { <http://example.com/C> a <http://example.com/Thing> } }");
+        boolean absenceTest = SPARQLTestUtils.sendSPARQLAsk("ASK { GRAPH <http://example.com/C> { <http://example.com/C> a <http://example.com/Thing> } }");
 
         List<List<String>> headers = new LinkedList<>();
         List<String> acceptHeader = new LinkedList<>();
@@ -194,9 +195,9 @@ public class GraphStoreProtocolTest {
         
         boolean presenceTest = SPARQLTestUtils.sendSPARQLAsk("ASK { GRAPH <http://example.com/C> { <http://example.com/C> a <http://example.com/Thing> } }");
 
+        assertFalse(absenceTest);
         assertEquals(201, status);
         assertTrue(presenceTest);
-        assertTrue(absenceTest);
     }
 
     @Test 

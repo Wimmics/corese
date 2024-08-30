@@ -68,7 +68,7 @@ public class LoadTurtle {
         return null;
     }
 
-    void setCreator(Creator c) {
+    public void setCreator(Creator c) {
         create = c;
     }
 
@@ -78,7 +78,7 @@ public class LoadTurtle {
 
     private void setLoader(InputStream stream, Creator c, String base) {
         parser = new SparqlCorese(stream);
-        parser.setHandler(new ParserHandler());        
+        parser.setHandler(new ParserHandler());
         setLoader(parser, c, base);
     }
 
@@ -87,7 +87,7 @@ public class LoadTurtle {
         parser.setHandler(new ParserHandler());
         setLoader(parser, c, base);
     }
-    
+
     private void setLoader(SparqlCorese parser, Creator c, String base) {
         try {
             ASTQuery ast = ASTQuery.create();
@@ -102,14 +102,12 @@ public class LoadTurtle {
 
     public void load() throws QueryLexicalException, QuerySyntaxException {
         try {
-            //logger.info("start parser");
             if (isNquad()) {
                 parser.nquad();
-            }
-            else {
+            } else {
                 parser.load();
             }
-            //logger.info("finish parser");
+            
             for (EngineException e : parser.getHandler().getErrorList()) {
                 throw new QuerySyntaxException(e.getMessage());
             }
@@ -117,8 +115,7 @@ public class LoadTurtle {
             if (e.isStop()) {
                 // parser stop after limit
                 logger.info("finish parser after limit");
-            }
-            else {
+            } else {
                 throw new QuerySyntaxException(e.getMessage());
             }
         } catch (TokenMgrError e) {

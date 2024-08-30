@@ -197,19 +197,6 @@ public class Load
         qengine = eng;
     }
 
-    // public void setPlugin(LoadPlugin p) {
-    // if (p != null) {
-    // plugin = p;
-    // hasPlugin = true;
-    // }
-    // }
-
-    // public void setBuild(BuildImpl b) {
-    // if (b != null) {
-    // build = b;
-    // }
-    // }
-
     public void setMax(int n) {
         maxFile = n;
     }
@@ -853,7 +840,6 @@ public class Load
     }
 
     void loadTurtle(Reader stream, String path, String base, String name, boolean nquad) throws LoadException {
-        // logger.info("Load Turtle: " + path);
         CreateImpl cr = CreateImpl.create(getGraph(), this);
         cr.graph(Constant.create(name));
         cr.setRenameBlankNode(renameBlankNode);
@@ -882,7 +868,6 @@ public class Load
 
     // load RDFa
     void loadRDFa(Reader stream, String path, String base, String name) throws LoadException {
-        // logger.info("Load RDFa: " + path);
         CoreseRDFaTripleSink sink = new CoreseRDFaTripleSink(getGraph(), null);
         sink.setHelper(renameBlankNode, getLimit());
 

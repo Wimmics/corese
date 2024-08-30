@@ -39,8 +39,6 @@ public class CreateImpl extends CreateTriple implements Creator {
     Stack stack;
     String base;
     private boolean renameBlankNode = true;
-    private String resource;
-    private Node node;
     Load load;
     int count = 1;
 
@@ -69,12 +67,6 @@ public class CreateImpl extends CreateTriple implements Creator {
         return new CreateImpl(g, ld);
     }
 
-    // init
-    // TODO: check
-    // public void graph(String src) {
-    // source = addGraph(src);
-    // }
-
     @Override
     public void graph(Atom src) {
         stack.add(source);
@@ -102,7 +94,6 @@ public class CreateImpl extends CreateTriple implements Creator {
     }
 
     Node getGraph(Atom graph) {
-        //return graph == null ? addDefaultGraphNode() : addGraph(graph);
         if (graph == null) {
             return addDefaultGraphNode();
         }

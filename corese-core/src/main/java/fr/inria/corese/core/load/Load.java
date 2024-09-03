@@ -883,7 +883,6 @@ public class Load
 
     // load JSON-LD
     void loadJsonld(Reader stream, String path, String base, String name) throws LoadException {
-        // logger.info("Load JSON LD: " + path);
 
         CoreseJsonTripleCallback callback = new CoreseJsonTripleCallback(getGraph(), getDataManager(), name);
         callback.setHelper(renameBlankNode, getLimit());

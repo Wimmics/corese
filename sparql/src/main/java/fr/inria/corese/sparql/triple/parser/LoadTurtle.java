@@ -90,7 +90,7 @@ public class LoadTurtle {
 
     private void setLoader(SparqlCorese parser, Creator c, String base) {
         try {
-            ASTQuery ast = ASTQuery.create();
+            ast = ASTQuery.create();
             ast.getNSM().setBase(base);
             ast.setRenameBlankNode(c.isRenameBlankNode());
             parser.setASTQuery(ast);

@@ -68,6 +68,14 @@ public class Transformer {
         return SPARQLRestAPI.getTripleStore();
     }
 
+    static TripleStore getTripleStore(String name) {
+        return SPARQLRestAPI.getTripleStore(name);
+    }
+
+    static String getTemplateService() {
+        return TEMPLATE_SERVICE;
+    }
+
     Profile getProfile() {
         return Profile.getProfile();
     }
@@ -78,6 +86,7 @@ public class Transformer {
     @Produces("text/html")
     public Response queryPOSTHTML(
             @jakarta.ws.rs.core.Context HttpServletRequest request,
+            @FormParam("operation") String operation, // operation
             @FormParam("profile") String profile, // query + transform
             @FormParam("uri") String resource, // query + transform
             @FormParam("mode") String mode,
@@ -92,7 +101,12 @@ public class Transformer {
             @FormParam("default-graph-uri") List<String> from,
             @FormParam("named-graph-uri") List<String> named) {
 
-        Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
+        String service = "/" + name + "/" + operation;
+        if (name == null || name.isEmpty() || operation == null || operation.isEmpty()) {
+            service = TEMPLATE_SERVICE;
+        }
+
+        Param par = new Param(service, profile, transform, resource, name, query);
         par.setValue(value);
         par.setMode(mode);
         par.setParam(param);
@@ -101,7 +115,7 @@ public class Transformer {
         par.setKey(access);
         par.setDataset(from, named);
         par.setRequest(request);
-        return template(getTripleStore(), par);
+        return template(getTripleStore(name), par);
     }
 
     @POST
@@ -139,6 +153,7 @@ public class Transformer {
     @Produces("text/html")
     public Response queryGETHTML(
             @jakarta.ws.rs.core.Context HttpServletRequest request,
+            @QueryParam("operation") String operation, // operation
             @QueryParam("profile") String profile, // query + transform
             @QueryParam("uri") String resource, // URI of resource focus
             @QueryParam("mode") String mode,
@@ -153,7 +168,12 @@ public class Transformer {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
 
-        Param par = new Param(TEMPLATE_SERVICE, profile, transform, resource, name, query);
+        String service = "/" + name + "/" + operation;
+        if (name == null || name.isEmpty() || operation == null || operation.isEmpty()) {
+            service = TEMPLATE_SERVICE;
+        }
+
+        Param par = new Param(service, profile, transform, resource, name, query);
         par.setValue(value);
         par.setMode(mode);
         par.setParam(param);
@@ -162,7 +182,7 @@ public class Transformer {
         par.setKey(access);
         par.setDataset(namedGraphUris, namedGraphUris);
         par.setRequest(request);
-        return template(getTripleStore(), par);
+        return template(getTripleStore(name), par);
     }
 
     public Response template(TripleStore store, Param par) {

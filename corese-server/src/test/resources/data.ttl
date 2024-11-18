@@ -1,0 +1,210 @@
+@prefix p: <http://fr.dbpedia.org/property/> .
+@prefix o: <http://dbpedia.org/ontology/> .
+@prefix w: <http://fr.wikipedia.org/wiki/> .
+@prefix r: <http://fr.dbpedia.org/resource/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://fr.dbpedia.org/resource/Andorre> a <http://dbpedia.org/ontology/Place> ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Andorre> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Andorra.svg?width=300> ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Andorre" ;
+  <http://fr.dbpedia.org/property/latitude> "42.5"^^xsd:float ;
+  <http://fr.dbpedia.org/property/longitude> "1.51667"^^xsd:float ;
+  rdfs:label "Andorre"@fr .
+
+<http://fr.dbpedia.org/resource/Kaliningrad> a <http://dbpedia.org/ontology/Place> ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Kaliningrad> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Kaliningrad.svg?width=300> ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Kaliningrad" ;
+  <http://fr.dbpedia.org/property/latitude> "54.7333"^^xsd:double ;
+  <http://fr.dbpedia.org/property/longitude> "20.4833"^^xsd:float ;
+  rdfs:comment "Kaliningrad (en russe : Калининград), anciennement Kœnigsberg (en allemand : Königsberg ; en vieux-prussien : Twangste, Kunnegsgarbs, Knigsberg ; en lituanien : Karaliaučius ; en polonais : Królewiec), est une ville de Russie, située dans une exclave territoriale, l\'oblast de Kaliningrad, totalement isolée du territoire russe (jusqu\'en 1945 « Prusse-Orientale ») au bord de la mer Baltique, entre la Pologne et la Lituanie. Sa population s\'élève à 441 376 habitants en 2013."@fr ;
+  rdfs:label "Kaliningrad"@fr .
+
+<http://fr.dbpedia.org/resource/Liechtenstein> a <http://dbpedia.org/ontology/Place> ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Liechtenstein> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Liechtenstein.svg?width=300> ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Liechtenstein" ;
+  <http://fr.dbpedia.org/property/latitude> "47.145"^^xsd:float ;
+  <http://fr.dbpedia.org/property/longitude> "9.55389"^^xsd:float ;
+  rdfs:label "Liechtenstein"@fr .
+
+<http://fr.dbpedia.org/resource/Llívia> a <http://dbpedia.org/ontology/Place> ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Llívia> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/LliviaGeneral.jpg?width=300> ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Llívia" ;
+  <http://fr.dbpedia.org/property/latitude> "42.4645"^^xsd:double ;
+  <http://fr.dbpedia.org/property/longitude> "1.982"^^xsd:float ;
+  rdfs:comment "Llívia (nom officiel en catalan), est une ville espagnole située en Cerdagne, dans la partie orientale des Pyrénées. Son territoire de 12,83 km2 présente la particularité d\'être enclavé à l’intérieur du département français des Pyrénées-Orientales, à 100 km environ à l’ouest de Perpignan. Elle fait partie de la province de Gérone et de la comarque de Basse-Cerdagne."@fr ;
+  rdfs:label "Llívia"@fr .
+
+
+
+<http://fr.dbpedia.org/resource/Monaco> a <http://dbpedia.org/ontology/Place> ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Monaco> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Monaco.svg?width=300> ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Monaco" ;
+  <http://fr.dbpedia.org/property/latitude> "43.7326"^^xsd:float ;
+  <http://fr.dbpedia.org/property/longitude> "7.41822"^^xsd:float ;
+  rdfs:label "Monaco"@fr .
+
+<http://fr.dbpedia.org/resource/Saint-Marin> a <http://dbpedia.org/ontology/Place> ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Saint-Marin> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_San_Marino.svg?width=300> ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Saint-Marin" ;
+  <http://fr.dbpedia.org/property/latitude> "43.9347"^^xsd:float ;
+  <http://fr.dbpedia.org/property/longitude> "12.4461"^^xsd:float ;
+  rdfs:label "Saint-Marin"@fr .
+
+<http://fr.dbpedia.org/resource/Vatican> a <http://dbpedia.org/ontology/Place> ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Vatican> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_Vatican_City.svg?width=300> ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Vatican" ;
+  <http://fr.dbpedia.org/property/latitude> "41.9022"^^xsd:float ;
+  <http://fr.dbpedia.org/property/longitude> "12.4534"^^xsd:float ;
+  rdfs:label "Vatican"@fr .
+  
+  
+  
+  <http://fr.dbpedia.org/resource/Ceuta> a <http://dbpedia.org/ontology/Place>  ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Ceuta> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_Ceuta.svg?width=300> ;
+  p:latitude 35.888668 ; p:longitude -5.3212738 ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Ceuta" ;
+  rdfs:comment "Ceuta (du latin Septem Fratres ; Abyla dans l\'Antiquité ou Sebta سبتة en berbère et en arabe) est une ville autonome espagnole formant une encoche sur la côte nord du Maroc en Afrique."@fr ;
+  rdfs:label "Ceuta"@fr .
+
+
+<http://fr.dbpedia.org/resource/Gibraltar> a <http://dbpedia.org/ontology/Place>  ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Gibraltar> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Gibraltar.svg?width=300> ;
+  p:latitude 36.13705 ; p:longitude -5.34782 ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Gibraltar" ;
+  rdfs:comment "Gibraltar (de l\'arabe « Djebel Tariq » (جبل طارق), « le mont de Tariq » du nom de Tariq ibn Ziyad), est un territoire britannique d\'outre-mer, situé au sud de la péninsule Ibérique, en bordure du détroit de Gibraltar qui relie la Méditerranée à l\'océan Atlantique. Il correspond au rocher de Gibraltar et à ses environs immédiats et est séparé de l\'Espagne par une frontière de 1,2 kilomètres. Gibraltar est possession du Royaume-Uni depuis 1704."@fr ;
+  rdfs:label "Gibraltar"@fr .
+  
+  
+  <http://fr.dbpedia.org/resource/Melilla> a <http://dbpedia.org/ontology/Place>  ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Melilla> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Melilla.svg?width=300> ;
+  p:latitude 35.28276 ; p:longitude -2.94582 ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Melilla" ;
+  rdfs:comment "Melilla (en berbère: Mřič (Mritch) [« la blanche »], ou Mliliya en darija) est une ville autonome espagnole située sur la côte nord-ouest de l\'Afrique, en face de la péninsule Ibérique, appartenant à la région géographique du Rif oriental et formant une enclave dans le territoire marocain. Administrée en tant que partie de la province de Malaga avant le 14 mars 1995, elle détient depuis le statut d\'une ville autonome, assez proche de celui d\'une communauté autonome espagnole."@fr ;
+  rdfs:label "Melilla"@fr .
+  
+  <http://fr.dbpedia.org/resource/Enclave_des_papes> a <http://dbpedia.org/ontology/Place>  ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Enclave_des_papes> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Cantondevalréas.png?width=300> ;
+  p:latitude 44.382810070345585 ; p:longitude 4.990425095893443 ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Enclave_des_papes" ;
+  rdfs:comment "L\'enclave des papes est un espace géographique correspondant au Canton de Valréas, enclavé dans la Drôme, par les cantons de Nyons et de Saint-Paul-Trois-Châteaux et séparé du Vaucluse dont il fait partie.↑ Se note aussi « Enclave des Papes » bien que, s\'il s\'agit d\'un nom propre, il peut prendre une majuscule, mais un nom propre ne s\'accorde pas en nombre, c\'est-à-dire ne doit pas être mis au pluriel."@fr ;
+  rdfs:label "Enclave des papes"@fr .
+  
+  
+  <http://fr.dbpedia.org/resource/Büsingen_am_Hochrhein> a <http://dbpedia.org/ontology/Place> ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Büsingen_am_Hochrhein> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/Wappen_Buesingen_am_Hochrhein.png?width=300> ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Büsingen_am_Hochrhein" ;
+  <http://fr.dbpedia.org/property/latitude> "47.6969"^^xsd:double ;
+  <http://fr.dbpedia.org/property/longitude> "8.69028"^^xsd:float ;
+  rdfs:comment "Büsingen (Büsingen am Hochrhein en allemand, c’est-à-dire : « Büsingen sur le Rhin supérieur ») est une commune allemande du Bade-Wurtemberg dépendant administrativement de l\'arrondissement de Constance et enclavée dans le territoire de la Suisse, dont la plupart des 1 449 habitants[réf."@fr ;
+  rdfs:label "Büsingen am Hochrhein"@fr .
+  
+  <http://fr.dbpedia.org/resource/Jungholz> a <http://dbpedia.org/ontology/Place> ;
+  <http://dbpedia.org/ontology/dbpedia> <http://fr.dbpedia.org/resource/Jungholz> ;
+  <http://dbpedia.org/ontology/thumbnail> <http://commons.wikimedia.org/wiki/Special:FilePath/AUT_Jungholz_COA.svg?width=300> ;
+  <http://dbpedia.org/ontology/wikipedia> "http://fr.wikipedia.org/wiki/Jungholz" ;
+  <http://fr.dbpedia.org/property/latitude> "47.5736"^^xsd:double ;
+  <http://fr.dbpedia.org/property/longitude> "10.4472"^^xsd:float ;
+  rdfs:comment "Jungholz est une commune du Tyrol autrichien, dans l\'ouest du pays. Elle a la particularité d\'être presque entièrement enclavée en territoire allemand et de n\'être reliée au reste de l\'Autriche que par un point."@fr ;
+  rdfs:label "Jungholz"@fr .
+  
+  
+  r:Baarle-Nassau rdfs:label "Baerle-Nassau"@fr .
+
+r:Baerle-Duc a o:Place ;
+  o:dbpedia r:Baerle-Duc ;
+  o:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Baarle-HertogLocatie.png?width=300> ;
+  o:wikiPageWikiLink r:Baarle-Nassau ;
+  o:wikiPageWikiLink r:Hoogstraten ;
+  o:wikiPageWikiLink r:Merksplas ;
+  o:wikiPageWikiLink r:Turnhout ;
+  o:wikipedia "http://fr.wikipedia.org/wiki/Baerle-Duc" ;
+  p:est r:Baarle-Nassau ;
+  p:latitude "51.4333"^^xsd:double ;
+  p:longitude "4.91667"^^xsd:double ;
+  p:nord r:Baarle-Nassau ;
+  p:ouest r:Baarle-Nassau ;
+  p:ouest r:Hoogstraten ;
+  p:sud r:Merksplas ;
+  p:sudEst r:Turnhout ;
+  rdfs:comment "Baerle-Duc (en néerlandais : Baarle-Hertog) est une commune néerlandophone de Belgique située en Région flamande dans la province d’Anvers et située partiellement dans la province néerlandaise du Brabant-Septentrional. Elle se caractérise par le fait unique qu’une partie de son territoire est enclavé en territoire néerlandais, enchevêtré en parcelles discontinues dans la commune néerlandaise de Baarle-Nassau. Baerle-Duc et la commune néerlandaise de Baarle-Nassau forment le village de Baarle."@fr ;
+  rdfs:label "Baerle-Duc"@fr .
+
+r:Hoogstraten rdfs:label "Hoogstraten"@fr .
+
+
+
+r:Merksplas rdfs:label "Merksplas"@fr .
+
+r:Turnhout rdfs:label "Turnhout"@fr .
+  
+  
+  
+ 
+r:Sastavci a o:Place ;
+  o:dbpedia r:Sastavci ;
+  o:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Sastavci.png?width=300> ;
+  o:wikipedia "http://fr.wikipedia.org/wiki/Sastavci" ;
+  p:latitude "43.5582"^^xsd:double ;
+  p:longitude "19.4249"^^xsd:float ;
+  rdfs:comment "Sastavci (en serbe : Саставци) est un village de Bosnie-Herzégovine. Il est complètement entouré par la Serbie, ce qui en fait une enclave."@fr ;
+  rdfs:label "Sastavci"@fr .
+  
+  
+ r:Brezovica_Žumberačka a o:Place ;
+  o:dbpedia r:Brezovica_Žumberačka ;
+  o:wikipedia "http://fr.wikipedia.org/wiki/Brezovica_Žumberačka" ;
+  p:latitude "45.41"^^xsd:double ;
+  p:longitude "15.18"^^xsd:float ;
+  rdfs:comment "Brezovica Žumberačka est un village situé dans la municipalité d\'Ozalj et le comitat de Karlovac, en Croatie. Deux parties du village y sont enclavées en Slovénie."@fr ;
+  rdfs:label "Brezovica Žumberačka"@fr .
+  
+  r:Akrotiri_et_Dhekelia a o:Place ;
+  o:dbpedia r:Akrotiri_et_Dhekelia ;
+  o:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_the_United_Kingdom.svg?width=300> ;
+  o:wikipedia "http://fr.wikipedia.org/wiki/Akrotiri_et_Dhekelia" ;
+  p:latitude "34.5833"^^xsd:float ;
+  p:longitude "32.9833"^^xsd:float ;
+  rdfs:comment "Akrotiri     (Ακρωτήρι en grec ; appelé également Episkopi Garrison) et Dhekelia (Δεκέλεια en grec ; comprenant également le village de Ayios Nikolaos) représentent le dernier exemple de bases militaires souveraines (Sovereign Base Areas) britanniques à Chypre."@fr ;
+  rdfs:label "Akrotiri et Dhekelia"@fr .
+  
+  
+  <http://fr.dbpedia.org/resource/Campione_d'Italia> a o:Place ;
+  o:dbpedia <http://fr.dbpedia.org/resource/Campione_d'Italia> ;
+  o:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Campioned'Italia.JPG?width=300> ;
+  o:wikipedia "http://fr.wikipedia.org/wiki/Campione_d\'Italia" ;
+  p:latitude "45.95"^^xsd:double ;
+  p:longitude "8.96667"^^xsd:float ;
+  rdfs:comment "Campione d\'Italia, appelée à l\'origine Campione, est une commune appartenant à la province de Côme (Lombardie, Italie). Située au bord du lac de Lugano dans le massif montagneux des Alpes, elle présente la particularité d\'être une enclave italienne en territoire suisse.↑ (it) Popolazione residente e bilancio demografico sur le site de l\'ISTAT."@fr ;
+  rdfs:label "Campione d\'Italia"@fr .
+  
+  <http://fr.dbpedia.org/resource/San'kovo-Medvezh'e> a o:Place ;
+  o:dbpedia <http://fr.dbpedia.org/resource/San'kovo-Medvezh'e> ;
+  o:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Sankovo-Medvezhye_map.png?width=300> ;
+  o:wikipedia "http://fr.wikipedia.org/wiki/San\'kovo-Medvezh\'e" ;
+  p:latitude "52.4833"^^xsd:float ;
+  p:longitude "31.55"^^xsd:float ;
+  rdfs:comment "Sankovo-Medvezhye (russe : посёлок Саньково и посёлок Медвежье, biélorusse : Санькова-Мядзьвежжа) est une exclave russe dans le territoire Biélorusse d\'une superficie de 4,5 km². Elle est située dans l\'est du raïon de Dobrouch à 5 km du village russe de Dobrodeyevka et seulement à 800 m de la frontière russe.D\'un point de vue administratif, Sankovo-Medvezhye est une partie du district de Zlynkovsky dans l\'oblast de Briansk."@fr ;
+  rdfs:label "San\'kovo-Medvezh\'e"@fr .
+
+  
+  r:Vennbahn a o:Place ;
+  o:dbpedia r:Vennbahn ;
+  o:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Vennquerbahn_bridge_buetgenbach.jpg?width=300> ;
+  o:wikipedia "http://fr.wikipedia.org/wiki/Vennbahn" ;
+  p:latitude "50.424"^^xsd:float ;
+  p:longitude "6.221"^^xsd:float ;
+  rdfs:comment "La Vennbahn (littéralement ligne de chemin de fer des Fagnes) est une ligne de chemin de fer belge (Lignes 48 et 49) dont le parcours pénètre par endroits sur le territoire allemand. Toutefois, en vertu du traité de Versailles, la voie ferrée ainsi que ses stations et installations se trouvent entièrement sous la souveraineté de la Belgique et font donc partie de son territoire, créant ainsi plusieurs enclaves de l\'Allemagne du côté ouest de la ligne de chemin de fer,."@fr ;
+  rdfs:label "Vennbahn"@fr .

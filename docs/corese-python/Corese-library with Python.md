@@ -221,12 +221,12 @@ print(serialize(graph, 'n4'))
 printTitle("SPARQL Query")
 
 graph = load(
-    "https://raw.githubusercontent.com/stardog-union/stardog-tutorials/master/music/beatles.ttl") # Uri or path to the graph
+    "https://files.inria.fr/corese/data/unit-test/beatles.ttl") # Uri or path to the graph
 print("Graph load ! (" + str(graph.size()) + " triplets)")
 
 # List of U2 albums
 query = """
-        prefix : <http://stardog.com/tutorial/>
+        prefix : <http://example.org/>
 
         SELECT ?member 
         WHERE {
@@ -262,7 +262,7 @@ print(serialize(result, 'turtle'))
 printTitle("Load / Export")
 
 graph = load(
-    "https://raw.githubusercontent.com/stardog-union/stardog-tutorials/master/music/beatles.ttl")
+    "https://files.inria.fr/corese/data/unit-test/beatles.ttl")
 print("Graph load ! (" + str(graph.size()) + " triplets)")
 
 path_export_file = "export.rdf"
@@ -296,10 +296,10 @@ Print Graph:
 Graph load ! (28 triplets)
 
 Query result ! (List of members of bands "The Beatles"): 
-01 ?member = <http://stardog.com/tutorial/John_Lennon>; 
-02 ?member = <http://stardog.com/tutorial/Paul_McCartney>; 
-03 ?member = <http://stardog.com/tutorial/Ringo_Starr>; 
-04 ?member = <http://stardog.com/tutorial/George_Harrison>; 
+01 ?member = <http://example.org/John_Lennon>; 
+02 ?member = <http://example.org/Paul_McCartney>; 
+03 ?member = <http://example.org/Ringo_Starr>; 
+04 ?member = <http://example.org/George_Harrison>; 
 
 
 

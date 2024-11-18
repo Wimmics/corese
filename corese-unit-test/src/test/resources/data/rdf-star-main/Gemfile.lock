@@ -66,8 +66,8 @@ GEM
       rdf (~> 3.1)
       rexml (~> 3.2)
     redcarpet (3.5.1)
-    rexml (3.2.8)
-      strscan (>= 3.0.9)
+    rexml (3.3.6)
+      strscan
     scanf (1.0.0)
     sparql (3.1.8)
       builder (~> 3.2)

@@ -26,7 +26,7 @@ The ``remote-sparql`` command allows executing SPARQL queries on a remote server
 - `-n`, `\-\-named-graph` `<string>` : Optional named graph URI. Can be specified multiple times. The named graph URIs form the `FROM NAMED` clause.
 - `-i`, `--ignore-query-validation`: Optional flag to forgo query syntax validation before it is sent to a remote server. Default: false.
 
-- `-m`, `\-\-request-method` `<GET|POST-Encoded|POST-Direct>` : HTTP request method, `POST-Encoded` is equivalent to ``POST`` request with ``Content-Type:application/x-www-form-urlencoded`` header. `POST-Direct` is equivalent to ``POST`` request with ``Content-Type:application/sparql-query`` header.  Default method: GET.
+- `-m`, `\-\-request-method` `<get|post-urlencodedEncoded|post-direct>` : HTTP request method, `post-urlencoded` is equivalent to ``POST`` request with ``Content-Type:application/x-www-form-urlencoded`` header. `POST-Direct` is equivalent to ``POST`` request with ``Content-Type:application/sparql-query`` header.  Default method: get.
 - `-a`, `-of`, `\-\-accept` `<string>` : `Accept` header value which is also an output format. Supported values are listed :ref:`below <corese-command-remote-sparql-output-formats>` Default: `text/csv`.
 - `-H`, `\-\-header` `<string>` : Any additional HTTP header to add to the request. Default: none.
 
@@ -34,7 +34,7 @@ The ``remote-sparql`` command allows executing SPARQL queries on a remote server
 
 - `-o`, `\-\-output-data` `<output_file>` : Optional path to save the query results. Default: standard output.
 
-- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file. Default: `config.properties` file in the current directory. Is this true??
+- `-c`,  `\-\-config`, `\-\-init` `<path>` : Optional path to the configuration file.
 - `-w`, `\-\-no-owl-import` : Disables the automatic import of referenced ontologies specified in 'owl:imports' statements in the `profile.ttl` file. Default: enabled.
 
 - `-v`, `\-\-verbose` : Display verbose output.

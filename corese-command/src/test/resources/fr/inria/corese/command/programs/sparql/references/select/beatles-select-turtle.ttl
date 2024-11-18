@@ -1,4 +1,4 @@
-@prefix : <http://stardog.com/tutorial/> .
+@prefix : <http://example.com/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix ns1: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .

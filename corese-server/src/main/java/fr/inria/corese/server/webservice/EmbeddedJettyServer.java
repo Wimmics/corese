@@ -424,7 +424,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
             server.join();
 
         } catch (ParseException exp) {
-            System.err.println("Parsing failed.  Reason: " + exp.getMessage());
+            logger.error("Parsing failed.  Reason: " + exp.getMessage());
         }
     }
 

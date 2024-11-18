@@ -1,6 +1,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix xsh: <http://www.w3.org/ns/shacl#> .
-@prefix ns1: <http://stardog.com/tutorial/> .
+@prefix ns1: <http://example.com/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <http://example.org/ns#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -34,7 +34,7 @@
 
 <urn:uuid:c1a0e22b-6f23-4ff8-95fa-0c814d361394> a sh:ValidationResult ;
   sh:focusNode ns1:Please_Please_Me ;
-  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://stardog.com/tutorial/name>]" ;
+  sh:resultMessage "Fail at: [sh:datatype xsd:string ;\n  sh:maxCount 1 ;\n  sh:minCount 1 ;\n  sh:path <http://example.com/name>]" ;
   sh:resultPath ns1:name ;
   sh:resultSeverity sh:Violation ;
   sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;

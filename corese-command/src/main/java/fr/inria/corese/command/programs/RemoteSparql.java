@@ -1,116 +1,75 @@
 package fr.inria.corese.command.programs;
 
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.Callable;
 
 import com.github.jsonldjava.shaded.com.google.common.io.Files;
 
-import fr.inria.corese.command.utils.ConfigManager;
-import fr.inria.corese.command.utils.ConvertString;
-import fr.inria.corese.command.utils.TestType;
+import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.http.EnumRequestMethod;
 import fr.inria.corese.command.utils.http.SparqlHttpClient;
-import fr.inria.corese.command.utils.sparql.SparqlQueryLoader;
-import fr.inria.corese.core.util.Property;
-import fr.inria.corese.core.util.Property.Value;
+import fr.inria.corese.command.utils.loader.sparql.SparqlQueryLoader;
 import picocli.CommandLine.Command;
-import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Spec;
 
-@Command(name = "remote-sparql", version = "1.0", description = "Execute a SPARQL query on a remote endpoint.", mixinStandardHelpOptions = true)
-public class RemoteSparql implements Callable<Integer> {
+@Command(name = "remote-sparql", version = App.version, description = "Execute a SPARQL query on a remote endpoint.", mixinStandardHelpOptions = true)
+public class RemoteSparql extends AbstractCommand {
 
-    private final int ERROR_EXIT_CODE_SUCCESS = 0;
-    private final int ERROR_EXIT_CODE_ERROR = 1;
-
-    private final String DEFAULT_OUTPUT_FILE_NAME = "output";
-    private boolean outputPathIsDefined;
-
-    @Spec
-    private CommandSpec spec;
-
-    @Option(names = { "-q", "--query" }, description = "SPARQL query to execute", required = false)
+    @Option(names = { "-q",
+            "--query" }, description = "Specifies the SPARQL query to execute. This can be provided as a URL or a file path.", required = false)
     private String queryUrlOrFile;
 
-    @Option(names = { "-e", "--endpoint" }, description = "SPARQL endpoint URL", required = true)
+    @Option(names = { "-e", "--endpoint" }, description = "Specifies the SPARQL endpoint URL.", required = true)
     private String endpoint_url;
 
-    @Option(names = { "-H", "--header" }, description = "HTTP header to add to the request", arity = "0..")
+    @Option(names = { "-H",
+            "--header" }, description = "Adds an HTTP header to the request. Multiple headers can be specified.", arity = "0..")
     private List<String> headers;
 
-    @Option(names = { "-a", "-of", "--accept" }, description = "Accept header value")
+    @Option(names = { "-a", "-of",
+            "--accept" }, description = "Specifies the Accept header value for the HTTP request.")
     private String accept;
 
     @Option(names = { "-m",
-            "--request-method" }, description = "HTTP request method to use. Possible values:\u001b[34m ${COMPLETION-CANDIDATES}\u001b[0m.")
+            "--request-method" }, description = "Specifies the HTTP request method to use. Possible values are: :@|fg(225) ${COMPLETION-CANDIDATES}|@.")
     private EnumRequestMethod requestMethod;
 
-    @Option(names = { "-v",
-            "--verbose" }, description = "Prints more information about the execution of the command..", required = false, defaultValue = "false")
-    private boolean verbose;
-
     @Option(names = { "-r",
-            "--max-redirection" }, description = "Maximum number of redirections to follow", defaultValue = "5")
+            "--max-redirection" }, description = "Specifies the maximum number of redirections to follow. Default value: ${DEFAULT-VALUE}.", defaultValue = "5")
     private int maxRedirection;
 
-    @Option(names = { "-d", "--default-graph" }, description = "Default graph URI", arity = "0..")
+    @Option(names = { "-d",
+            "--default-graph" }, description = "Specifies the default graph URI. Multiple URIs can be specified.", arity = "0..")
     private List<String> default_graph;
 
-    @Option(names = { "-n", "--named-graph" }, description = "Named graph URI", arity = "0..")
+    @Option(names = { "-n",
+            "--named-graph" }, description = "Specifies the named graph URI. Multiple URIs can be specified.", arity = "0..")
     private List<String> named_graph;
 
-    @Option(names = { "-o",
-            "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.", arity = "0..1", fallbackValue = DEFAULT_OUTPUT_FILE_NAME)
-    private Path output;
-
-    @Option(names = { "-c",
-            "--config",
-            "--init" }, description = "Path to a configuration file. If not provided, the default configuration file will be used.", required = false)
-    private Path configFilePath;
-
     @Option(names = { "-i",
-            "--ignore-query-validation" }, description = "Ignore query validation.", required = false, defaultValue = "false")
+            "--ignore-query-validation" }, description = "Ignores query validation if set to true. Default value: ${DEFAULT-VALUE}.", required = false, defaultValue = "false")
     private boolean ignoreQueryValidation;
-
-    @Option(names = { "-w",
-            "--no-owl-import" }, description = "Disables the automatic importation of ontologies specified in 'owl:imports' statements. When this flag is set, the application will not fetch and include referenced ontologies.", required = false, defaultValue = "false")
-    private boolean noOwlImport;
 
     private String query;
 
     private final String DEFAULT_ACCEPT_HEADER = "text/csv";
 
     @Override
-    public Integer call() throws Exception {
-        try {
+    public Integer call() {
 
-            // Check if output is defined
-            this.outputPathIsDefined = this.output != null;
+        super.call();
+
+        try {
 
             // if accept is not defined, set it to text/csv
             if (this.accept == null && !this.containAcceptHeader(this.headers)) {
                 this.accept = DEFAULT_ACCEPT_HEADER;
             }
 
-            // Load configuration file
-            Optional<Path> configFilePath = Optional.ofNullable(this.configFilePath);
-            if (configFilePath.isPresent()) {
-                ConfigManager.loadFromFile(configFilePath.get(), this.spec, this.verbose);
-            } else {
-                ConfigManager.loadDefaultConfig(this.spec, this.verbose);
-            }
-
-            // Set owl import
-            Property.set(Value.DISABLE_OWL_AUTO_IMPORT, this.noOwlImport);
-
             // Load query
-            this.loadQuery();
+            SparqlQueryLoader queryLoader = new SparqlQueryLoader(this.spec, this.verbose);
+            this.query = queryLoader.load(this.queryUrlOrFile);
 
             // Execute query
             String res = this.sendRequest();
@@ -119,7 +78,7 @@ public class RemoteSparql implements Callable<Integer> {
             this.exportResult(res);
 
         } catch (Exception e) {
-            this.spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            this.spec.commandLine().getErr().println("Error: " + e.getMessage());
             return this.ERROR_EXIT_CODE_ERROR;
         }
 
@@ -145,40 +104,6 @@ public class RemoteSparql implements Callable<Integer> {
             }
         }
         return false;
-    }
-
-    /**
-     * Load the query from the query string or from the query file.
-     *
-     * @throws IOException If the query file cannot be read.
-     */
-    private void loadQuery() throws IOException {
-
-        // If query is not defined, read from standard input
-        if (this.queryUrlOrFile == null) {
-            this.query = SparqlQueryLoader.loadFromInputStream(System.in, this.spec, this.verbose);
-
-            if (this.query == null || this.query.isEmpty()) {
-                throw new RuntimeException("The query is not a valid SPARQL query, a URL or a file path.");
-            }
-        } else {
-            Optional<Path> path = ConvertString.toPath(this.queryUrlOrFile);
-            Optional<URL> url = ConvertString.toUrl(this.queryUrlOrFile);
-            Boolean isSparqlQuery = TestType.isSparqlQuery(this.queryUrlOrFile);
-
-            if (isSparqlQuery) {
-                // if query is a SPARQL query
-                this.query = this.queryUrlOrFile;
-            } else if (url.isPresent()) {
-                // if query is a URL
-                this.query = SparqlQueryLoader.loadFromUrl(url.get(), this.spec, this.verbose);
-            } else if (path.isPresent()) {
-                // if query is a path
-                this.query = SparqlQueryLoader.loadFromFile(path.get(), this.spec, this.verbose);
-            } else {
-                throw new RuntimeException("The query is not a valid SPARQL query, a URL or a file path.");
-            }
-        }
     }
 
     /**
@@ -230,7 +155,7 @@ public class RemoteSparql implements Callable<Integer> {
      */
     private void exportResult(String response) {
 
-        if (this.outputPathIsDefined) {
+        if (this.output != null) {
             // Write result to file
             try {
                 Files.write(response.getBytes(StandardCharsets.UTF_8), this.output.toFile());

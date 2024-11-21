@@ -1,0 +1,17 @@
+.. _exhale_class_classfr_1_1inria_1_1corese_1_1jena_1_1convert_1_1ConvertJenaCorese:
+
+Class ConvertJenaCorese
+=======================
+
+- Defined in :ref:`file_corese-jena_src_main_java_fr_inria_corese_jena_convert_ConvertJenaCorese.java`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: fr::inria::corese::jena::convert::ConvertJenaCorese
+   :project: corese
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -1,0 +1,16 @@
+.. _dir__github_workspace_corese-jena_src_main_java_fr_inria_corese_jena_convert_datatypes:
+
+
+Directory datatypes
+===================
+
+
+|exhale_lsh| :ref:`Parent directory <dir__github_workspace_corese-jena_src_main_java_fr_inria_corese_jena_convert>` (``/github/workspace/corese-jena/src/main/java/fr/inria/corese/jena/convert``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``/github/workspace/corese-jena/src/main/java/fr/inria/corese/jena/convert/datatypes``
+
+
+

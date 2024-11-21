@@ -1,0 +1,1046 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Class JenaTdb1DataManager &#8212; CORESE</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=0675bd48" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=eef0943b"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+    <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'java_api/classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'http://127.0.0.1:3000/docs/source/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v\d+\.\d+\.\d+';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/Corese-square-logo-transparent.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Class JenaTdb1DataManagerBuilder" href="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder.html" />
+    <link rel="prev" title="Class JenaRdfNodeToCoreseDatatype" href="classfr_1_1inria_1_1corese_1_1jena_1_1convert_1_1datatypes_1_1JenaRdfNodeToCoreseDatatype.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/corese.svg" class="logo__image only-light" alt="CORESE - Home"/>
+    <script>document.write(`<img src="../_static/corese.svg" class="logo__image only-dark" alt="CORESE - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../apis.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://corese.inria.fr/">
+                        Demo
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Wimmics/corese" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli_ref/cli_root.html">CLI</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_sparql.html">sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_convert.html">convert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_shacl.html">shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_remote_sparql.html">remote-sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli_ref/cli_canonicalize.html">canonicalize</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../rest_api/api_root.html">REST API</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql.html">/sparql</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_load.html">/sparql/load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_reset.html">/sparql/reset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rest_api/sparql_d3.html">/sparql/d3</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="library_root.html">Java API</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph.html">Class Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1CompareNode.html">Class Graph::CompareNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1GTable.html">Class Graph::GTable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1TreeNode.html">Class Graph::TreeNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1GraphDistance.html">Class GraphDistance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1load_1_1Load.html">Class Load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1print_1_1ResultFormat.html">Class ResultFormat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1query_1_1QueryProcess.html">Class QueryProcess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1shacl_1_1Shacl.html">Class Shacl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1core_1_1transform_1_1Transformer.html">Class Transformer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1jena_1_1convert_1_1ConvertJenaCorese.html">Class ConvertJenaCorese</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1jena_1_1convert_1_1datatypes_1_1CoreseDatatypeToJenaRdfNode.html">Class CoreseDatatypeToJenaRdfNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1jena_1_1convert_1_1datatypes_1_1JenaRdfNodeToCoreseDatatype.html">Class JenaRdfNodeToCoreseDatatype</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Class JenaTdb1DataManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder.html">Class JenaTdb1DataManagerBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enumfr_1_1inria_1_1corese_1_1core_1_1GraphDistance_1_1Mode.html">Enum Mode</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../apis.html" class="nav-link">CORESE APIs</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="library_root.html" class="nav-link">Java API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Class...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="class-jenatdb1datamanager">
+<span id="exhale-class-classfr-1-1inria-1-1corese-1-1jena-1-1jenatdb1datamanager"></span><h1>Class JenaTdb1DataManager<a class="headerlink" href="#class-jenatdb1datamanager" title="Permalink to this heading">#</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_corese-jena_src_main_java_fr_inria_corese_jena_JenaTdb1DataManager.java.html#file-corese-jena-src-main-java-fr-inria-corese-jena-jenatdb1datamanager-java"><span class="std std-ref">File JenaTdb1DataManager.java</span></a></p></li>
+</ul>
+<section id="inheritance-relationships">
+<h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Permalink to this heading">#</a></h2>
+<section id="base-types">
+<h3>Base Types<a class="headerlink" href="#base-types" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">DataManager</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">AutoCloseable</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Permalink to this heading">#</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManagerE">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManagerE"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManagerE"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JenaTdb1DataManager</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">DataManager</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">AutoCloseable</span></span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManagerE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Implements Corese DataManager interface for Jena-TDB. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager9graphSizeEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager9graphSizeEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager9graphSizeEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::graphSize"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1ae64e6d21f3bf495a383ab3f004aaf789"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">graphSize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager9graphSizeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager10countEdgesE4Node">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager10countEdgesE4Node"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager10countEdgesE4Node"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::countEdges__Node"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1ad641ff1bd512a727b26e1693fc6dbc29"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">countEdges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">predicate</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager10countEdgesE4Node" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Counts the number of edges with a specific predicate. </p>
+<p>This method returns the number of edges in the dataset that have the specified predicate. It achieves this by converting the Corese Node to its Jena equivalent and then streaming the graph for the specified predicate.</p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>predicate</strong> – The predicate to count edges for </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of edges with the specified predicate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager5existE4Node4Node4Node">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager5existE4Node4Node4Node"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager5existE4Node4Node4Node"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::exist__Node.Node.Node"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a39a142aca12eea569d3799da59d1d3a6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">exist</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subject</span></span>, <span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">predicate</span></span>, <span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">object</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager5existE4Node4Node4Node" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Checks if an edge exists in the dataset. </p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> – The subject node of the edge. </p></li>
+<li><p><strong>predicate</strong> – The predicate node of the edge. </p></li>
+<li><p><strong>object</strong> – The object node of the edge. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if an edge with the given subject, predicate, and object exists in the dataset, false otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8getEdgesE4Node4Node4Node4ListI4NodeE">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager8getEdgesE4Node4Node4Node4ListI4NodeE"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager8getEdgesE4Node4Node4Node4ListI4NodeE"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::getEdges__Node.Node.Node.List:Node:"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1ad831ce31f8170c56c14d0ae105d9d744"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Edge</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getEdges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subject</span></span>, <span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">predicate</span></span>, <span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">object</span></span>, <span class="n"><span class="pre">List</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Node</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">contexts</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8getEdgesE4Node4Node4Node4ListI4NodeE" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Retrieves iterable of edges based on given nodes and contexts. </p>
+<p>The method returns an iterable of edges based on the provided subject, predicate, object nodes, and an optional list of contexts. It checks for null values in the contexts list and if there’s only one context or if the data manager is a rule data manager, it returns an iterable of quads without losing context information. Otherwise, it returns an iterable of triples without duplicates for reading.</p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> – The subject node </p></li>
+<li><p><strong>predicate</strong> – The predicate node </p></li>
+<li><p><strong>object</strong> – The object node </p></li>
+<li><p><strong>contexts</strong> – The list of context nodes, can be null </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An iterable of edges based on the given nodes and contexts</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8getEdgesE4Node4Node4Node4ListI4NodeEii">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager8getEdgesE4Node4Node4Node4ListI4NodeEii"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager8getEdgesE4Node4Node4Node4ListI4NodeEii"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::getEdges__Node.Node.Node.List:Node:.i.i"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a4cfa6825e22b3fafcfb5edc742a1ec45"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Edge</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getEdges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">subject</span></span>, <span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">predicate</span></span>, <span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">object</span></span>, <span class="n"><span class="pre">List</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Node</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">contexts</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">oper</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8getEdgesE4Node4Node4Node4ListI4NodeEii" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Iterates over edges based on provided parameters. </p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> – The subject node </p></li>
+<li><p><strong>predicate</strong> – The predicate node </p></li>
+<li><p><strong>object</strong> – The object node </p></li>
+<li><p><strong>contexts</strong> – The list of context nodes </p></li>
+<li><p><strong>oper</strong> – The operator type </p></li>
+<li><p><strong>index</strong> – The index value </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An iterable of edges</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager10predicatesE4Node">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager10predicatesE4Node"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager10predicatesE4Node"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::predicates__Node"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a7f04cd48c0f4802931e003f06e004721"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Node</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">predicates</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">corese_context</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager10predicatesE4Node" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8getNodesE4Node">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager8getNodesE4Node"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager8getNodesE4Node"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::getNodes__Node"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a1cff53ddbc7cda7796a70587e5e72c61"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Node</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getNodes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">context</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8getNodesE4Node" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns an iterable collection of nodes from the graph. </p>
+<p>The method iterates over all nodes in the graph, either the default graph or a named graph, and converts them into Corese nodes using a provided function.</p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>context</strong> – The context node, can be null for the default graph. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An iterable collection of nodes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8contextsEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager8contextsEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager8contextsEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::contexts"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a5fed00cd97c50c48cfa21a888ff07377"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Node</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">contexts</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8contextsEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns an iterable collection of node contexts in the dataset. </p>
+<p>If the default model of the dataset is not empty, the default graph will be included in the list of contexts. Otherwise, only the named graphs are returned.</p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An iterable collection of node contexts in the dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager6insertE4Edge">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager6insertE4Edge"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager6insertE4Edge"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::insert__Edge"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a403186b2e7bc1f7fae1759796f0b2114"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Edge</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Edge</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">edge</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager6insertE4Edge" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a8839ce884a279b51025cd63a0ddd24b0"></span><span class="sig-name descname"><span class="pre">inline</span> <span class="pre">Iterable&lt;</span> <span class="pre">Edge</span> <span class="pre">&gt;</span> <span class="pre">delete</span> <span class="pre">(Node</span> <span class="pre">subject,</span> <span class="pre">Node</span> <span class="pre">predicate,</span> <span class="pre">Node</span> <span class="pre">object,</span> <span class="pre">List&lt;</span> <span class="pre">Node</span> <span class="pre">&gt;</span> <span class="pre">contexts)</span></span></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager9blankNodeEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager9blankNodeEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager9blankNodeEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::blankNode"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1abf8c0b45864841914a1ff07d3428a05e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">blankNode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager9blankNodeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8addGraphE4Node4Node7boolean">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager8addGraphE4Node4Node7boolean"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager8addGraphE4Node4Node7boolean"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::addGraph__Node.Node.boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1afd0c9b0d2ced7a91b2f8ba8267af7662"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">addGraph</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">source</span></span>, <span class="n"><span class="pre">Node</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">target</span></span>, <span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">silent</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager8addGraphE4Node4Node7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager10getDatasetEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager10getDatasetEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager10getDatasetEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::getDataset"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1aa790e1d5a47b90fcc632b93eeb5c5220"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDataset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager10getDatasetEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Getter for the internal Jena Dataset object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>internal Jena Dataset object </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager5closeEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager5closeEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager5closeEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::close"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a5ae591df94fc66ccb85cbb6565368bca"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">close</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager5closeEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Closes the Jena dataset and releases resources. </p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager14getStoragePathEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager14getStoragePathEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager14getStoragePathEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::getStoragePath"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a88c9ebb39c69b019a9bb1b97315748c5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getStoragePath</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager14getStoragePathEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Database storage path getter. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Database storage path or<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">null</span><span class="w"> </span>
+</pre></div>
+</div>
+ if the DB has no storage path. For example, the data is stored in the RAM of the computer. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18transactionSupportEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager18transactionSupportEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager18transactionSupportEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::transactionSupport"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a5c6f23ff757789b3b72c188f0477472e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">transactionSupport</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18transactionSupportEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager20startReadTransactionEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager20startReadTransactionEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager20startReadTransactionEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::startReadTransaction"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a7940881d62d095bcdbdaa3c0a605d313"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">startReadTransaction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager20startReadTransactionEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Begins a read transaction on the Jena dataset. </p>
+<p>The method first increments the read transaction counter, then starts a read transaction if the counter is at zero. If a metadata manager exists, it also starts a read transaction.</p>
+<p>
+This docstring was generated by AI. <div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>#getReadTransactionCounter() </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>#setReadTransactionCounter(int) </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>#jena_dataset </p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a481e1b680c2d7742c835c23c7bc655af"><span class="std std-ref">getMetadataManager()</span></a></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>#hasMetadataManager()</p>
+</div>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18endReadTransactionEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager18endReadTransactionEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager18endReadTransactionEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::endReadTransaction"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a076eb672fa76c001ebfffe416605fb56"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">endReadTransaction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18endReadTransactionEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Ends the read transaction, decrementing the read transaction counter. </p>
+<p>If the read transaction counter is 0 after decrementing, the Jena dataset’s read transaction is ended and if there is a metadata manager, its read transaction is also ended.</p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager21startWriteTransactionEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager21startWriteTransactionEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager21startWriteTransactionEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::startWriteTransaction"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a959312d0355e2ee508f9fec0c0e8ae16"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">startWriteTransaction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager21startWriteTransactionEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Starts a write transaction on the Jena dataset. </p>
+<p>If a metadata manager exists, it will also start a write transaction. This method is typically called before performing write operations on the dataset.</p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19endWriteTransactionEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager19endWriteTransactionEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager19endWriteTransactionEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::endWriteTransaction"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1ad53b1b8398d8692c9cdea8b54d31510b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">endWriteTransaction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19endWriteTransactionEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Commits the current write transaction in the Jena dataset. </p>
+<p>This method ensures that any changes made during the write transaction are persisted to the underlying storage. If there is a metadata manager associated with the data manager, it will also commit its changes.</p>
+<p>This docstring was generated by AI. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager16abortTransactionEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager16abortTransactionEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager16abortTransactionEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::abortTransaction"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1af99b7144da93e1f18dd3509ef178dc45"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">abortTransaction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager16abortTransactionEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Aborts the current transaction. </p>
+<p>This method aborts the ongoing transaction, discarding any changes made since the last commit or the start of the transaction.</p>
+<p>This docstring was generated by AI. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager15isInTransactionEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager15isInTransactionEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager15isInTransactionEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::isInTransaction"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a257d8f642301a8febc591f5d99ba78e1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isInTransaction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager15isInTransactionEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Checks if the data manager is currently in a transaction. </p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the data manager is in a transaction, false otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19isInReadTransactionEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager19isInReadTransactionEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager19isInReadTransactionEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::isInReadTransaction"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a7b0ca2c3041aca864ba2bc16f6b34474"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isInReadTransaction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19isInReadTransactionEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Checks if the data manager is in a read transaction. </p>
+<p>This method checks the transaction mode of the Jena dataset to determine if it is currently in a read transaction.</p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the dataset is in a read transaction, false otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager20isInWriteTransactionEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager20isInWriteTransactionEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager20isInWriteTransactionEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::isInWriteTransaction"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1afee378bdeb9920b14fc90a8fd7b9d239"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isInWriteTransaction</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager20isInWriteTransactionEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Checks if the data manager is in a write transaction. </p>
+<p>This method determines whether the data manager is currently in a write transaction by checking the transaction mode of the Jena dataset. If the transaction mode is null, the method returns false, indicating that the data manager is not in a write transaction. Otherwise, the method returns true if the transaction mode is set to Write, and false if it is set to Read.</p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>true if the data manager is in a write transaction, false otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18hasMetadataManagerEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager18hasMetadataManagerEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager18hasMetadataManagerEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::hasMetadataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1abb14d29e455b8d603d4802b4120e61b8"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">hasMetadataManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18hasMetadataManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18getMetadataManagerEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager18getMetadataManagerEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager18getMetadataManagerEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::getMetadataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a481e1b680c2d7742c835c23c7bc655af"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">MetadataManager</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getMetadataManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18getMetadataManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns the metadata manager. </p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The metadata manager.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18setMetadataManagerE15MetadataManager">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager18setMetadataManagerE15MetadataManager"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager18setMetadataManagerE15MetadataManager"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::setMetadataManager__MetadataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1ab3b4d01ab91e362a81cda5d27099dd36"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setMetadataManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">MetadataManager</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">metaDataManager</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18setMetadataManagerE15MetadataManager" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Sets the metadata manager for the data manager. </p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>metaDataManager</strong> – The metadata manager to be set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager15startRuleEngineEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager15startRuleEngineEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager15startRuleEngineEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::startRuleEngine"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a4663ffdbb6699ffa74649931701d66bd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">startRuleEngine</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager15startRuleEngineEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Starts the rule engine. </p>
+<p>This method is intentionally empty and reserved for future implementations.</p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager13endRuleEngineEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager13endRuleEngineEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager13endRuleEngineEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::endRuleEngine"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1ae6b6ca1018a2023bde47a39820612797"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">endRuleEngine</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager13endRuleEngineEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Closes the dataset and releases associated resources if the DataManager is a rule DataManager. </p>
+<p>If the ‘RULE_DATAMANAGER_CLEAN’ property is set to false, the method does not clean the named graph.</p>
+<p>This docstring was generated by AI. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager17isRuleDataManagerEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager17isRuleDataManagerEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager17isRuleDataManagerEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::isRuleDataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1ae5af66fbf38a8f53115a3c89a9286f9b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isRuleDataManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager17isRuleDataManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Returns whether this data manager is a rule data manager. </p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>true if this data manager is a rule data manager, false otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18setRuleDataManagerE7boolean">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager18setRuleDataManagerE7boolean"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager18setRuleDataManagerE7boolean"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::setRuleDataManager__boolean"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a14fcb1b9d052d506cacb182431f8c0a3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setRuleDataManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">boolean</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">optimize</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager18setRuleDataManagerE7boolean" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Sets the rule data manager to the specified optimization value. </p>
+<p>
+This docstring was generated by AI. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>optimize</strong> – The new optimization value for the rule data manager.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerEv">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerEv"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerEv"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::JenaTdb1DataManager"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a5e0759c837e312f512a884800c9e4a72"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JenaTdb1DataManager</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerEv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Constructor of JenaTdbDataManager. </p>
+<p>Create to a Jena dataset backed by an in-memory block manager. For testing. Please use the <a class="reference internal" href="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder.html#classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder"><span class="std std-ref">JenaTdb1DataManagerBuilder</span></a> to create a <a class="reference internal" href="#classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager"><span class="std std-ref">JenaTdb1DataManager</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerE6String">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerE6String"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerE6String"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::JenaTdb1DataManager__String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1af27b4d3056479ac20497aa62645f08bc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JenaTdb1DataManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">storage_path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerE6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Constructor of JenaTdbDataManager. </p>
+<p>Create or connect to a Jena dataset backed in file system. Please use the <a class="reference internal" href="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder.html#classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder"><span class="std std-ref">JenaTdb1DataManagerBuilder</span></a> to create a <a class="reference internal" href="#classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager"><span class="std std-ref">JenaTdb1DataManager</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>storage_path</strong> – Path of the directory where the data is stored. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerE7Dataset6String">
+<span id="_CPPv3N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerE7Dataset6String"></span><span id="_CPPv2N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerE7Dataset6String"></span><span id="fr::inria::corese::jena::JenaTdb1DataManager::JenaTdb1DataManager__Dataset.String"></span><span class="target" id="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager_1a37c6671b0afddad2d11fb9d555509bbd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JenaTdb1DataManager</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Dataset</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dataset</span></span>, <span class="n"><span class="pre">String</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">storage_path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N2fr5inria6corese4jena19JenaTdb1DataManager19JenaTdb1DataManagerE7Dataset6String" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Constructor of JenajDataManager from a Jena dataset. </p>
+<p>Please use the <a class="reference internal" href="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder.html#classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder"><span class="std std-ref">JenaTdb1DataManagerBuilder</span></a> to create a <a class="reference internal" href="#classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager"><span class="std std-ref">JenaTdb1DataManager</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> – Jena dataset. </p></li>
+<li><p><strong>storage_path</strong> – Path of the directory where the dataset is stored, null if it is in memory. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="classfr_1_1inria_1_1corese_1_1jena_1_1convert_1_1datatypes_1_1JenaRdfNodeToCoreseDatatype.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Class JenaRdfNodeToCoreseDatatype</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Class JenaTdb1DataManagerBuilder</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inheritance-relationships">Inheritance Relationships</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#base-types">Base Types</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-documentation">Class Documentation</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/java_api/classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, WIMMICS.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

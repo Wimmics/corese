@@ -18,3 +18,5 @@ Namespaces
 
 
 - :ref:`namespace_fr__inria__corese__core`
+
+- :ref:`namespace_fr__inria__corese__jena`

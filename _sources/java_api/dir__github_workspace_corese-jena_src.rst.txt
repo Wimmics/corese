@@ -1,0 +1,21 @@
+.. _dir__github_workspace_corese-jena_src:
+
+
+Directory src
+=============
+
+
+|exhale_lsh| :ref:`Parent directory <dir_corese-jena>` (``corese-jena``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+*Directory path:* ``/github/workspace/corese-jena/src``
+
+Subdirectories
+--------------
+
+- :ref:`dir__github_workspace_corese-jena_src_main`
+
+
+

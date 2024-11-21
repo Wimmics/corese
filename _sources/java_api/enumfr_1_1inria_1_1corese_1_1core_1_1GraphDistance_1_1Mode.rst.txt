@@ -1,0 +1,14 @@
+.. _exhale_enum_enumfr_1_1inria_1_1corese_1_1core_1_1GraphDistance_1_1Mode:
+
+Enum Mode
+=========
+
+- Defined in :ref:`file_corese-core_src_main_java_fr_inria_corese_core_GraphDistance.java`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: fr::inria::corese::core::GraphDistance::Mode
+   :project: corese

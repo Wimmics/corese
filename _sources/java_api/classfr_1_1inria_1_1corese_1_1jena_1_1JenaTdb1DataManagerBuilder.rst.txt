@@ -1,0 +1,26 @@
+.. _exhale_class_classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManagerBuilder:
+
+Class JenaTdb1DataManagerBuilder
+================================
+
+- Defined in :ref:`file_corese-jena_src_main_java_fr_inria_corese_jena_JenaTdb1DataManagerBuilder.java`
+
+
+Inheritance Relationships
+-------------------------
+
+Base Type
+*********
+
+- ``public DataManagerBuilder``
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: fr::inria::corese::jena::JenaTdb1DataManagerBuilder
+   :project: corese
+   :members:
+   :protected-members:
+   :undoc-members:

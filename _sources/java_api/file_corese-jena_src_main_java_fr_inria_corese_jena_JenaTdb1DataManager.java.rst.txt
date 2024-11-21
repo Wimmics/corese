@@ -1,0 +1,36 @@
+
+.. _file_corese-jena_src_main_java_fr_inria_corese_jena_JenaTdb1DataManager.java:
+
+File JenaTdb1DataManager.java
+=============================
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``corese-jena/src/main/java/fr/inria/corese/jena/JenaTdb1DataManager.java``)
+----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_fr__inria__corese__jena`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classfr_1_1inria_1_1corese_1_1jena_1_1JenaTdb1DataManager`
+

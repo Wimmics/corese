@@ -58,6 +58,21 @@ Namespaces
 
    namespace_fr__inria__corese__core__transform.rst
 
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__jena.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__jena__convert.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   namespace_fr__inria__corese__jena__convert__datatypes.rst
+
 Directories
 ***********
 
@@ -130,7 +145,57 @@ Directories
 .. toctree::
    :maxdepth: 5
 
+   dir__github_workspace_corese-jena_src.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-jena_src_main.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-jena_src_main_java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-jena_src_main_java_fr.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-jena_src_main_java_fr_inria.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-jena_src_main_java_fr_inria_corese.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-jena_src_main_java_fr_inria_corese_jena.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-jena_src_main_java_fr_inria_corese_jena_convert.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir__github_workspace_corese-jena_src_main_java_fr_inria_corese_jena_convert_datatypes.rst
+
+.. toctree::
+   :maxdepth: 5
+
    dir_corese-core.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   dir_corese-jena.rst
 
 Files
 *****
@@ -139,7 +204,37 @@ Files
 .. toctree::
    :maxdepth: 5
 
+   file_corese-jena_src_main_java_fr_inria_corese_jena_convert_ConvertJenaCorese.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-jena_src_main_java_fr_inria_corese_jena_convert_datatypes_CoreseDatatypeToJenaRdfNode.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
    file_corese-core_src_main_java_fr_inria_corese_core_Graph.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-core_src_main_java_fr_inria_corese_core_GraphDistance.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-jena_src_main_java_fr_inria_corese_jena_convert_datatypes_JenaRdfNodeToCoreseDatatype.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-jena_src_main_java_fr_inria_corese_jena_JenaTdb1DataManager.java.rst
+
+.. toctree::
+   :maxdepth: 5
+
+   file_corese-jena_src_main_java_fr_inria_corese_jena_JenaTdb1DataManagerBuilder.java.rst
 
 .. toctree::
    :maxdepth: 5

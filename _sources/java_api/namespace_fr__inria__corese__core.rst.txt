@@ -41,5 +41,3 @@ Classes
 - :ref:`exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1GTable`
 
 - :ref:`exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1Graph_1_1TreeNode`
-
-- :ref:`exhale_class_classfr_1_1inria_1_1corese_1_1core_1_1GraphDistance`

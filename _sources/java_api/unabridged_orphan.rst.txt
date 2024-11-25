@@ -219,11 +219,6 @@ Files
 .. toctree::
    :maxdepth: 5
 
-   file_corese-core_src_main_java_fr_inria_corese_core_GraphDistance.java.rst
-
-.. toctree::
-   :maxdepth: 5
-
    file_corese-jena_src_main_java_fr_inria_corese_jena_convert_datatypes_JenaRdfNodeToCoreseDatatype.java.rst
 
 .. toctree::

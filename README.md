@@ -10,7 +10,8 @@
 -----
 
 # Corese has moved out 
-Corese has entered a new era. The project has been moved under the care of the [Corese-stack](https://github.com/orgs/corese-stack/repositories) organization on GitHub. Further development and maintenance of Corese will be done under the new organization, with members of [Wimmics](https://team.inria.fr/wimmics/), [P16](https://p16.inria.fr/) teams from INRIA, and members from [Probabl](https://probabl.ai/) leading the project. 
+Corese has entered a new era. The project has been moved under the care of the [Corese-stack](https://github.com/orgs/corese-stack/repositories) organization on GitHub.
+Further development and maintenance of Corese will be fully-open and done under the new organization, starting with members of [Wimmics](https://team.inria.fr/wimmics/), [P16](https://p16.inria.fr/) teams from INRIA, and members from [Probabl](https://probabl.ai/) leading the project. 
 
 We still maintain the different diffusion channels. You can still find the latest stable releases of each corese application on Maven, Docker, Flathub, and Pip. 
 
@@ -26,7 +27,7 @@ Graphical interface that allows easy and visual use of Corese features.
 ### [Corese-python](https://github.com/corese-stack/corese-python) 
 Python wrapper for accessing and manipulating RDF data with Corese features using py4j. 
 ### [Corese-W3C](https://github.com/corese-stack/corese-w3c) 
-Application used to evaluate the application of Corese to the different W3C standards. 
+Application used to test and evaluate the application of Corese to the different W3C standards. 
 ### [Corese-plugin-storage-rdf4j](https://github.com/corese-stack/corese-plugin-storage-rdf4j) 
 The backend plugin to interface with RDF4J. 
 ### [Corese-plugin-storage-jena](https://github.com/corese-stack/corese-plugin-storage-jena) 

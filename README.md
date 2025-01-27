@@ -14,7 +14,7 @@ Corese has entered a new era. The project has been moved under the care of the [
 
 We still maintain the different diffusion channels. You can still find the latest stable releases of each corese application on Maven, Docker, Flathub, and Pip. 
 
-##The project has been separated into several repositories: 
+## The project has been separated into several repositories: 
 ### [Corese-core](https://github.com/corese-stack/corese-core) 
 Formerly Corese-library, allows the usage of Corese to manipulate RDF data, execute SPARQL queries, SHACL shapes and LDScript scripts through an API. 
 ### [Corese-command](https://github.com/corese-stack/corese-command) 

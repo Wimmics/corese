@@ -1,3 +1,42 @@
+
+<p align="center">
+    <a href="https://project.inria.fr/corese/">
+        <img src="https://user-images.githubusercontent.com/5692787/151987397-316a61f0-8098-4d37-a4e8-69180e33261a.svg" width="300" height="149" alt="Corese-logo">
+    </a>
+    <br>
+    <strong>Software platform for the Semantic Web of Linked Data</strong>
+</p>
+
+-----
+
+# Corese has moved out 
+Corese has entered a new era. The project has been moved under the care of the [Corese-stack](https://github.com/orgs/corese-stack/repositories) organization on GitHub. Further development and maintenance of Corese will be done under the new organization, with members of [Wimmics](https://team.inria.fr/wimmics/), [P16](https://p16.inria.fr/) teams from INRIA, and members from [Probabl](https://probabl.ai/) leading the project. 
+
+We still maintain the different diffusion channels. You can still find the latest stable releases of each corese application on Maven, Docker, Flathub, and Pip. 
+
+##The project has been separated into several repositories: 
+### [Corese-core](https://github.com/corese-stack/corese-core) 
+Formerly Corese-library, allows the usage of Corese to manipulate RDF data, execute SPARQL queries, SHACL shapes and LDScript scripts through an API. 
+### [Corese-command](https://github.com/corese-stack/corese-command) 
+Command Line Interface for Corese that allows users to interact with Corese features from the terminal. 
+### [Corese-server](https://github.com/corese-stack/corese-server) 
+Server application allowing the creation, configuration, and management of SPARQL endpoints.
+### [Corese-gui](https://github.com/corese-stack/corese-gui-swing) 
+Graphical interface that allows easy and visual use of Corese features. 
+### [Corese-python](https://github.com/corese-stack/corese-python) 
+Python wrapper for accessing and manipulating RDF data with Corese features using py4j. 
+### [Corese-W3C](https://github.com/corese-stack/corese-w3c) 
+Application used to evaluate the application of Corese to the different W3C standards. 
+### [Corese-plugin-storage-rdf4j](https://github.com/corese-stack/corese-plugin-storage-rdf4j) 
+The backend plugin to interface with RDF4J. 
+### [Corese-plugin-storage-jena](https://github.com/corese-stack/corese-plugin-storage-jena) 
+The backend plugin to interface with Jena.
+
+
+-----
+<!-- markdownlint-enable MD033 -->
+
+
 <!-- markdownlint-configure-file { "MD004": { "style": "consistent" } } -->
 
 <!-- markdownlint-disable MD033 -->
@@ -9,14 +48,6 @@
 
 
 
-<p align="center">
-    <a href="https://project.inria.fr/corese/">
-        <img src="https://user-images.githubusercontent.com/5692787/151987397-316a61f0-8098-4d37-a4e8-69180e33261a.svg" width="300" height="149" alt="Corese-logo">
-    </a>
-    <br>
-    <strong>Software platform for the Semantic Web of Linked Data</strong>
-</p>
-<!-- markdownlint-enable MD033 -->
 
 Corese is a software platform implementing and extending the standards of the Semantic Web. It allows to create, manipulate, parse, serialize, query, reason and validate RDF data.
 
